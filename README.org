@@ -1,0 +1,493 @@
+# -*- mode: org; coding:utf-8; -*-
+#+TITLE: Uniline
+#+OPTIONS: ^:{} authors:Thierry Banel, toc:nil
+
+* Pure UNICODΕ text diagrams
+Draw diagrams like those:
+
+Document a command:
+#+begin_example
+   pdfjam source.pdf 3-5,9
+        ▲    ▲        ▲  ▲
+command╶╯    │        │  │
+input file╶──╯        │  │
+select pages 3,4,5╶───╯  │
+and page 9╶──────────────╯
+#+end_example
+
+Connect boxes with arrows:
+#+begin_example
+            ╭───────────────────────╮
+  ╷123╭────▶┤ hundred and something │
+  ╰───╯     ╰───────────────────────╯
+                             ╭────▶──╮A╷
+    ╭───╮    ┏━━━┓    ╔═══╗  │       ╰─╯
+0╶─→┤ 1 ┝━━━▶┫ 2 ┣═══▷╣ 3 ╟──●────▶──╮B╷
+    ╰───╯    ┗━┯━┛    ╚═╤═╝  │       ╰─╯
+               ╰────←───╯    ╰────▶──╮C╷
+                                     ╰─╯
+   ╔══════════╗
+   ║ 1        ║          ▐▀▀▀▀▀▀▀▀▜
+   ║    ╭─────╫───╮ ◁──▷ ▐ 3      ▐
+   ╚════╪═════╝ 2 │      ▐▄▄▄▄▄▄▄▄▟
+        ╰─────────╯
+#+end_example
+
+Explain decisions trees:
+#+begin_example
+  ┏━━━━━━━━━━━━┓
+  ┃which color?┃
+  ┗━┯━━━━━━━━━━┛
+    │     ╭──────╮
+    │  ╭──┤yellow├─▷╮good─choice╭□
+    ▽  │  ╰──────╯  ╰═══════════╯
+    ╰──●  ╭───╮    ┏━━━━━┓
+       ├──┤red├───▷┨dark?┠──╮
+       │  ╰───╯    ┗━━━━━┛  │
+       │ ╭───◁──────────────╯
+       │ │   ╭───╮
+       │ ╰─●─┤yes├▷╮regular─red╭─□
+       │   │ ╰───╯ ╰═══════════╯
+       │   │ ╭──╮
+       │   ╰─┤no├─▷╮pink╭────────□
+       │     ╰──╯  ╰════╯
+       │  ╭────╮
+       ├──┤blue├───▷╮next week╭──□
+       │  ╰────╯    ╰═════════╯
+       │  ╭─────╮
+       ╰──┤white├──▷╮available╭──□
+          ╰─────╯   ╰═════════╯
+#+end_example
+
+Draw lines or blocks:
+#+begin_example
+                              ╭─╮←─╮
+                         ╭╮   │ │  ╰──╴max 235
+                       ╭╮││  ╭╯ │
+                       │╰╯│╭─╯  │
+      ╭╮               │  ││    │
+   ╭─╮││╭╮   ╭──╮╭╮    │  ╰╯    ╰╮
+  ╭╯ ╰╯╰╯│  ╭╯  ╰╯╰─╮  │         │ ╭╮
+◁─╯      ╰──╯       ╰──╯         ╰─╯╰────▷
+◀════════════════════════════════════════▶
+                       ╭────────╮
+   ▲                   │all time│
+   ┃       ▄     ▗▟█ ←─┤highest │
+  Qdx      █▌   ████   ╰────────╯
+   ┃     ▗▄█▌   █████▙
+   ┃   ▟███████▄█████████▄▄▄     ▗▄
+   ┃▐▄▄████████████████████████████▄▄▖
+    ╺━━━━━━━━━━╸time╺━━━━━━━━━━━━━━━━▶
+
+#+end_example
+
+Explain Lisp lists:
+#+begin_example
+  '(a b c)
+     ┏━━━┳━━━┓   ┏━━━┳━━━┓   ┏━━━┳━━━┓
+●━━━▶┫ ● ┃ ●─╂──▷┨ ● ┃ ●─╂──▷┨ ● ┃nil┃
+     ┗━┿━┻━━━┛   ┗━┿━┻━━━┛   ┗━┿━┻━━━┛
+       │           ╰──────────╮╰╮
+       │  ╭─────┬───────────╮ │ │
+       ╰─▷┤"a\0"│properties │ │ │
+          ├─────┼───────────┤ │ │
+          │"b\0"│properties ├◁╯ │
+          ├─────┼───────────┤   │
+          │"c\0"│properties ├◁──╯
+          ├─────┼───────────┤
+          │...  │...        │
+          ╵     ╵           ╵
+#+end_example
+
+Draw sketched objects:
+#+begin_example
+
+  ◀─(-)────────(+)──▶    ~╭──────╮~
+   ▗──────────────╮     ~~│ ╭~~╮ │~~
+   ▐              ╰╮     ~│ ╵  ╵ │~
+ ╭□▐   1.5 volts  ╭╯□╮    ╰─╖  ╓─╯
+ │ ▝▀▀▀▀▀▀▀▀▀▀▀▀▀▀▘  │      ╠━━╣
+ │                   ╰──────╯  │
+ ╰─────────────────────────────╯
+#+end_example
+
+Those diagrams are pure text. There is nothing graphic. They are
+achieved using UNICODE characters. Most often, the text file will be
+encoded as UTF-8.
+
+Creating such diagrams by hand is painfully slow. Use Uniline to
+draw lines while you move the cursor with keyboard arrows.
+
+*Beware!*
+
+If you see those diagrams miss-aligned, most likely the font used to
+display them does not support UNICODE block characters. See bellow the
+paragraph "Which fonts?".
+
+* Minor mode
+Uniline is a minor mode. Activate it temporarily:
+
+ =M-x uniline-mode=
+
+Exit it with:
+
+ =C-c C-c=
+
+The current major mode is still active underneath =uniline-mode=.
+
+While in =uniline-mode=, overwritting is active, as well as long lines
+truncation. Also, a hollow cursor is provided. Those settings are
+reset to their previous state when exiting =uniline-mode=.
+
+* Drawing lines
+Use keybord arrows to draw lines.
+
+By default, drawing lines only happens over empty space or over other
+lines. If there is already text, it will not be erased. However, by
+hiting the control-key while moving, lines overwrite whatever there
+is.
+
+The buffer is "infinite" in bottom and right directions. Which means
+that when the cursor ends up outside the buffer, white space
+characters are automatically added.
+
+The usual numeric prefix is available. For instance, to draw a line 12
+characters wide downward, type: =M-12 <down>=
+
+* Brush style
+Set the current brush with:
+
+- =-= single thin line
+  ╭─┬─╮
+
+- =+= single thick line
+  ┏━┳━┓
+
+- === double line
+  ╔═╦═╗
+
+- =#= quarter block
+   ▙▄▟▀
+
+- =<delete>= eraser
+
+- =<return>= move without drawing anything
+
+* The =<insert>= key
+The =<insert>= key is a prefix for other keys:
+- for drawing arrows, squares, crosses, o-shapes glyphs,
+- for handling rectangles,
+- for inserting =# = - += which otherwise change the brush style,
+- for trying a choice of monospaced fonts.
+
+Why =<insert>=? Because:
+- Uniline tries to leave their original meaning to as much keys as possible,
+- the standard meaning of =<insert>= is to toggle the overwrite mode;
+  but Uniline is already in overwrite mode, and de-activating
+  overwrite would break Uniline.
+
+So preempting =<insert>= does not sacrifices anything.
+
+* Arrows glyphs =▷ ▶ →=
+At any time, an arrow may be drawn. The arrow points in the direction
+that the line drawing follows.
+
+Uniline supports 3 arrows: =▷ ▶ →=
+
+Actually, there are tons of arrows of all styles in the UNICODE
+standard. Unfortunately, the support by fonts is weak. So Uniline
+restrains itself to those three safe arrows.
+
+To insert an arrow, type: =<insert>a= or =<insert>aa= or =<insert>aaa=. (=a=
+cycles through the 3 styles, =A= cycles backward).
+
+=<insert>3a= is equivalent to =<insert>aaa=, which is also equivalent to
+=<insert>A=. Those 3 shortcuts insert an arrow of this style: =→↑←↓=. The
+actual direction where the arrow points follows the last movement of
+the cursor.
+
+To change the direction of the arrow, use shift-arrow, for example:
+=S-<up>= will change it from =→= to =↑=.
+
+* Intersection glyphs =■ ◆ ●=
+There are a few other UNICODE characters which are monospace and
+symetric in the 4 directions. They are great at line intersections:
+
+To insert a square =□ ■ ◇ ◆ ◊= type:
+=<insert>sss...= (=s= cycles, =S= cycles backward).
+
+To insert a circular shape =· ● Ø ø= type:
+=<insert>ooo...= (=o= cycles, =O= cycles backward).
+
+To insert a cross shape =÷ × ± ¤= type:
+=<insert>xxx...= (=x= cycles, =X= cycles backward).
+
+To insert a usual ASCII letter or symbol, just type it.
+
+As the keys =- + = #= are preempted by Uniline mode, to type them,
+prefix them with =<insert>=. Example: =<insert>-= inserts a =-= and
+=<insert>+= inserts a =+=.
+
+#+begin_example
+ ╷ ╷ ╷ ╷
+╶◆─◇─■─□╴
+ │ │ │ │   ╶─▷─▶─→─────╮
+╶·─●─Ø─ø╴   ╭─◆─◇─■─□──╯
+ │ │ │ │    ╰─·─●─Ø─ø──╮
+╶¤─±─×─÷╴   ╭─¤─±─×─÷──╯
+ │ │ │ │    ╰─a─b─c─d──╮
+╶a─b─c─d╴   ╭─#─-─+─$──╯
+ │ │ │ │    │  ╷  ╷  ╭╮ ╭╮ ╷  ╭╮ ╷  ╭╮
+╶#─-─+─$╴   ╰──0──1──2┴─3┴─4──5┴─6──7┴╴
+ │ │ │ │
+#+end_example
+
+* Drawing rectangles
+To draw a rectangle in one shot, select a rectangular region with
+=C-SPC= or =C-x SPC= and move the cursor.
+
+If needed, change the brush with any of
+ =-= =+= === =#= =<delete>=
+
+then hit
+- =r= to draw a rectangle inside the selection
+- =R= to draw a rectangle ouside the selection
+
+#+begin_example
+   ╭───────╮          r: inside╮╭───────╮
+   │ one   │          ▗▄▄▄▄▄▄▖╭┤│▛▀▀▀▀▀▜│
+   │  ┏━━━━┿━━━━━━┓   ▐╭────╮▌│╰┼▌     ▐│
+   ╰──╂────╯ two  ┃   ▐│    │▌│ │▙▄▄▄▄▄▟│
+      ┃   ╔═══════╋═╗ ▐│    ├▌╯ ╰─────┬─╯
+      ┗━━━╋━━━━━━━┛ ║ ▐╰────╯▌────────┴───╮
+          ║  three  ║ ▝▀▀▀▀▀▀▘  R: outside╯
+          ╚═════════╝
+
+                          ╭─────────╮
+   my text I              │my text I│
+   want to  ╶─<insert>R─▷ │want to  │
+   box                    │box      │
+                          ╰─────────╯
+#+end_example
+
+The usual =C-_= key may be hit to undo, even with the region still
+active visually.
+
+* Moving rectangles
+Select a region, then press =<insert>=. The selection becomes rectangular if it
+was not.
+
+Use arrow keys to move the rectangle around. A numeric prefix may be
+used to move the rectangle that many characters. Be sure to specify
+the numeric prefix with just digits, without the =Alt= key. Typing
+=15<left>= moves the rectangle 15 characters to the left. =M-15<left>=
+does not work.
+
+Press =q=, =RET=, or =C-g= to stop moving the rectangle.
+
+The =C-_= key may also be used to undo the previous movements, even
+though the selection is still active.
+
+#+begin_example
+                 ▲
+                 │
+                <up>
+           ╭─────┴──────╮
+           │this is     │
+           │my rectangle│
+ ◀─<left>──┤I want to   ├─<right>─▶
+           │move        │
+           │      % +   │
+           ╰─────┬──────╯
+               <down>
+                 │
+                 ▼
+#+end_example
+
+A rectangle can be copied or killed, then yanked somewhere else. Press:
+- =c= to copy
+- =k= to kill
+- =y= to yank (aka paste)
+
+This is similar to the Emacs standard rectangle handling:
+- =C-x r r= copy rectangle to register
+- =C-x r k= kill rectangle
+- =C-x r y= yank killed rectangle
+
+The difference is that Uniline rectangles when killed and yanked, do not
+move surrounding characters.
+
+Uniline and Emacs standard rectangle share the same storage for copied
+and killed rectangles, =killed-rectangle=. So, a rectangle can be killed
+one way, and yanked another way.
+
+* Which fonts?
+A monospace character font must be used. It must also support UNICODE.
+
+Not all fonts are born equal.
+
+- =(set-frame-font "DejaVu Sans Mono")=
+- =(set-frame-font "Unifont"         )=
+- =(set-frame-font "Hack"            )=
+- =(set-frame-font "JetBrains Mono"  )=
+- =(set-frame-font "Cascadia Mono"   )=
+- =(set-frame-font "Agave"           )=
+
+Those fonts are known to support the required UNICODE characters, AND
+display them as monospace. There are fonts advertized as monospace
+which give arbitrary widths to non-ASCII characters. That is bad for
+the kind of drawings done by Uniline.
+
+You may want to try any of the 6 suggested fonts. Just hit the
+corresponding entry in the Uniline menu, or type =<insert>f=. You may
+also execute the above Lisp commands like that:
+
+=M-: (set-frame-font "DejaVu Sans Mono")=
+
+This setting is for the current session. If you want to make it
+permanent, you may use the Emacs customization:
+
+=M-x customize-face default=
+
+Beware that Emacs tries to compensate for missing UNICODE support by
+the current font. Emacs substitutes one font for another, character
+per character. The user may not notice until the dawings done under
+Emacs are displayed on another text editor or on the Web.
+
+To know which font Emacs has choosen for a given character, type:
+
+=C-u C-x ==
+
+* Exotic environments
+** Emacs on the Linux console
+Linux consoles are the 7 non-graphic screens which can be accessed
+usually typing =C-M-F1=, =C-M-F2=, and so on. Such a screen is also
+presented when connecting through ssh into a non-graphical server.
+
+By default they use a font
+named "Fixed" with poor support for Unicode. However, it supports
+lines of the 3 types, mixing all of them in thin lines though.
+
+Another problem is that by default =S-<left>= and =C-<left>= are
+indistinguishable from =<left>=. Same problem with =<right>=, =<up>=, =<down>=
+and =<insert>=. This has nothing to do with Emacs. A solution can be
+found here: https://www.emacswiki.org/emacs/MissingKeys
+
+** Emacs on a graphical terminal emulator
+This is the Emacs launched from a terminal typing =emacs -nw=. In this
+environment, =<insert>= does not exists. It is replaced by
+=<insertchar>=. This has already been taken into account by Uniline by
+duplicating the key-bindings for the two flavors of this key.
+
+If you decide to bind globally =C-<insert>= to the toggling of Uniline
+minor mode as suggested, then you will have to do the same for
+=C-<insertchar>=, for example with =use-package= in your =~/.emacs= file:
+
+#+begin_example
+(use-package uniline
+  :defer t
+  :bind ("C-<insert>"     . uniline-mode)
+  :bind ("C-<insertchar>" . uniline-mode))
+#+end_example
+
+** Emacs on Windows
+On Windows the only native monospaced fonts are Lucida Console and
+Courier New. They are not monospaced for the Unicodes used by uniline.
+
+Often, the Cosolas font is present on Windows. It supports quite well
+the required Unicodes to draw lines. A few glyphs produce unaligned
+result though. They should be avoided under Consolas: △▶▹◇◆
+
+Of course, other fonts may be installed. It is quite easy.
+
+* Installation
+
+Emacs package from Melpa: add the following lines to your =.emacs= file,
+and reload it, if not already done:
+
+#+begin_example
+(add-to-list 'package-archives '("melpa" . "http://melpa.org/packages/") t)
+(package-initialize)
+#+end_example
+
+You may also customize this variable:
+
+#+begin_example
+M-x customize-variable package-archives
+#+end_example
+
+Then download the package:
+
+#+begin_example
+(package-install "uniline")
+#+end_example
+
+Alternatively, you can download the Lisp file, and load it:
+
+#+BEGIN_EXAMPLE
+(load-file "uniline.el")
+#+END_EXAMPLE
+
+You may want to give =uniline-mode= a key-binding. =use-package= is great for that:
+
+#+begin_example
+(use-package uniline
+  :defer t
+  :bind ("C-<insert>" . uniline-mode))
+#+end_example
+
+In this example, =C-<insert>= was choosen. You can use whatever keys combination you want.
+=<insert>= happens to also be the key used inside Uniline.
+
+* Related packages
+
+- artist-mode: the ASCII art mode built into Emacs.
+
+- ascii-art-to-unicode: as the name suggest, converts ASCII drawings
+  to UNICODE, giving results similar to those of Uniline.
+
+- picture-mode: as in Uniline, the buffer is infinite in east & south
+  directions.
+
+- org-pretty-table: Org Mode tables /appear/ to be drawn in UNICODE
+  characters (actually they are still in ASCII).
+
+- boxes: draws artistic boxes around text, with nice looking unicorns,
+  flowers, parchments, all in ASCII art.
+
+- org-drawio: a bridge between the Draw.Io editor and Emacs, producing
+  drawing similar to those of Uniline, but in .svg.
+
+- syntree: draws ASCII trees on-the-fly from description.
+
+- unicode-fonts: in Emacs, helps alleviate the lack of full UNICODE
+  coverage of most fonts.
+
+- org-superstar: prettify headings and plain lists in Org Mode, using
+  UNICODE glyphs.
+
+- charmap: UNICODE table viewer for Emacs.
+
+- insert-char-preview: insert UNICODEs with character preview in
+  completion prompt.
+
+- list-unicode-display: list all UNICODE characters, or a selection of
+  them.
+
+- show-font: show font features in a buffer.
+
+* License
+Copyright (C) 2024  Thierry Banel
+
+Uniline is free software: you can redistribute it and/or modify it under
+the terms of the GNU General Public License as published by the Free
+Software Foundation, either version 3 of the License, or (at your
+option) any later version.
+
+Uniline is distributed in the hope that it will be useful, but WITHOUT
+ANY WARRANTY; without even the implied warranty of MERCHANTABILITY or
+FITNESS FOR A PARTICULAR PURPOSE.  See the GNU General Public License
+for more details.
+
+You should have received a copy of the GNU General Public License
+along with this program.  If not, see <http://www.gnu.org/licenses/>.
