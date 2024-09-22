@@ -176,16 +176,16 @@ characters wide downward, type: =M-12 <down>=
 Set the current brush with:
 
 - =-= single thin line
-  ╭─┬─╮
+  =╭─┬─╮=
 
 - =+= single thick line
-  ┏━┳━┓
+  =┏━┳━┓=
 
-- === double line
-  ╔═╦═╗
+- = = = double line
+  =╔═╦═╗=
 
 - =#= quarter block
-   ▙▄▟▀
+  =▙▄▟▀=
 
 - =<delete>= eraser
 
@@ -420,7 +420,9 @@ Of course, other fonts may be installed. It is quite easy.
 
 * Installation
 
-Emacs package from Melpa: add the following lines to your =.emacs= file,
+Emacs package from Melpa: coming soon!
+
+Add the following lines to your =.emacs= file,
 and reload it, if not already done:
 
 #+begin_example
@@ -446,7 +448,8 @@ Alternatively, you can download the Lisp file, and load it:
 (load-file "uniline.el")
 #+END_EXAMPLE
 
-You may want to give =uniline-mode= a key-binding. =use-package= is great for that:
+You may want to give =uniline-mode= a key-binding. =use-package=
+in your =$HOME/.emacs= file is great for that:
 
 #+begin_example
 (use-package uniline
