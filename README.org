@@ -500,6 +500,9 @@ In this example, =C-<insert>= was choosen. You can use whatever keys combination
 
 - show-font: show font features in a buffer.
 
+- ob-svgbob: convert your ascii diagram scribbles into happy little
+  SVG
+
 * License
 Copyright (C) 2024  Thierry Banel
 
