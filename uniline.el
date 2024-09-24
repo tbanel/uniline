@@ -878,7 +878,7 @@ Here we selected only the fixed-size ones.")
     (eval-when-compile
       (let ((r (reverse uniline--glyphs-tmp)))
         ;; nconc is used to create a circular list on purpose
-        (with-no-warnings (nconc r r))))
+        (nconc r r)))
     "List of good looking UNICODE glyphs.
 Those are:
 - arrows in 4 directions,
@@ -892,7 +892,7 @@ This list is ciurcular in backward order."))
   (defconst uniline--glyphs-fw
     (eval-when-compile
       ;; nconc is used to create a circular list on purpose
-      (with-no-warnings (nconc uniline--glyphs-tmp uniline--glyphs-tmp)))
+      (nconc uniline--glyphs-tmp uniline--glyphs-tmp))
     "List of good looking UNICODE glyphs.
 Those are:
 - arrows in 4 directions,
