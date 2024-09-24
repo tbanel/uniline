@@ -1901,7 +1901,7 @@ And backup previous settings."
   (setq cursor-type 'hollow)
   (add-hook
    'post-self-insert-hook
-   #'(lambda () (forward-char -1))
+   (lambda () (forward-char -1))
    nil 'local))
 
 (defun uniline--mode-post ()
