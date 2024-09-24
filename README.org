@@ -481,6 +481,9 @@ In this example, =C-<insert>= was choosen. You can use whatever keys combination
 
 - syntree: draws ASCII trees on-the-fly from description.
 
+- unicode-enbox: create a UNICODE box around a text; input and output
+  are strings.
+
 - unicode-fonts: in Emacs, helps alleviate the lack of full UNICODE
   coverage of most fonts.
 
