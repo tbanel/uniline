@@ -212,7 +212,7 @@ that the line drawing follows.
 
 Uniline supports 5 arrows types: =▷ ▶ → ▹ ▸=
 
-file:images/arrow-styles.png
+[[file:images/arrow-styles.png]]
 
 #+begin_example
 
@@ -256,7 +256,7 @@ As the keys =- + = #= are preempted by Uniline mode, to type them,
 prefix them with =<insert>=. Example: =<insert>-= inserts a =-= and
 =<insert>+= inserts a =+=.
 
-file:images/insert-glyphs.png
+[[file:images/insert-glyphs.png]]
 
 #+begin_example
 
@@ -298,7 +298,7 @@ then hit
 - =r= to draw a rectangle inside the selection
 - =R= to draw a rectangle ouside the selection
 
-file:images/draw-rectangle.png
+[[file:images/draw-rectangle.png]]
 
 #+begin_example
    ╭───────╮          r: inside╮╭───────╮
@@ -335,7 +335,7 @@ Press =q=, =RET=, or =C-g= to stop moving the rectangle.
 The =C-_= key may also be used to undo the previous movements, even
 though the selection is still active.
 
-file:images/move-rectangle.png
+[[file:images/move-rectangle.png]]
 
 #+begin_example
                  ▲
