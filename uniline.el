@@ -1784,10 +1784,10 @@ See `uniline--insert-glyph'."
    :exit nil)
   ;; Docstring MUST begin with an empty line to benefit from substitutions
   "
-_a_,_A_rrow   ^▷ ▶ →     _S-<left>_  ^rotate ←   ^_-__+__=__#_ self-insert
-_s_,_S_quare  ^□ ■ ◇ ◆ ◊ _S-<right>_ ^rotate →   _f_ choose font
-_o_,_O_-shape ^· ● Ø ø   _S-<up>_    ^rotate ↑   _q_,_RET_ exit
-_x_,_X_-cross ^÷ × ± ¤   _S-<down>_  ^rotate ↓
+_a_,_A_rrow   ^▷ ▶ → ▹ ▸  _S-<left>_  ^rotate ←   ^_-__+__=__#_ self-insert
+_s_,_S_quare  ^□ ■ ◇ ◆ ◊  _S-<right>_ ^rotate →   _f_ choose font
+_o_,_O_-shape ^· ● ◦ Ø ø  _S-<up>_    ^rotate ↑   _q_,_RET_ exit
+_x_,_X_-cross ^╳ ÷ × ± ¤  _S-<down>_  ^rotate ↓
 "
   ("a" uniline-insert-fw-arrow )
   ("A" uniline-insert-bw-arrow )
@@ -1961,10 +1961,10 @@ Set the style of brush by hitting:
   enter a sub-mode to draw a single char glyph,
   and change its orientation.
 \\<uniline-hydra-arrows/keymap>
-  \\[uniline-hydra-arrows/uniline-insert-fw-arrow]	arrows   ▷ ▶ →
+  \\[uniline-hydra-arrows/uniline-insert-fw-arrow]	arrows   ▷ ▶ → ▹ ▸
   \\[uniline-hydra-arrows/uniline-insert-fw-square]	squares  □ ■ ◇ ◆ ◊
-  \\[uniline-hydra-arrows/uniline-insert-fw-oshape]	circles  · ● Ø ø
-  \\[uniline-hydra-arrows/uniline-insert-fw-cross]	crosses  ÷ × ± ¤
+  \\[uniline-hydra-arrows/uniline-insert-fw-oshape]	circles  · ● ◦ Ø ø
+  \\[uniline-hydra-arrows/uniline-insert-fw-cross]	crosses  ╳ ÷ × ± ¤
   Shifting the key cycles backward
 
   \\[uniline-hydra-arrows/uniline-rotate-lf←]	point arrow glyph ←
@@ -2057,10 +2057,10 @@ For a permanent setting, customize it:
     ["eraser brush"    uniline--set-brush-0     :style radio :selected (eq uniline--brush 0     )]
     ["inactive brush"  uniline--set-brush-nil   :style radio :selected (eq uniline--brush nil   )]
     "----"
-    ["insert arrow ▷ ▶ →"      uniline-insert-fw-arrow  :keys "<insert>a"]
+    ["insert arrow ▷ ▶ → ▹ ▸"  uniline-insert-fw-arrow  :keys "<insert>a"]
     ["insert square □ ■ ◇ ◆ ◊" uniline-insert-fw-square :keys "<insert>s"]
-    ["insert oshape · ● Ø ø"   uniline-insert-fw-oshape :keys "<insert>o"]
-    ["insert cross ÷ × ± ¤"    uniline-insert-fw-cross  :keys "<insert>x"]
+    ["insert oshape · ● ◦ Ø ø" uniline-insert-fw-oshape :keys "<insert>o"]
+    ["insert cross ╳ ÷ × ± ¤"  uniline-insert-fw-cross  :keys "<insert>x"]
     "----"
     ["move selection right" uniline-move-rect-ri→ :keys "<insert><right>"]
     ["move selection left"  uniline-move-rect-lf← :keys "<insert><left>"]
