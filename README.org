@@ -206,18 +206,28 @@ Why =<insert>=? Because:
 
 So preempting =<insert>= does not sacrifices anything.
 
-* Arrows glyphs =▷ ▶ →=
+* Arrows glyphs =▷ ▶ → ▹ ▸=
 At any time, an arrow may be drawn. The arrow points in the direction
 that the line drawing follows.
 
-Uniline supports 3 arrows: =▷ ▶ →=
+Uniline supports 5 arrows types: =▷ ▶ → ▹ ▸=
+
+file:images/arrow-styles.png
+
+#+begin_example
+
+    △    ▵    ↑    ▲    ▴
+   ◁ ▷  ◃ ▹  ← →  ◀ ▶  ◂ ▸
+    ▽    ▿    ↓    ▼    ▾
+
+#+end_example
 
 Actually, there are tons of arrows of all styles in the UNICODE
 standard. Unfortunately, the support by fonts is weak. So Uniline
-restrains itself to those three safe arrows.
+restrains itself to those five safe arrows.
 
 To insert an arrow, type: =<insert>a= or =<insert>aa= or =<insert>aaa=. (=a=
-cycles through the 3 styles, =A= cycles backward).
+cycles through the 5 styles, =A= cycles backward).
 
 =<insert>3a= is equivalent to =<insert>aaa=, which is also equivalent to
 =<insert>A=. Those 3 shortcuts insert an arrow of this style: =→↑←↓=. The
@@ -231,13 +241,13 @@ To change the direction of the arrow, use shift-arrow, for example:
 There are a few other UNICODE characters which are monospace and
 symetric in the 4 directions. They are great at line intersections:
 
-To insert a square =□ ■ ◇ ◆ ◊= type:
+To insert a square =□ ■ ▫ ▪ ◇ ◆ ◊= type:
 =<insert>sss...= (=s= cycles, =S= cycles backward).
 
-To insert a circular shape =· ● Ø ø= type:
+To insert a circular shape =· ∙ • ● ◦ Ø ø= type:
 =<insert>ooo...= (=o= cycles, =O= cycles backward).
 
-To insert a cross shape =÷ × ± ¤= type:
+To insert a cross shape =╳ ÷ × ± ¤= type:
 =<insert>xxx...= (=x= cycles, =X= cycles backward).
 
 To insert a usual ASCII letter or symbol, just type it.
@@ -246,18 +256,35 @@ As the keys =- + = #= are preempted by Uniline mode, to type them,
 prefix them with =<insert>=. Example: =<insert>-= inserts a =-= and
 =<insert>+= inserts a =+=.
 
+file:images/insert-glyphs.png
+
 #+begin_example
- ╷ ╷ ╷ ╷
-╶◆─◇─■─□╴
- │ │ │ │   ╶─▷─▶─→─────╮
-╶·─●─Ø─ø╴   ╭─◆─◇─■─□──╯
- │ │ │ │    ╰─·─●─Ø─ø──╮
-╶¤─±─×─÷╴   ╭─¤─±─×─÷──╯
- │ │ │ │    ╰─a─b─c─d──╮
-╶a─b─c─d╴   ╭─#─-─+─$──╯
- │ │ │ │    │  ╷  ╷  ╭╮ ╭╮ ╷  ╭╮ ╷  ╭╮
-╶#─-─+─$╴   ╰──0──1──2┴─3┴─4──5┴─6──7┴╴
- │ │ │ │
+
+<insert>
+    │
+    ▼
+   ╭┴╮   ╭───────╮  ╭─────────────────────╮
+   │s├─▶─┤squares├──┤ □  ■  ▫  ▪  ◇  ◆  ◊ │
+   ╰┬╯   ╰───────╯  ╰─────────────────────╯
+   ╭┴╮   ╭───────╮  ╭─────────────────────╮
+   │o├─▶─┼circles┼──┤ ·  ∙  •  ●  ◦  Ø  ø │
+   ╰┬╯   ╰───────╯  ╰─────────────────────╯
+   ╭┴╮   ╭───────╮  ╭───────────────╮
+   │x├─▶─┼crosses┼──┤ ╳  ÷  ×  ±  ¤ │
+   ╰┬╯   ╰───────╯  ╰───────────────╯
+   ╭┴╮              ╭───╮
+   │+├─▶────────────┤ + │
+   ╰┬╯              ╰───╯
+   ╭┴╮              ╭───╮
+   │-├─▶────────────┤ - │
+   ╰┬╯              ╰───╯
+   ╭┴╮              ╭───╮
+   │=├─▶────────────┤ = │
+   ╰┬╯              ╰───╯
+   ╭┴╮              ╭───╮
+   │#├─▶────────────┤ # │
+   ╰─╯              ╰───╯
+
 #+end_example
 
 * Drawing rectangles
@@ -270,6 +297,8 @@ If needed, change the brush with any of
 then hit
 - =r= to draw a rectangle inside the selection
 - =R= to draw a rectangle ouside the selection
+
+file:images/draw-rectangle.png
 
 #+begin_example
    ╭───────╮          r: inside╮╭───────╮
@@ -306,6 +335,8 @@ Press =q=, =RET=, or =C-g= to stop moving the rectangle.
 The =C-_= key may also be used to undo the previous movements, even
 though the selection is still active.
 
+file:images/move-rectangle.png
+
 #+begin_example
                  ▲
                  │
@@ -315,7 +346,6 @@ though the selection is still active.
            │my rectangle│
  ◀─<left>──┤I want to   ├─<right>─▶
            │move        │
-           │      % +   │
            ╰─────┬──────╯
                <down>
                  │
@@ -414,7 +444,7 @@ Courier New. They are not monospaced for the Unicodes used by uniline.
 
 Often, the Cosolas font is present on Windows. It supports quite well
 the required Unicodes to draw lines. A few glyphs produce unaligned
-result though. They should be avoided under Consolas: △▶▹◇◆
+result though. They should be avoided under Consolas: =△▶▹◇◆=
 
 Of course, other fonts may be installed. It is quite easy.
 
@@ -430,7 +460,7 @@ and reload it, if not already done:
 (package-initialize)
 #+end_example
 
-You may also customize this variable:
+Alternately you may customize this variable:
 
 #+begin_example
 M-x customize-variable package-archives
@@ -442,7 +472,7 @@ Then download the package:
 (package-install "uniline")
 #+end_example
 
-Alternatively, you can download the Lisp file, and load it:
+Alternately, you can download the Lisp file, and load it:
 
 #+BEGIN_EXAMPLE
 (load-file "uniline.el")
