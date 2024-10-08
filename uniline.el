@@ -624,7 +624,7 @@ without the fall-back characters.")
 
   ;; This inactive code was used to generate the
   ;;   `uniline--list-of-double-halflines' list above.
-  
+
   ;; As the ╬ double line glyphs combinations were not all defined
   ;; in the UNICODE standard, a penalty system was applied to look
   ;; for the closest possible alternate glyph.
@@ -634,7 +634,7 @@ without the fall-back characters.")
   ;;   ((3 3 1 0)  (3 3 3 0)) ;; ╠
   ;; which says that, when this ├ is needed, with the upward and
   ;; rightward branches in double line style, then fallback to ╠
-  
+
   ;; There is no need to re-run it, except if one wants to change
   ;; the penalties applied.
   ;;
@@ -1273,7 +1273,7 @@ It works even when in `rectangle-mark-mode'.
 After execution of the body, selection is activated
 from BEGX,BEGY to ENDX,ENDY in `rectangle-mark-mode'."
     (declare (debug (body)))
-    `(progn
+    `(when (region-active-p)
        (rectangle-mark-mode -1)     ; otherwise sometimes end is wrong
        (let* ((deactivate-mark) ; kludge needed to avoid deactivating the mark
               (beg (region-beginning))
@@ -1432,10 +1432,11 @@ defaulting to 1."
      begx (max (1- begx) 0)
      endx (max (1- endx) 0)))))
 
-(defun uniline-draw-inner-rectangle ()
+(defun uniline-draw-inner-rectangle (&optional force)
   "Draws a rectangle inside a rectangular selection.
 Use the current brush style, which may be thin, thick,
-double line, block, or eraser."
+double line, block, or eraser.
+When FORCE is not nil, overwrite whatever is there."
   (interactive)
   (uniline--operate-on-rectangle
    (setq
@@ -1448,15 +1449,24 @@ double line, block, or eraser."
         height (+ height height 1)
         uniline--block-which-quadrant 0))
    (let ((mark-active nil)) ;; otherwise brush would be inactive
-     (uniline-write-ri→ width)
-     (uniline-write-dw↓ height)
-     (uniline-write-lf← width)
-     (uniline-write-up↑ height))))
+     (uniline-write-ri→ width  force)
+     (uniline-write-dw↓ height force)
+     (uniline-write-lf← width  force)
+     (uniline-write-up↑ height force))))
 
-(defun uniline-draw-outer-rectangle ()
+(defun uniline-overwrite-inner-rectangle ()
+  "Draws a rectangle inside a rectangular selection.
+Use the current brush style, which may be thin, thick,
+double line, block, or eraser.
+Overwrite whatever is there."
+  (interactive)
+  (uniline-draw-inner-rectangle t))
+
+(defun uniline-draw-outer-rectangle (&optional force)
   "Draws a rectangle outside a rectangular selection.
 Use the current brush style, which may be thin, thick,
-double line, block, or eraser."
+double line, block, or eraser.
+When FORCE is not nil, overwrite whatever is there."
   (interactive)
   (uniline--operate-on-rectangle
    (goto-char beg)
@@ -1477,14 +1487,22 @@ double line, block, or eraser."
     height (1+ height))
    (uniline--move-to-column (1- begx))
    (let ((mark-active nil))             ; otherwise brush is inactive
-     (uniline-write-ri→ width)
-     (uniline-write-dw↓ height)
-     (uniline-write-lf← width)
+     (uniline-write-ri→ width  force)
+     (uniline-write-dw↓ height force)
+     (uniline-write-lf← width  force)
      (if (> begx 0)
-         (uniline-write-up↑ height)))
+         (uniline-write-up↑ height force)))
    (when (= begy 0)
      (goto-char (point-min))
      (delete-line))))
+
+(defun uniline-overwrite-outer-rectangle ()
+  "Draws a rectangle outside a rectangular selection.
+Use the current brush style, which may be thin, thick,
+double line, block, or eraser.
+Overwrite whatever is there."
+  (interactive)
+  (uniline-draw-outer-rectangle t))
 
 (defun uniline-copy-rectangle ()
   "Copy the selected rectangle in the kill storage."
@@ -1754,20 +1772,30 @@ See `uniline--insert-glyph'."
 ;;;│User interfaces│
 ;;;╰───────────────╯
 
+(defun uniline-customize-face ()
+  "Customize a temporary font to may-be set it for future sessions."
+  (interactive)
+  (customize-face-other-window 'default))
+
 (defhydra uniline-hydra-fonts
   (:pre (hydra-set-property 'uniline-hydra-arrows :verbosity 1)
-   :hint t
-   :exit nil
-   :columns 2)
-  "Try suggested mono-spaced fonts."
-  ("d" (set-frame-font "DejaVu Sans Mono"   ) "DejaVu Sans Mono"   )
-  ("u" (set-frame-font "Unifont"            ) "Unifont"            )
-  ("h" (set-frame-font "Hack"               ) "Hack"               )
-  ("j" (set-frame-font "JetBrains Mono"     ) "JetBrains Mono"     )
-  ("c" (set-frame-font "Cascadia Mono"      ) "Cascadia Mono"      )
-  ("a" (set-frame-font "Agave"              ) "Agave"              )
-  ("q"   () "exit font mode" :exit t)
-  ("RET" () "exit font mode" :exit t))
+   :hint nil
+   :exit nil)
+  "
+╭^─^──────Try a font──^^─────╮╭^─^───^─^──────╮
+│_d_ DejaVu   │_u_ Unifont   ││_*_ ^^configure│
+│_h_ Hack     │_j_ JetBrains ││_RET_ _q_ exit │
+│_c_ Cascadia │_a_ Agave     │╰^─^───^─^──────╯
+╰^─^──────────┴^─^───────────╯"
+  ("d" (set-frame-font "DejaVu Sans Mono"))
+  ("u" (set-frame-font "Unifont"         ))
+  ("h" (set-frame-font "Hack"            ))
+  ("j" (set-frame-font "JetBrains Mono"  ))
+  ("c" (set-frame-font "Cascadia Mono"   ))
+  ("a" (set-frame-font "Agave"           ))
+  ("*" uniline-customize-face :exit t)
+  ("q"   () :exit t)
+  ("RET" () :exit t))
 
 (defun uniline--self-insert-+ ()
   "Wrapper over `self-insert-command' <kp-add>."
@@ -1784,11 +1812,12 @@ See `uniline--insert-glyph'."
    :exit nil)
   ;; Docstring MUST begin with an empty line to benefit from substitutions
   "
-_a_,_A_rrow   ^▷ ▶ → ▹ ▸  _S-<left>_  ^rotate ←   ^_-__+__=__#_ self-insert
-_s_,_S_quare  ^□ ■ ◇ ◆ ◊  _S-<right>_ ^rotate →   _f_ choose font
-_o_,_O_-shape ^· ● ◦ Ø ø  _S-<up>_    ^rotate ↑   _q_,_RET_ exit
-_x_,_X_-cross ^╳ ÷ × ± ¤  _S-<down>_  ^rotate ↓
-"
+╭^─^─^Insert glyph^─────╮╭^Rotate arrow^╮╭^─^─^─^─^─^─^─^────────────╮
+│_a_,_A_rrow   ▷ ▶ → ▹ ▸││_S-<left>_  ← ││_-_,_+_,_=_,_#_ self-insert│
+│_s_,_S_quare  □ ■ ◇ ◆ ◊││_S-<right>_ → ││_f_ ^^^^^^      choose font│
+│_o_,_O_-shape · ● ◦ Ø ø││_S-<up>_    ↑ ││_q_,_RET_ ^^^^  exit       │
+│_x_,_X_-cross ╳ ÷ × ± ¤││_S-<down>_  ↓ │╰^─^─^─^─^─^─^─^────────────╯
+╰^─^─^─^────────────────╯╰^─^───────────╯"
   ("a" uniline-insert-fw-arrow )
   ("A" uniline-insert-bw-arrow )
   ("s" uniline-insert-fw-square)
@@ -1820,8 +1849,7 @@ _x_,_X_-cross ^╳ ÷ × ± ¤  _S-<down>_  ^rotate ↓
   "Make undo work outside selection."
   (interactive)
   (deactivate-mark)
-  (undo)
-  (activate-mark))
+  (undo))
 
 (defun uniline--hydra-rect-quit ()
   "Quit this hydra."
@@ -1834,23 +1862,26 @@ _x_,_X_-cross ^╳ ÷ × ± ¤  _S-<down>_  ^rotate ↓
    :exit nil)
   ;; Docstring MUST begin with an empty line to benefit from substitutions
   "
-_<left>_  ^move ←   _r_ trace inner rect  _<delete>_ ^blank  brush
-_<right>_ ^move →   _R_ trace outer rect  _-_        ^thin   brush ╭─╯
-_<up>_    ^move ↑   _c_ copy rect         _+_        ^thick  bruch ┏━┛
-_<down>_  ^move ↓   _k_ kill rect         _=_        ^double brush ╔═╝
-          ^   ^  ^  _y_ yank rect         _#_        ^block  brush ▄▄▟
-"
+╭^Move ^rect╮╭────^Draw^ rect────╮╭^─^─────╮╭^Brush^╮
+│_<left>_  ←││_r_     trace inner││_c_ copy││_-_ ╭─╯│
+│_<right>_ →││_R_     trace outer││_k_ kill││_+_ ┏━┛│
+│_<up>_    ↑││_C-r_   ovewr inner││_y_ yank││_=_ ╔═╝│
+│_<down>_  ↓││_C-S-R_ ovewr outer│╰^^┬─────┴╯_#_ ▄▄▟│
+╰^─────^────╯╰^────^─────────────╯ ^^│_<delete>_ DEL│
+ _RET_ exit   _C-/_ undo           ^^╰^────────^────╯"
   ("<left>"  uniline-move-rect-lf←)
   ("<right>" uniline-move-rect-ri→)
   ("<up>"    uniline-move-rect-up↑)
   ("<down>"  uniline-move-rect-dw↓)
-  ("r"   uniline-draw-inner-rectangle)
-  ("R"   uniline-draw-outer-rectangle)
-  ("c"   uniline-copy-rectangle      )
-  ("k"   uniline-kill-rectangle      )
-  ("y"   uniline-yank-rectangle      )
-  ("<delete>"       uniline--set-brush-nil)
-  ("<deletechar>"   uniline--set-brush-nil)
+  ("r"     uniline-draw-inner-rectangle)
+  ("R"     uniline-draw-outer-rectangle)
+  ("C-r"   uniline-overwrite-inner-rectangle)
+  ("C-S-R" uniline-overwrite-outer-rectangle)
+  ("c"   uniline-copy-rectangle)
+  ("k"   uniline-kill-rectangle)
+  ("y"   uniline-yank-rectangle)
+  ("<delete>"       uniline--set-brush-0)
+  ("<deletechar>"   uniline--set-brush-0)
   ("C-<delete>"     uniline--set-brush-0)
   ("C-<deletechar>" uniline--set-brush-0)
   ("-"              uniline--set-brush-1)
@@ -1861,8 +1892,10 @@ _<down>_  ^move ↓   _k_ kill rect         _=_        ^double brush ╔═╝
   ("#"              uniline--set-brush-block)
   ("h"   uniline--hydra-rect-verbosity)
   ("?"   uniline--hydra-rect-verbosity)
-  ("C-_" uniline--hydra-rect-undo)
-  ("RET" uniline--hydra-rect-quit nil :exit t))
+  ("C-/"   uniline--hydra-rect-undo :exit t)
+  ("C-_"   uniline--hydra-rect-undo :exit t)
+  ("C-x u" uniline--hydra-rect-undo :exit t)
+  ("RET"   uniline--hydra-rect-quit :exit t))
 
 (defun uniline-hydra-choose-body ()
   "Choose between two Hydras based on selection.
@@ -1913,6 +1946,7 @@ And backup previous settings."
    cursor-type           (nth 3 uniline--remember-settings)
    post-self-insert-hook (nth 4 uniline--remember-settings)))
 
+;; (unintern 'uniline-mode-map nil)
 ;;;###autoload
 (define-minor-mode uniline-mode
 
@@ -1944,63 +1978,71 @@ And backup previous settings."
     u─┴╴▝▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀
     e   ├───time────────────▷
 
-Use keyboard arrows to draw lines ╭─┲━╦═╗
-Use control-arrows to overwrite whatever was there
-
-\\<uniline-mode-map>
-Set the style of brush by hitting:
-  \\[uniline--set-brush-1]	for thin   lines  ╭─┬─╮
-  \\[uniline--set-brush-2]	for thick  lines  ┏━┳━┓
-  \\[uniline--set-brush-3]	for double lines  ╔═╦═╗
-  \\[uniline--set-brush-block]	for blocks ▙▄▟▀
-  \\[uniline--set-brush-0]	to erase lines
-  \\[uniline--set-brush-nil]	to move cursor without drawing
-
-\\<uniline-mode-map>
-\\[uniline-hydra-choose-body] when there is NO region highlighted,
-  enter a sub-mode to draw a single char glyph,
-  and change its orientation.
-\\<uniline-hydra-arrows/keymap>
-  \\[uniline-hydra-arrows/uniline-insert-fw-arrow]	arrows   ▷ ▶ → ▹ ▸
-  \\[uniline-hydra-arrows/uniline-insert-fw-square]	squares  □ ■ ◇ ◆ ◊
-  \\[uniline-hydra-arrows/uniline-insert-fw-oshape]	circles  · ● ◦ Ø ø
-  \\[uniline-hydra-arrows/uniline-insert-fw-cross]	crosses  ╳ ÷ × ± ¤
-  Shifting the key cycles backward
-
-  \\[uniline-hydra-arrows/uniline-rotate-lf←]	point arrow glyph ←
-  \\[uniline-hydra-arrows/uniline-rotate-ri→]	point arrow glyph →
-  \\[uniline-hydra-arrows/uniline-rotate-up↑]	point arrow glyph ↑
-  \\[uniline-hydra-arrows/uniline-rotate-dw↓]	point arrow glyph ↓
-
-  In this sub-mode, the keys `- + = #' recover their
-  basic meaning, which is to insert this character.
-  \\[uniline-hydra-arrows/nil] (or q) exits the sub-mode
-  Any other key exits the sub-mode and do whatever they
-  are intended for.
-
-\\<uniline-mode-map>
-\\[uniline-hydra-choose-body] when region is highlighted,
-  enter a sub-mode to handle rectangles, marked by the
-  highlighted region.
-\\<uniline-hydra-moverect/keymap>
-  \\[uniline-hydra-moverect/uniline-move-rect-lf←]	move the rectangle ←
-  \\[uniline-hydra-moverect/uniline-move-rect-ri→]	move the rectangle →
-  \\[uniline-hydra-moverect/uniline-move-rect-up↑]		move the rectangle ↑
-  \\[uniline-hydra-moverect/uniline-move-rect-dw↓]	move the rectangle ↓
-  \\[uniline-hydra-moverect/uniline-draw-inner-rectangle] draw an inner rectangle with current brush
-  \\[uniline-hydra-moverect/uniline-draw-outer-rectangle] draw an outer rectangle with current brush
-  \\[uniline-hydra-moverect/uniline--hydra-rect-undo] undo works outside selection
-  \\[uniline-hydra-moverect/uniline--hydra-rect-quit-and-exit] exit the rectangle sub-mode
-
-Try out some mono-spaced fonts with support for the
-required UNICODE characters.
-Type `<insert>f', then the first letter of the name of the font.
-This setting is just for the current Emacs session.
-For a permanent setting, customize it:
- \\[customize-face] `default'
-\\<uniline-mode-map>
-  \\[uniline-mode] quit the uniline minor mode."
-
+╭─Keyboard arrows────────────╴
+│ Use keyboard arrows to draw lines ╭─┲━╦═╗
+│ Use control-arrows to overwrite whatever was there
+╰────────────────────────────╴
+╭─Brush style────────────────╴\\<uniline-mode-map>
+│ \\[uniline--set-brush-1]	for thin   lines	╭─┬─╮
+│ \\[uniline--set-brush-2]	for thick  lines	┏━┳━┓
+│ \\[uniline--set-brush-3]	for double lines	╔═╦═╗
+│ \\[uniline--set-brush-block]	for blocks		▙▄▟▀
+│ \\[uniline--set-brush-0]	to erase lines
+│ \\[uniline--set-brush-nil]	to move cursor without drawing
+╰────────────────────────────╴
+╭─Glyphs─(region inactive)──╴\\<uniline-mode-map>
+│ \\[uniline-hydra-choose-body] when there is NO region highlighted,
+│ enter a sub-mode to draw a single char glyph,
+│ and change its orientation.
+├─Intersection glyphs────────╴\\<uniline-hydra-arrows/keymap>
+│ \\[uniline-hydra-arrows/uniline-insert-fw-arrow]	arrows   ▷ ▶ → ▹ ▸
+│ \\[uniline-hydra-arrows/uniline-insert-fw-square]	squares  □ ■ ◇ ◆ ◊
+│ \\[uniline-hydra-arrows/uniline-insert-fw-oshape]	circles  · ● ◦ Ø ø
+│ \\[uniline-hydra-arrows/uniline-insert-fw-cross]	crosses  ╳ ÷ × ± ¤
+│ Shifting the key cycles backward
+├─Arrow direction────────────╴
+│ \\[uniline-hydra-arrows/uniline-rotate-lf←]	point arrow ← left
+│ \\[uniline-hydra-arrows/uniline-rotate-ri→]	point arrow → right
+│ \\[uniline-hydra-arrows/uniline-rotate-up↑]	point arrow ↑ up
+│ \\[uniline-hydra-arrows/uniline-rotate-dw↓]	point arrow ↓ down
+├─Insert characters──────────╴
+│ In this sub-mode, the keys `- + = #' recover their
+│ basic meaning, which is to insert this character.
+│ \\[uniline-hydra-arrows/nil] (or q) exits the sub-mode
+│ Any other key exits the sub-mode and do whatever they
+│ are intended for.
+╰────────────────────────────╴
+╭─Rectangles─(region active)─╴\\<uniline-mode-map>
+│ \\[uniline-hydra-choose-body] when region IS highlighted,
+│ enter a sub-mode to handle rectangles,
+│ marked by the highlighted region.
+├─Move rectangle─────────────╴\\<uniline-hydra-moverect/keymap>
+│ \\[uniline-hydra-moverect/uniline-move-rect-lf←]	move the rectangle ←
+│ \\[uniline-hydra-moverect/uniline-move-rect-ri→]	move the rectangle →
+│ \\[uniline-hydra-moverect/uniline-move-rect-up↑]		move the rectangle ↑
+│ \\[uniline-hydra-moverect/uniline-move-rect-dw↓]	move the rectangle ↓
+├─Draw rectangle─────────────╴
+│ \\[uniline-hydra-moverect/uniline-draw-inner-rectangle]	draw      an inner rectangle
+│ \\[uniline-hydra-moverect/uniline-draw-outer-rectangle]	draw      an outer rectangle
+│ \\[uniline-hydra-moverect/uniline-overwrite-inner-rectangle]	overwrite an inner rectangle
+│ \\[uniline-hydra-moverect/uniline-overwrite-outer-rectangle]	overwrite an outer rectangle
+├─Quit───────────────────────╴
+│ \\[uniline-hydra-moverect/uniline--hydra-rect-undo-and-exit] undo works outside selection
+│ \\[uniline-hydra-moverect/uniline--hydra-rect-quit-and-exit] exit the rectangle sub-mode
+╰────────────────────────────╴
+╭─Fonts──────────────────────╴\\<uniline-hydra-arrows/keymap>
+│ Try out some mono-spaced fonts with support for the
+│ required UNICODE characters.
+│ \\[uniline-hydra-arrows/uniline-hydra-fonts/body-and-exit] enters a sub-menu to change the font
+│ type the first letter of the font name.
+│ This setting is just for the current Emacs session.\\<uniline-hydra-fonts/keymap>
+│ \\[uniline-hydra-fonts/uniline-customize-face-and-exit] customize default font for future sessions.
+╰────────────────────────────╴
+╭─Quit───────────────────────╴\\<uniline-mode-map>
+│ \\[uniline-mode] quit the uniline minor mode.
+│ the state of the buffer (ex: `overwrite-mode') will return to
+│ what it was prior to entering `uniline-mode'
+╰────────────────────────────╴"
   :init-value nil
   :lighter (:eval (uniline--mode-line))
   :keymap
@@ -2073,9 +2115,14 @@ For a permanent setting, customize it:
      ["move selection down"  uniline-move-rect-dw↓ :keys "<insert><down> "]
      ["trace rectangle inside selection" uniline-draw-inner-rectangle :keys "<insert>r"]
      ["trace rectangle around selection" uniline-draw-outer-rectangle :keys "<insert>R"]
+<<<<<<< HEAD
 ;     ["overwrite rectangle inside selection" uniline-overwrite-inner-rectangle :keys "<insert>C-r"]
 ;     ["overwrite rectangle around selection" uniline-overwrite-outer-rectangle :keys "<insert>C-R"]
      )
+=======
+     ["overwrite rectangle inside selection" uniline-overwrite-inner-rectangle :keys "<insert>C-r"]
+     ["overwrite rectangle around selection" uniline-overwrite-outer-rectangle :keys "<insert>C-R"])
+>>>>>>> overwrect
     ("Font"
      ["set font DejaVu Sans Mono"     (set-frame-font "DejaVu Sans Mono")]
      ["set font Unifont"              (set-frame-font "Unifont"         )]

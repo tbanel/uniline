@@ -175,16 +175,16 @@ characters wide downward, type: =M-12 <down>=
 * Brush style
 Set the current brush with:
 
-- =-= single thin line
+- = - = single thin line
   =╭─┬─╮=
 
-- =+= single thick line
+- = + = single thick line
   =┏━┳━┓=
 
 - = = = double line
   =╔═╦═╗=
 
-- =#= quarter block
+- = # = quarter block
   =▙▄▟▀=
 
 - =<delete>= eraser
@@ -292,11 +292,13 @@ To draw a rectangle in one shot, select a rectangular region with
 =C-SPC= or =C-x SPC= and move the cursor.
 
 If needed, change the brush with any of
- =-= =+= === =#= =<delete>=
+ =- + = # <delete>=
 
 then hit
-- =r= to draw a rectangle inside the selection
-- =R= to draw a rectangle ouside the selection
+- =    r= to draw a rectangle inside the selection
+- =  S-R= to draw a rectangle ouside the selection
+- =  C-r= to overwrite a rectangle inside the selection
+- =C-S-R= to overwrite a rectangle ouside the selection
 
 [[file:images/draw-rectangle.png]]
 
@@ -317,7 +319,7 @@ then hit
                           ╰─────────╯
 #+end_example
 
-The usual =C-_= key may be hit to undo, even with the region still
+The usual =C-_= or =C-/= keys may be hit to undo, even with the region still
 active visually.
 
 * Moving rectangles
