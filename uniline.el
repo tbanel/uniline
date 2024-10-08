@@ -2115,14 +2115,8 @@ And backup previous settings."
      ["move selection down"  uniline-move-rect-dw↓ :keys "<insert><down> "]
      ["trace rectangle inside selection" uniline-draw-inner-rectangle :keys "<insert>r"]
      ["trace rectangle around selection" uniline-draw-outer-rectangle :keys "<insert>R"]
-<<<<<<< HEAD
-;     ["overwrite rectangle inside selection" uniline-overwrite-inner-rectangle :keys "<insert>C-r"]
-;     ["overwrite rectangle around selection" uniline-overwrite-outer-rectangle :keys "<insert>C-R"]
-     )
-=======
      ["overwrite rectangle inside selection" uniline-overwrite-inner-rectangle :keys "<insert>C-r"]
      ["overwrite rectangle around selection" uniline-overwrite-outer-rectangle :keys "<insert>C-R"])
->>>>>>> overwrect
     ("Font"
      ["set font DejaVu Sans Mono"     (set-frame-font "DejaVu Sans Mono")]
      ["set font Unifont"              (set-frame-font "Unifont"         )]
