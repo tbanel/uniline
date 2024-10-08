@@ -2057,27 +2057,34 @@ For a permanent setting, customize it:
     ["eraser brush"    uniline--set-brush-0     :style radio :selected (eq uniline--brush 0     )]
     ["inactive brush"  uniline--set-brush-nil   :style radio :selected (eq uniline--brush nil   )]
     "----"
-    ["insert arrow ▷ ▶ → ▹ ▸"  uniline-insert-fw-arrow  :keys "<insert>a"]
-    ["insert square □ ■ ◇ ◆ ◊" uniline-insert-fw-square :keys "<insert>s"]
-    ["insert oshape · ● ◦ Ø ø" uniline-insert-fw-oshape :keys "<insert>o"]
-    ["insert cross ╳ ÷ × ± ¤"  uniline-insert-fw-cross  :keys "<insert>x"]
+    ("Insert glyph"
+     ["insert arrow ▷ ▶ → ▹ ▸"  uniline-insert-fw-arrow  :keys "<insert>a"]
+     ["insert square □ ■ ◇ ◆ ◊" uniline-insert-fw-square :keys "<insert>s"]
+     ["insert oshape · ● ◦ Ø ø" uniline-insert-fw-oshape :keys "<insert>o"]
+     ["insert cross ╳ ÷ × ± ¤"  uniline-insert-fw-cross  :keys "<insert>x"]
+     ["rotate arrow → right"    uniline-rotate-ri→ :keys "<insert> a S-<right>"]
+     ["rotate arrow ↑ up"       uniline-rotate-up↑ :keys "<insert> a S-<up>   "]
+     ["rotate arrow ← left"     uniline-rotate-lf← :keys "<insert> a S-<left> "]
+     ["rotate arrow ↓ down"     uniline-rotate-dw↓ :keys "<insert> a S-<down> "])
+    ("Rectangular selection" :active (region-active-p)
+     ["move selection right" uniline-move-rect-ri→ :keys "<insert><right>"]
+     ["move selection left"  uniline-move-rect-lf← :keys "<insert><left> "]
+     ["move selection up"    uniline-move-rect-up↑ :keys "<insert><up>   "]
+     ["move selection down"  uniline-move-rect-dw↓ :keys "<insert><down> "]
+     ["trace rectangle inside selection" uniline-draw-inner-rectangle :keys "<insert>r"]
+     ["trace rectangle around selection" uniline-draw-outer-rectangle :keys "<insert>R"]
+;     ["overwrite rectangle inside selection" uniline-overwrite-inner-rectangle :keys "<insert>C-r"]
+;     ["overwrite rectangle around selection" uniline-overwrite-outer-rectangle :keys "<insert>C-R"]
+     )
+    ("Font"
+     ["set font DejaVu Sans Mono"     (set-frame-font "DejaVu Sans Mono")]
+     ["set font Unifont"              (set-frame-font "Unifont"         )]
+     ["set font Hack"                 (set-frame-font "Hack"            )]
+     ["set font JetBrains Mono"       (set-frame-font "JetBrains Mono"  )]
+     ["set font Cascadia Mono"        (set-frame-font "Cascadia Mono"   )]
+     ["set font Agave"                (set-frame-font "Agave"           )])
     "----"
-    ["move selection right" uniline-move-rect-ri→ :keys "<insert><right>"]
-    ["move selection left"  uniline-move-rect-lf← :keys "<insert><left>"]
-    ["move selection up"    uniline-move-rect-up↑ :keys "<insert><up>"]
-    ["move selection down"  uniline-move-rect-dw↓ :keys "<insert><down>"]
-    "----"
-    ["trace rectangle inside selection" uniline-draw-inner-rectangle :keys "<insert>r"]
-    ["trace rectangle around selection" uniline-draw-outer-rectangle :keys "<insert>R"]
-    "----"
-    ["set font DejaVu Sans Mono"     (set-frame-font "DejaVu Sans Mono")]
-    ["set font Unifont"              (set-frame-font "Unifont"         )]
-    ["set font Hack"                 (set-frame-font "Hack"            )]
-    ["set font JetBrains Mono"       (set-frame-font "JetBrains Mono"  )]
-    ["set font Cascadia Mono"        (set-frame-font "Cascadia Mono"   )]
-    ["set font Agave"                (set-frame-font "Agave"           )]
-    "----"
-    ["quit uniline" uniline-mode t] ))
+    ["quit Uniline Mode" uniline-mode t] ))
 
 (provide 'uniline)
 ;;; uniline.el ends here
