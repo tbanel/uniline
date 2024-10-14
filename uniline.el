@@ -2066,13 +2066,7 @@ And backup previous settings."
     ([kp-add]        . uniline--set-brush-2)
     ("="             . uniline--set-brush-3)
     ("#"             . uniline--set-brush-block)
-    ([?\C-c ?\C-c] . uniline-mode)
-    ;; if user has already bound a custom key to the mode
-    ;; then advertise it rather than C-c C-c
-    ,(if (where-is-internal 'uniline-mode)
-         (cons
-          (car (last (where-is-internal 'uniline-mode)))
-          'uniline-mode)))
+    ([?\C-c ?\C-c] . uniline-mode))
   :after-hook (if uniline-mode (uniline--mode-pre) (uniline--mode-post)))
 
 (easy-menu-define

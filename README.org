@@ -535,6 +535,11 @@ In this example, =C-<insert>= was choosen. You can use whatever keys combination
 - ob-svgbob: convert your ascii diagram scribbles into happy little
   SVG
 
+* Author, contributors
+- Thierry Banel, author
+- Joost Kremers https://github.com/joostkremers found a bug in the
+  minor-mode key-binding definitions
+
 * License
 Copyright (C) 2024  Thierry Banel
 
