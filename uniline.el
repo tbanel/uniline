@@ -1,4 +1,4 @@
-;;; uniline.el --- Draw lines, boxes, & arrows with the keyboard  -*- coding:utf-8; lexical-binding: t; -*-
+;;; uniline.el --- Draw UNICODE lines, boxes & arrows with the keyboard  -*- coding:utf-8; lexical-binding: t; -*-
 
 ;; Copyright (C) 2024  Thierry Banel
 
@@ -151,7 +151,7 @@ Add blanks if line is too short: ensure that cursor
 points to a character, not \\n.
 Move to 0 if X negative."
   (move-to-column (1+ (max x 0)) t)
-  (forward-char -1))
+  (backward-char))
 
 (defun uniline--move-to-delta-column (x)
   "Move X characters, staying on the same line.
@@ -178,12 +178,10 @@ Does not preserve current column."
   (goto-char
    (prog1 (point)
      (goto-char (point-max))
-     (unless (bolp)
-       (self-insert-command 1 ?\n))))
+     (or (bolp) (insert ?\n))))
   (let ((y (forward-line y))) ; faster than (setq y (forward-line y))
-    (when (> y 0)
-      (self-insert-command y ?\n)
-      (forward-line y))))
+    (while (>= (setq y (1- y)) 0)
+      (insert ?\n))))
 
 (defun uniline--move-to-line (y)
   "Move to line Y, while staying on the same column.
@@ -196,7 +194,7 @@ Y=0 means first line in buffer."
      (goto-char (point-min))
      (uniline--forward-line-force y))
    t)
-  (forward-char -1))
+  (backward-char))
 
 (defun uniline--move-to-delta-line (y)
   "Move Y lines while staying on the same column.
@@ -208,7 +206,7 @@ Y may be negative to move backward."
        (1+ (current-column))
      (uniline--forward-line-force y))
    t)
-  (forward-char -1))
+  (backward-char))
 
 (defun uniline--move-to-col-lin (y x)
   "Move to line Y and column X.
@@ -219,7 +217,7 @@ X=0 means first column of buffer."
   (goto-char (point-min))
   (uniline--forward-line-force y)
   (move-to-column (1+ x) t)
-  (forward-char -1))
+  (backward-char))
 
 (eval-when-compile ; not needed at runtime
   (defmacro uniline--move-in-direction (dir &optional nb)
@@ -983,6 +981,35 @@ north-east, south-west, etc.
            ╰─┬╯
 3: here──→───╯")
 
+
+;;;╭──────────────────────╮
+;;;│Inserting a character │
+;;;╰──────────────────────╯
+
+;; Formerly, `self-insert-command' was used directly
+;; along with the `post-self-insert-hook' to avoid the cursor
+;; moving right.
+;;
+;; But `self-insert-command' has too many side-effects.
+;; Besides, other utilities like `electric-pair-mode' assume that
+;; `last-command-event' is equal to the parameter given to
+;; `self-insert-command'.
+;;
+;; A side effect of using `post-self-insert-hook' was that inserting
+;; an ordinary character did not move the cursor.
+;;
+;; For those reasons, direct usage of `self-insert-command' was
+;; replaced by a simple call to `insert' with `delete-char' to
+;; simulate the `overwrite-mode'.
+
+(defun uniline--insert-char (char)
+  "Insert CHAR in overwrite mode avoiding cursor moving."
+  (or
+   (eolp)
+   (delete-char 1))
+  (insert char)
+  (backward-char))
+
 ;;;╭────────────────────────────────────────────────────────╮
 ;;;│Low level management of ┏╾╯half-lines UNICODE characters│
 ;;;╰────────────────────────────────────────────────────────╯
@@ -1009,8 +1036,7 @@ Return nil if the character is not a 4halfs character."
     "Insert at (point) a UNICODE like ┬.
 The UNICODE character is described by the 4HALFS bits pattern.
 The (point) does not move."
-    (self-insert-command
-     1
+    (uniline--insert-char
      (aref uniline--4halfs-to-char 4halfs))))
 
 ;;;╭───────────────────────────────────────────────────────────────╮
@@ -1043,14 +1069,13 @@ at `point', preserving already present quadrant-blocks.
 When FORCE is not nil, overwrite a possible non quadrant-block
 character at point."
   (if (eolp)
-      (self-insert-command 1 ? ))
+      (uniline--insert-char ? ))
   (let ((bits
          (or
           (aref uniline--block-char-to-4quadb (char-after))
           (and force 0))))
     (if bits
-        (self-insert-command
-         1
+        (uniline--insert-char
          (aref uniline--block-4quadb-to-char
                (logior bits (ash 1 uniline--block-which-quadrant)))))))
 
@@ -1061,8 +1086,7 @@ Assume that point is on a quadrant-block character.
 Clear the half of this character pointing in DIR direction."
     `(let ((bits (aref uniline--block-char-to-4quadb (char-after))))
        (if bits
-           (self-insert-command
-            1
+           (uniline--insert-char
             (aref
              uniline--block-4quadb-to-char
              (logand
@@ -1094,7 +1118,7 @@ Cursor does not move.
 When FORCE is not nil, overwrite a possible non-4halfs character."
     `(progn
        (if (eolp)
-           (self-insert-command 1 ? ))
+           (uniline--insert-char ? ))
        (if uniline--brush
            (let ((bits (or (uniline--get-4halfs) (and ,force 0))))
              (cond
@@ -1323,7 +1347,6 @@ Then the leakage of the two glyphs fills in E:
                      (uniline--get-4halfs)
                    (uniline--move-in-direction ,dir)))
                0)))
-
          ;; mask pairs of bits in the desired direction
          (setq
           here (logand here (eval-when-compile (ash 3 (* 2 ,odir))))
@@ -1342,9 +1365,9 @@ Then the leakage of the two glyphs fills in E:
             do
             (setq hand
                   (prog1 (char-after)
-                    (self-insert-command 1 hand)))
+                    (uniline--insert-char hand)))
             (uniline--move-in-direction ,dir))
-           (self-insert-command 1 hand))))))
+           (uniline--insert-char hand))))))
 
 (defun uniline-move-rect-up↑ (repeat)
   "Move the rectangle marked by selection one line upper.
@@ -1475,7 +1498,7 @@ When FORCE is not nil, overwrite whatever is there."
      (uniline--move-to-delta-column -1))
    (when (= begy 0)                     ; at the top of buffer
      (goto-char (point-min))
-     (insert "\n"))
+     (insert ?\n))
    (forward-line -1)
    (if (eq uniline--brush :block)
        (setq
@@ -1531,7 +1554,7 @@ in that it overwrites the rectangle."
     (cl-loop
      for char across line
      do
-     (self-insert-command 1 char)
+     (uniline--insert-char char)
      (uniline--move-to-delta-column 1))
     (uniline--move-to-column begx)
     (uniline--move-to-delta-line 1))
@@ -1634,8 +1657,7 @@ of the same command."
            if (eq (cdr line2) line) return nil))
     (when line
       (setq line (nthcdr (1- (or repeat 1)) line))
-      (self-insert-command
-       1
+      (uniline--insert-char
        (if (cddar line)
            (nth uniline--arrow-direction (cdar line))
          (cadar line))))))
@@ -1725,8 +1747,7 @@ See `uniline--insert-glyph'."
   "Rotate an arrow so it points toward DIR."
   (let ((ligne (gethash (char-after) uniline--glyphs-reverse-hash-fw)))
     (when (car ligne) ;; if (point) is on a directional arrow
-      (self-insert-command ;; then change its direction
-       1
+      (uniline--insert-char ;; then change its direction
        (nth (1+ dir) (cadr ligne))))))
 
 ;; Run the following cl-loop to automatically write a bunch
@@ -1915,8 +1936,7 @@ It is a list containing:
   - `overwrite-mode'
   - `indent-tabs-mode'
   - `truncate-lines'
-  - `cursor-type'
-  - `post-self-insert-hook'")
+  - `cursor-type'")
 
 (defun uniline--mode-pre ()
   "Change settings when entering uniline mode.
@@ -1926,27 +1946,21 @@ And backup previous settings."
          overwrite-mode
          indent-tabs-mode
          truncate-lines
-         cursor-type
-         post-self-insert-hook))
+         cursor-type))
   (overwrite-mode 1)
   (indent-tabs-mode 0)
   (setq truncate-lines t)
-  (setq cursor-type 'hollow)
-  (add-hook
-   'post-self-insert-hook
-   (lambda () (forward-char -1))
-   nil 'local))
+  (setq cursor-type 'hollow))
 
 (defun uniline--mode-post ()
   "Restore settings when exiting uniline mode."
   (overwrite-mode   (if (nth 0 uniline--remember-settings) 1 0))
   (indent-tabs-mode (if (nth 1 uniline--remember-settings) 1 0))
   (setq
-   truncate-lines        (nth 2 uniline--remember-settings)
-   cursor-type           (nth 3 uniline--remember-settings)
-   post-self-insert-hook (nth 4 uniline--remember-settings)))
+   truncate-lines       (nth 2 uniline--remember-settings)
+   cursor-type          (nth 3 uniline--remember-settings)))
 
-;; (unintern 'uniline-mode-map nil)
+(unintern 'uniline-mode-map nil)
 ;;;###autoload
 (define-minor-mode uniline-mode
 
