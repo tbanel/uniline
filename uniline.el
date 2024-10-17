@@ -1960,7 +1960,10 @@ And backup previous settings."
    truncate-lines       (nth 2 uniline--remember-settings)
    cursor-type          (nth 3 uniline--remember-settings)))
 
-(unintern 'uniline-mode-map nil)
+;; This `unintern' instruction is useful during development
+;; to ensure that M-x eval-buffer reloads 100% of the Lisp code
+;; (unintern 'uniline-mode-map nil)
+
 ;;;###autoload
 (define-minor-mode uniline-mode
 
