@@ -2,7 +2,7 @@
 #+TITLE: Uniline
 #+OPTIONS: ^:{} authors:Thierry Banel, toc:nil
 
-* Pure UNICODΕ text diagrams
+* Pure UNICODΕ text diagrams in Emacs
 Draw diagrams like those:
 
 Document a command:
