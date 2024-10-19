@@ -452,8 +452,6 @@ Of course, other fonts may be installed. It is quite easy.
 
 * Installation
 
-Emacs package from Melpa: coming soon!
-
 Add the following lines to your =.emacs= file,
 and reload it, if not already done:
 
@@ -534,6 +532,15 @@ In this example, =C-<insert>= was choosen. You can use whatever keys combination
 
 - ob-svgbob: convert your ascii diagram scribbles into happy little
   SVG
+
+- el-easydraw: a full featured SVG editor right inside your Emacs
+
+- asciiflow: (not Emacs) draw on the web, then copy-paste your UNICODE text
+
+- dot-to-ascii.ggerganov.com: (not Emacs) describe your schema in the
+  Graphviz language, and copy-past your UNICODE text.
+
+- monosketch: (not Emacs) draw on the web, then copy-paste your UNICODE text
 
 * Author, contributors
 - Thierry Banel, author
