@@ -28,8 +28,8 @@
 ;; or
 ;;   (eval-buffer)
 ;;
-;; If OK, the "*uniline-summary*" summary buffer is displayed
-;; If ERROR, two windows are displayed, the actual an the expected sketchs
+;; If OK, a message is displayed
+;; If ERROR, two windows are displayed, the actual and the expected sketchs
 ;; with points on the first difference.
 
 ;; Creating a new bench
@@ -118,7 +118,7 @@ If there are no errors, a summary buffer is presented."
   (interactive)
   (let ((buf (current-buffer)))
     (cl-loop
-     for file in (directory-files "." nil "\.el$")
+     for file in (directory-files "." nil "\\.el$")
      unless (equal "uniline-bench.el" file)
      do
      (load (format "%s%s" default-directory file) nil nil t)
