@@ -408,6 +408,31 @@ To know which font Emacs has choosen for a given character, type:
 
 =C-u C-x ==
 
+* Line spacing
+The =line-spacing= setting in Emacs can change the display of a sketch.
+
+The best looking effect is given by:
+: (setq line-spacing nil)
+
+You may want to change your current setting. Uniline may handle this
+variable some day. Right now, =line-spacing= is left as a matter of
+choice for everyone.
+
+[[file:images/line-spacing.png]]
+
+#+begin_example
+
+ ╭────┬────────┬────╮   ╺┯━━━━┯┯━━┯┯━┯┯━━━━━━━━┯┯━━━━━━━┯┯━━━━━━━┯╸
+ │▒▒▒▒╰────────╯▒▒▒▒│    │    │╰is╯╰a╯│        ││       │╰arround╯
+ │▒▒▒▒▒▒▒▒▒▒▒▒▒▒▒▒▒▒│    ╰this╯       ╰sentence╯╰hanging╯
+ │▒▒▒╭─╮▒▒▒▒▒▒╭─╮▒▒▒│            △
+ │▒▒▒╰─╯▒▒▒▒▒▒╰─╯▒▒▒│            │                  △
+ │▒▒▒▒▒▒▒▒▒▒▒▒▒▒▒▒▒▒│            ╰─────────┬────────╯
+ ╰──────────────────╯                    verbs
+              (setq line-spacing nil)
+
+#+end_example
+
 * Exotic environments
 ** Emacs on the Linux console
 Linux consoles are the 7 non-graphic screens which can be accessed
