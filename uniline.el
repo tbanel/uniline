@@ -1,4 +1,4 @@
-;;; uniline.el --- Draw UNICODE lines, boxes & arrows with the keyboard  -*- coding:utf-8; lexical-binding: t; -*-
+;;; uniline.el --- Draw UNICODE lines, boxes, arrows onto existing text -*- coding:utf-8; lexical-binding: t; -*-
 
 ;; Copyright (C) 2024  Thierry Banel
 
