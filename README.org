@@ -382,13 +382,14 @@ Not all fonts are born equal.
 - =(set-frame-font "JetBrains Mono"  )=
 - =(set-frame-font "Cascadia Mono"   )=
 - =(set-frame-font "Agave"           )=
+- =(set-frame-font "JuliaMono"       )=
 
 Those fonts are known to support the required UNICODE characters, AND
 display them as monospace. There are fonts advertized as monospace
 which give arbitrary widths to non-ASCII characters. That is bad for
 the kind of drawings done by Uniline.
 
-You may want to try any of the 6 suggested fonts. Just hit the
+You may want to try any of the 7 suggested fonts. Just hit the
 corresponding entry in the Uniline menu, or type =<insert>f=. You may
 also execute the above Lisp commands like that:
 

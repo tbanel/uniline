@@ -53,6 +53,7 @@
 ;; - JetBrains Mono
 ;; - Cascadia Mono
 ;; - Agave
+;; - JuliaMono
 ;;
 ;; Also, the encoding of the file must support UNICODE.
 ;; One way to do that, is to add a line like this one
@@ -1803,17 +1804,19 @@ See `uniline--insert-glyph'."
    :hint nil
    :exit nil)
   "
-╭^─^──────Try a font──^^─────╮╭^─^───^─^──────╮
-│_d_ DejaVu   │_u_ Unifont   ││_*_ ^^configure│
-│_h_ Hack     │_j_ JetBrains ││_RET_ _q_ exit │
-│_c_ Cascadia │_a_ Agave     │╰^─^───^─^──────╯
-╰^─^──────────┴^─^───────────╯"
+╭^─^───────Try a font──^^─────╮╭^─^───^─^──────╮
+│_d_ DejaVu    │_u_ Unifont   ││_*_ ^^configure│
+│_h_ Hack      │_b_ JetBrains ││_RET_ _q_ exit │
+│_c_ Cascadia  │_a_ Agave     │╰^─^───^─^──────╯
+│_j_ JuliaMono │^ ^           │
+╰^─^───────────┴^─^───────────╯"
   ("d" (set-frame-font "DejaVu Sans Mono"))
   ("u" (set-frame-font "Unifont"         ))
   ("h" (set-frame-font "Hack"            ))
-  ("j" (set-frame-font "JetBrains Mono"  ))
+  ("b" (set-frame-font "JetBrains Mono"  ))
   ("c" (set-frame-font "Cascadia Mono"   ))
   ("a" (set-frame-font "Agave"           ))
+  ("j" (set-frame-font "JuliaMono"       ))
   ("*" uniline-customize-face :exit t)
   ("q"   () :exit t)
   ("RET" () :exit t))
@@ -2134,7 +2137,8 @@ And backup previous settings."
      ["set font Hack"                 (set-frame-font "Hack"            )]
      ["set font JetBrains Mono"       (set-frame-font "JetBrains Mono"  )]
      ["set font Cascadia Mono"        (set-frame-font "Cascadia Mono"   )]
-     ["set font Agave"                (set-frame-font "Agave"           )])
+     ["set font Agave"                (set-frame-font "Agave"           )]
+     ["set font JuliaMono"            (set-frame-font "JuliaMono"       )])
     "----"
     ["quit Uniline Mode" uniline-mode t] ))
 
