@@ -1790,9 +1790,9 @@ See `uniline--insert-glyph'."
 
 ;; END -- Automatically generated
 
-;;;╭───────────────╮
-;;;│User interfaces│
-;;;╰───────────────╯
+;;;╭────────────────╮
+;;;│Hydra interfaces│
+;;;╰────────────────╯
 
 (defun uniline-customize-face ()
   "Customize a temporary font to may-be set it for future sessions."
@@ -1800,8 +1800,7 @@ See `uniline--insert-glyph'."
   (customize-face-other-window 'default))
 
 (defhydra uniline-hydra-fonts
-  (:pre (hydra-set-property 'uniline-hydra-arrows :verbosity 1)
-   :hint nil
+  (:hint nil
    :exit nil)
   "
 ╭^─^───────Try a font──^^─────╮╭^─^───^─^──────╮
@@ -1856,18 +1855,13 @@ See `uniline--insert-glyph'."
   ("S-<down>"  uniline-rotate-dw↓)
   ("<kp-subtract>" uniline--self-insert--)
   ("<kp-add>"      uniline--self-insert-+)
-  ("-"             self-insert-command )
-  ("+"             self-insert-command )
-  ("="             self-insert-command )
-  ("#"             self-insert-command )
-  ("f" uniline-hydra-fonts/body nil :exit t)
-  ("q"   ()                     nil :exit t)
-  ("RET" ()                     nil :exit t))
-
-(defun uniline--hydra-rect-verbosity ()
-  "Make this Hydra verbose."
-  (interactive)
-  (hydra-set-property 'uniline-hydra-moverect :verbosity 1))
+  ("-" self-insert-command)
+  ("+" self-insert-command)
+  ("=" self-insert-command)
+  ("#" self-insert-command)
+  ("f" uniline-hydra-fonts/body :exit t)
+  ("q"   ()                     :exit t)
+  ("RET" ()                     :exit t))
 
 (defun uniline--hydra-rect-undo ()
   "Make undo work outside selection."
@@ -1914,8 +1908,6 @@ See `uniline--insert-glyph'."
   ("<kp-add>"       uniline--set-brush-2)
   ("="              uniline--set-brush-3)
   ("#"              uniline--set-brush-block)
-  ("h"   uniline--hydra-rect-verbosity)
-  ("?"   uniline--hydra-rect-verbosity)
   ("C-/"   uniline--hydra-rect-undo :exit t)
   ("C-_"   uniline--hydra-rect-undo :exit t)
   ("C-x u" uniline--hydra-rect-undo :exit t)
@@ -1923,7 +1915,7 @@ See `uniline--insert-glyph'."
 
 (defun uniline-hydra-choose-body ()
   "Choose between two Hydras based on selection.
-When selection is active, most likely user want to act
+When selection is active, most likely user wants to act
 on a rectangle.
 Therefore the rectangle hydra is launched.
 Otherwise, the arrows & shapes hydra is invoked."
@@ -1931,6 +1923,10 @@ Otherwise, the arrows & shapes hydra is invoked."
   (if (region-active-p)
       (uniline-hydra-moverect/body)
     (uniline-hydra-arrows/body)))
+
+;;;╭──────────────────╮
+;;;│Uniline minor mode│
+;;;╰──────────────────╯
 
 (defvar-local uniline--remember-settings
     nil
@@ -1953,7 +1949,13 @@ And backup previous settings."
   (overwrite-mode 1)
   (indent-tabs-mode 0)
   (setq truncate-lines t)
-  (setq cursor-type 'hollow))
+  (setq cursor-type 'hollow)
+  (message "Uniline mode
+       → ↓ ← ↑           draw lines with current brush
+  Ctrl → ↓ ← ↑           overwrite
+  - + = # DEL            change brush style
+  INS without selection  insert glyphs, change font
+  INS with    selection  handle rectangles"))
 
 (defun uniline--mode-post ()
   "Restore settings when exiting uniline mode."
