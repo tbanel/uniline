@@ -54,6 +54,7 @@
 ;; - Cascadia Mono
 ;; - Agave
 ;; - JuliaMono
+;; - FreeMono
 ;;
 ;; Also, the encoding of the file must support UNICODE.
 ;; One way to do that, is to add a line like this one
@@ -1807,7 +1808,7 @@ See `uniline--insert-glyph'."
 │_d_ DejaVu    │_u_ Unifont   ││_*_ ^^configure│
 │_h_ Hack      │_b_ JetBrains ││_RET_ _q_ exit │
 │_c_ Cascadia  │_a_ Agave     │╰^─^───^─^──────╯
-│_j_ JuliaMono │^ ^           │
+│_j_ JuliaMono │_f_ FreeMono  │
 ╰^─^───────────┴^─^───────────╯"
   ("d" (set-frame-font "DejaVu Sans Mono"))
   ("u" (set-frame-font "Unifont"         ))
@@ -1816,6 +1817,7 @@ See `uniline--insert-glyph'."
   ("c" (set-frame-font "Cascadia Mono"   ))
   ("a" (set-frame-font "Agave"           ))
   ("j" (set-frame-font "JuliaMono"       ))
+  ("f" (set-frame-font "FreeMono"        ))
   ("*" uniline-customize-face :exit t)
   ("q"   () :exit t)
   ("RET" () :exit t))
@@ -2140,7 +2142,8 @@ And backup previous settings."
      ["set font JetBrains Mono"       (set-frame-font "JetBrains Mono"  )]
      ["set font Cascadia Mono"        (set-frame-font "Cascadia Mono"   )]
      ["set font Agave"                (set-frame-font "Agave"           )]
-     ["set font JuliaMono"            (set-frame-font "JuliaMono"       )])
+     ["set font JuliaMono"            (set-frame-font "JuliaMono"       )]
+     ["set font FreeMono"             (set-frame-font "FreeMono"        )])
     "----"
     ["quit Uniline Mode" uniline-mode t] ))
 

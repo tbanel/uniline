@@ -383,20 +383,25 @@ Not all fonts are born equal.
 - =(set-frame-font "Cascadia Mono"   )=
 - =(set-frame-font "Agave"           )=
 - =(set-frame-font "JuliaMono"       )=
+- =(set-frame-font "FreeMono"        )=
 
 Those fonts are known to support the required UNICODE characters, AND
 display them as monospace. There are fonts advertized as monospace
 which give arbitrary widths to non-ASCII characters. That is bad for
 the kind of drawings done by Uniline.
 
-You may want to try any of the 7 suggested fonts. Just hit the
+You may want to try any of the 8 suggested fonts. Just hit the
 corresponding entry in the Uniline menu, or type =<insert>f=. You may
 also execute the above Lisp commands like that:
 
 =M-: (set-frame-font "DejaVu Sans Mono")=
 
-This setting is for the current session. If you want to make it
+This setting is for the current session only. If you want to make it
 permanent, you may use the Emacs customization:
+
+=INS f *=
+
+or
 
 =M-x customize-face default=
 
