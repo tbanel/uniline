@@ -1952,12 +1952,27 @@ And backup previous settings."
   (indent-tabs-mode 0)
   (setq truncate-lines t)
   (setq cursor-type 'hollow)
-  (message "Uniline mode
-       → ↓ ← ↑           draw lines with current brush
-  Ctrl → ↓ ← ↑           overwrite
-  - + = # DEL            change brush style
-  INS without selection  insert glyphs, change font
-  INS with    selection  handle rectangles"))
+  (let ((message-log-max))
+    (message
+     (replace-regexp-in-string
+      "([^)]*)"
+      (lambda (x)
+        (setq x (substring x 1 (1- (length x))))
+        (add-face-text-property
+         0 (length x)
+         'hydra-face-red
+         nil x)
+        x)
+      "\
+ ╭─()────────────╴Uniline╶╴mode╶────────────────────────╮
+ │      (→ ↓ ← ↑)          draw lines with current brush│
+ │(Ctrl  → ↓ ← ↑)          overwrite                    │
+ │(Shift → ↓ ← ↑)          extend selection             │
+ │(- + = # DEL RET)        change brush style           │
+ │(INS) without selection  insert glyphs, change font   │
+ │(INS) with    selection  handle rectangles            │
+ ╰─()───────────────────────────────────────────────────╯"
+      t))))
 
 (defun uniline--mode-post ()
   "Restore settings when exiting uniline mode."
