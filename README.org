@@ -475,8 +475,8 @@ buffer. And it is funny to look at this activity.
 
 To make them fully compatible, disable the newline visualization:
 
-M-x customize-variable whitespace-style
-uncheck (Mark) NEWLINEs
+- =M-x customize-variable whitespace-style=
+- uncheck =(Mark) NEWLINEs=
 
 This is due to a glitch in =move-to-column= when a visual property is
 attached to newlines. And =uniline-mode= makes heavy use of =move-to-column=.
