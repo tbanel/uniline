@@ -297,18 +297,19 @@ range of [0..256).  It is handy to index vectors rather than
       ( ?╵ 1 0 0 0 )
       ( ?╹ 2 0 0 0 )
       ( ?╶ 0 1 0 0 )
-      ;;( ?└ 1 1 0 0 ) ;; prefer rounded corner
-      ( ?╰ 1 1 0 0 )
+      ( ?└ 1 1 0 0 )
+      ( ?╰ 1 1 0 0 ) ;; prefer rounded corner
       ( ?┖ 2 1 0 0 )
       ( ?╺ 0 2 0 0 )
       ( ?┕ 1 2 0 0 )
       ( ?┗ 2 2 0 0 )
       ( ?╷ 0 0 1 0 )
+      ;;( ?| 1 0 1 0 ) ;; recognize vertical ASCII pipe
       ( ?│ 1 0 1 0 )
       ( ?┃ 2 0 2 0 )
       ( ?╿ 2 0 1 0 )
-      ;;( ?┌ 0 1 1 0 ) ;; prefer rounded corner
-      ( ?╭ 0 1 1 0 )
+      ( ?┌ 0 1 1 0 )
+      ( ?╭ 0 1 1 0 ) ;; prefer rounded corner
       ( ?├ 1 1 1 0 )
       ( ?┞ 2 1 1 0 )
       ( ?┍ 0 2 1 0 )
@@ -323,20 +324,22 @@ range of [0..256).  It is handy to index vectors rather than
       ( ?┢ 1 2 2 0 )
       ( ?┣ 2 2 2 0 )
       ( ?╴ 0 0 0 1 )
-      ;;( ?┘ 1 0 0 1 ) ;; prefer rounded corner
-      ( ?╯ 1 0 0 1 )
+      ( ?┘ 1 0 0 1 )
+      ( ?╯ 1 0 0 1 ) ;; prefer rounded corner
       ( ?┚ 2 0 0 1 )
+      ;;( ?- 0 1 0 1 ) ;; recognize ASCII minus
       ( ?─ 0 1 0 1 )
       ( ?┴ 1 1 0 1 )
       ( ?┸ 2 1 0 1 )
       ( ?╼ 0 2 0 1 )
       ( ?┶ 1 2 0 1 )
       ( ?┺ 2 2 0 1 )
-      ;;( ?┐ 0 0 1 1 ) ;; prefer rounded corner
-      ( ?╮ 0 0 1 1 )
+      ( ?┐ 0 0 1 1 )
+      ( ?╮ 0 0 1 1 ) ;; prefer rounded corner
       ( ?┤ 1 0 1 1 )
       ( ?┦ 2 0 1 1 )
       ( ?┬ 0 1 1 1 )
+      ;;( ?+ 1 1 1 1 ) ;; recognize ASCII plus
       ( ?┼ 1 1 1 1 )
       ( ?╀ 2 1 1 1 )
       ( ?┮ 0 2 1 1 )
