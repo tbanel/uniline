@@ -133,7 +133,7 @@ Those diagrams are pure text. There is nothing graphic. They are
 achieved using UNICODE characters. Most often, the text file will be
 encoded as UTF-8.
 
-Creating such diagrams by hand is painfully slow. Use Uniline to
+Creating such diagrams by hand is painfully slow. Use =Uniline= to
 draw lines while you move the cursor with keyboard arrows.
 
 *Beware!*
@@ -143,7 +143,7 @@ display them does not support UNICODE block characters. See bellow the
 paragraph "Which fonts?".
 
 * Minor mode
-Uniline is a minor mode. Activate it temporarily:
+=Uniline= is a minor mode. Activate it temporarily:
 
  =M-x uniline-mode=
 
@@ -199,10 +199,11 @@ The =<insert>= key is a prefix for other keys:
 - for trying a choice of monospaced fonts.
 
 Why =<insert>=? Because:
-- Uniline tries to leave their original meaning to as much keys as possible,
+- =Uniline= tries to leave their original meaning to as much keys as
+  possible,
 - the standard meaning of =<insert>= is to toggle the overwrite mode;
-  but Uniline is already in overwrite mode, and de-activating
-  overwrite would break Uniline.
+  but =Uniline= is already in =overwrite-mode=, and de-activating
+  overwrite would break =Uniline=.
 
 So preempting =<insert>= does not sacrifices anything.
 
@@ -210,7 +211,7 @@ So preempting =<insert>= does not sacrifices anything.
 At any time, an arrow may be drawn. The arrow points in the direction
 that the line drawing follows.
 
-Uniline supports 5 arrows types: =▷ ▶ → ▹ ▸=
+=Uniline= supports 5 arrows types: =▷ ▶ → ▹ ▸=
 
 [[file:images/arrow-styles.png]]
 
@@ -223,19 +224,19 @@ Uniline supports 5 arrows types: =▷ ▶ → ▹ ▸=
 #+end_example
 
 Actually, there are tons of arrows of all styles in the UNICODE
-standard. Unfortunately, the support by fonts is weak. So Uniline
+standard. Unfortunately, the support by fonts is weak. So =Uniline=
 restrains itself to those five safe arrows.
 
 To insert an arrow, type: =<insert>a= or =<insert>aa= or =<insert>aaa=. (=a=
 cycles through the 5 styles, =A= cycles backward).
 
-=<insert>3a= is equivalent to =<insert>aaa=, which is also equivalent to
-=<insert>A=. Those 3 shortcuts insert an arrow of this style: =→↑←↓=. The
+=<insert>4a= is equivalent to =<insert>aaaa=, which is also equivalent to
+=<insert>AA=. Those 3 shortcuts insert an arrow of this style: =▵▹▿◃=. The
 actual direction where the arrow points follows the last movement of
 the cursor.
 
 To change the direction of the arrow, use shift-arrow, for example:
-=S-<up>= will change it from =→= to =↑=.
+=S-<up>= will change from =→= to =↑=.
 
 * Intersection glyphs =■ ◆ ●=
 There are a few other UNICODE characters which are monospace and
@@ -252,7 +253,7 @@ To insert a cross shape =╳ ÷ × ± ¤= type:
 
 To insert a usual ASCII letter or symbol, just type it.
 
-As the keys =- + = #= are preempted by Uniline mode, to type them,
+As the keys =- + = #= are preempted by =Uniline= mode, to type them,
 prefix them with =<insert>=. Example: =<insert>-= inserts a =-= and
 =<insert>+= inserts a =+=.
 
@@ -364,10 +365,10 @@ This is similar to the Emacs standard rectangle handling:
 - =C-x r k= kill rectangle
 - =C-x r y= yank killed rectangle
 
-The difference is that Uniline rectangles when killed and yanked, do not
+The difference is that =Uniline= rectangles when killed and yanked, do not
 move surrounding characters.
 
-Uniline and Emacs standard rectangle share the same storage for copied
+=Uniline= and Emacs standard rectangle share the same storage for copied
 and killed rectangles, =killed-rectangle=. So, a rectangle can be killed
 one way, and yanked another way.
 
@@ -388,10 +389,10 @@ Not all fonts are born equal.
 Those fonts are known to support the required UNICODE characters, AND
 display them as monospace. There are fonts advertized as monospace
 which give arbitrary widths to non-ASCII characters. That is bad for
-the kind of drawings done by Uniline.
+the kind of drawings done by =Uniline=.
 
 You may want to try any of the 8 suggested fonts. Just hit the
-corresponding entry in the Uniline menu, or type =<insert>f=. You may
+corresponding entry in the =Uniline= menu, or type =<insert>f=. You may
 also execute the above Lisp commands like that:
 
 =M-: (set-frame-font "DejaVu Sans Mono")=
@@ -420,7 +421,7 @@ The =line-spacing= setting in Emacs can change the display of a sketch.
 The best looking effect is given by:
 : (setq line-spacing nil)
 
-You may want to change your current setting. Uniline may handle this
+You may want to change your current setting. =Uniline= may handle this
 variable some day. Right now, =line-spacing= is left as a matter of
 choice for everyone.
 
@@ -438,6 +439,47 @@ choice for everyone.
               (setq line-spacing nil)
 
 #+end_example
+
+* How Uniline behaves with other modes?
+** Compatibility with Picture-mode
+
+=Picture-mode= and =uniline-mode= are compatible. Their features overlap
+somehow:
+- Both implement an unlimited buffer in east an south directions.
+- Both visually truncate long lines (actual text is not truncated).
+- Both set the overwrite mode (=uniline-mode= activates
+  =overwrite-mode=, while =picture-mode= re-implements it)
+- Both are able to draw rectangles (=uniline-mode= in UNICODE, picture in
+  ASCII), copy and yank them.
+
+They also have features unique to each:
+- =Picture-mode= writes in 8 possible directions
+- =Picture-mode= handles TAB stops
+- =Uniline-mode= draws lines and arrows
+
+** Compatibility with Artist-mode
+
+=Artist-mode= and =uniline-mode= are mostly incompatible. This is because
+=Artist-mode= preempts the arrow keys, which give access to a large part
+of =uniline-mode= features.
+
+However, it is possible to use both one after the other.
+
+** Compatibility with Whitespace-mode
+
+=Whitespace-mode= and =uniline-mode= are mostly compatible.
+
+Why activate =whitespace-mode= while in =uniline-mode=? Because
+=uniline-mode= creates a lot of white-spaces to implement an infinite
+buffer. And it is funny to look at this activity.
+
+To make them fully compatible, disable the newline visualization:
+
+M-x customize-variable whitespace-style
+uncheck (Mark) NEWLINEs
+
+This is due to a glitch in =move-to-column= when a visual property is
+attached to newlines. And =uniline-mode= makes heavy use of =move-to-column=.
 
 * Exotic environments
 ** Emacs on the Linux console
@@ -457,12 +499,13 @@ found here: https://www.emacswiki.org/emacs/MissingKeys
 ** Emacs on a graphical terminal emulator
 This is the Emacs launched from a terminal typing =emacs -nw=. In this
 environment, =<insert>= does not exists. It is replaced by
-=<insertchar>=. This has already been taken into account by Uniline by
-duplicating the key-bindings for the two flavors of this key.
+=<insertchar>=. This has already been taken into account by =Uniline=
+by duplicating the key-bindings for the two flavors of this key.
 
-If you decide to bind globally =C-<insert>= to the toggling of Uniline
-minor mode as suggested, then you will have to do the same for
-=C-<insertchar>=, for example with =use-package= in your =~/.emacs= file:
+If you decide to bind globally =C-<insert>= to the toggling of
+=Uniline= minor mode as suggested, then you will have to do the same
+for =C-<insertchar>=, for example with =use-package= in your
+=~/.emacs= file:
 
 #+begin_example
 (use-package uniline
@@ -473,7 +516,8 @@ minor mode as suggested, then you will have to do the same for
 
 ** Emacs on Windows
 On Windows the only native monospaced fonts are Lucida Console and
-Courier New. They are not monospaced for the Unicodes used by uniline.
+Courier New. They are not monospaced for the Unicodes used by
+=Uniline=.
 
 Often, the Cosolas font is present on Windows. It supports quite well
 the required Unicodes to draw lines. A few glyphs produce unaligned
@@ -519,59 +563,59 @@ in your =$HOME/.emacs= file is great for that:
 #+end_example
 
 In this example, =C-<insert>= was choosen. You can use whatever keys combination you want.
-=<insert>= happens to also be the key used inside Uniline.
+=<insert>= happens to also be the key used inside =Uniline=.
 
 * Related packages
 
-- artist-mode: the ASCII art mode built into Emacs.
+- =artist-mode=: the ASCII art mode built into Emacs.
 
-- ascii-art-to-unicode: as the name suggest, converts ASCII drawings
-  to UNICODE, giving results similar to those of Uniline.
+- =ascii-art-to-unicode=: as the name suggest, converts ASCII drawings
+  to UNICODE, giving results similar to those of =Uniline=.
 
-- picture-mode: as in Uniline, the buffer is infinite in east & south
+- =picture-mode=: as in =Uniline=, the buffer is infinite in east & south
   directions.
 
-- org-pretty-table: Org Mode tables /appear/ to be drawn in UNICODE
+- =org-pretty-table=: Org Mode tables /appear/ to be drawn in UNICODE
   characters (actually they are still in ASCII).
 
-- boxes: draws artistic boxes around text, with nice looking unicorns,
+- =boxes=: draws artistic boxes around text, with nice looking unicorns,
   flowers, parchments, all in ASCII art.
 
-- org-drawio: a bridge between the Draw.Io editor and Emacs, producing
-  drawing similar to those of Uniline, but in .svg.
+- =org-drawio=: a bridge between the Draw.Io editor and Emacs, producing
+  drawing similar to those of =Uniline=, but in .svg.
 
-- syntree: draws ASCII trees on-the-fly from description.
+- =syntree=: draws ASCII trees on-the-fly from description.
 
-- unicode-enbox: create a UNICODE box around a text; input and output
+- =unicode-enbox=: create a UNICODE box around a text; input and output
   are strings.
 
-- unicode-fonts: in Emacs, helps alleviate the lack of full UNICODE
+- =unicode-fonts=: in Emacs, helps alleviate the lack of full UNICODE
   coverage of most fonts.
 
-- org-superstar: prettify headings and plain lists in Org Mode, using
+- =org-superstar=: prettify headings and plain lists in Org Mode, using
   UNICODE glyphs.
 
-- charmap: UNICODE table viewer for Emacs.
+- =charmap=: UNICODE table viewer for Emacs.
 
-- insert-char-preview: insert UNICODEs with character preview in
+- =insert-char-preview=: insert UNICODEs with character preview in
   completion prompt.
 
-- list-unicode-display: list all UNICODE characters, or a selection of
+- =list-unicode-display=: list all UNICODE characters, or a selection of
   them.
 
-- show-font: show font features in a buffer.
+- =show-font=: show font features in a buffer.
 
-- ob-svgbob: convert your ascii diagram scribbles into happy little
+- =ob-svgbob=: convert your ascii diagram scribbles into happy little
   SVG
 
-- el-easydraw: a full featured SVG editor right inside your Emacs
+- =el-easydraw=: a full featured SVG editor right inside your Emacs
 
-- asciiflow: (not Emacs) draw on the web, then copy-paste your UNICODE text
+- =asciiflow=: (not Emacs) draw on the web, then copy-paste your UNICODE text
 
-- dot-to-ascii.ggerganov.com: (not Emacs) describe your schema in the
+- =dot-to-ascii.ggerganov.com:= (not Emacs) describe your schema in the
   Graphviz language, and copy-past your UNICODE text.
 
-- monosketch: (not Emacs) draw on the web, then copy-paste your UNICODE text
+- =monosketch=: (not Emacs) draw on the web, then copy-paste your UNICODE text
 
 * Author, contributors
 - Thierry Banel, author
