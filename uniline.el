@@ -55,6 +55,7 @@
 ;; - Agave
 ;; - JuliaMono
 ;; - FreeMono
+;; - Iosevka Comfy Fixed
 ;;
 ;; Also, the encoding of the file must support UNICODE.
 ;; One way to do that, is to add a line like this one
@@ -1807,12 +1808,11 @@ See `uniline--insert-glyph'."
   (:hint nil
    :exit nil)
   "
-╭^─^───────Try a font──^^─────╮╭^─^───^─^──────╮
-│_d_ DejaVu    │_u_ Unifont   ││_*_ ^^configure│
-│_h_ Hack      │_b_ JetBrains ││_RET_ _q_ exit │
-│_c_ Cascadia  │_a_ Agave     │╰^─^───^─^──────╯
-│_j_ JuliaMono │_f_ FreeMono  │
-╰^─^───────────┴^─^───────────╯"
+╭^Try a font╶^──^─^────────────^─^───────────────╮╭^─^───^─^──────╮
+│_d_ DejaVu     _j_ JuliaMono  _u_ Unifont       ││_*_ ^^configure│
+│_h_ Hack       _b_ JetBrains  _a_ Agave         ││_RET_ _q_ exit │
+│_c_ Cascadia   _f_ FreeMono   _i_ Iosevka Comfy │╰^─^───^─^──────╯
+╰^─^────────────^─^────────────^─^───────────────╯"
   ("d" (set-frame-font "DejaVu Sans Mono"))
   ("u" (set-frame-font "Unifont"         ))
   ("h" (set-frame-font "Hack"            ))
@@ -1821,6 +1821,7 @@ See `uniline--insert-glyph'."
   ("a" (set-frame-font "Agave"           ))
   ("j" (set-frame-font "JuliaMono"       ))
   ("f" (set-frame-font "FreeMono"        ))
+  ("i" (set-frame-font "Iosevka Comfy Fixed"))
   ("*" uniline-customize-face :exit t)
   ("q"   () :exit t)
   ("RET" () :exit t))
@@ -2161,7 +2162,8 @@ And backup previous settings."
      ["set font Cascadia Mono"        (set-frame-font "Cascadia Mono"   )]
      ["set font Agave"                (set-frame-font "Agave"           )]
      ["set font JuliaMono"            (set-frame-font "JuliaMono"       )]
-     ["set font FreeMono"             (set-frame-font "FreeMono"        )])
+     ["set font FreeMono"             (set-frame-font "FreeMono"        )]
+     ["set font Iosevka Comfy Fixed"  (set-frame-font "Iosevka Comfy Fixed")])
     "----"
     ["quit Uniline Mode" uniline-mode t] ))
 
