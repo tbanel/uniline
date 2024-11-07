@@ -52,12 +52,7 @@ nil if there was an error.")
 COMMANDS is a string describing a sequence of keyboard strokes,
 supposed to draw a sketch using uniline minor-mode.
 Its format is the one used to store keyboard macros.
-RESULT is a string representing the expected result.
-Note that RESULT begins with an empty line not part of the result,
-making it more human-readable."
-  (setq result
-        (substring result (1+ (string-search "\n" result))))
-
+RESULT is a string representing the expected result."
   (ignore-errors (kill-buffer "*uniline-interactive*"))
   (switch-to-buffer "*uniline-interactive*")
   (uniline-mode 1)
@@ -102,7 +97,7 @@ Do not call it directly."
   (switch-to-buffer "b.el")
   (insert "(uniline-bench\n\"")
   (insert (key-description (kmacro--keys (kmacro last-kbd-macro))))
-  (insert "\"\n\"\n")
+  (insert "\"\n\"\\\n")
   (insert-buffer-substring "*uniline-interactive*")
   (insert "\")\n")
   (lisp-mode))
