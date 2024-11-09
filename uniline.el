@@ -1568,19 +1568,156 @@ in that it overwrites the rectangle."
    (setq endx (+ begx (length (car killed-rectangle))))
    (setq endy (+ begy (length killed-rectangle) -1))))
 
+;;;╭──────────────╮
+;;;│Text direction│
+;;;╰──────────────╯
+
+(defvar-local uniline--text-direction
+    nil
+  "Direction of text insertion.
+It can be any of the 4 values of
+`uniline--direction-up↑' `-ri→' `-dw↓' `-lf←'
+which means that typing a key on the keyboard moves the cursor
+in this direction.
+It can also be nil, which means that uniline makes no tweaking of
+the natural cursor movement upon insertion.")
+
+(defun uniline--post-self-insert ()
+  "Change the cursor movement after `self-insert-command'.
+Usually the cursor moves to the right.
+Sometimes to the left for some locales, but this is not currently handled.
+This hook fixes the cursor movement according to `uniline--text-direction'"
+  (let ((n
+         (cond
+          ((numberp current-prefix-arg)
+           current-prefix-arg)
+          ((and
+            (consp current-prefix-arg)
+            (numberp (car current-prefix-arg)))
+           (car current-prefix-arg))
+          ((null current-prefix-arg)
+           1)
+          (t (error "current-prefix-arg = %S" current-prefix-arg)))))
+    (cond
+     ((eq uniline--text-direction (eval-when-compile uniline--direction-ri→)))
+     ((eq uniline--text-direction (eval-when-compile uniline--direction-dw↓))
+      (forward-char (- n))
+      (uniline--move-to-delta-line n))
+     ((eq uniline--text-direction (eval-when-compile uniline--direction-up↑))
+      (forward-char (- n))
+      (uniline--move-to-delta-line (- n)))
+     ((eq uniline--text-direction (eval-when-compile uniline--direction-lf←))
+      (forward-char (- n))
+      (uniline--move-to-delta-column (- n)))
+     ((eq uniline--text-direction nil))
+     (t (error "uniline--text-direction %S" uniline--text-direction)))))
+
+(defun uniline-text-direction-up↑ ()
+  "Set text insertion direction up↑."
+  (interactive)
+  (setq uniline--text-direction uniline--direction-up↑))
+(defun uniline-text-direction-ri→ ()
+  "Set text insertion direction right→."
+  (interactive)
+  (setq uniline--text-direction uniline--direction-ri→))
+(defun uniline-text-direction-dw↓ ()
+  "Set text insertion direction down↓."
+  (interactive)
+  (setq uniline--text-direction uniline--direction-dw↓))
+(defun uniline-text-direction-lf← ()
+  "Set text insertion direction left←."
+  (interactive)
+  (setq uniline--text-direction uniline--direction-lf←))
+
+;;;╭───────────────────────────╮
+;;;│Macro calls in 4 directions│
+;;;╰───────────────────────────╯
+
+(defvar-local uniline--directional-macros
+    (make-vector 8 nil)
+  "A cache handling 4 versions of the current macro in 4 directions.
+It is needed to avoid repeatidly re-creating a new directional macro
+from the recorded macro.
+There are 4 entries indexed by
+`uniline--direction-up↑' `-ri→' `-dw↓' `-lf←'
+Each entry has 2 slots:
+- the recorded macro (a vector of key strokes)
+- the twisted macro (the same vector with <up> <right> and sisters twisted).")
+
+(eval-when-compile ; not used at runtime
+  (defconst uniline--directional-keystrokes-table
+    `(
+      ;;   ╭─keystroke as used in keyboard macros
+      ;;   │      ╭─direction of the keystroke
+      ;;   │      │      shift-control modifiers╮
+      ;;   │      │                      ╭──────╯
+      ;;   ▽      ▽                      ▽
+      (  right ,uniline--direction-ri→)
+      (  down  ,uniline--direction-dw↓)
+      (  left  ,uniline--direction-lf←)
+      (  up    ,uniline--direction-up↑)
+      (S-right ,uniline--direction-ri→ . S)
+      (S-down  ,uniline--direction-dw↓ . S)
+      (S-left  ,uniline--direction-lf← . S)
+      (S-up    ,uniline--direction-up↑ . S)
+      (C-right ,uniline--direction-ri→ . C)
+      (C-down  ,uniline--direction-dw↓ . C)
+      (C-left  ,uniline--direction-lf← . C)
+      (C-up    ,uniline--direction-up↑ . C))
+    "Temporary table of conversion between keystrokes and uniline directions.
+It will be converted into 2 hashtables for both conversions."))
+
+(defconst uniline--keystroke-to-dir-shift
+  (eval-when-compile
+    (let ((table (make-hash-table)))
+      (cl-loop
+       for entry in uniline--directional-keystrokes-table
+       do
+       (puthash (car entry) (cdr entry) table))
+      table))
+  "Hashtable to convert a directional keystroke into Uniline constants.")
+
+(defconst uniline--dir-shift-to-keystroke
+  (eval-when-compile
+    (let ((table (make-hash-table :test #'equal)))
+      (cl-loop
+       for entry in uniline--directional-keystrokes-table
+       do
+       (puthash (cdr entry) (car entry) table))
+      table))
+  "Hashtable to convert Uniline directional constants into keystrokes.")
+
+(defun uniline-call-macro-in-direction (dir)
+  "Call last keybord macro twisted in DIR direction.
+A twisted version of the last keybord macro is created, unless
+it is already present in the `uniline--directional-macros' cache"
+  (interactive)
+  (let*
+      ((uniline--text-direction dir)
+       (dir2 (* 2 dir))
+       (last-kbd-macro
+        (or (and (eq (aref uniline--directional-macros dir2) last-kbd-macro)
+                 (aref uniline--directional-macros (1+ dir2)))
+            (progn
+              (aset uniline--directional-macros dir2 last-kbd-macro)
+              (aset uniline--directional-macros (1+ dir2)
+                    (vconcat
+                     (mapcar
+                      (lambda (x)
+                        (let ((y (gethash x uniline--keystroke-to-dir-shift)))
+                          (if y
+                              (gethash
+                               (cons
+                                (mod (+ (car y) dir 3) 4)
+                                (cdr y))
+                               uniline--dir-shift-to-keystroke)
+                            x)))
+                      last-kbd-macro)))))))
+    (kmacro-end-and-call-macro 1)))
+
 ;;;╭───────────────────────────╮
 ;;;│High level brush management│
 ;;;╰───────────────────────────╯
-
-(defun uniline--mode-line ()
-  "Computes the string which appears in the mode-line."
-  (pcase uniline--brush
-    ('nil   " ╶▶Uniline ")
-    (0      " ╶▶Uniline/")
-    (1      " ╶▶Uniline┼")
-    (2      " ╶▶Uniline╋")
-    (3      " ╶▶Uniline╬")
-    (:block " ╶▶Uniline▞")))
 
 (defun uniline--set-brush-nil ()
   "Change the current style of line to nothing.
@@ -1844,12 +1981,12 @@ See `uniline--insert-glyph'."
    :exit nil)
   ;; Docstring MUST begin with an empty line to benefit from substitutions
   "
-╭^─^─^Insert glyph^─────╮╭^Rotate arrow^╮╭^─^─^─^─^─^─^─^────────────╮
-│_a_,_A_rrow   ▷ ▶ → ▹ ▸││_S-<left>_  ← ││_-_,_+_,_=_,_#_ self-insert│
-│_s_,_S_quare  □ ■ ◇ ◆ ◊││_S-<right>_ → ││_f_ ^^^^^^      choose font│
-│_o_,_O_-shape · ● ◦ Ø ø││_S-<up>_    ↑ ││_q_,_RET_ ^^^^  exit       │
-│_x_,_X_-cross ╳ ÷ × ± ¤││_S-<down>_  ↓ │╰^─^─^─^─^─^─^─^────────────╯
-╰^─^─^─^────────────────╯╰^─^───────────╯"
+╭^─^─^Insert glyph^─────╮╭^Rotate arrow^╮╭^Text directi^╮╭^─^─^─^─^─^─^─^──────────────╮
+│_a_,_A_rrow   ▷ ▶ → ▹ ▸││_S-<left>_  ← ││_C-<left>_  ← ││_-_ _+_ _=_ _#_   self-insert│
+│_s_,_S_quare  □ ■ ◇ ◆ ◊││_S-<right>_ → ││_C-<right>_ → ││_f_ ^^^^^^        choose font│
+│_o_,_O_-shape · ● ◦ Ø ø││_S-<up>_    ↑ ││_C-<up>_    ↑ ││^ ^ ^ ^ ^ ^ ^ ^              │
+│_x_,_X_-cross ╳ ÷ × ± ¤││_S-<down>_  ↓ ││_C-<down>_  ↓ ││_q_ _RET_ ^^^^  exit         │
+╰^─^─^─^────────────────╯╰^─^───────────╯╰^─^───────────╯╰^─^─^─^─^─^─^─^──────────────╯"
   ("a" uniline-insert-fw-arrow )
   ("A" uniline-insert-bw-arrow )
   ("s" uniline-insert-fw-square)
@@ -1862,6 +1999,10 @@ See `uniline--insert-glyph'."
   ("S-<right>" uniline-rotate-ri→)
   ("S-<up>"    uniline-rotate-up↑)
   ("S-<down>"  uniline-rotate-dw↓)
+  ("C-<right>" uniline-text-direction-ri→ :exit t)
+  ("C-<up>"    uniline-text-direction-up↑ :exit t)
+  ("C-<down>"  uniline-text-direction-dw↓ :exit t)
+  ("C-<left>"  uniline-text-direction-lf← :exit t)
   ("<kp-subtract>" uniline--self-insert--)
   ("<kp-add>"      uniline--self-insert-+)
   ("-" self-insert-command)
@@ -1933,6 +2074,24 @@ Otherwise, the arrows & shapes hydra is invoked."
       (uniline-hydra-moverect/body)
     (uniline-hydra-arrows/body)))
 
+(defhydra uniline-hydra-macro-exec
+  (:hint nil
+   :exit nil)
+  "
+╭^^Call macro in direction╶^^^^────╮
+│_<right>_ call → │_e_ usual call^^│
+│_<up>_    call ↑ │^ ^ ^   ^       │
+│_<down>_  call ↓ │_q_ _RET_ exit  │
+│_<left>_  call ← │^ ^ ^   ^       │
+╰^^───────────────┴^─^─^───^───────╯"
+  ("e"       (kmacro-end-and-call-macro 1))
+  ("<right>" (uniline-call-macro-in-direction uniline--direction-ri→))
+  ("<up>"    (uniline-call-macro-in-direction uniline--direction-up↑))
+  ("<down>"  (uniline-call-macro-in-direction uniline--direction-dw↓))
+  ("<left>"  (uniline-call-macro-in-direction uniline--direction-lf←))
+  ("q"   () :exit t)
+  ("RET" () :exit t))
+
 ;;;╭──────────────────╮
 ;;;│Uniline minor mode│
 ;;;╰──────────────────╯
@@ -1954,11 +2113,16 @@ And backup previous settings."
          overwrite-mode
          indent-tabs-mode
          truncate-lines
-         cursor-type))
+         cursor-type
+         post-self-insert-hook))
   (overwrite-mode 1)
   (indent-tabs-mode 0)
   (setq truncate-lines t)
   (setq cursor-type 'hollow)
+  (add-hook
+   'post-self-insert-hook
+   #'uniline--post-self-insert
+   nil 'local)
   (let ((message-log-max))
     (message
      (replace-regexp-in-string
@@ -1983,11 +2147,30 @@ And backup previous settings."
 
 (defun uniline--mode-post ()
   "Restore settings when exiting uniline mode."
-  (overwrite-mode   (if (nth 0 uniline--remember-settings) 1 0))
-  (indent-tabs-mode (if (nth 1 uniline--remember-settings) 1 0))
+  (overwrite-mode    (if (nth 0 uniline--remember-settings) 1 0))
+  (indent-tabs-mode  (if (nth 1 uniline--remember-settings) 1 0))
   (setq
-   truncate-lines       (nth 2 uniline--remember-settings)
-   cursor-type          (nth 3 uniline--remember-settings)))
+   truncate-lines        (nth 2 uniline--remember-settings)
+   cursor-type           (nth 3 uniline--remember-settings)
+   post-self-insert-hook (nth 4 uniline--remember-settings)))
+
+(defun uniline--mode-line ()
+  "Computes the string which appears in the mode-line."
+  (format
+   " %cUniline%c"
+   (cond
+    ((null uniline--text-direction) ? )
+    ((eq uniline--text-direction uniline--direction-up↑) ?↑)
+    ((eq uniline--text-direction uniline--direction-ri→) ?→)
+    ((eq uniline--text-direction uniline--direction-dw↓) ?↓)
+    ((eq uniline--text-direction uniline--direction-lf←) ?←))
+   (pcase uniline--brush
+     ('nil   ? )
+     (0      ?/)
+     (1      ?┼)
+     (2      ?╋)
+     (3      ?╬)
+     (:block ?▞))))
 
 ;; This `unintern' instruction is useful during development
 ;; to ensure that M-x eval-buffer reloads 100% of the Lisp code
@@ -1995,7 +2178,6 @@ And backup previous settings."
 
 ;;;###autoload
 (define-minor-mode uniline-mode
-
   "Minor mode to draw lines, boxes, & arrows using UNICODE characters.
 
                 ┏━━━━━━━┓
@@ -2051,6 +2233,12 @@ And backup previous settings."
 │ \\[uniline-hydra-arrows/uniline-rotate-ri→]	point arrow → right
 │ \\[uniline-hydra-arrows/uniline-rotate-up↑]	point arrow ↑ up
 │ \\[uniline-hydra-arrows/uniline-rotate-dw↓]	point arrow ↓ down
+├─Text─direction─────────────╴
+│ Usually when typing text, cursor moves to the right.
+│ \\[uniline-hydra-arrows/uniline-text-direction-up↑-and-exit]]	text goes up   ↑
+│ \\[uniline-hydra-arrows/uniline-text-direction-ri→-and-exit]]	text goes right→
+│ \\[uniline-hydra-arrows/uniline-text-direction-dw↓-and-exit]]	text goes down ↓
+│ \\[uniline-hydra-arrows/uniline-text-direction-lf←-and-exit]]	text goes left ←
 ├─Insert characters──────────╴
 │ In this sub-mode, the keys `- + = #' recover their
 │ basic meaning, which is to insert this character.
@@ -2075,6 +2263,11 @@ And backup previous settings."
 ├─Quit───────────────────────╴
 │ \\[uniline-hydra-moverect/uniline--hydra-rect-undo-and-exit] undo works outside selection
 │ \\[uniline-hydra-moverect/uniline--hydra-rect-quit-and-exit] exit the rectangle sub-mode
+╰────────────────────────────╴
+╭╴Macros─────────────────────╴\\<uniline-mode-map>
+│ Usual Emacs macros recording works as usual
+│ Last keybord macro can be twisted in any of the 4 directions
+│ \\[uniline-hydra-macro-exec/body] directional call of last keyboard macro
 ╰────────────────────────────╴
 ╭─Fonts──────────────────────╴\\<uniline-hydra-arrows/keymap>
 │ Try out some mono-spaced fonts with support for the
@@ -2112,7 +2305,8 @@ And backup previous settings."
     ([kp-add]        . uniline--set-brush-2)
     ("="             . uniline--set-brush-3)
     ("#"             . uniline--set-brush-block)
-    ([?\C-c ?\C-c] . uniline-mode))
+    ([?\C-x ?e]      . uniline-hydra-macro-exec/body)
+    ([?\C-c ?\C-c]   . uniline-mode))
   :after-hook (if uniline-mode (uniline--mode-pre) (uniline--mode-post)))
 
 (easy-menu-define
@@ -2157,6 +2351,11 @@ And backup previous settings."
      ["trace rectangle around selection" uniline-draw-outer-rectangle :keys "<insert>R"]
      ["overwrite rectangle inside selection" uniline-overwrite-inner-rectangle :keys "<insert>C-r"]
      ["overwrite rectangle around selection" uniline-overwrite-outer-rectangle :keys "<insert>C-R"])
+    ("Text insertion direction"
+     ["→ right" uniline-text-direction-ri→ :keys "<insert> C-<right>"]
+     ["↑ up"    uniline-text-direction-up↑ :keys "<insert> C-<up>   "]
+     ["← left"  uniline-text-direction-lf← :keys "<insert> C-<left> "]
+     ["↓ down"  uniline-text-direction-dw↓ :keys "<insert> C-<down> "])
     ("Font"
      ["set font DejaVu Sans Mono"     (set-frame-font "DejaVu Sans Mono")]
      ["set font Unifont"              (set-frame-font "Unifont"         )]

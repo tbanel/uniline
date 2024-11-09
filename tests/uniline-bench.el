@@ -56,7 +56,7 @@ RESULT is a string representing the expected result."
   (ignore-errors (kill-buffer "*uniline-interactive*"))
   (switch-to-buffer "*uniline-interactive*")
   (uniline-mode 1)
-  (eval `(,(kmacro commands)))
+  (execute-kbd-macro (kbd commands))
   
   (setq uniline-bench-result
         (string-equal
