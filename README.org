@@ -700,6 +700,9 @@ In this example, =C-<insert>= was choosen. You can use whatever keys combination
 
 - =monosketch=: (not Emacs) draw on the web, then copy-paste your UNICODE text
 
+- =ibm-box-drawing-hydra.el=: keyboard interface to insert UNICODE
+  box-drawing characters one at a time
+
 * Author, contributors
 - Thierry Banel, author
 - Joost Kremers https://github.com/joostkremers found a bug in the
