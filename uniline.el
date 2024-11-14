@@ -154,8 +154,9 @@ Exchange left with right, up with down."
 Add blanks if line is too short: ensure that cursor
 points to a character, not \\n.
 Move to 0 if X negative."
-  (move-to-column (1+ (max x 0)) t)
-  (backward-char))
+  (let ((x (max x 0))) ;; let is faster than setq when byte-compiled
+    (move-to-column (1+ x) t)
+    (move-to-column     x  t)))
 
 (defun uniline--move-to-delta-column (x)
   "Move X characters, staying on the same line.
