@@ -222,7 +222,7 @@ X=0 means first column of buffer."
   (goto-char (point-min))
   (uniline--forward-line-force y)
   (move-to-column (1+ x) t)
-  (backward-char))
+  (move-to-column     x  t))
 
 (eval-when-compile ; not needed at runtime
   (defmacro uniline--move-in-direction (dir &optional nb)
