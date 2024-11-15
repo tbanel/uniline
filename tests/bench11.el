@@ -20,7 +20,7 @@
 ;; along with this program.  If not, see <http://www.gnu.org/licenses/>.
 
 (uniline-bench
-"C-q <tab> t a b s SPC ? <return> <down> C-a C-q <tab> C-q <tab> 2 SPC t a b s <down> <home> <kp-subtract> <right> <right> <up> <up> <right> <right> <right> <right> <right> <right> <right> <right> <right> <right> <down> <down> <insert> s"
+"C-q <tab> t a b s SPC ? <return> <down> C-a C-q <tab> C-q <tab> 2 SPC t a b s <down> <home> <kp-subtract> <right> <right> <up> <up> <right> <right> <right> <right> <right> <right> <right> <right> <right> <right> <down> <down> <insert> s <return>"
 "\
   ╭─────tabs╮? 
   │         │   2 tabs         
