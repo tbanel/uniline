@@ -149,14 +149,11 @@ Exchange left with right, up with down."
       ('uniline--direction-lf← 'uniline--direction-ri→)
       (_ (error "Bad direction")))))
 
-(defun uniline--move-to-column (x)
+(defsubst uniline--move-to-column (x)
   "Move to column X staying on the same line.
-Add blanks if line is too short: ensure that cursor
-points to a character, not \\n.
+Add blanks if line is too short.
 Move to 0 if X negative."
-  (let ((x (max x 0))) ;; let is faster than setq when byte-compiled
-    (move-to-column (1+ x) t)
-    (move-to-column     x  t)))
+  (move-to-column (max x 0) t))
 
 (defun uniline--move-to-delta-column (x)
   "Move X characters, staying on the same line.
@@ -195,11 +192,10 @@ or blank characters at the end of target line.
 Y=0 means first line in buffer."
   (move-to-column
    (prog1
-       (1+ (current-column))
+       (current-column)
      (goto-char (point-min))
      (uniline--forward-line-force y))
-   t)
-  (backward-char))
+   t))
 
 (defun uniline--move-to-delta-line (y)
   "Move Y lines while staying on the same column.
@@ -208,10 +204,9 @@ or blank characters at the end of target line.
 Y may be negative to move backward."
   (move-to-column
    (prog1
-       (1+ (current-column))
+       (current-column)
      (uniline--forward-line-force y))
-   t)
-  (backward-char))
+   t))
 
 (defun uniline--move-to-col-lin (y x)
   "Move to line Y and column X.
@@ -221,8 +216,7 @@ Y=0 means first line of buffer.
 X=0 means first column of buffer."
   (goto-char (point-min))
   (uniline--forward-line-force y)
-  (move-to-column (1+ x) t)
-  (move-to-column     x  t))
+  (uniline--move-to-column x))
 
 (eval-when-compile ; not needed at runtime
   (defmacro uniline--move-in-direction (dir &optional nb)
@@ -254,6 +248,14 @@ In the bottom & right directions the buffer is infinite."
       ('uniline--direction-dw↓ 'nil)
       ('uniline--direction-lf← '(bolp))
       (_ (error "Bad direction")))))
+
+(defun uniline--char-after ()
+  "Same as `char-after', except for right and bottom edges of buffer.
+Outside the buffer, return a blank character."
+  (let ((c (char-after)))
+    (if (or (not c) (eq c ?\n))
+        ?  ;; eol & eob are considered blank
+      c)))
 
 ;;;╭─────────────────────────────────────────────────────╮
 ;;;│Reference tables of ┼ 4 half-lines UNICODE characters│
@@ -1015,7 +1017,7 @@ north-east, south-west, etc.
   (or
    (eolp)
    (delete-char 1))
-  (insert char)
+  (insert (if (eq char ?\n) ?  char))
   (backward-char))
 
 ;;;╭────────────────────────────────────────────────────────╮
@@ -1037,7 +1039,9 @@ nil: no action except cursor movements
     "Return a bit pattern (a 4halfs).
 It represents a UNICODE character like ┬ found at (point).
 Return nil if the character is not a 4halfs character."
-    (aref uniline--char-to-4halfs (or (char-after) ? ))))
+    (aref
+     uniline--char-to-4halfs
+     (uniline--char-after))))
 
 (eval-when-compile ; not needed at runtime
   (defsubst uniline--insert-4halfs (4halfs)
@@ -1080,7 +1084,7 @@ character at point."
       (uniline--insert-char ? ))
   (let ((bits
          (or
-          (aref uniline--block-char-to-4quadb (char-after))
+          (aref uniline--block-char-to-4quadb (uniline--char-after))
           (and force 0))))
     (if bits
         (uniline--insert-char
@@ -1092,7 +1096,7 @@ character at point."
     "Helper function to clear half a quadrant-block at point.
 Assume that point is on a quadrant-block character.
 Clear the half of this character pointing in DIR direction."
-    `(let ((bits (aref uniline--block-char-to-4quadb (char-after))))
+    `(let ((bits (aref uniline--block-char-to-4quadb (uniline--char-after))))
        (if bits
            (uniline--insert-char
             (aref
@@ -1372,7 +1376,7 @@ Then the leakage of the two glyphs fills in E:
             repeat ,size
             do
             (setq hand
-                  (prog1 (char-after)
+                  (prog1 (uniline--char-after)
                     (uniline--insert-char hand)))
             (uniline--move-in-direction ,dir))
            (uniline--insert-char hand))))))
@@ -1783,7 +1787,7 @@ of the same command."
       (setq repeat (- repeat)
             back (not back)))
   (let ((line ; something like (3 x ((a ?▲ ?▶ ?▼ ?◀) (a ?↑ ?→ ?↓ ?←) …))
-         (gethash (char-after)
+         (gethash (uniline--char-after)
                   (if back
                       uniline--glyphs-reverse-hash-bw
                     uniline--glyphs-reverse-hash-fw))))
@@ -1890,7 +1894,10 @@ See `uniline--insert-glyph'."
 
 (defun uniline--rotate-arrow (dir)
   "Rotate an arrow so it points toward DIR."
-  (let ((ligne (gethash (char-after) uniline--glyphs-reverse-hash-fw)))
+  (let ((ligne
+         (gethash
+          (uniline--char-after)
+          uniline--glyphs-reverse-hash-fw)))
     (when (car ligne) ;; if (point) is on a directional arrow
       (uniline--insert-char ;; then change its direction
        (nth (1+ dir) (cadr ligne))))))

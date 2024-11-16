@@ -71,7 +71,9 @@ RESULT is a string representing the expected result."
     (switch-to-buffer-other-window "*uniline-expected*")
     (insert result)
     (goto-char (point-min))
-    (compare-windows nil)))
+    (compare-windows nil))
+
+  uniline-bench-result)
 
 (defun uniline-bench-create ()
   "Interactively create a bench.
