@@ -1014,10 +1014,9 @@ north-east, south-west, etc.
 
 (defun uniline--insert-char (char)
   "Insert CHAR in overwrite mode avoiding cursor moving."
-  (or
-   (eolp)
-   (delete-char 1))
+  ;; `insert' before `delete-char' to preserve `point-marker'
   (insert (if (eq char ?\n) ?  char))
+  (or (eolp) (delete-char 1))
   (backward-char))
 
 ;;;╭────────────────────────────────────────────────────────╮
