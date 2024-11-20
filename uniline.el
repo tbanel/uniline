@@ -243,7 +243,7 @@ when trying to go further when DIR is up or left:
 In the bottom & right directions the buffer is infinite."
     (declare (debug (form)))
     (pcase dir
-      ('uniline--direction-up↑ '(= (pos-bol) 1))
+      ('uniline--direction-up↑ '(eq (pos-bol) 1))
       ('uniline--direction-ri→ 'nil)
       ('uniline--direction-dw↓ 'nil)
       ('uniline--direction-lf← '(bolp))
@@ -1147,7 +1147,7 @@ When FORCE is not nil, overwrite a possible non-4halfs character."
               ;; 2nd case: (char-after) is a block character like ▜,
               ;; and the brush is the eraser
               ;; then clear only half of this character
-              ((= uniline--brush 0)
+              ((eq uniline--brush 0)
                (uniline--block-clear-half ,dir))))))))
 
 (eval-when-compile ; not needed at runtime
@@ -1185,7 +1185,7 @@ but that would be overkill."
           repeat repeat
           do
           (uniline--store-undo-quadrant-cursor)
-          (if (= (logand uniline--block-which-quadrant ,blockbit) ,compbit)
+          (if (eq (logand uniline--block-which-quadrant ,blockbit) ,compbit)
               (uniline--move-in-direction ,dir))
           (setq uniline--block-which-quadrant
                 (logxor uniline--block-which-quadrant ,blockbit))
@@ -1507,7 +1507,7 @@ When FORCE is not nil, overwrite whatever is there."
    (if (<= begx 0)                      ; at leftmost side of buffer
        (setq width (1- width))
      (uniline--move-to-delta-column -1))
-   (when (= begy 0)                     ; at the top of buffer
+   (when (eq begy 0)                     ; at the top of buffer
      (goto-char (point-min))
      (insert ?\n))
    (forward-line -1)
@@ -1526,7 +1526,7 @@ When FORCE is not nil, overwrite whatever is there."
      (uniline-write-lf← width  force)
      (if (> begx 0)
          (uniline-write-up↑ height force)))
-   (when (= begy 0)
+   (when (eq begy 0)
      (goto-char (point-min))
      (delete-line))))
 
