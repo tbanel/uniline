@@ -1577,7 +1577,7 @@ in that it overwrites the rectangle."
 ;;;╰──────────────╯
 
 (defvar-local uniline--text-direction
-    nil
+    uniline--direction-ri→
   "Direction of text insertion.
 It can be any of the 4 values of
 `uniline--direction-up↑' `-ri→' `-dw↓' `-lf←'
@@ -1949,16 +1949,38 @@ See `uniline--insert-glyph'."
   (interactive)
   (customize-face-other-window 'default))
 
+(defun uniline--is-font (letter)
+  "Check if current font is the one presented by LETTER."
+  (cond
+   ((eq letter ?d) (string-match "DejaVu"      (frame-parameter nil 'font)))
+   ((eq letter ?u) (string-match "Unifont"     (frame-parameter nil 'font)))
+   ((eq letter ?h) (string-match "Hack"        (frame-parameter nil 'font)))
+   ((eq letter ?b) (string-match "JetBrain"    (frame-parameter nil 'font)))
+   ((eq letter ?c) (string-match "Cascadia"    (frame-parameter nil 'font)))
+   ((eq letter ?a) (string-match "Agave"       (frame-parameter nil 'font)))
+   ((eq letter ?j) (string-match "Julia"       (frame-parameter nil 'font)))
+   ((eq letter ?f) (string-match "FreeMono"    (frame-parameter nil 'font)))
+   ((eq letter ?i) (string-match "Iosevka"     (frame-parameter nil 'font)))
+   ((eq letter ?s) (string-match "Source Code" (frame-parameter nil 'font)))))
+
+(defun uniline--is-font-str (letter)
+  "Return a glyph if current font is the one presented by LETTER."
+  (if (uniline--is-font letter) "▶" " "))
+
 (defhydra uniline-hydra-fonts
   (:hint nil
    :exit nil)
-"
+  (concat
+   (replace-regexp-in-string
+    "_\\([dhcjbfsiua]\\)_ "
+    "_\\1_%s(uniline--is-font-str ?\\1)"
+    "\
 ╭^─Try a font^─╮^ ^           ╭^─^──────────────╮╭^─^───^─^──────╮
 │_d_ DejaVu    ╰^─^───────────╯_i_ Iosevka Comfy││_*_ ^^configure│
 │_h_ Hack       _b_ JetBrains  _u_ Unifont      ││_RET_ _q_ exit │
 │_c_ Cascadia   _f_ FreeMono   _a_ Agave        │╰^─^───^─^──────╯
 │_j_ JuliaMono  _s_ Source Code Pro^^╭──────────╯
-╰^─^────────────^─^────────────^─^───╯"
+╰^─^────────────^─^────────────^─^───╯"))
   ("d" (set-frame-font "DejaVu Sans Mono"))
   ("u" (set-frame-font "Unifont"         ))
   ("h" (set-frame-font "Hack"            ))
@@ -1983,17 +2005,31 @@ See `uniline--insert-glyph'."
   (interactive)
   (self-insert-command 1 ?-))
 
+(defun uniline--text-direction-str ()
+  "Return a textual representation of current text direction."
+  (interactive)
+  (cond
+   ((eq uniline--text-direction (eval-when-compile uniline--direction-up↑)) "↑")
+   ((eq uniline--text-direction (eval-when-compile uniline--direction-ri→)) "→")
+   ((eq uniline--text-direction (eval-when-compile uniline--direction-dw↓)) "↓")
+   ((eq uniline--text-direction (eval-when-compile uniline--direction-lf←)) "←")
+   (t " ")))
+
 (defhydra uniline-hydra-arrows
   (:hint nil
    :exit nil)
   ;; Docstring MUST begin with an empty line to benefit from substitutions
-  "
-╭^─^─^Insert glyph^─────╮╭^Rotate arrow^╮╭^Text directi^╮╭^─^─^─^─^─^─^─^──────────────╮
-│_a_,_A_rrow   ▷ ▶ → ▹ ▸││_S-<left>_  ← ││_C-<left>_  ← ││_-_ _+_ _=_ _#_   self-insert│
-│_s_,_S_quare  □ ■ ◇ ◆ ◊││_S-<right>_ → ││_C-<right>_ → ││_f_ ^^^^^^        choose font│
-│_o_,_O_-shape · ● ◦ Ø ø││_S-<up>_    ↑ ││_C-<up>_    ↑ ││^ ^ ^ ^ ^ ^ ^ ^              │
-│_x_,_X_-cross ╳ ÷ × ± ¤││_S-<down>_  ↓ ││_C-<down>_  ↓ ││_q_ _RET_ ^^^^  exit         │
-╰^─^─^─^────────────────╯╰^─^───────────╯╰^─^───────────╯╰^─^─^─^─^─^─^─^──────────────╯"
+  (concat
+   (string-replace
+    "Text dir────"
+    "Text dir─╴%s(uniline--text-direction-str)╶"
+  "\
+╭^─^─^Insert glyph^─────╮╭^Rotate arrow^╮╭^Text dir────^╮╭^─^─^─^─^─^─^─^────────────╮
+│_a_,_A_rrow   ▷ ▶ → ▹ ▸││_S-<left>_  ← ││_C-<left>_  ← ││_-_ _+_ _=_ _#_ self-insert│
+│_s_,_S_quare  □ ■ ◇ ◆ ◊││_S-<right>_ → ││_C-<right>_ → ││_f_ ^^^^^^      choose font│
+│_o_,_O_-shape · ● ◦ Ø ø││_S-<up>_    ↑ ││_C-<up>_    ↑ ││^ ^ ^ ^ ^ ^ ^ ^            │
+│_x_,_X_-cross ╳ ÷ × ± ¤││_S-<down>_  ↓ ││_C-<down>_  ↓ ││_q_ _RET_ ^^^^  exit       │
+╰^─^─^─^────────────────╯╰^─^───────────╯╰^─^───────────╯╰^─^─^─^─^─^─^─^────────────╯"))
   ("a" uniline-insert-fw-arrow )
   ("A" uniline-insert-bw-arrow )
   ("s" uniline-insert-fw-square)
@@ -2346,39 +2382,40 @@ And backup previous settings."
     ["inactive brush"  uniline--set-brush-nil   :style radio :selected (eq uniline--brush nil   )]
     "----"
     ("Insert glyph"
-     ["insert arrow ▷ ▶ → ▹ ▸"  uniline-insert-fw-arrow  :keys "<insert>a"]
-     ["insert square □ ■ ◇ ◆ ◊" uniline-insert-fw-square :keys "<insert>s"]
-     ["insert oshape · ● ◦ Ø ø" uniline-insert-fw-oshape :keys "<insert>o"]
-     ["insert cross ╳ ÷ × ± ¤"  uniline-insert-fw-cross  :keys "<insert>x"]
-     ["rotate arrow → right"    uniline-rotate-ri→ :keys "<insert> a S-<right>"]
-     ["rotate arrow ↑ up"       uniline-rotate-up↑ :keys "<insert> a S-<up>   "]
-     ["rotate arrow ← left"     uniline-rotate-lf← :keys "<insert> a S-<left> "]
-     ["rotate arrow ↓ down"     uniline-rotate-dw↓ :keys "<insert> a S-<down> "])
+     ["insert arrow ▷ ▶ → ▹ ▸"  uniline-insert-fw-arrow  :keys "INS a"]
+     ["insert square □ ■ ◇ ◆ ◊" uniline-insert-fw-square :keys "INS s"]
+     ["insert oshape · ● ◦ Ø ø" uniline-insert-fw-oshape :keys "INS o"]
+     ["insert cross ╳ ÷ × ± ¤"  uniline-insert-fw-cross  :keys "INS x"]
+     ["rotate arrow → right"    uniline-rotate-ri→ :keys "INS S-<right>"]
+     ["rotate arrow ↑ up"       uniline-rotate-up↑ :keys "INS S-<up>   "]
+     ["rotate arrow ← left"     uniline-rotate-lf← :keys "INS S-<left> "]
+     ["rotate arrow ↓ down"     uniline-rotate-dw↓ :keys "INS S-<down> "])
     ("Rectangular selection" :active (region-active-p)
-     ["move selection right" uniline-move-rect-ri→ :keys "<insert><right>"]
-     ["move selection left"  uniline-move-rect-lf← :keys "<insert><left> "]
-     ["move selection up"    uniline-move-rect-up↑ :keys "<insert><up>   "]
-     ["move selection down"  uniline-move-rect-dw↓ :keys "<insert><down> "]
-     ["trace rectangle inside selection" uniline-draw-inner-rectangle :keys "<insert>r"]
-     ["trace rectangle around selection" uniline-draw-outer-rectangle :keys "<insert>R"]
-     ["overwrite rectangle inside selection" uniline-overwrite-inner-rectangle :keys "<insert>C-r"]
-     ["overwrite rectangle around selection" uniline-overwrite-outer-rectangle :keys "<insert>C-R"])
+     ["move selection right" uniline-move-rect-ri→ :keys "INS <right>"]
+     ["move selection left"  uniline-move-rect-lf← :keys "INS <left> "]
+     ["move selection up"    uniline-move-rect-up↑ :keys "INS <up>   "]
+     ["move selection down"  uniline-move-rect-dw↓ :keys "INS <down> "]
+     ["trace rectangle inside selection" uniline-draw-inner-rectangle :keys "INS r"]
+     ["trace rectangle around selection" uniline-draw-outer-rectangle :keys "INS R"]
+     ["overwrite rectangle inside selection" uniline-overwrite-inner-rectangle :keys "INS C-r"]
+     ["overwrite rectangle around selection" uniline-overwrite-outer-rectangle :keys "INS C-R"])
     ("Text insertion direction"
-     ["→ right" uniline-text-direction-ri→ :keys "<insert> C-<right>"]
-     ["↑ up"    uniline-text-direction-up↑ :keys "<insert> C-<up>   "]
-     ["← left"  uniline-text-direction-lf← :keys "<insert> C-<left> "]
-     ["↓ down"  uniline-text-direction-dw↓ :keys "<insert> C-<down> "])
+     ["→ right" uniline-text-direction-ri→ :keys "INS C-<right>" :style radio :selected (eq uniline--text-direction uniline--direction-ri→)]
+     ["↑ up"    uniline-text-direction-up↑ :keys "INS C-<up>   " :style radio :selected (eq uniline--text-direction uniline--direction-up↑)]
+     ["← left"  uniline-text-direction-lf← :keys "INS C-<left> " :style radio :selected (eq uniline--text-direction uniline--direction-lf←)]
+     ["↓ down"  uniline-text-direction-dw↓ :keys "INS C-<down> " :style radio :selected (eq uniline--text-direction uniline--direction-dw↓)])
     ("Font"
-     ["set font DejaVu Sans Mono"     (set-frame-font "DejaVu Sans Mono")]
-     ["set font Unifont"              (set-frame-font "Unifont"         )]
-     ["set font Hack"                 (set-frame-font "Hack"            )]
-     ["set font JetBrains Mono"       (set-frame-font "JetBrains Mono"  )]
-     ["set font Cascadia Mono"        (set-frame-font "Cascadia Mono"   )]
-     ["set font Agave"                (set-frame-font "Agave"           )]
-     ["set font JuliaMono"            (set-frame-font "JuliaMono"       )]
-     ["set font FreeMono"             (set-frame-font "FreeMono"        )]
-     ["set font Iosevka Comfy Fixed"  (set-frame-font "Iosevka Comfy Fixed")]
-     ["set font Source Code Pro"      (set-frame-font "Source Code Pro" )])
+     ["DejaVu Sans Mono"    (set-frame-font "DejaVu Sans Mono"   ) :keys "INS f d" :style radio :selected (uniline--is-font ?d)]
+     ["Hack"                (set-frame-font "Hack"               ) :keys "INS f h" :style radio :selected (uniline--is-font ?h)]
+     ["Cascadia Mono"       (set-frame-font "Cascadia Mono"      ) :keys "INS f c" :style radio :selected (uniline--is-font ?c)]
+     ["JuliaMono"           (set-frame-font "JuliaMono"          ) :keys "INS f j" :style radio :selected (uniline--is-font ?j)]
+     ["JetBrains Mono"      (set-frame-font "JetBrains Mono"     ) :keys "INS f b" :style radio :selected (uniline--is-font ?b)]
+     ["FreeMono"            (set-frame-font "FreeMono"           ) :keys "INS f f" :style radio :selected (uniline--is-font ?f)]
+     ["Source Code Pro"     (set-frame-font "Source Code Pro"    ) :keys "INS f s" :style radio :selected (uniline--is-font ?s)]
+     ["Iosevka Comfy Fixed" (set-frame-font "Iosevka Comfy Fixed") :keys "INS f i" :style radio :selected (uniline--is-font ?i)]
+     ["Unifont"             (set-frame-font "Unifont"            ) :keys "INS f u" :style radio :selected (uniline--is-font ?u)]
+     ["Agave"               (set-frame-font "Agave"              ) :keys "INS f a" :style radio :selected (uniline--is-font ?a)]
+     ["permanently configure" uniline-customize-face               :keys "INS f *"])
     "----"
     ["quit Uniline Mode" uniline-mode t] ))
 
