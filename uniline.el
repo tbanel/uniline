@@ -2112,6 +2112,31 @@ It is a list containing:
   - `truncate-lines'
   - `cursor-type'")
 
+(defun uniline--welcome-message ()
+  "Display a message giving the main key-bindings of the minor mode."
+  (interactive)
+  (let ((message-log-max))
+    (message
+     (replace-regexp-in-string
+      "\\^.*?\\^"
+      (lambda (x)
+        (setq x (substring x 1 (1- (length x))))
+        (add-face-text-property
+         0 (length x)
+         'hydra-face-red
+         nil x)
+        x)
+      "\
+ ╭─^^────────────╴Uniline╶╴mode╶────────────────────────╮
+ │      ^→ ↓ ← ↑^          draw lines with current brush│
+ │^Ctrl  → ↓ ← ↑^          overwrite                    │
+ │^Shift → ↓ ← ↑^          extend selection             │
+ │^- + = # DEL RET^        change brush style           │
+ │^INS^ without selection  insert glyphs, change font   │
+ │^INS^ with    selection  handle rectangles            │
+ ╰─^^───────────────────────────────────────────────────╯"
+      t))))
+
 (defun uniline--mode-pre ()
   "Change settings when entering uniline mode.
 And backup previous settings."
@@ -2130,27 +2155,7 @@ And backup previous settings."
    'post-self-insert-hook
    #'uniline--post-self-insert
    nil 'local)
-  (let ((message-log-max))
-    (message
-     (replace-regexp-in-string
-      "([^)]*)"
-      (lambda (x)
-        (setq x (substring x 1 (1- (length x))))
-        (add-face-text-property
-         0 (length x)
-         'hydra-face-red
-         nil x)
-        x)
-      "\
- ╭─()────────────╴Uniline╶╴mode╶────────────────────────╮
- │      (→ ↓ ← ↑)          draw lines with current brush│
- │(Ctrl  → ↓ ← ↑)          overwrite                    │
- │(Shift → ↓ ← ↑)          extend selection             │
- │(- + = # DEL RET)        change brush style           │
- │(INS) without selection  insert glyphs, change font   │
- │(INS) with    selection  handle rectangles            │
- ╰─()───────────────────────────────────────────────────╯"
-      t))))
+  (uniline--welcome-message))
 
 (defun uniline--mode-post ()
   "Restore settings when exiting uniline mode."

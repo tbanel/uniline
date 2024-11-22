@@ -191,6 +191,19 @@ Set the current brush with:
 
 - =<return>= move without drawing anything
 
+The current bush and the current text direction (see below) are
+reflected in the mode-line (at the bottom of the Emacs screen). It
+looks like this:
+
+#+begin_example
+        ╭─current brush
+        ▽
+→Uniline┼
+△
+╰──current text direction
+
+#+end_example
+
 * The =<insert>= key
 The =<insert>= key is a prefix for other keys:
 - for drawing arrows, squares, crosses, o-shapes glyphs,
