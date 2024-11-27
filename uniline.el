@@ -1,4 +1,4 @@
-;;; uniline.el --- Draw UNICODE lines, boxes, arrows onto existing text -*- coding:utf-8; lexical-binding: t; -*-
+;;; uniline.el --- Draw plain text UNICODE diagrams within existing text -*- coding:utf-8; lexical-binding: t; -*-
 
 ;; Copyright (C) 2024  Thierry Banel
 
@@ -1977,9 +1977,9 @@ See `uniline--insert-glyph'."
     "\
 ╭^─Try a font^─╮^ ^           ╭^─^──────────────╮╭^─^───^─^──────╮
 │_d_ DejaVu    ╰^─^───────────╯_i_ Iosevka Comfy││_*_ ^^configure│
-│_h_ Hack       _b_ JetBrains  _u_ Unifont      ││_RET_ _q_ exit │
-│_c_ Cascadia   _f_ FreeMono   _a_ Agave        │╰^─^───^─^──────╯
-│_j_ JuliaMono  _s_ Source Code Pro^^╭──────────╯
+│_h_ Hack       _b_ JetBrains  _u_ Unifont      ││_TAB_^^ sh hint│
+│_c_ Cascadia   _f_ FreeMono   _a_ Agave        ││_RET_ _q_ exit │
+│_j_ JuliaMono  _s_ Source Code Pro^^╭──────────╯╰^─^───^─^──────╯
 ╰^─^────────────^─^────────────^─^───╯"))
   ("d" (set-frame-font "DejaVu Sans Mono"))
   ("u" (set-frame-font "Unifont"         ))
@@ -1992,6 +1992,7 @@ See `uniline--insert-glyph'."
   ("i" (set-frame-font "Iosevka Comfy Fixed"))
   ("s" (set-frame-font "Source Code Pro" ))
   ("*" uniline-customize-face :exit t)
+  ("TAB" uniline-toggle-hydra-hints)
   ("q"   () :exit t)
   ("RET" () :exit t))
 
@@ -2028,6 +2029,7 @@ See `uniline--insert-glyph'."
 │_a_,_A_rrow   ▷ ▶ → ▹ ▸││_S-<left>_  ← ││_C-<left>_  ← ││_-_ _+_ _=_ _#_ self-insert│
 │_s_,_S_quare  □ ■ ◇ ◆ ◊││_S-<right>_ → ││_C-<right>_ → ││_f_ ^^^^^^      choose font│
 │_o_,_O_-shape · ● ◦ Ø ø││_S-<up>_    ↑ ││_C-<up>_    ↑ ││^ ^ ^ ^ ^ ^ ^ ^            │
+│_o_,_O_-shape · ● ◦ Ø ø││_S-<up>_    ↑ ││_C-<up>_    ↑ ││_TAB_   ^^^^^^  short hint │
 │_x_,_X_-cross ╳ ÷ × ± ¤││_S-<down>_  ↓ ││_C-<down>_  ↓ ││_q_ _RET_ ^^^^  exit       │
 ╰^─^─^─^────────────────╯╰^─^───────────╯╰^─^───────────╯╰^─^─^─^─^─^─^─^────────────╯"))
   ("a" uniline-insert-fw-arrow )
@@ -2054,6 +2056,7 @@ See `uniline--insert-glyph'."
   ("#" self-insert-command)
   ("f" uniline-hydra-fonts/body :exit t)
   ("q"   ()                     :exit t)
+  ("TAB" uniline-toggle-hydra-hints)
   ("RET" ()                     :exit t))
 
 (defun uniline--hydra-rect-undo ()
@@ -2079,7 +2082,7 @@ See `uniline--insert-glyph'."
 │_<up>_    ↑││_C-r_   ovewr inner││_y_ yank││_=_ ╔═╝│
 │_<down>_  ↓││_C-S-R_ ovewr outer│╰^^┬─────┴╯_#_ ▄▄▟│
 ╰^─────^────╯╰^────^─────────────╯ ^^│_<delete>_ DEL│
- _RET_ exit   _C-/_ undo           ^^╰^────────^────╯"
+ _TAB_ hint  _RET_ exit  _C-/_ undo  ╰^────────^────╯"
   ("<left>"  uniline-move-rect-lf←)
   ("<right>" uniline-move-rect-ri→)
   ("<up>"    uniline-move-rect-up↑)
@@ -2101,6 +2104,7 @@ See `uniline--insert-glyph'."
   ("<kp-add>"       uniline--set-brush-2)
   ("="              uniline--set-brush-3)
   ("#"              uniline--set-brush-block)
+  ("TAB" uniline-toggle-hydra-hints)
   ("C-/"   uniline--hydra-rect-undo :exit t)
   ("C-_"   uniline--hydra-rect-undo :exit t)
   ("C-x u" uniline--hydra-rect-undo :exit t)
@@ -2121,19 +2125,102 @@ Otherwise, the arrows & shapes hydra is invoked."
   (:hint nil
    :exit nil)
   "
-╭^^Call macro in direction╶^^^^────╮
-│_<right>_ call → │_e_ usual call^^│
-│_<up>_    call ↑ │^ ^ ^   ^       │
-│_<down>_  call ↓ │_q_ _RET_ exit  │
-│_<left>_  call ← │^ ^ ^   ^       │
-╰^^───────────────┴^─^─^───^───────╯"
+╭^^Call macro in direction╶^^^^──────╮
+│_<right>_ call → │_e_ usual call^^  │
+│_<up>_    call ↑ │^ ^ ^   ^         │
+│_<down>_  call ↓ │_TAB_^^ short hint│
+│_<left>_  call ← │_q_ _RET_ exit    │
+╰^^───────────────┴^─^─^───^─────────╯"
   ("e"       (kmacro-end-and-call-macro 1))
   ("<right>" (uniline-call-macro-in-direction uniline--direction-ri→))
   ("<up>"    (uniline-call-macro-in-direction uniline--direction-up↑))
   ("<down>"  (uniline-call-macro-in-direction uniline--direction-dw↓))
   ("<left>"  (uniline-call-macro-in-direction uniline--direction-lf←))
+  ("TAB" uniline-toggle-hydra-hints)
   ("q"   () :exit t)
   ("RET" () :exit t))
+
+;;;╭───────────────────╮
+;;;│Smaller hydra hints│
+;;;╰───────────────────╯
+;; toggle between normal hydra hints, and one-liners
+
+(defvar-local uniline-hint-style t
+  "Which kind of hint message should the Hydras display?
+t: large and detailed messages
+1: one-line non-disturbing messages in the echo area
+0: no message
+Those values are loosely in sync with those defined by the
+`:verbosity' Hydra property.")
+
+(eval-when-compile ; not needed at runtime
+  (defun uniline--color-hint (hint)
+    "Return a colored message mimicking the Hydra way.
+HINT is the message string. It  contains pairs of ^xxx^
+carets which are to be removed from the message, while the
+text within will be colored."
+    (interactive)
+    (replace-regexp-in-string
+     "\\^.*?\\^"
+     (lambda (x)
+       (setq x (substring x 1 (1- (length x))))
+       (add-face-text-property
+        0 (length x)
+        'hydra-face-red
+        nil x)
+       x)
+     hint
+     t)))
+
+;; Pack 2 hints in the usual uniline-hydra-*/hint variables
+;; one is the standard hint created by `defhydra'
+;; the other is a one-liner
+(setq
+ uniline-hydra-arrows/hint
+ `(if (eq uniline-hint-style t)
+      ,uniline-hydra-arrows/hint
+    ,(eval-when-compile
+       (uniline--color-hint
+        "glyphs: ^aAsSoOxX-+=#^  arrow-dir: ^S-←→↑↓^  text-dir: ^C-←→↑↓^  fonts: ^f^  hint: ^TAB^")))
+ uniline-hydra-fonts/hint
+ `(if (eq uniline-hint-style t)
+      ,uniline-hydra-fonts/hint
+    ,(eval-when-compile
+       (uniline--color-hint
+        "choose font: ^dhcjbfsiua^  config font: ^*^  hint: ^TAB^")))
+ uniline-hydra-moverect/hint
+ `(if (eq uniline-hint-style t)
+      ,uniline-hydra-moverect/hint
+    ,(eval-when-compile
+       (uniline--color-hint
+        "move: ^←→↑↓^ trace: ^rR C-rR^  copy-paste: ^cky^  brush: ^-+=# DEL^  hint: ^TAB^")))
+ uniline-hydra-macro-exec/hint
+ `(if (eq uniline-hint-style t)
+      ,uniline-hydra-macro-exec/hint
+    ,(eval-when-compile
+       (uniline--color-hint
+        "macro exec usual: ^e^  directional: ^←→↑↓^  hint: ^TAB^"))))
+
+(defun uniline-toggle-hydra-hints (&optional notoggle)
+  "Toggle between styles of hydra hints.
+When NOTOGGLΕ is t, do not toggle `uniline-hint-style',
+just put everything in sync."
+  (interactive)
+  (unless notoggle
+    (setq uniline-hint-style
+          (cond
+           ((eq uniline-hint-style t) 1)
+           ((eq uniline-hint-style 1) t)
+           (t t))))
+  (cl-loop
+   for hydra in
+   '(uniline-hydra-arrows
+     uniline-hydra-fonts
+     uniline-hydra-moverect
+     uniline-hydra-macro-exec)
+   do
+   (hydra-set-property
+    hydra :verbosity uniline-hint-style)))
 
 ;;;╭──────────────────╮
 ;;;│Uniline minor mode│
@@ -2153,16 +2240,11 @@ It is a list containing:
   (interactive)
   (let ((message-log-max))
     (message
-     (replace-regexp-in-string
-      "\\^.*?\\^"
-      (lambda (x)
-        (setq x (substring x 1 (1- (length x))))
-        (add-face-text-property
-         0 (length x)
-         'hydra-face-red
-         nil x)
-        x)
-      "\
+     (cond
+      ((eq uniline-hint-style t)
+       (eval-when-compile
+         (uniline--color-hint
+          "\
  ╭─^^────────────╴Uniline╶╴mode╶────────────────────────╮
  │      ^→ ↓ ← ↑^          draw lines with current brush│
  │^Ctrl  → ↓ ← ↑^          overwrite                    │
@@ -2170,8 +2252,20 @@ It is a list containing:
  │^- + = # DEL RET^        change brush style           │
  │^INS^ without selection  insert glyphs, change font   │
  │^INS^ with    selection  handle rectangles            │
- ╰─^^───────────────────────────────────────────────────╯"
-      t))))
+ │^C-h TAB^                switch small-large hints     │
+ │^C-c C-c^                quit uniline                 │
+ ╰─^^───────────────────────────────────────────────────╯")))
+      ((eq uniline-hint-style 1)
+       (eval-when-compile
+         (uniline--color-hint
+          "trace: ^←→↑↓^  ovwr: ^C-←→↑↓^  selec: ^C-←→↑↓^  brush: ^-+=# DEL RET^  menu: (sel)^INS^  hint: ^C-h TAB^")))
+      (t nil)))))
+
+(defun uniline-toggle-hydra-hints-welcome ()
+  "Toggle between styles of hydra hints, and display welcome message."
+  (interactive)
+  (uniline-toggle-hydra-hints)
+  (uniline--welcome-message))
 
 (defun uniline--mode-pre ()
   "Change settings when entering uniline mode.
@@ -2191,6 +2285,7 @@ And backup previous settings."
    'post-self-insert-hook
    #'uniline--post-self-insert
    nil 'local)
+  (uniline-toggle-hydra-hints t)
   (uniline--welcome-message))
 
 (defun uniline--mode-post ()
@@ -2257,6 +2352,7 @@ And backup previous settings."
 ╭─Keyboard arrows────────────╴
 │ Use keyboard arrows to draw lines ╭─┲━╦═╗
 │ Use control-arrows to overwrite whatever was there
+│ Use shift-arrows to extend the selection (or start a selection)
 ╰────────────────────────────╴
 ╭─Brush style────────────────╴\\<uniline-mode-map>
 │ \\[uniline--set-brush-1]	for thin   lines	╭─┬─╮
@@ -2266,9 +2362,9 @@ And backup previous settings."
 │ \\[uniline--set-brush-0]	to erase lines
 │ \\[uniline--set-brush-nil]	to move cursor without drawing
 ╰────────────────────────────╴
-╭─Glyphs─(region inactive)──╴\\<uniline-mode-map>
+╭─Glyphs (region inactive)───╴\\<uniline-mode-map>
 │ \\[uniline-hydra-choose-body] when there is NO region highlighted,
-│ enter a sub-mode to draw a single char glyph,
+│ enter a sub-mode to draw a single character glyph,
 │ and change its orientation.
 ├─Intersection glyphs────────╴\\<uniline-hydra-arrows/keymap>
 │ \\[uniline-hydra-arrows/uniline-insert-fw-arrow]	arrows   ▷ ▶ → ▹ ▸
@@ -2281,20 +2377,22 @@ And backup previous settings."
 │ \\[uniline-hydra-arrows/uniline-rotate-ri→]	point arrow → right
 │ \\[uniline-hydra-arrows/uniline-rotate-up↑]	point arrow ↑ up
 │ \\[uniline-hydra-arrows/uniline-rotate-dw↓]	point arrow ↓ down
-├─Text─direction─────────────╴
+├─Text direction─────────────╴
 │ Usually when typing text, cursor moves to the right.
-│ \\[uniline-hydra-arrows/uniline-text-direction-up↑-and-exit]]	text goes up   ↑
-│ \\[uniline-hydra-arrows/uniline-text-direction-ri→-and-exit]]	text goes right→
-│ \\[uniline-hydra-arrows/uniline-text-direction-dw↓-and-exit]]	text goes down ↓
-│ \\[uniline-hydra-arrows/uniline-text-direction-lf←-and-exit]]	text goes left ←
+│ \\[uniline-hydra-arrows/uniline-text-direction-up↑-and-exit]	text goes up   ↑
+│ \\[uniline-hydra-arrows/uniline-text-direction-ri→-and-exit]	text goes right→
+│ \\[uniline-hydra-arrows/uniline-text-direction-dw↓-and-exit]	text goes down ↓
+│ \\[uniline-hydra-arrows/uniline-text-direction-lf←-and-exit]	text goes left ←
 ├─Insert characters──────────╴
 │ In this sub-mode, the keys `- + = #' recover their
 │ basic meaning, which is to insert this character.
+├─Other──────────────────────╴
+│ \\[uniline-hydra-arrows/uniline-hydra-fonts/body-and-exit] enter the fonts sub-menu
 │ \\[uniline-hydra-arrows/nil] (or q) exits the sub-mode
 │ Any other key exits the sub-mode and do whatever they
 │ are intended for.
 ╰────────────────────────────╴
-╭─Rectangles─(region active)─╴\\<uniline-mode-map>
+╭─Rectangles (region active)─╴\\<uniline-mode-map>
 │ \\[uniline-hydra-choose-body] when region IS highlighted,
 │ enter a sub-mode to handle rectangles,
 │ marked by the highlighted region.
@@ -2308,22 +2406,28 @@ And backup previous settings."
 │ \\[uniline-hydra-moverect/uniline-draw-outer-rectangle]	draw      an outer rectangle
 │ \\[uniline-hydra-moverect/uniline-overwrite-inner-rectangle]	overwrite an inner rectangle
 │ \\[uniline-hydra-moverect/uniline-overwrite-outer-rectangle]	overwrite an outer rectangle
-├─Quit───────────────────────╴
+├─Other──────────────────────╴
 │ \\[uniline-hydra-moverect/uniline--hydra-rect-undo-and-exit] undo works outside selection
 │ \\[uniline-hydra-moverect/uniline--hydra-rect-quit-and-exit] exit the rectangle sub-mode
+│ Any other key exits the sub-mode and do whatever they
+│ are intended for.
 ╰────────────────────────────╴
 ╭╴Macros─────────────────────╴\\<uniline-mode-map>
 │ Usual Emacs macros recording works as usual
 │ Last keybord macro can be twisted in any of the 4 directions
-│ \\[uniline-hydra-macro-exec/body] directional call of last keyboard macro
+│ \\[uniline-hydra-macro-exec/body] then → ↓ ← ↑ : directional call of last keyboard macro
 ╰────────────────────────────╴
-╭─Fonts──────────────────────╴\\<uniline-hydra-arrows/keymap>
+╭─Fonts──────────────────────╴
 │ Try out some mono-spaced fonts with support for the
 │ required UNICODE characters.
-│ \\[uniline-hydra-arrows/uniline-hydra-fonts/body-and-exit] enters a sub-menu to change the font
+│ \\<uniline-mode-map>\\[uniline-hydra-choose-body] \\<uniline-hydra-arrows/keymap>\\[uniline-hydra-arrows/uniline-hydra-fonts/body-and-exit] enters a sub-menu to change the font
 │ type the first letter of the font name.
 │ This setting is just for the current Emacs session.\\<uniline-hydra-fonts/keymap>
 │ \\[uniline-hydra-fonts/uniline-customize-face-and-exit] customize default font for future sessions.
+╰────────────────────────────╴
+╭─Toggle hint sizes──────────╴
+│ \\<uniline-mode-map>\\[uniline-toggle-hydra-hints-welcome] in base uniline mode
+│ \\<uniline-hydra-arrows/keymap>\\[uniline-hydra-arrows/uniline-toggle-hydra-hints] in a INS-activated menu
 ╰────────────────────────────╴
 ╭─Quit───────────────────────╴\\<uniline-mode-map>
 │ \\[uniline-mode] quit the uniline minor mode.
@@ -2354,6 +2458,7 @@ And backup previous settings."
     ("="             . uniline--set-brush-3)
     ("#"             . uniline--set-brush-block)
     ([?\C-x ?e]      . uniline-hydra-macro-exec/body)
+    ([?\C-h ?\t]     . uniline-toggle-hydra-hints-welcome)
     ([?\C-c ?\C-c]   . uniline-mode))
   :after-hook (if uniline-mode (uniline--mode-pre) (uniline--mode-post)))
 
@@ -2404,6 +2509,8 @@ And backup previous settings."
      ["↑ up"    uniline-text-direction-up↑ :keys "INS C-<up>   " :style radio :selected (eq uniline--text-direction uniline--direction-up↑)]
      ["← left"  uniline-text-direction-lf← :keys "INS C-<left> " :style radio :selected (eq uniline--text-direction uniline--direction-lf←)]
      ["↓ down"  uniline-text-direction-dw↓ :keys "INS C-<down> " :style radio :selected (eq uniline--text-direction uniline--direction-dw↓)])
+    "----"
+    ["large hints sizes" uniline-toggle-hydra-hints :keys "TAB or C-h TAB" :style toggle :selected (eq uniline-hint-style t)]
     ("Font"
      ["DejaVu Sans Mono"    (set-frame-font "DejaVu Sans Mono"   ) :keys "INS f d" :style radio :selected (uniline--is-font ?d)]
      ["Hack"                (set-frame-font "Hack"               ) :keys "INS f h" :style radio :selected (uniline--is-font ?h)]
@@ -2416,7 +2523,6 @@ And backup previous settings."
      ["Unifont"             (set-frame-font "Unifont"            ) :keys "INS f u" :style radio :selected (uniline--is-font ?u)]
      ["Agave"               (set-frame-font "Agave"              ) :keys "INS f a" :style radio :selected (uniline--is-font ?a)]
      ["permanently configure" uniline-customize-face               :keys "INS f *"])
-    "----"
     ["quit Uniline Mode" uniline-mode t] ))
 
 (provide 'uniline)

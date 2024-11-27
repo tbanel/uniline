@@ -2,6 +2,8 @@
 #+TITLE: Uniline
 #+OPTIONS: ^:{} authors:Thierry Banel, toc:nil
 
+*New*: one-liner Hydra hints (see below "Text menus (Hydra)")
+
 * Pure UNICODΕ text diagrams in Emacs
 Draw diagrams like those:
 
@@ -438,7 +440,7 @@ Then we call this macro repeatedly in any of the 4 directions:
 
 [[file:images/macro-doted-line.png]]
 
-#+begin_src
+#+begin_example
 
    ·─·─·─·─·  ╷     ·──·
            │  │     │  │
@@ -448,7 +450,7 @@ Then we call this macro repeatedly in any of the 4 directions:
            │           │
            ·─·─·─·─·─·─·
 
-#+end_src
+#+end_example
 
 We can draw complex shapes by just drawing one step. Hereafter, we
 call a macro in 4 directions, closing a square:
@@ -515,6 +517,51 @@ Emacs are displayed on another text editor or on the Web.
 To know which font Emacs has choosen for a given character, type:
 
 =C-u C-x ==
+
+* Text menus (Hydra)
+Casual usage of Uniline should be easy: just move the point, and lines
+are traced.
+
+More complex actions are summoned by the =INS= key, with or without
+selection. This is a single key to remember. Then a textual menu is
+displayed, giving the possible keys continuations and their
+meaning. All that is achieved by the =Hydra= library, which is now part
+of Emacs (thanks!).
+
+For seasoned users, those multi-lines textual menus may distract them
+from their workflow. Beside, they disturb the layout of windows.
+
+It is now possible to switch to less distracting textual menus. They
+are displayed in the echo-area on a single line.
+
+To do so, type:
+- =TAB= within a sub-mode (glyph insertion mode, rectangle handling,
+  etc.)
+- =C-h TAB= at the top-level
+
+This will flip between the two sizes of textual menus. It also affects
+the welcome message, the one displayed when entering the uniline minor
+mode.
+
+The current size is controlled by the =uniline-hint-style= variable:
+- =t= for full fledged messages over several lines
+- =1= for one-liner messages
+- =0= for no message at all
+
+The variable is "buffer-local", which means that it can take distinct
+values on distinct buffers.
+
+There are no customizable uniline variables (not yet). This does not
+prevent customizing =uniline-hint-style= for future sessions. For
+instance, in the =~/.emacs= file, there might be:
+
+#+begin_example
+(use-package uniline
+  :config (setq uniline-hint-style 1))
+#+end_example
+
+This setting gives one-liner messages. It can be changed later on a buffer
+per buffer basis with the =TAB= key.
 
 * Line spacing
 The =line-spacing= setting in Emacs can change the display of a sketch.
