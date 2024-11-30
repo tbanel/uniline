@@ -2028,7 +2028,6 @@ See `uniline--insert-glyph'."
 ╭^─^─^Insert glyph^─────╮╭^Rotate arrow^╮╭^Text dir────^╮╭^─^─^─^─^─^─^─^────────────╮
 │_a_,_A_rrow   ▷ ▶ → ▹ ▸││_S-<left>_  ← ││_C-<left>_  ← ││_-_ _+_ _=_ _#_ self-insert│
 │_s_,_S_quare  □ ■ ◇ ◆ ◊││_S-<right>_ → ││_C-<right>_ → ││_f_ ^^^^^^      choose font│
-│_o_,_O_-shape · ● ◦ Ø ø││_S-<up>_    ↑ ││_C-<up>_    ↑ ││^ ^ ^ ^ ^ ^ ^ ^            │
 │_o_,_O_-shape · ● ◦ Ø ø││_S-<up>_    ↑ ││_C-<up>_    ↑ ││_TAB_   ^^^^^^  short hint │
 │_x_,_X_-cross ╳ ÷ × ± ¤││_S-<down>_  ↓ ││_C-<down>_  ↓ ││_q_ _RET_ ^^^^  exit       │
 ╰^─^─^─^────────────────╯╰^─^───────────╯╰^─^───────────╯╰^─^─^─^─^─^─^─^────────────╯"))
