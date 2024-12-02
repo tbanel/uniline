@@ -113,19 +113,27 @@ Stops on the first error, presenting two buffers,
 with points on the first difference.
 If there are no errors, a summary buffer is presented."
   (interactive)
-  (let ((buf (current-buffer)))
+  (let ((buf (current-buffer))
+        (nbpassed 0)
+        (nbfailed 0))
     (cl-loop
      for file in (directory-files "." nil "\\.el$")
      unless (equal "uniline-bench.el" file)
      do
      (load (format "%s%s" default-directory file) nil nil t)
-     while uniline-bench-result)
-    (if (not uniline-bench-result)
-        (message "at least one bench FAILED")
-      (switch-to-buffer buf)
-      (message "all benches PASSED"))))
+     (if uniline-bench-result
+         (cl-incf nbpassed)
+       (cl-incf nbfailed)
+       (message "%s FAILED" file)))
+    (switch-to-buffer buf)
+    (message "%s PASSED / %s FAILED" nbpassed nbfailed)))
 
-(uniline-bench-run)
+(if t
+    (uniline-bench-run)
+  (profiler-start 'cpu+mem)
+  (uniline-bench-run)
+  (profiler-stop)
+  (profiler-report))
 
 (provide 'uniline-bench)
 ;;; uniline-bench.el ends here

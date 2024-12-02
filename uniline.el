@@ -149,6 +149,16 @@ Exchange left with right, up with down."
       ('uniline--direction-lf← 'uniline--direction-ri→)
       (_ (error "Bad direction")))))
 
+(defsubst uniline--turn-right (dir)
+  "Return DIR turned 90° clockwise.
+DIR & returned value are in [0,1,2,3]."
+  (mod (1+ dir) 4))
+
+(defsubst uniline--turn-left (dir)
+  "Return DIR turned 90° anti-clockwise.
+DIR & returned value are in [0,1,2,3]."
+  (mod (1- dir) 4))
+
 (defsubst uniline--move-to-column (x)
   "Move to column X staying on the same line.
 Add blanks if line is too short.
@@ -248,6 +258,42 @@ In the bottom & right directions the buffer is infinite."
       ('uniline--direction-dw↓ 'nil)
       ('uniline--direction-lf← '(bolp))
       (_ (error "Bad direction")))))
+
+(defsubst uniline--neighbour-point-ri→ ()
+  "Return the (point) at the right of current point.
+Return nil if no such point exists because it would fall
+outside the buffer.
+The buffer is not modified."
+  (unless (eolp) (1+ (point))))
+
+(defsubst uniline--neighbour-point-lf← ()
+  "Return the (point) at the left of current point.
+Return nil if no such point exists because it would fall
+outside the buffer.
+The buffer is not modified."
+  (unless (bolp) (1- (point))))
+
+(defsubst uniline--neighbour-point-up↑ ()
+  "Return the (point) upon the current point.
+Return nil if no such point exists because it would fall
+outside the buffer.
+The buffer is not modified."
+  (save-excursion
+    (let ((p (current-column)))
+      (and (eq (forward-line -1) 0)
+           (eq (move-to-column p) p)
+           (point)))))
+
+(defsubst uniline--neighbour-point-dw↓ ()
+  "Return the (point) down the current point.
+Return nil if no such point exists because it would fall
+outside the buffer.
+The buffer is not modified."
+  (save-excursion
+    (let ((p (current-column)))
+      (and (eq (forward-line 1) 0)
+           (eq (move-to-column p) p)
+           (point)))))
 
 (defun uniline--char-after ()
   "Same as `char-after', except for right and bottom edges of buffer.
@@ -707,6 +753,74 @@ without the fall-back characters.")
                        u3 r3 d3 l3
                        (aref uniline--4halfs-to-char
                              (uniline--pack-4halfs (list u3 r3 d3 l3))))))))))))
+
+(defun uniline--blank-at-point (p)
+  "Return non-nil if P points to a 4halfs character.
+This includes
+- a blank character,
+- or a new line
+- or nil
+The last two cases will be changed to an actual blank character by
+virtue of the infinite buffer."
+  (or
+   (not p)
+   (= (point-max) p) ;; corner case
+   (eq (char-after p) ?\n)
+   (aref uniline--char-to-4halfs (char-after p))
+   (aref uniline--block-char-to-4quadb (char-after p))))
+
+(defun uniline--blank-neighbour1 (dir)
+  "Return non-nil if the neighbour of current point in DIR is blank.
+The neighbour is one character away in the DIR direction.
+Blank include:
+- actual blank
+- new line
+- outside buffer in the right→ or down↓ DIRections"
+  (uniline--blank-at-point
+   (cond
+    ((eq dir (eval-when-compile uniline--direction-up↑))
+     (uniline--neighbour-point-up↑))
+    ((eq dir (eval-when-compile uniline--direction-ri→))
+     (uniline--neighbour-point-ri→))
+    ((eq dir (eval-when-compile uniline--direction-dw↓))
+     (uniline--neighbour-point-dw↓))
+    ((eq dir (eval-when-compile uniline--direction-lf←))
+     (uniline--neighbour-point-lf←)))))
+
+(defun uniline--blank-neighbour4 (dir)
+  "Return non-nil if the neighbour of current quarter point in DIR is blank.
+The neighbour is half a character away in the DIR direction.
+Blank include:
+- actual blank
+- new line
+- outside buffer in the right→ or down↓ DIRections
+- point is on character containing a quarter block, and the quarter-cursor
+  can further move in DIR direction while point stay still."
+  (cond
+   ((eq dir (eval-when-compile uniline--direction-up↑))
+    (or
+     (memq uniline--block-which-quadrant '(2 3))
+     (uniline--blank-at-point (uniline--neighbour-point-up↑))))
+   ((eq dir (eval-when-compile uniline--direction-ri→))
+    (or
+     (memq uniline--block-which-quadrant '(0 2))
+     (uniline--blank-at-point (uniline--neighbour-point-ri→))))
+   ((eq dir (eval-when-compile uniline--direction-dw↓))
+    (or
+     (memq uniline--block-which-quadrant '(0 1))
+     (uniline--blank-at-point (uniline--neighbour-point-dw↓))))
+   ((eq dir (eval-when-compile uniline--direction-lf←))
+    (or
+     (memq uniline--block-which-quadrant '(1 3))
+     (uniline--blank-at-point (uniline--neighbour-point-lf←))))))
+
+(defun uniline--blank-neighbour (dir)
+  "Return non-nil if the neighbour in DIR direction is blank.
+Depending on `uniline--brush', the neighbour may be one character away,
+or half a character away."
+  (if (eq uniline--brush :block)
+      (uniline--blank-neighbour4 dir)
+    (uniline--blank-neighbour1 dir)))
 
 ;;;╭────────────────────────────────────────────────────────╮
 ;;;│Reference tables of △▶↓□◆● arrows & other UNICODE glyphs│
@@ -1287,6 +1401,77 @@ REPEAT is the length of the line to draw, defaulting to 1."
   (interactive "P")
   (uniline-write-lf← repeat t))
 
+(defun uniline--write (dir &optional force)
+  "Move cursor one char in DIR direction.
+Doing so, draw or erase glyphs, or extend region.
+- If region is already active, just extend it without drawing.
+- If the brush is set to blocks, draw one quadrant-block.
+  Then move cursor half a character.
+- Otherwise, draw or erase pairs of half-lines.
+  `uniline--brush' gives the style of line (it may be an eraser).
+When FORCE is not nil, overwrite whatever is in the buffer."
+  (cond
+   ((eq dir (eval-when-compile uniline--direction-up↑)) (uniline-write-up↑ 1 force))
+   ((eq dir (eval-when-compile uniline--direction-ri→)) (uniline-write-ri→ 1 force))
+   ((eq dir (eval-when-compile uniline--direction-dw↓)) (uniline-write-dw↓ 1 force))
+   ((eq dir (eval-when-compile uniline--direction-lf←)) (uniline-write-lf← 1 force))
+   (t (error "Bad DIR %s" dir))))
+
+;;;╭────╮
+;;;│Fill│
+;;;╰────╯
+
+(defun uniline--choose-fill-char ()
+  "Interactively choose a character to fill a shape.
+This character will replace the character the cursor is on
+throughout the shape.
+Some values of the input character are replaced by computed values:
+- `C-y' chooses the first character in the kill ring
+- `SPC' selects a darker  shade of grey than the character the point is on.
+- `DEL' selects a lighter shade of grey than the character the point is on.
+  there are 5 shades of grey in the UNICODΕ standard: \" ░▒▓█\".
+- `RET' means abort filling."
+  (let ((char (read-char "Fill with (any char, C-y, SPC, DEL, RET)? ")))
+    (cond
+     ((eq char 13) nil)              ; RET: abort filling
+     ((eq char ?)                  ; yank: 1st char of the kill ring
+      (aref (car kill-ring) 0))
+     ((eq char ? )                      ; SPC: next shade of grey
+      (or (cadr (memq (uniline--char-after) '(?  ?░ ?▒ ?▓ ?█ )))
+          ? ))
+     ((eq char ?)                     ; DEL: prev shade of grey
+      (or (cadr (memq (uniline--char-after) '(?█ ?▓ ?▒ ?░ ? )))
+          ?█))
+     (t char))))
+
+(defun uniline-fill (char)
+  "Fill a hollow shape with character CHAR.
+The hole is the set of contiguous identical characters.
+The character at point is used as reference for other
+identical characters."
+  (interactive)
+  ;; why is stack initialized with twice the current point?
+  ;; the first is for starting the filling process
+  ;; the second is for returning to the starting point after filling
+  (let ((currentchar (uniline--char-after))
+        (stack (list (point) (point)))
+        p)
+    (if (and
+         char
+         (not (eq char currentchar)))
+        (while stack
+          (goto-char (pop stack))
+          (when (eq (char-after) currentchar) ; not (uniline--char-after) !
+            (uniline--insert-char char)
+            (if (setq p (uniline--neighbour-point-lf←))
+                (push p stack))
+            (if (setq p (uniline--neighbour-point-ri→))
+                (push p stack))
+            (if (setq p (uniline--neighbour-point-up↑))
+                (push p stack))
+            (if (setq p (uniline--neighbour-point-dw↓))
+                (push p stack)))))))
+
 ;;;╭───────────────────────────────────╮
 ;;;│High level management of rectangles│
 ;;;╰───────────────────────────────────╯
@@ -1465,6 +1650,25 @@ defaulting to 1."
     (setq
      begx (max (1- begx) 0)
      endx (max (1- endx) 0)))))
+
+(defun uniline-fill-rectangle ()
+  "Fill the rectangle marked by selection.
+Interactively choose the filling character.
+See `uniline--choose-fill-char'."
+  (interactive)
+  (let ((char (uniline--choose-fill-char)))
+    (uniline--operate-on-rectangle
+     (goto-char beg)
+     (cl-loop
+      repeat height
+      do
+      (uniline--move-to-column begx)
+      (cl-loop
+       repeat width
+       do
+       (uniline--insert-char char)
+       (uniline--move-to-delta-column 1))
+      (uniline--move-to-delta-line 1)))))
 
 (defun uniline-draw-inner-rectangle (&optional force)
   "Draws a rectangle inside a rectangular selection.
@@ -1940,6 +2144,92 @@ See `uniline--insert-glyph'."
 
 ;; END -- Automatically generated
 
+;;;╭───────╮
+;;;│Contour│
+;;;╰───────╯
+
+(defun uniline-contour (&optional force)
+  "Draw a contour arround a block of characters.
+A block of characters is a contiguous set of non-blank characters.
+For the sake of the contour, a non-blank character is any character
+not in the 4halfs set.
+The style of the contour is determined by the current brush.
+This includes possibly the eraser, which erases an actual contour.
+When FORCE is not nil, overwrite whatever is in the buffer."
+  (interactive)
+  (while (not (uniline--blank-at-point (point)))
+    (uniline--move-to-delta-column 1))
+
+  (let ((dir uniline--direction-dw↓)
+        (e)
+        (start (point-marker))
+        (q uniline--block-which-quadrant)
+        (n 0))
+    (and
+     (uniline--blank-neighbour1 (setq e (uniline--turn-right       dir)))
+     (uniline--blank-neighbour1 (setq e (uniline--turn-right (setq dir e))))
+     (uniline--blank-neighbour1 (setq e (uniline--turn-right (setq dir e))))
+     (uniline--blank-neighbour1         (uniline--turn-right (setq dir e)))
+     (error "No border of any shape found around point"))
+    (if (eq uniline--brush :block)
+        (setq
+         q
+         (setq
+          uniline--block-which-quadrant
+          (cond
+           ((eq dir (eval-when-compile uniline--direction-up↑)) 3)
+           ((eq dir (eval-when-compile uniline--direction-ri→)) 2)
+           ((eq dir (eval-when-compile uniline--direction-dw↓)) 0)
+           ((eq dir (eval-when-compile uniline--direction-lf←)) 1)))))
+    (while
+        (progn
+          (cond
+           ((uniline--blank-neighbour (setq e (uniline--turn-right dir)))
+            (setq dir e))
+           ((uniline--blank-neighbour dir))
+           ((uniline--blank-neighbour (setq dir (uniline--turn-left dir))))
+           ((uniline--blank-neighbour (setq dir (uniline--turn-left dir))))
+           (t (error "Cursor is surrounded by walls")))
+          (cond
+           ((and
+             (eq dir (eval-when-compile uniline--direction-lf←))
+             (uniline--at-border-p uniline--direction-lf←)
+             (if (eq uniline--brush :block)
+                 (memq uniline--block-which-quadrant '(0 2))
+               t))
+            (while
+                (and
+                 (= (forward-line -1) 0)
+                 (not (uniline--blank-at-point (point)))))
+            (if (uniline--at-border-p uniline--direction-up↑)
+                (setq dir uniline--direction-up↑
+                      uniline--block-which-quadrant 1)
+              (setq dir uniline--direction-ri→
+                    uniline--block-which-quadrant 2)))
+           ((and
+             (eq dir (eval-when-compile uniline--direction-up↑))
+             (uniline--at-border-p uniline--direction-up↑)
+             (if (eq uniline--brush :block)
+                 (memq uniline--block-which-quadrant '(0 1))
+               t))
+            (while
+                (progn
+                  (forward-char 1)
+                  (not (uniline--blank-at-point (point)))))
+            (setq dir uniline--direction-dw↓)
+            (setq uniline--block-which-quadrant 0))
+           (t
+            (uniline--write dir force)
+            (setq n (1+ n))))
+          (and
+           (not
+            (and (eq (point) (marker-position start))
+                 (or (not (eq uniline--brush :block))
+                     (eq uniline--block-which-quadrant q))))
+           (< n 10000))))
+    (set-marker start nil)
+    (message "drew a %s steps contour" n)))
+
 ;;;╭────────────────╮
 ;;;│Hydra interfaces│
 ;;;╰────────────────╯
@@ -2025,12 +2315,12 @@ See `uniline--insert-glyph'."
     "Text dir────"
     "Text dir─╴%s(uniline--text-direction-str)╶"
   "\
-╭^─^─^Insert glyph^─────╮╭^Rotate arrow^╮╭^Text dir────^╮╭^─^─^─^─^─^─^─^────────────╮
-│_a_,_A_rrow   ▷ ▶ → ▹ ▸││_S-<left>_  ← ││_C-<left>_  ← ││_-_ _+_ _=_ _#_ self-insert│
-│_s_,_S_quare  □ ■ ◇ ◆ ◊││_S-<right>_ → ││_C-<right>_ → ││_f_ ^^^^^^      choose font│
-│_o_,_O_-shape · ● ◦ Ø ø││_S-<up>_    ↑ ││_C-<up>_    ↑ ││_TAB_   ^^^^^^  short hint │
-│_x_,_X_-cross ╳ ÷ × ± ¤││_S-<down>_  ↓ ││_C-<down>_  ↓ ││_q_ _RET_ ^^^^  exit       │
-╰^─^─^─^────────────────╯╰^─^───────────╯╰^─^───────────╯╰^─^─^─^─^─^─^─^────────────╯"))
+╭^─^─^Insert glyph^─────╮╭^Rotate arrow^╮╭^Text dir────^╮╭^─Contour─^╮╭^─^─^─^─^─^─^─^────────────╮
+│_a_,_A_rrow   ▷ ▶ → ▹ ▸││_S-<left>_  ← ││_C-<left>_  ← ││_c_ contour││_-_ _+_ _=_ _#_ self-insert│
+│_s_,_S_quare  □ ■ ◇ ◆ ◊││_S-<right>_ → ││_C-<right>_ → ││_C_ ovwrt  ││_f_ ^^^^^^      choose font│
+│_o_,_O_-shape · ● ◦ Ø ø││_S-<up>_    ↑ ││_C-<up>_    ↑ │╭^─Fill────^╮│_TAB_   ^^^^^^  short hint │
+│_x_,_X_-cross ╳ ÷ × ± ¤││_S-<down>_  ↓ ││_C-<down>_  ↓ ││_i_ fill   ││_q_ _RET_ ^^^^  exit       │
+╰^─^─^─^────────────────╯╰^─^───────────╯╰^─^───────────╯╰^─^────────╯╰^─^─^─^─^─^─^─^────────────╯"))
   ("a" uniline-insert-fw-arrow )
   ("A" uniline-insert-bw-arrow )
   ("s" uniline-insert-fw-square)
@@ -2054,6 +2344,9 @@ See `uniline--insert-glyph'."
   ("=" self-insert-command)
   ("#" self-insert-command)
   ("f" uniline-hydra-fonts/body :exit t)
+  ("c" uniline-contour          :exit t)
+  ("C" (uniline-contour t)      :exit t)
+  ("i" (uniline-fill (uniline--choose-fill-char)) :exit t)
   ("q"   ()                     :exit t)
   ("TAB" uniline-toggle-hydra-hints)
   ("RET" ()                     :exit t))
@@ -2075,13 +2368,13 @@ See `uniline--insert-glyph'."
    :exit nil)
   ;; Docstring MUST begin with an empty line to benefit from substitutions
   "
-╭^Move ^rect╮╭────^Draw^ rect────╮╭^─^─────╮╭^Brush^╮
-│_<left>_  ←││_r_     trace inner││_c_ copy││_-_ ╭─╯│
-│_<right>_ →││_R_     trace outer││_k_ kill││_+_ ┏━┛│
-│_<up>_    ↑││_C-r_   ovewr inner││_y_ yank││_=_ ╔═╝│
-│_<down>_  ↓││_C-S-R_ ovewr outer│╰^^┬─────┴╯_#_ ▄▄▟│
-╰^─────^────╯╰^────^─────────────╯ ^^│_<delete>_ DEL│
- _TAB_ hint  _RET_ exit  _C-/_ undo  ╰^────────^────╯"
+╭^Move ^rect╮╭────^Draw^ rect────╮╭^─Rect^─╮╭^Brush^╮╭──^Misc^───────╮
+│_<left>_  ←││_r_     trace inner││_c_ copy││_-_ ╭─╯││_C-/_ undo     │
+│_<right>_ →││_R_     trace outer││_k_ kill││_+_ ┏━┛││_TAB_ sort hint│
+│_<up>_    ↑││_C-r_   ovewr inner││_y_ yank││_=_ ╔═╝││_RET_ exit     │
+│_<down>_  ↓││_C-S-R_ ovewr outer│╰^^┬─────╯╯_#_ ▄▄▟│╰^───^──────────╯
+╰^─────^────╯│_i_     fill       │ ^^│_<delete>_ DEL│
+ ^     ^     ╰^────^─────────────╯ ^^╰^────────^────╯"
   ("<left>"  uniline-move-rect-lf←)
   ("<right>" uniline-move-rect-ri→)
   ("<up>"    uniline-move-rect-up↑)
@@ -2090,6 +2383,7 @@ See `uniline--insert-glyph'."
   ("R"     uniline-draw-outer-rectangle)
   ("C-r"   uniline-overwrite-inner-rectangle)
   ("C-S-R" uniline-overwrite-outer-rectangle)
+  ("i"     uniline-fill-rectangle)
   ("c"   uniline-copy-rectangle)
   ("k"   uniline-kill-rectangle)
   ("y"   uniline-yank-rectangle)
@@ -2107,6 +2401,7 @@ See `uniline--insert-glyph'."
   ("C-/"   uniline--hydra-rect-undo :exit t)
   ("C-_"   uniline--hydra-rect-undo :exit t)
   ("C-x u" uniline--hydra-rect-undo :exit t)
+  ("C-x C-x" rectangle-exchange-point-and-mark)
   ("RET"   uniline--hydra-rect-quit :exit t))
 
 (defun uniline-hydra-choose-body ()
@@ -2180,7 +2475,7 @@ text within will be colored."
       ,uniline-hydra-arrows/hint
     ,(eval-when-compile
        (uniline--color-hint
-        "glyphs: ^aAsSoOxX-+=#^  arrow-dir: ^S-←→↑↓^  text-dir: ^C-←→↑↓^  fonts: ^f^  hint: ^TAB^")))
+        "glyph:^aAsSoOxX-+=#^ arr-dir:^S-←→↑↓^ text-dir:^C-←→↑↓^ ^c^-ontour f-^i^-ll ^f^-onts ^TAB^")))
  uniline-hydra-fonts/hint
  `(if (eq uniline-hint-style t)
       ,uniline-hydra-fonts/hint
@@ -2503,6 +2798,10 @@ And backup previous settings."
      ["trace rectangle around selection" uniline-draw-outer-rectangle :keys "INS R"]
      ["overwrite rectangle inside selection" uniline-overwrite-inner-rectangle :keys "INS C-r"]
      ["overwrite rectangle around selection" uniline-overwrite-outer-rectangle :keys "INS C-R"])
+    ("Fill & contour"
+     ["contour" uniline-contour]
+     ["contour overw" (uniline-contour t)]
+     ["fill" uniline-fill])
     ("Text insertion direction"
      ["→ right" uniline-text-direction-ri→ :keys "INS C-<right>" :style radio :selected (eq uniline--text-direction uniline--direction-ri→)]
      ["↑ up"    uniline-text-direction-up↑ :keys "INS C-<up>   " :style radio :selected (eq uniline--text-direction uniline--direction-up↑)]
