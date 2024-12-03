@@ -754,74 +754,6 @@ without the fall-back characters.")
                        (aref uniline--4halfs-to-char
                              (uniline--pack-4halfs (list u3 r3 d3 l3))))))))))))
 
-(defun uniline--blank-at-point (p)
-  "Return non-nil if P points to a 4halfs character.
-This includes
-- a blank character,
-- or a new line
-- or nil
-The last two cases will be changed to an actual blank character by
-virtue of the infinite buffer."
-  (or
-   (not p)
-   (= (point-max) p) ;; corner case
-   (eq (char-after p) ?\n)
-   (aref uniline--char-to-4halfs (char-after p))
-   (aref uniline--block-char-to-4quadb (char-after p))))
-
-(defun uniline--blank-neighbour1 (dir)
-  "Return non-nil if the neighbour of current point in DIR is blank.
-The neighbour is one character away in the DIR direction.
-Blank include:
-- actual blank
-- new line
-- outside buffer in the right→ or down↓ DIRections"
-  (uniline--blank-at-point
-   (cond
-    ((eq dir (eval-when-compile uniline--direction-up↑))
-     (uniline--neighbour-point-up↑))
-    ((eq dir (eval-when-compile uniline--direction-ri→))
-     (uniline--neighbour-point-ri→))
-    ((eq dir (eval-when-compile uniline--direction-dw↓))
-     (uniline--neighbour-point-dw↓))
-    ((eq dir (eval-when-compile uniline--direction-lf←))
-     (uniline--neighbour-point-lf←)))))
-
-(defun uniline--blank-neighbour4 (dir)
-  "Return non-nil if the neighbour of current quarter point in DIR is blank.
-The neighbour is half a character away in the DIR direction.
-Blank include:
-- actual blank
-- new line
-- outside buffer in the right→ or down↓ DIRections
-- point is on character containing a quarter block, and the quarter-cursor
-  can further move in DIR direction while point stay still."
-  (cond
-   ((eq dir (eval-when-compile uniline--direction-up↑))
-    (or
-     (memq uniline--block-which-quadrant '(2 3))
-     (uniline--blank-at-point (uniline--neighbour-point-up↑))))
-   ((eq dir (eval-when-compile uniline--direction-ri→))
-    (or
-     (memq uniline--block-which-quadrant '(0 2))
-     (uniline--blank-at-point (uniline--neighbour-point-ri→))))
-   ((eq dir (eval-when-compile uniline--direction-dw↓))
-    (or
-     (memq uniline--block-which-quadrant '(0 1))
-     (uniline--blank-at-point (uniline--neighbour-point-dw↓))))
-   ((eq dir (eval-when-compile uniline--direction-lf←))
-    (or
-     (memq uniline--block-which-quadrant '(1 3))
-     (uniline--blank-at-point (uniline--neighbour-point-lf←))))))
-
-(defun uniline--blank-neighbour (dir)
-  "Return non-nil if the neighbour in DIR direction is blank.
-Depending on `uniline--brush', the neighbour may be one character away,
-or half a character away."
-  (if (eq uniline--brush :block)
-      (uniline--blank-neighbour4 dir)
-    (uniline--blank-neighbour1 dir)))
-
 ;;;╭────────────────────────────────────────────────────────╮
 ;;;│Reference tables of △▶↓□◆● arrows & other UNICODE glyphs│
 ;;;╰────────────────────────────────────────────────────────╯
@@ -1105,7 +1037,6 @@ north-east, south-west, etc.
            ╰─┬╯
 3: here──→───╯")
 
-
 ;;;╭──────────────────────╮
 ;;;│Inserting a character │
 ;;;╰──────────────────────╯
@@ -1223,6 +1154,78 @@ Clear the half of this character pointing in DIR direction."
                         ('uniline--direction-ri→ ?▌)
                         ('uniline--direction-dw↓ ?▀)
                         ('uniline--direction-lf← ?▐)))))))))))
+
+;;;╭────────────────────────────╮
+;;;│Test blanks in the neighbour│
+;;;╰────────────────────────────╯
+
+(defun uniline--blank-at-point (p)
+  "Return non-nil if P points to a 4halfs character.
+This includes
+- a blank character,
+- or a new line
+- or nil
+The last two cases will be changed to an actual blank character by
+virtue of the infinite buffer."
+  (or
+   (not p)
+   (= (point-max) p) ;; corner case
+   (eq (char-after p) ?\n)
+   (aref uniline--char-to-4halfs (char-after p))
+   (aref uniline--block-char-to-4quadb (char-after p))))
+
+(defun uniline--blank-neighbour1 (dir)
+  "Return non-nil if the neighbour of current point in DIR is blank.
+The neighbour is one character away in the DIR direction.
+Blank include:
+- actual blank
+- new line
+- outside buffer in the right→ or down↓ DIRections"
+  (uniline--blank-at-point
+   (cond
+    ((eq dir (eval-when-compile uniline--direction-up↑))
+     (uniline--neighbour-point-up↑))
+    ((eq dir (eval-when-compile uniline--direction-ri→))
+     (uniline--neighbour-point-ri→))
+    ((eq dir (eval-when-compile uniline--direction-dw↓))
+     (uniline--neighbour-point-dw↓))
+    ((eq dir (eval-when-compile uniline--direction-lf←))
+     (uniline--neighbour-point-lf←)))))
+
+(defun uniline--blank-neighbour4 (dir)
+  "Return non-nil if the neighbour of current quarter point in DIR is blank.
+The neighbour is half a character away in the DIR direction.
+Blank include:
+- actual blank
+- new line
+- outside buffer in the right→ or down↓ DIRections
+- point is on character containing a quarter block, and the quarter-cursor
+  can further move in DIR direction while point stay still."
+  (cond
+   ((eq dir (eval-when-compile uniline--direction-up↑))
+    (or
+     (memq uniline--block-which-quadrant '(2 3))
+     (uniline--blank-at-point (uniline--neighbour-point-up↑))))
+   ((eq dir (eval-when-compile uniline--direction-ri→))
+    (or
+     (memq uniline--block-which-quadrant '(0 2))
+     (uniline--blank-at-point (uniline--neighbour-point-ri→))))
+   ((eq dir (eval-when-compile uniline--direction-dw↓))
+    (or
+     (memq uniline--block-which-quadrant '(0 1))
+     (uniline--blank-at-point (uniline--neighbour-point-dw↓))))
+   ((eq dir (eval-when-compile uniline--direction-lf←))
+    (or
+     (memq uniline--block-which-quadrant '(1 3))
+     (uniline--blank-at-point (uniline--neighbour-point-lf←))))))
+
+(defun uniline--blank-neighbour (dir)
+  "Return non-nil if the neighbour in DIR direction is blank.
+Depending on `uniline--brush', the neighbour may be one character away,
+or half a character away."
+  (if (eq uniline--brush :block)
+      (uniline--blank-neighbour4 dir)
+    (uniline--blank-neighbour1 dir)))
 
 ;;;╭──────────────────────────────────────────────────╮
 ;;;│High level drawing in half-lines & quadrant-blocks│
@@ -2497,7 +2500,7 @@ text within will be colored."
 
 (defun uniline-toggle-hydra-hints (&optional notoggle)
   "Toggle between styles of hydra hints.
-When NOTOGGLΕ is t, do not toggle `uniline-hint-style',
+When NOTOGGLE is t, do not toggle `uniline-hint-style',
 just put everything in sync."
   (interactive)
   (unless notoggle
