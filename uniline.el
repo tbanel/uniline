@@ -2263,6 +2263,7 @@ When FORCE is not nil, overwrite whatever is in the buffer."
 (defhydra uniline-hydra-fonts
   (:hint nil
    :exit nil)
+  ;; Docstring MUST begin with an empty line to benefit from substitutions
   (concat
    (replace-regexp-in-string
     "_\\([dhcjbfsiua]\\)_ "
@@ -2414,13 +2415,15 @@ on a rectangle.
 Therefore the rectangle hydra is launched.
 Otherwise, the arrows & shapes hydra is invoked."
   (interactive)
-  (if (region-active-p)
-      (uniline-hydra-moverect/body)
-    (uniline-hydra-arrows/body)))
+  (let ((message-log-max)) ; avoid hint copied in *Messages*
+    (if (region-active-p)
+        (uniline-hydra-moverect/body)
+      (uniline-hydra-arrows/body))))
 
 (defhydra uniline-hydra-macro-exec
   (:hint nil
    :exit nil)
+  ;; Docstring MUST begin with an empty line to benefit from substitutions
   "
 ╭^^Call macro in direction╶^^^^──────╮
 │_<right>_ call → │_e_ usual call^^  │
