@@ -638,11 +638,12 @@ instance, in the =~/.emacs= file, there might be:
 
 #+begin_example
 (use-package uniline
-  :config (setq uniline-hint-style 1))
+  :config (set-default 'uniline-hint-style 1))
 #+end_example
 
 This setting gives one-liner messages. It can be changed later on a buffer
-per buffer basis with the =TAB= key.
+per buffer basis with the =TAB= key. Note the use of =set-default=. Using
+=setq= instead would assign the value =1= only in the =~/.emacs= buffer.
 
 * Line spacing
 The =line-spacing= setting in Emacs can change the display of a sketch.
