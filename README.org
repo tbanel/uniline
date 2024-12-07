@@ -1,6 +1,7 @@
 # -*- mode: org; coding:utf-8; -*-
 #+TITLE: Uniline
 #+OPTIONS: ^:{} authors:Thierry Banel, toc:nil
+#+LATEX_HEADER: \usepackage{pmboxdraw}
 
 *New*: trace contour & flood-fill shapes
 
@@ -668,7 +669,7 @@ choice for everyone.
 
 #+end_example
 
-* How Uniline behaves with other modes?
+* How Uniline behaves with its environment?
 ** Compatibility with Picture-mode
 
 =Picture-mode= and =uniline-mode= are compatible. Their features overlap
@@ -727,6 +728,66 @@ buffer.
 
 Other than that, =Uniline= is compatible with =Org Mode=
 
+** Org Mode and LaTex
+Use the =pmboxdraw= LaTex module. This gives limited support for "box
+drawing" characters in LaTex documents.
+
+Example:
+
+#+begin_example
+
+#+LATEX_HEADER: \usepackage{pmboxdraw}
+
+#+begin_src text
+
+this works:
+┌─────┐       ┌────────────┐
+│     ├───────┤            │
+└─────┘       │            │
+┌─────┐  ┌────┤            │
+│     ├──┘    │            │
+└─────┘  ┌────┤            │
+┌─────┐  │    │            │
+│     ├──┘    └────────────┘
+└─────┘
+
+this does not quite work:
+   ┏━━━┓  ┏━━┓     ┏━━━━━┓
+   ┃   ┃  ┃  ┣━━━━━┫     ┃
+   ┃   ┗━━┛  ┃    ┏┛     ┃
+   ┗━━━━━━━━━┛    ┗━━━━━━┛
+
+but that is ok:
+     ┏━━━┓
+     ┃   ┃
+     ┗━━━┛
+
+that is ok too:
+╺════╦══╗  ╔════╗
+     ║ A║  ║ B  ╚══╗
+     ╚══╝  ╚═══════╝
+
+this works:
+
+├── dev
+└┬┬ release
+ │├── new
+ │└── old
+ ├── graph
+ └── non-graph
+
+#+end_src
+
+#+end_example
+
+Note that corners of thin lines should be sharp. There is no support
+for rounded corners. Uniline does not (yet) draw sharp thin
+corners. But it can recognize them.
+
+To export this Org Mode example to PDF through LaTex, type:
+
+=C-c C-E l o=
+
 ** What about =\t= tabs?
 Some files may contain tabs (the character =\t=). Those include
 programming code (Python, Perl, C++, D, Rust, JavaScript and so on).
@@ -746,7 +807,6 @@ because those characters occupy twice the width of a normal character.
 Just try to get away from =^L=, =^T= and such when drawing with
 =Uniline=.
 
-* Exotic environments
 ** Emacs on the Linux console
 Linux consoles are the 7 non-graphic screens which can be accessed
 usually typing =C-M-F1=, =C-M-F2=, and so on. Such a screen is also
