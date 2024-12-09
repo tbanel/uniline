@@ -218,7 +218,7 @@ Y may be negative to move backward."
      (uniline--forward-line-force y))
    t))
 
-(defun uniline--move-to-col-lin (y x)
+(defun uniline--move-to-lin-col (y x)
   "Move to line Y and column X.
 Create blank lines at the end of the buffer if needed,
 or blank characters at the end of target line if needed.
@@ -1513,9 +1513,9 @@ from BEGX,BEGY to ENDX,ENDY in `rectangle-mark-mode'."
            (setq beg (- beg width))
            (setq end (+ end width)))
          ,@body
-         (uniline--move-to-col-lin endy endx)
+         (uniline--move-to-lin-col endy endx)
          (set-mark (point))
-         (uniline--move-to-col-lin begy begx)
+         (uniline--move-to-lin-col begy begx)
          (rectangle-mark-mode 1)))))
 
 (eval-when-compile ; not needed at runtime
@@ -1821,7 +1821,7 @@ This hook fixes the cursor movement according to `uniline--text-direction'"
       (forward-char (- n))
       (uniline--move-to-delta-column (- n)))
      ((eq uniline--text-direction nil))
-     (t (error "uniline--text-direction %S" uniline--text-direction)))))
+     (t (error "Bad uniline--text-direction %S" uniline--text-direction)))))
 
 (defun uniline-text-direction-up↑ ()
   "Set text insertion direction up↑."
