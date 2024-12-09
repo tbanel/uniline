@@ -5,6 +5,12 @@
 
 *New*: trace contour & flood-fill shapes
 
+* 10 seconds start up
+
+- Type =M-x uniline-mode=
+- Move cursor with the arrow-keys on the keyboard =→ ↑ ↓ ←=
+- Quit =C-c C-c=
+
 * Pure UNICODΕ text diagrams in Emacs
 Draw diagrams like those:
 
