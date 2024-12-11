@@ -5,7 +5,7 @@
 
 *New*: trace contour & flood-fill shapes
 
-* 10 seconds start up
+* Getting started in 10 seconds
 
 - Type =M-x uniline-mode=
 - Move cursor with the arrow-keys on the keyboard =→ ↑ ↓ ←=
