@@ -1079,13 +1079,26 @@ nil: no action except cursor movements
 :block block drawing like ▙▄▟▀")
 
 (eval-when-compile ; not needed at runtime
-  (defsubst uniline--get-4halfs ()
+  (defmacro uniline--get-4halfs (&optional char)
     "Return a bit pattern (a 4halfs).
 It represents a UNICODE character like ┬ found at (point).
+If CHAR is given, use this CHAR instead of the character
+found at (point).
 Return nil if the character is not a 4halfs character."
-    (aref
-     uniline--char-to-4halfs
-     (uniline--char-after))))
+    `(aref
+      uniline--char-to-4halfs
+      ,(or char '(uniline--char-after)))))
+
+(eval-when-compile ; not needed at runtime
+  (defmacro uniline--get-4quadb (&optional char)
+    "Return a bit pattern (a 4quadb).
+It represents a UNICODE character like ▙ found at (point).
+If CHAR is given, use this CHAR instead of the character
+found at (point).
+Return nil if the character is not a 4quadb character."
+    `(aref
+      uniline--block-char-to-4quadb
+      ,(or char '(uniline--char-after)))))
 
 (eval-when-compile ; not needed at runtime
   (defsubst uniline--insert-4halfs (4halfs)
@@ -1094,6 +1107,14 @@ The UNICODE character is described by the 4HALFS bits pattern.
 The (point) does not move."
     (uniline--insert-char
      (aref uniline--4halfs-to-char 4halfs))))
+
+(eval-when-compile ; not needed at runtime
+  (defsubst uniline--insert-4quadb (4quadb)
+    "Insert at (point) a UNICODE like ▙.
+The UNICODE character is described by the 4QUADB bits pattern.
+The (point) does not move."
+    (uniline--insert-char
+     (aref uniline--block-4quadb-to-char 4quadb))))
 
 ;;;╭───────────────────────────────────────────────────────────────╮
 ;;;│Low level management of ▙▄▟▀ quadrant-blocks UNICODE characters│
@@ -1128,32 +1149,29 @@ character at point."
       (uniline--insert-char ? ))
   (let ((bits
          (or
-          (aref uniline--block-char-to-4quadb (uniline--char-after))
+          (uniline--get-4quadb)
           (and force 0))))
     (if bits
-        (uniline--insert-char
-         (aref uniline--block-4quadb-to-char
-               (logior bits (ash 1 uniline--block-which-quadrant)))))))
+        (uniline--insert-4quadb
+         (logior bits (ash 1 uniline--block-which-quadrant))))))
 
 (eval-when-compile ; not needed at runtime
   (defmacro uniline--block-clear-half (dir)
     "Helper function to clear half a quadrant-block at point.
 Assume that point is on a quadrant-block character.
 Clear the half of this character pointing in DIR direction."
-    `(let ((bits (aref uniline--block-char-to-4quadb (uniline--char-after))))
+    `(let ((bits (uniline--get-4quadb)))
        (if bits
-           (uniline--insert-char
-            (aref
-             uniline--block-4quadb-to-char
-             (logand
-              bits
-              (eval-when-compile
-                (aref uniline--block-char-to-4quadb
-                      (pcase ',dir
-                        ('uniline--direction-up↑ ?▄)
-                        ('uniline--direction-ri→ ?▌)
-                        ('uniline--direction-dw↓ ?▀)
-                        ('uniline--direction-lf← ?▐)))))))))))
+           (uniline--insert-4quadb
+            (logand
+             bits
+             (eval-when-compile
+               (uniline--get-4quadb
+                (pcase ',dir
+                  ('uniline--direction-up↑ ?▄)
+                   ('uniline--direction-ri→ ?▌)
+                   ('uniline--direction-dw↓ ?▀)
+                   ('uniline--direction-lf← ?▐))))))))))
 
 ;;;╭────────────────────────────╮
 ;;;│Test blanks in the neighbour│
@@ -1171,8 +1189,8 @@ virtue of the infinite buffer."
    (not p)
    (= (point-max) p) ;; corner case
    (eq (char-after p) ?\n)
-   (aref uniline--char-to-4halfs (char-after p))
-   (aref uniline--block-char-to-4quadb (char-after p))))
+   (uniline--get-4halfs (char-after p))
+   (uniline--get-4quadb (char-after p))))
 
 (defun uniline--blank-neighbour1 (dir)
   "Return non-nil if the neighbour of current point in DIR is blank.
