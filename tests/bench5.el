@@ -25,9 +25,9 @@
  
  
      aaaa aa╭─────╦╤╤══aaaaaaaa
-       aaaa │aaa  ║┏┿━━━┓aaaaaaaa 
+       aaaa │aaa  ║┏┿━━━┓aaaaaaaa
          aaa│ aaaa║┃│aaa┃║ aaaaaaaa
            a╰─────╫╂╯  a┃a   aaaaaaaa
-                  ║┗━━━━┛║        
+                  ║┗━━━━┛║
                   ╚══════╝
 ")

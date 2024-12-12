@@ -259,41 +259,29 @@ In the bottom & right directions the buffer is infinite."
       ('uniline--direction-lf← '(bolp))
       (_ (error "Bad direction")))))
 
-(defsubst uniline--neighbour-point-ri→ ()
-  "Return the (point) at the right of current point.
-Return nil if no such point exists because it would fall
-outside the buffer.
-The buffer is not modified."
-  (unless (eolp) (1+ (point))))
 
-(defsubst uniline--neighbour-point-lf← ()
-  "Return the (point) at the left of current point.
+(eval-when-compile ; not needed at runtime
+  (defmacro uniline--neighbour-point (dir)
+    "Return the (point) one char away from current (point) in DIR direction.
 Return nil if no such point exists because it would fall
 outside the buffer.
 The buffer is not modified."
-  (unless (bolp) (1- (point))))
-
-(defsubst uniline--neighbour-point-up↑ ()
-  "Return the (point) upon the current point.
-Return nil if no such point exists because it would fall
-outside the buffer.
-The buffer is not modified."
-  (save-excursion
-    (let ((p (current-column)))
-      (and (eq (forward-line -1) 0)
-           (eq (move-to-column p) p)
-           (point)))))
-
-(defsubst uniline--neighbour-point-dw↓ ()
-  "Return the (point) down the current point.
-Return nil if no such point exists because it would fall
-outside the buffer.
-The buffer is not modified."
-  (save-excursion
-    (let ((p (current-column)))
-      (and (eq (forward-line 1) 0)
-           (eq (move-to-column p) p)
-           (point)))))
+    (pcase dir
+      ('uniline--direction-ri→ '(unless (eolp) (1+ (point))))
+      ('uniline--direction-lf← '(unless (bolp) (1- (point))))
+      ('uniline--direction-up↑
+       '(save-excursion
+          (let ((p (current-column)))
+            (and (eq (forward-line -1) 0)
+                 (eq (move-to-column p) p)
+                 (point)))))
+      ('uniline--direction-dw↓ '
+       (save-excursion
+         (let ((p (current-column)))
+           (and (eq (forward-line 1) 0)
+                (eq (move-to-column p) p)
+                (point)))))
+      (_ (error "Bad direction")))))
 
 (defun uniline--char-after ()
   "Same as `char-after', except for right and bottom edges of buffer.
@@ -1169,9 +1157,9 @@ Clear the half of this character pointing in DIR direction."
                (uniline--get-4quadb
                 (pcase ',dir
                   ('uniline--direction-up↑ ?▄)
-                   ('uniline--direction-ri→ ?▌)
-                   ('uniline--direction-dw↓ ?▀)
-                   ('uniline--direction-lf← ?▐))))))))))
+                  ('uniline--direction-ri→ ?▌)
+                  ('uniline--direction-dw↓ ?▀)
+                  ('uniline--direction-lf← ?▐))))))))))
 
 ;;;╭────────────────────────────╮
 ;;;│Test blanks in the neighbour│
@@ -1202,13 +1190,13 @@ Blank include:
   (uniline--blank-at-point
    (cond
     ((eq dir (eval-when-compile uniline--direction-up↑))
-     (uniline--neighbour-point-up↑))
+     (uniline--neighbour-point  uniline--direction-up↑))
     ((eq dir (eval-when-compile uniline--direction-ri→))
-     (uniline--neighbour-point-ri→))
+     (uniline--neighbour-point  uniline--direction-ri→))
     ((eq dir (eval-when-compile uniline--direction-dw↓))
-     (uniline--neighbour-point-dw↓))
+     (uniline--neighbour-point  uniline--direction-dw↓))
     ((eq dir (eval-when-compile uniline--direction-lf←))
-     (uniline--neighbour-point-lf←)))))
+     (uniline--neighbour-point  uniline--direction-lf←)))))
 
 (defun uniline--blank-neighbour4 (dir)
   "Return non-nil if the neighbour of current quarter point in DIR is blank.
@@ -1223,19 +1211,23 @@ Blank include:
    ((eq dir (eval-when-compile uniline--direction-up↑))
     (or
      (memq uniline--block-which-quadrant '(2 3))
-     (uniline--blank-at-point (uniline--neighbour-point-up↑))))
+     (uniline--blank-at-point
+      (uniline--neighbour-point uniline--direction-up↑))))
    ((eq dir (eval-when-compile uniline--direction-ri→))
     (or
      (memq uniline--block-which-quadrant '(0 2))
-     (uniline--blank-at-point (uniline--neighbour-point-ri→))))
+     (uniline--blank-at-point
+      (uniline--neighbour-point uniline--direction-ri→))))
    ((eq dir (eval-when-compile uniline--direction-dw↓))
     (or
      (memq uniline--block-which-quadrant '(0 1))
-     (uniline--blank-at-point (uniline--neighbour-point-dw↓))))
+     (uniline--blank-at-point
+      (uniline--neighbour-point uniline--direction-dw↓))))
    ((eq dir (eval-when-compile uniline--direction-lf←))
     (or
      (memq uniline--block-which-quadrant '(1 3))
-     (uniline--blank-at-point (uniline--neighbour-point-lf←))))))
+     (uniline--blank-at-point
+      (uniline--neighbour-point uniline--direction-lf←))))))
 
 (defun uniline--blank-neighbour (dir)
   "Return non-nil if the neighbour in DIR direction is blank.
@@ -1484,13 +1476,13 @@ identical characters."
           (goto-char (pop stack))
           (when (eq (char-after) currentchar) ; not (uniline--char-after) !
             (uniline--insert-char char)
-            (if (setq p (uniline--neighbour-point-lf←))
+            (if (setq p (uniline--neighbour-point uniline--direction-lf←))
                 (push p stack))
-            (if (setq p (uniline--neighbour-point-ri→))
+            (if (setq p (uniline--neighbour-point uniline--direction-ri→))
                 (push p stack))
-            (if (setq p (uniline--neighbour-point-up↑))
+            (if (setq p (uniline--neighbour-point uniline--direction-up↑))
                 (push p stack))
-            (if (setq p (uniline--neighbour-point-dw↓))
+            (if (setq p (uniline--neighbour-point uniline--direction-dw↓))
                 (push p stack)))))))
 
 ;;;╭───────────────────────────────────╮
@@ -1511,8 +1503,11 @@ The selection may be reversed in any way, the variables
 are sets as if the selection was made from
 the upper-most, left-most to the lower-most, right-most points.
 It works even when in `rectangle-mark-mode'.
+Note that ENDX & ENDY point outside the selection in such a way that
+WIDTH=ENDX-BEGX, HEIGHT=ENDY-BEGY
 After execution of the body, selection is activated
-from BEGX,BEGY to ENDX,ENDY in `rectangle-mark-mode'."
+from BEGX,BEGY inclusive to ENDX,ENDY exclusive
+in `rectangle-mark-mode'."
     (declare (debug (body)))
     `(when (region-active-p)
        (rectangle-mark-mode -1)     ; otherwise sometimes end is wrong
@@ -1522,8 +1517,8 @@ from BEGX,BEGY to ENDX,ENDY in `rectangle-mark-mode'."
               (begx (progn (goto-char beg) (current-column)))
               (begy (1- (line-number-at-pos)))
               (endx (progn (goto-char end) (current-column)))
-              (endy (1- (line-number-at-pos)))
-              (height (- endy begy -1))
+              (endy (line-number-at-pos))
+              (height (- endy begy))
               (width  (- endx begx)))
          (when (< endx begx)
            (setq endx (prog1 begx (setq begx endx)))
@@ -1531,7 +1526,7 @@ from BEGX,BEGY to ENDX,ENDY in `rectangle-mark-mode'."
            (setq beg (- beg width))
            (setq end (+ end width)))
          ,@body
-         (uniline--move-to-lin-col endy endx)
+         (uniline--move-to-lin-col (1- endy) endx)
          (set-mark (point))
          (uniline--move-to-lin-col begy begx)
          (rectangle-mark-mode 1)))))
@@ -1557,13 +1552,10 @@ Then the leakage of the two glyphs fills in E:
     (let ((odir (uniline--reverse-direction dir)))
       `(let ((here (or (uniline--get-4halfs) 0))
              (prev    ; char preceding (point) as a 4halfs-bit-pattern
-              (or
-               (unless (uniline--at-border-p ,odir)
-                 (prog2
-                     (uniline--move-in-direction ,odir)
-                     (uniline--get-4halfs)
-                   (uniline--move-in-direction ,dir)))
-               0)))
+              (let ((p (uniline--neighbour-point ,odir)))
+                (or
+                 (and p (uniline--get-4halfs (char-after p)))
+                 0))))
          ;; mask pairs of bits in the desired direction
          (setq
           here (logand here (eval-when-compile (ash 3 (* 2 ,odir))))
@@ -1596,17 +1588,16 @@ defaulting to 1."
    repeat (or repeat 1)
    do
    (uniline--operate-on-rectangle
-    (uniline--move-to-column begx)
     (if (eq begy 0) (setq height (1- height)))
-    (cl-loop
-     repeat width
-     do
-     (uniline--move-to-line endy)
-     (uniline--translate-1xsize-slice uniline--direction-up↑ height)
-     (uniline--move-to-delta-column 1))
     (setq
      begy (max (1- begy) 0)
-     endy (max (1- endy) 0)))))
+     endy (max (1- endy) 0))
+    (cl-loop
+     repeat width
+     for x from begx
+     do
+     (uniline--move-to-lin-col endy x)
+     (uniline--translate-1xsize-slice uniline--direction-up↑ height)))))
 
 (defun uniline-move-rect-ri→ (repeat)
   "Move the rectangle marked by selection one char to the left.
@@ -1618,13 +1609,12 @@ defaulting to 1."
    repeat (or repeat 1)
    do
    (uniline--operate-on-rectangle
-    (uniline--move-to-line begy)
     (cl-loop
      repeat height
+     for y from begy
      do
-     (uniline--move-to-column begx)
-     (uniline--translate-1xsize-slice uniline--direction-ri→ width)
-     (uniline--move-to-delta-line 1))
+     (uniline--move-to-lin-col y begx)
+     (uniline--translate-1xsize-slice uniline--direction-ri→ width))
     (setq
      begx (1+ begx)
      endx (1+ endx)))))
@@ -1639,13 +1629,12 @@ defaulting to 1."
    repeat (or repeat 1)
    do
    (uniline--operate-on-rectangle
-    (uniline--move-to-column begx)
     (cl-loop
      repeat width
+     for x from begx
      do
-     (uniline--move-to-line begy)
-     (uniline--translate-1xsize-slice uniline--direction-dw↓ height)
-     (uniline--move-to-delta-column 1))
+     (uniline--move-to-lin-col begy x)
+     (uniline--translate-1xsize-slice uniline--direction-dw↓ height))
    (setq
     begy (1+ begy)
     endy (1+ endy)))))
@@ -1660,17 +1649,16 @@ defaulting to 1."
    repeat (or repeat 1)
    do
    (uniline--operate-on-rectangle
-    (uniline--move-to-line begy)
     (if (eq begx 0) (setq width (1- width)))
-    (cl-loop
-     repeat height
-     do
-     (uniline--move-to-column (1- endx))
-     (uniline--translate-1xsize-slice uniline--direction-lf← width)
-     (uniline--move-to-delta-line 1))
     (setq
      begx (max (1- begx) 0)
-     endx (max (1- endx) 0)))))
+     endx (max (1- endx) 0))
+    (cl-loop
+     repeat height
+     for y from begy
+     do
+     (uniline--move-to-lin-col y endx)
+     (uniline--translate-1xsize-slice uniline--direction-lf← width)))))
 
 (defun uniline-fill-rectangle ()
   "Fill the rectangle marked by selection.
@@ -1795,7 +1783,7 @@ in that it overwrites the rectangle."
     (uniline--move-to-column begx)
     (uniline--move-to-delta-line 1))
    (setq endx (+ begx (length (car killed-rectangle))))
-   (setq endy (+ begy (length killed-rectangle) -1))))
+   (setq endy (+ begy (length killed-rectangle)))))
 
 ;;;╭──────────────╮
 ;;;│Text direction│
