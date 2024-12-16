@@ -11,7 +11,7 @@
 - Move cursor with the arrow-keys on the keyboard =→ ↑ ↓ ←=
 - Quit =C-c C-c=
 
-* Pure UNICODΕ text diagrams in Emacs
+* Pure UNICODE text diagrams in Emacs
 Draw diagrams like those:
 
 Document a command:
@@ -162,16 +162,16 @@ Exit it with:
 
 The current major mode is still active underneath =uniline-mode=.
 
-While in =uniline-mode=, overwritting is active, as well as long lines
+While in =uniline-mode=, overwriting is active, as well as long lines
 truncation. Also, a hollow cursor is provided. Those settings are
 reset to their previous state when exiting =uniline-mode=.
 
 * Drawing lines
-Use keybord arrows to draw lines.
+Use keyboard arrows to draw lines.
 
 By default, drawing lines only happens over empty space or over other
 lines. If there is already text, it will not be erased. However, by
-hiting the control-key while moving, lines overwrite whatever there
+hitting the control-key while moving, lines overwrite whatever there
 is.
 
 The buffer is "infinite" in bottom and right directions. Which means
@@ -218,7 +218,7 @@ The =<insert>= key is a prefix for other keys:
 - for drawing arrows, squares, crosses, o-shapes glyphs,
 - for handling rectangles,
 - for inserting =# = - += which otherwise change the brush style,
-- for trying a choice of monospaced fonts.
+- for trying a choice of mono-spaced fonts.
 
 Why =<insert>=? Because:
 - =Uniline= tries to leave their original meaning to as much keys as
@@ -261,8 +261,8 @@ To change the direction of the arrow, use shift-arrow, for example:
 =S-<up>= will change from =→= to =↑=.
 
 * Intersection glyphs =■ ◆ ●=
-There are a few other UNICODE characters which are monospace and
-symetric in the 4 directions. They are great at line intersections:
+There are a few other UNICODE characters which are mono-space and
+symmetric in the 4 directions. They are great at line intersections:
 
 To insert a square =□ ■ ▫ ▪ ◇ ◆ ◊= type:
 =<insert>sss...= (=s= cycles, =S= cycles backward).
@@ -314,9 +314,9 @@ prefix them with =<insert>=. Example: =<insert>-= inserts a =-= and
 To draw a rectangle in one shot, select a rectangular region with
 =C-SPC= or =C-x SPC= and move the cursor.
 
-You may also use =S-<arrow>= (=<arrow>= beeing any of the 4
+You may also use =S-<arrow>= (=<arrow>= being any of the 4
 directions) to extend the selection. The buffer grows as needed with
-white spaces to accomodate the selection. Selection extension mode is
+white spaces to accommodate the selection. Selection extension mode is
 active when =shift-select-mode= is non-nil.
 
 If needed, change the brush with any of
@@ -460,7 +460,7 @@ a boundary.
 
 Put the cursor anywhere in the hole. Then type:
 
-=<insert> i=
+=INS i=
 
 Answer by giving a character to fill the hole.
 
@@ -475,6 +475,11 @@ ring will be chosen as the filling character. The kill ring is filled
 by functions like =C-k= or =M-w=, which remove text from the buffer.
 
 Typing =RET= aborts the filling operation.
+
+A rectangular shape may also be filled.
+- Mark a region
+- =INS i=
+- answer which character should be used to fill.
 
 There is no limit on the area to fill. Therefore, the filling
 operation may flood the entire buffer (but no more).
@@ -561,7 +566,7 @@ call a macro in 4 directions, closing a square:
 #+end_example
 
 * Which fonts?
-A monospace character font must be used. It must also support UNICODE.
+A mono-space character font must be used. It must also support UNICODE.
 
 Not all fonts are born equal.
 
@@ -577,7 +582,7 @@ Not all fonts are born equal.
 - =(set-frame-font "Source Code Pro"    )=
 
 Those fonts are known to support the required UNICODE characters, AND
-display them as monospace. There are fonts advertized as monospace
+display them as mono-space. There are fonts advertised as mono-space
 which give arbitrary widths to non-ASCII characters. That is bad for
 the kind of drawings done by =Uniline=.
 
@@ -598,10 +603,10 @@ or
 
 Beware that Emacs tries to compensate for missing UNICODE support by
 the current font. Emacs substitutes one font for another, character
-per character. The user may not notice until the dawings done under
+per character. The user may not notice until the drawings done under
 Emacs are displayed on another text editor or on the Web.
 
-To know which font Emacs has choosen for a given character, type:
+To know which font Emacs has chosen for a given character, type:
 
 =C-u C-x ==
 
@@ -665,8 +670,8 @@ choice for everyone.
 
 #+begin_example
 
- ╭────┬────────┬────╮   ╺┯━━━━┯┯━━┯┯━┯┯━━━━━━━━┯┯━━━━━━━┯┯━━━━━━━┯╸
- │▒▒▒▒╰────────╯▒▒▒▒│    │    │╰is╯╰a╯│        ││       │╰arround╯
+ ╭────┬────────┬────╮   ╺┯━━━━┯┯━━┯┯━┯┯━━━━━━━━┯┯━━━━━━━┯┯━━━━━━┯╸
+ │▒▒▒▒╰────────╯▒▒▒▒│    │    │╰is╯╰a╯│        ││       │╰around╯
  │▒▒▒▒▒▒▒▒▒▒▒▒▒▒▒▒▒▒│    ╰this╯       ╰sentence╯╰hanging╯
  │▒▒▒╭─╮▒▒▒▒▒▒╭─╮▒▒▒│            △
  │▒▒▒╰─╯▒▒▒▒▒▒╰─╯▒▒▒│            │                  △
@@ -764,12 +769,12 @@ this does not quite work:
    ┃   ┗━━┛  ┃    ┏┛     ┃
    ┗━━━━━━━━━┛    ┗━━━━━━┛
 
-but that is ok:
+but that is OK:
      ┏━━━┓
      ┃   ┃
      ┗━━━┛
 
-that is ok too:
+that is OK too:
 ╺════╦══╗  ╔════╗
      ║ A║  ║ B  ╚══╗
      ╚══╝  ╚═══════╝
@@ -847,8 +852,8 @@ for =C-<insertchar>=, for example with =use-package= in your
 #+end_example
 
 ** Emacs on Windows
-On Windows the only native monospaced fonts are =Lucida Console= and
-=Courier New=. They are not monospaced for the Unicodes used by
+On Windows the only native mono-spaced fonts are =Lucida Console= and
+=Courier New=. They are not mono-spaced for the Unicodes used by
 =Uniline=.
 
 Often, the =Consolas= font is present on Windows. It supports quite well
@@ -894,7 +899,7 @@ in your =$HOME/.emacs= file is great for that:
   :bind ("C-<insert>" . uniline-mode))
 #+end_example
 
-In this example, =C-<insert>= was choosen. You can use whatever keys combination you want.
+In this example, =C-<insert>= was chosen. You can use whatever keys combination you want.
 =<insert>= happens to also be the key used inside =Uniline=.
 
 * Related packages
@@ -960,6 +965,9 @@ In this example, =C-<insert>= was choosen. You can use whatever keys combination
 
 * Author, contributors
 - Thierry Banel, author
+
+Feedback:
+
 - Joost Kremers https://github.com/joostkremers found a bug in the
   minor-mode key-binding definitions, and incompatibility with
 - DogLooksGood https://github.com/DogLooksGood gave feedback on

@@ -1667,17 +1667,16 @@ See `uniline--choose-fill-char'."
   (interactive)
   (let ((char (uniline--choose-fill-char)))
     (uniline--operate-on-rectangle
-     (goto-char beg)
      (cl-loop
       repeat height
+      for y from begy
       do
-      (uniline--move-to-column begx)
+      (uniline--move-to-lin-col y begx)
       (cl-loop
        repeat width
        do
        (uniline--insert-char char)
-       (uniline--move-to-delta-column 1))
-      (uniline--move-to-delta-line 1)))))
+       (uniline--move-to-delta-column 1))))))
 
 (defun uniline-draw-inner-rectangle (&optional force)
   "Draws a rectangle inside a rectangular selection.
@@ -2499,7 +2498,7 @@ text within will be colored."
       ,uniline-hydra-moverect/hint
     ,(eval-when-compile
        (uniline--color-hint
-        "move: ^←→↑↓^ trace: ^rR C-rR^  copy-paste: ^cky^  brush: ^-+=# DEL^  hint: ^TAB^")))
+        "move: ^←→↑↓^ trace: ^rR C-rR^  copy-paste: ^cky^  fill: ^i^  brush: ^-+=# DEL^  hint: ^TAB^")))
  uniline-hydra-macro-exec/hint
  `(if (eq uniline-hint-style t)
       ,uniline-hydra-macro-exec/hint
@@ -2712,6 +2711,8 @@ And backup previous settings."
 │ \\[uniline-hydra-moverect/uniline-draw-outer-rectangle]	draw      an outer rectangle
 │ \\[uniline-hydra-moverect/uniline-overwrite-inner-rectangle]	overwrite an inner rectangle
 │ \\[uniline-hydra-moverect/uniline-overwrite-outer-rectangle]	overwrite an outer rectangle
+├─Fill───────────────────────╴
+│ \\[uniline-hydra-moverect/uniline-fill-rectangle]	fill region with a character
 ├─Other──────────────────────╴
 │ \\[uniline-hydra-moverect/uniline--hydra-rect-undo-and-exit] undo works outside selection
 │ \\[uniline-hydra-moverect/uniline--hydra-rect-quit-and-exit] exit the rectangle sub-mode
@@ -2801,7 +2802,7 @@ And backup previous settings."
      ["rotate arrow ↑ up"       uniline-rotate-up↑ :keys "INS S-<up>   "]
      ["rotate arrow ← left"     uniline-rotate-lf← :keys "INS S-<left> "]
      ["rotate arrow ↓ down"     uniline-rotate-dw↓ :keys "INS S-<down> "])
-    ("Rectangular selection" :active (region-active-p)
+    ("Rectangular region" :active (region-active-p)
      ["move selection right" uniline-move-rect-ri→ :keys "INS <right>"]
      ["move selection left"  uniline-move-rect-lf← :keys "INS <left> "]
      ["move selection up"    uniline-move-rect-up↑ :keys "INS <up>   "]
@@ -2809,7 +2810,8 @@ And backup previous settings."
      ["trace rectangle inside selection" uniline-draw-inner-rectangle :keys "INS r"]
      ["trace rectangle around selection" uniline-draw-outer-rectangle :keys "INS R"]
      ["overwrite rectangle inside selection" uniline-overwrite-inner-rectangle :keys "INS C-r"]
-     ["overwrite rectangle around selection" uniline-overwrite-outer-rectangle :keys "INS C-R"])
+     ["overwrite rectangle around selection" uniline-overwrite-outer-rectangle :keys "INS C-R"]
+     ["fill" uniline-fill-rectangle :keys "INS i"])
     ("Fill & contour"
      ["contour" uniline-contour]
      ["contour overw" (uniline-contour t)]
