@@ -1,4 +1,4 @@
-;;; uniline.el --- Draw plain text UNICODE diagrams within existing text -*- coding:utf-8; lexical-binding: t; -*-
+;;; uniline.el --- Draw text diagrams using UNICODE characters -*- coding:utf-8; lexical-binding: t; -*-
 
 ;; Copyright (C) 2024  Thierry Banel
 
