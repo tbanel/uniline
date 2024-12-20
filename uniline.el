@@ -987,7 +987,7 @@ LIST is `uniline--glyphs-fbw'."
 ;; to 2x2x2x2 = 16.
 
 (eval-and-compile
-  (defconst uniline--block-4quadb-to-char
+  (defconst uniline--4quadb-to-char
     [   ?  ?▘ ?▝ ?▀
         ?▖ ?▌ ?▞ ?▛
         ?▗ ?▚ ?▐ ?▜
@@ -997,21 +997,21 @@ LIST is `uniline--glyphs-fbw'."
 A quadrant bitmap is a number in [0..16) made of 4 bits.
 Each bit says whether or not there is a quadrant-block
 at a position.
-Reverse of `uniline--block-char-to-4quadb'"))
+Reverse of `uniline--char-to-4quadb'"))
 
 (eval-and-compile
-  (defconst uniline--block-char-to-4quadb
+  (defconst uniline--char-to-4quadb
     (eval-when-compile
-      (let ((table (make-char-table 'uniline--block-char-to-4quadb)))
+      (let ((table (make-char-table 'uniline--char-to-4quadb)))
         (cl-loop
-         for c across uniline--block-4quadb-to-char
+         for c across uniline--4quadb-to-char
          for i from 0
          do (aset table c i))
         table))
     "Convert a UNICODE character to a quadrant bitmap.
-Reverse of `uniline--block-4quadb-to-char'"))
+Reverse of `uniline--4quadb-to-char'"))
 
-(defvar-local uniline--block-which-quadrant 0
+(defvar-local uniline--which-quadrant 0
   "Where is the quadrant cursor.
 To draw lines with quadrant-blocks like this ▙▄▟▀,
 it is required to keep track where is the
@@ -1085,7 +1085,7 @@ If CHAR is given, use this CHAR instead of the character
 found at (point).
 Return nil if the character is not a 4quadb character."
     `(aref
-      uniline--block-char-to-4quadb
+      uniline--char-to-4quadb
       ,(or char '(uniline--char-after)))))
 
 (eval-when-compile ; not needed at runtime
@@ -1102,18 +1102,18 @@ The (point) does not move."
 The UNICODE character is described by the 4QUADB bits pattern.
 The (point) does not move."
     (uniline--insert-char
-     (aref uniline--block-4quadb-to-char 4quadb))))
+     (aref uniline--4quadb-to-char 4quadb))))
 
 ;;;╭───────────────────────────────────────────────────────────────╮
 ;;;│Low level management of ▙▄▟▀ quadrant-blocks UNICODE characters│
 ;;;╰───────────────────────────────────────────────────────────────╯
 
 (defun uniline--quadrant-undo (i)
-  "Re-position `uniline--block-which-quadrant' on undo.
+  "Re-position `uniline--which-quadrant' on undo.
 This function sets the cursor to I.
 It is called from the deep intricacies of the standard
 undo machinery."
-  (setq uniline--block-which-quadrant i))
+  (setq uniline--which-quadrant i))
 
 (defun uniline--store-undo-quadrant-cursor ()
   "Helper function to store the quandrant-cursor in the undo history.
@@ -1123,13 +1123,13 @@ needs a specific action to restore it."
   (setq buffer-undo-list
         `((apply
            uniline--quadrant-undo
-           ,uniline--block-which-quadrant)
+           ,uniline--which-quadrant)
           ,(point)
           ,@buffer-undo-list)))
 
-(defun uniline--block-write (force)
+(defun uniline--write-one-4quadb (force)
   "Helper function to write the quadrant cursor at point.
-It adds the quadrant-block described by `uniline--block-which-quadrant'
+It adds the quadrant-block described by `uniline--which-quadrant'
 at `point', preserving already present quadrant-blocks.
 When FORCE is not nil, overwrite a possible non quadrant-block
 character at point."
@@ -1141,10 +1141,10 @@ character at point."
           (and force 0))))
     (if bits
         (uniline--insert-4quadb
-         (logior bits (ash 1 uniline--block-which-quadrant))))))
+         (logior bits (ash 1 uniline--which-quadrant))))))
 
 (eval-when-compile ; not needed at runtime
-  (defmacro uniline--block-clear-half (dir)
+  (defmacro uniline--clear-two-4quadb (dir)
     "Helper function to clear half a quadrant-block at point.
 Assume that point is on a quadrant-block character.
 Clear the half of this character pointing in DIR direction."
@@ -1210,22 +1210,22 @@ Blank include:
   (cond
    ((eq dir (eval-when-compile uniline--direction-up↑))
     (or
-     (memq uniline--block-which-quadrant '(2 3))
+     (memq uniline--which-quadrant '(2 3))
      (uniline--blank-at-point
       (uniline--neighbour-point uniline--direction-up↑))))
    ((eq dir (eval-when-compile uniline--direction-ri→))
     (or
-     (memq uniline--block-which-quadrant '(0 2))
+     (memq uniline--which-quadrant '(0 2))
      (uniline--blank-at-point
       (uniline--neighbour-point uniline--direction-ri→))))
    ((eq dir (eval-when-compile uniline--direction-dw↓))
     (or
-     (memq uniline--block-which-quadrant '(0 1))
+     (memq uniline--which-quadrant '(0 1))
      (uniline--blank-at-point
       (uniline--neighbour-point uniline--direction-dw↓))))
    ((eq dir (eval-when-compile uniline--direction-lf←))
     (or
-     (memq uniline--block-which-quadrant '(1 3))
+     (memq uniline--which-quadrant '(1 3))
      (uniline--blank-at-point
       (uniline--neighbour-point uniline--direction-lf←))))))
 
@@ -1248,7 +1248,7 @@ This might be 0, 1, 2, 3, as defined by the four constants
 `uniline--direction-up↑', `uniline--direction-lf←', ...")
 
 (eval-when-compile ; not needed at runtime
-  (defmacro uniline--draw-half-line (dir force)
+  (defmacro uniline--write-one-4halfs (dir force)
     "Draw half a line in the direction DIR.
 If there are too few characters on the row where the line
 will be drawn, fill it with blank characters.
@@ -1275,7 +1275,7 @@ When FORCE is not nil, overwrite a possible non-4halfs character."
               ;; and the brush is the eraser
               ;; then clear only half of this character
               ((eq uniline--brush 0)
-               (uniline--block-clear-half ,dir))))))))
+               (uniline--clear-two-4quadb ,dir))))))))
 
 (eval-when-compile ; not needed at runtime
   (defmacro uniline--write-impl (dir blockbit compbit)
@@ -1294,7 +1294,7 @@ or the length to extend region.
 REPEAT defaults to 1.
 When FORCE is not nil, overwrite characters which are not lines.
 BLOCKBIT and COMPBIT are bit-patterns used to manage the
-quadrant-blocks cursor `uniline--block-which-quadrant'.
+quadrant-blocks cursor `uniline--which-quadrant'.
 BLOCKBIT and COMPBIT could be deduced from DIR,
 but that would be overkill."
     `(progn
@@ -1312,21 +1312,21 @@ but that would be overkill."
           repeat repeat
           do
           (uniline--store-undo-quadrant-cursor)
-          (if (eq (logand uniline--block-which-quadrant ,blockbit) ,compbit)
+          (if (eq (logand uniline--which-quadrant ,blockbit) ,compbit)
               (uniline--move-in-direction ,dir))
-          (setq uniline--block-which-quadrant
-                (logxor uniline--block-which-quadrant ,blockbit))
-          (uniline--block-write force)))
+          (setq uniline--which-quadrant
+                (logxor uniline--which-quadrant ,blockbit))
+          (uniline--write-one-4quadb force)))
         (t
          ;; draw lines ╰──╮
          (cl-loop
           repeat repeat
           do
-          (uniline--draw-half-line ,dir force)
+          (uniline--write-one-4halfs ,dir force)
           until (uniline--at-border-p ,dir)
           do
           (uniline--move-in-direction ,dir)
-          (uniline--draw-half-line
+          (uniline--write-one-4halfs
            ,(uniline--reverse-direction dir)
            force)))))))
 
@@ -1693,7 +1693,7 @@ When FORCE is not nil, overwrite whatever is there."
        (setq
         width  (+ width  width  1)
         height (+ height height 1)
-        uniline--block-which-quadrant 0))
+        uniline--which-quadrant 0))
    (let ((mark-active nil)) ;; otherwise brush would be inactive
      (uniline-write-ri→ width  force)
      (uniline-write-dw↓ height force)
@@ -1727,7 +1727,7 @@ When FORCE is not nil, overwrite whatever is there."
        (setq
         width  (+ width  width )
         height (+ height height)
-        uniline--block-which-quadrant 3))
+        uniline--which-quadrant 3))
    (setq
     width  (1+ width)
     height (1+ height))
@@ -2171,7 +2171,7 @@ When FORCE is not nil, overwrite whatever is in the buffer."
   (let ((dir uniline--direction-dw↓)
         (e)
         (start (point-marker))
-        (q uniline--block-which-quadrant)
+        (q uniline--which-quadrant)
         (n 0))
     (and
      (uniline--blank-neighbour1 (setq e (uniline--turn-right       dir)))
@@ -2183,7 +2183,7 @@ When FORCE is not nil, overwrite whatever is in the buffer."
         (setq
          q
          (setq
-          uniline--block-which-quadrant
+          uniline--which-quadrant
           (cond
            ((eq dir (eval-when-compile uniline--direction-up↑)) 3)
            ((eq dir (eval-when-compile uniline--direction-ri→)) 2)
@@ -2203,7 +2203,7 @@ When FORCE is not nil, overwrite whatever is in the buffer."
              (eq dir (eval-when-compile uniline--direction-lf←))
              (uniline--at-border-p uniline--direction-lf←)
              (if (eq uniline--brush :block)
-                 (memq uniline--block-which-quadrant '(0 2))
+                 (memq uniline--which-quadrant '(0 2))
                t))
             (while
                 (and
@@ -2211,21 +2211,21 @@ When FORCE is not nil, overwrite whatever is in the buffer."
                  (not (uniline--blank-at-point (point)))))
             (if (uniline--at-border-p uniline--direction-up↑)
                 (setq dir uniline--direction-up↑
-                      uniline--block-which-quadrant 1)
+                      uniline--which-quadrant 1)
               (setq dir uniline--direction-ri→
-                    uniline--block-which-quadrant 2)))
+                    uniline--which-quadrant 2)))
            ((and
              (eq dir (eval-when-compile uniline--direction-up↑))
              (uniline--at-border-p uniline--direction-up↑)
              (if (eq uniline--brush :block)
-                 (memq uniline--block-which-quadrant '(0 1))
+                 (memq uniline--which-quadrant '(0 1))
                t))
             (while
                 (progn
                   (forward-char 1)
                   (not (uniline--blank-at-point (point)))))
             (setq dir uniline--direction-dw↓)
-            (setq uniline--block-which-quadrant 0))
+            (setq uniline--which-quadrant 0))
            (t
             (uniline--write dir force)
             (setq n (1+ n))))
@@ -2233,7 +2233,7 @@ When FORCE is not nil, overwrite whatever is in the buffer."
            (not
             (and (eq (point) (marker-position start))
                  (or (not (eq uniline--brush :block))
-                     (eq uniline--block-which-quadrant q))))
+                     (eq uniline--which-quadrant q))))
            (< n 10000))))
     (set-marker start nil)
     (message "drew a %s steps contour" n)))
