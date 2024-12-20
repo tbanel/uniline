@@ -138,6 +138,26 @@ Draw sketched objects:
  ╰─────────────────────────────╯
 #+end_example
 
+file:images/water-sketch.png
+
+#+begin_example
+   ╶╮       ╭╴
+  ┏┳┥▒▒▒▒▒▒▒┝╸
+  ┃┃│▒▒eau▒▒│
+  ┃┃│▒▒▒▒▒▒▒│ ╔═════╗
+  ┃┃╰──╮▒╭──╯ ║ ╶╮  ▽           ╭╴
+  ┃┃    ▒     ║  │  ░           │
+  ┃┃    ▒     ║  │░░░░░░░░░░░░░░│
+  ┃┃    ╚═════╝  │░░░░░░░░░░░░░░╞════▷▒▒
+  ┃┃             │░░░░░akvo░░░░░│    ╶╮ ▒         ╭╴
+  ┃┃             │░░░░░░░░░░░░░░│     │  ▒        │
+  ┃┃             ╰─┲┳━━━━━━━━┳┱─╯     │▒▒▒▒▒▒▒▒▒▒▒│
+  ┃┃               ┃┃        ┃┃       │▒▒▒water▒▒▒│
+  ┃┃               ┃┃        ┃┃       │▒▒▒▒▒▒▒▒▒▒▒│
+  ┃┃               ┃┃        ┃┃       ╰───────────╯
+  ▝▀▀▀▀▀▀▘        ▝▀▘        ▝▀▘      ▀▀▀▀▀▀▀▀▀▀▀▀▀
+#+end_example
+
 Those diagrams are pure text. There is nothing graphic. They are
 achieved using UNICODE characters. Most often, the text file will be
 encoded as UTF-8.
