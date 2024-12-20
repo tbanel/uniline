@@ -138,7 +138,7 @@ Draw sketched objects:
  ╰─────────────────────────────╯
 #+end_example
 
-file:images/water-sketch.png
+[[file:images/water-sketch.png]]
 
 #+begin_example
    ╶╮       ╭╴
