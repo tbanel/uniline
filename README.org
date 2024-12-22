@@ -983,6 +983,16 @@ In this example, =C-<insert>= was chosen. You can use whatever keys combination 
 - =rcd-box=: create tables surrounded by box-drawing characters from
   Lisp descriptions
 
+- =ob-diagram=: generate various diagrams using diagrams backend
+
+- =ob-mermaid=: generate Mermaid diagrams within org-mode babel
+
+- =quail-boxdrawing.el=: input method for box drawing characters
+
+- =make-box.el=: box around part of a buffer
+
+- =Vim DrawIt ascii diagrams=: in Vin, in ASCII
+
 * Author, contributors
 - Thierry Banel, author
 
