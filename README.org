@@ -991,7 +991,7 @@ In this example, =C-<insert>= was chosen. You can use whatever keys combination 
 
 - =make-box.el=: box around part of a buffer
 
-- =Vim DrawIt ascii diagrams=: in Vin, in ASCII
+- =vim drawit ascii diagrams=: in Vin, in ASCII
 
 * Author, contributors
 - Thierry Banel, author
