@@ -253,7 +253,7 @@ So preempting =<insert>= does not sacrifices anything.
 At any time, an arrow may be drawn. The arrow points in the direction
 that the line drawing follows.
 
-=Uniline= supports 5 arrows types: =▷ ▶ → ▹ ▸ ↔=
+=Uniline= supports 6 arrows types: =▷ ▶ → ▹ ▸ ↔=
 
 [[file:images/arrow-styles.png]]
 
