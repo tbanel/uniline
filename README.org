@@ -253,7 +253,7 @@ So preempting =<insert>= does not sacrifices anything.
 At any time, an arrow may be drawn. The arrow points in the direction
 that the line drawing follows.
 
-=Uniline= supports 5 arrows types: =▷ ▶ → ▹ ▸=
+=Uniline= supports 5 arrows types: =▷ ▶ → ▹ ▸ ↔=
 
 [[file:images/arrow-styles.png]]
 
@@ -273,7 +273,7 @@ To insert an arrow, type: =<insert>a= or =<insert>aa= or =<insert>aaa=. (=a=
 cycles through the 5 styles, =A= cycles backward).
 
 =<insert>4a= is equivalent to =<insert>aaaa=, which is also equivalent to
-=<insert>AA=. Those 3 shortcuts insert an arrow of this style: =▵▹▿◃=. The
+=<insert>AAA=. Those 3 shortcuts insert an arrow of this style: =▵▹▿◃=. The
 actual direction where the arrow points follows the last movement of
 the cursor.
 
