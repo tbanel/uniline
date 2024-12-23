@@ -3,7 +3,7 @@
 #+OPTIONS: ^:{} authors:Thierry Banel, toc:nil
 #+LATEX_HEADER: \usepackage{pmboxdraw}
 
-*New*: trace contour & flood-fill shapes
+*New*: double arrows ↕ ↔
 
 * Getting started in 10 seconds
 
