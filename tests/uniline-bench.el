@@ -104,29 +104,34 @@ Do not call it directly."
   (insert "\")\n")
   (lisp-mode))
 
-(defun uniline-bench-run ()
-  "Run all benches.
-The benches are all files with *.el suffix.
+(defun uniline-bench-run (&rest files)
+  "Run all benches, or a specified list.
+When FILES is nil, th benches are all files with *.el suffix.
 Stops on the first error, presenting two buffers,
 - one with the actual drawing,
 - the other with the expected drawing,
 with points on the first difference.
 If there are no errors, a summary buffer is presented."
   (interactive)
-  (let ((buf (current-buffer))
-        (nbpassed 0)
-        (nbfailed 0))
-    (cl-loop
-     for file in (directory-files "." nil "\\.el$")
-     unless (equal "uniline-bench.el" file)
-     do
-     (load (format "%s%s" default-directory file) nil nil t)
-     (if uniline-bench-result
-         (cl-incf nbpassed)
-       (cl-incf nbfailed)
-       (message "%s FAILED" file)))
+  (unless files
+    (setq files
+          (delete "uniline-bench.el" (directory-files "." nil "\\.el$"))))
+  (let* ((buf (current-buffer))
+         (nbpassed 0)
+         (nbfailed 0)
+         (failed
+          (cl-loop
+           for file in files
+           do
+           (load (format "%s%s" default-directory file) nil nil t)
+           (if uniline-bench-result
+               (cl-incf nbpassed)
+             (cl-incf nbfailed)
+             (message "%s FAILED" file))
+           unless uniline-bench-result
+           collect file)))
     (switch-to-buffer buf)
-    (message "%s PASSED / %s FAILED" nbpassed nbfailed)))
+    (message "%s PASSED / %s FAILED %s" nbpassed nbfailed failed)))
 
 (if t
     (uniline-bench-run)
@@ -134,6 +139,9 @@ If there are no errors, a summary buffer is presented."
   (uniline-bench-run)
   (profiler-stop)
   (profiler-report))
+
+(if nil
+    (uniline-bench-run "bench15.el" "bench16.el"))
 
 (provide 'uniline-bench)
 ;;; uniline-bench.el ends here
