@@ -2416,12 +2416,12 @@ When FORCE is not nil, overwrite whatever is in the buffer."
    :exit nil)
   ;; Docstring MUST begin with an empty line to benefit from substitutions
   "
-╭^Move ^rect╮╭────^Draw^ rect────╮╭^─Rect^─╮╭^Brush^╮╭──^Misc^───────╮
-│_<left>_  ←││_r_     trace inner││_c_ copy││_-_ ╭─╯││_C-/_ undo     │
-│_<right>_ →││_R_     trace outer││_k_ kill││_+_ ┏━┛││_TAB_ sort hint│
-│_<up>_    ↑││_C-r_   ovewr inner││_y_ yank││_=_ ╔═╝││_RET_ exit     │
-│_<down>_  ↓││_C-S-R_ ovewr outer│╰^^┬─────╯╯_#_ ▄▄▟│╰^───^──────────╯
-╰^─────^────╯│_i_     fill       │ ^^│_<delete>_ DEL│
+╭^Move ^rect╮╭────^Draw^ rect────╮╭^─Rect^─╮╭^Brush^╮╭──^Misc^─────────╮
+│_<left>_  ←││_r_     trace inner││_c_ copy││_-_ ╭─╯││_C-/_ undo       │
+│_<right>_ →││_R_     trace outer││_k_ kill││_+_ ┏━┛││_f_   choose font│
+│_<up>_    ↑││_C-r_   ovewr inner││_y_ yank││_=_ ╔═╝││_TAB_ sort hint  │
+│_<down>_  ↓││_C-S-R_ ovewr outer│╰^^┬─────╯╯_#_ ▄▄▟││_RET_ exit       │
+╰^─────^────╯│_i_     fill       │ ^^│_<delete>_ DEL│╰^───^────────────╯
  ^     ^     ╰^────^─────────────╯ ^^╰^────────^────╯"
   ("<left>"  uniline-move-rect-lf←)
   ("<right>" uniline-move-rect-ri→)
@@ -2446,6 +2446,7 @@ When FORCE is not nil, overwrite whatever is in the buffer."
   ("="              uniline--set-brush-3)
   ("#"              uniline--set-brush-block)
   ("TAB" uniline-toggle-hydra-hints)
+  ("f"     uniline-hydra-fonts/body :exit t)
   ("C-/"   uniline--hydra-rect-undo :exit t)
   ("C-_"   uniline--hydra-rect-undo :exit t)
   ("C-x u" uniline--hydra-rect-undo :exit t)
@@ -2537,7 +2538,7 @@ text within will be colored."
       ,uniline-hydra-moverect/hint
     ,(eval-when-compile
        (uniline--color-hint
-        "move: ^←→↑↓^ trace: ^rR C-rR^  copy-paste: ^cky^  fill: ^i^  brush: ^-+=# DEL^  hint: ^TAB^")))
+        "move: ^←→↑↓^ trace: ^rR C-rR^ copy-paste: ^cky^ f-^i^-ll brush: ^-+=# DEL^ ^f^-onts ^TAB^")))
  uniline-hydra-macro-exec/hint
  `(if (eq uniline-hint-style t)
       ,uniline-hydra-macro-exec/hint
