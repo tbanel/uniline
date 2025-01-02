@@ -1,6 +1,6 @@
 ;;; uniline-bench.el --- Regression tests for Uniline  -*- coding:utf-8; lexical-binding: t; -*-
 
-;; Copyright (C) 2024  Thierry Banel
+;; Copyright (C) 2024-2025  Thierry Banel
 
 ;; Author: Thierry Banel tbanelwebmin at free dot fr
 ;; Version: 1.0
