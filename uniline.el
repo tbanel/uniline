@@ -132,22 +132,69 @@
 ;;;╰────────────────────────────────────────────────────────╯
 
 (eval-and-compile
-  (defconst uniline--direction-up↑ 0)
-  (defconst uniline--direction-ri→ 1)
-  (defconst uniline--direction-dw↓ 2)
-  (defconst uniline--direction-lf← 3))
+  (defconst uniline--direction-up↑ 0) (defmacro uniline--direction-up↑ () 0)
+  (defconst uniline--direction-ri→ 1) (defmacro uniline--direction-ri→ () 1)
+  (defconst uniline--direction-dw↓ 2) (defmacro uniline--direction-dw↓ () 2)
+  (defconst uniline--direction-lf← 3) (defmacro uniline--direction-lf← () 3))
+
+(eval-when-compile ; not needed at runtime
+
+  (defmacro uniline--switch-with-cond (dir &rest body)
+    "Macro to simplify `cond' applied to possible values of DIR.
+BODY is ((CASE1 EXPR1...) (CASE2 EXPR2...) ...)
+DIR is an expression which is compared to each of the CASE1, CASE2, ...
+until it matches one. Then the corresponding EXPRN is executed.
+It expands to a (cond) form.
+It is somehow similar to `cl-case', except that the cases are evaluated
+while `cl-case' quotes them."
+    (declare (indent 1))
+    `(cond
+      ,@(cl-loop
+         for c in body
+         collect
+         `((eq ,dir (eval-when-compile ,(car c)))
+           ,@(cdr c)))
+      (t (error "direction not known"))))
+
+  (defmacro uniline--switch-with-table (dir &rest body)
+    "Macro to return a value by looking in a table at the DIR entry.
+BODY is ((CASE1 EXPR1) (CASE2 EXPR2) ...)
+It is similar to `uniline--switch-with-cond', but instead of executing
+an EXPRN, it just returns it as is.
+It is expanded into a lookup into a vector or a plist, depending on the CASES.
+It it faster than an equivalent (cond) form."
+    (declare (indent 1))
+    (let ((max
+           (cl-loop
+            for c in body
+            for e = (eval (car c))
+            always (and (fixnump e) (<= 0 e 30))
+            maximize e)))
+      (if max
+          ;; create a vector for fast lookup
+          (let ((vec (make-vector (1+ max) nil)))
+            (cl-loop
+             for c in body
+             do (aset vec (eval (car c)) (eval (cadr c))))
+            `(aref ,vec ,dir))
+        ;; create a plist for versatile lookup
+        `(plist-get
+          ',(cl-loop
+             for c in body
+             collect (eval (car c))
+             collect (eval (cadr c)))
+          ,dir)))))
 
 (eval-when-compile ; not needed at runtime
   (defun uniline--reverse-direction (dir)
     "Reverse DIR.
 DIR is any of the 4 `uniline--direction-*'.
 Exchange left with right, up with down."
-    (pcase dir
-      ('uniline--direction-up↑ 'uniline--direction-dw↓)
-      ('uniline--direction-ri→ 'uniline--direction-lf←)
-      ('uniline--direction-dw↓ 'uniline--direction-up↑)
-      ('uniline--direction-lf← 'uniline--direction-ri→)
-      (_ (error "Bad direction")))))
+    (uniline--switch-with-table dir
+      (uniline--direction-up↑ uniline--direction-dw↓)
+      (uniline--direction-ri→ uniline--direction-lf←)
+      (uniline--direction-dw↓ uniline--direction-up↑)
+      (uniline--direction-lf← uniline--direction-ri→))))
 
 (defsubst uniline--turn-right (dir)
   "Return DIR turned 90° clockwise.
@@ -237,12 +284,11 @@ directly (uniline--move-to-delta-line -1) and such,
 with no overhead."
     (declare (debug (form)))
     (unless nb (setq nb 1))
-    (pcase dir
-      ('uniline--direction-up↑ `(uniline--move-to-delta-line   (- ,nb)))
-      ('uniline--direction-ri→ `(uniline--move-to-delta-column    ,nb) )
-      ('uniline--direction-dw↓ `(uniline--move-to-delta-line      ,nb) )
-      ('uniline--direction-lf← `(uniline--move-to-delta-column (- ,nb)))
-      (_ (error "Bad direction")))))
+    (uniline--switch-with-cond dir
+      (uniline--direction-up↑ `(uniline--move-to-delta-line   (- ,nb)))
+      (uniline--direction-ri→ `(uniline--move-to-delta-column    ,nb) )
+      (uniline--direction-dw↓ `(uniline--move-to-delta-line      ,nb) )
+      (uniline--direction-lf← `(uniline--move-to-delta-column (- ,nb))))))
 
 (eval-when-compile ; not needed at runtime
   (defmacro uniline--at-border-p (dir)
@@ -252,13 +298,12 @@ when trying to go further when DIR is up or left:
 `uniline--direction-up↑' or `uniline--direction-lf←'.
 In the bottom & right directions the buffer is infinite."
     (declare (debug (form)))
-    (pcase dir
-      ('uniline--direction-up↑ '(eq (pos-bol) 1))
-      ('uniline--direction-ri→ 'nil)
-      ('uniline--direction-dw↓ 'nil)
-      ('uniline--direction-lf← '(bolp))
-      (_ (error "Bad direction")))))
-
+    (setq dir (eval dir))
+    (uniline--switch-with-table dir
+      (uniline--direction-up↑ '(eq (pos-bol) 1))
+      (uniline--direction-ri→ nil)
+      (uniline--direction-dw↓ nil)
+      (uniline--direction-lf← '(bolp)))))
 
 (eval-when-compile ; not needed at runtime
   (defmacro uniline--neighbour-point (dir)
@@ -266,22 +311,24 @@ In the bottom & right directions the buffer is infinite."
 Return nil if no such point exists because it would fall
 outside the buffer.
 The buffer is not modified."
-    (pcase dir
-      ('uniline--direction-ri→ '(unless (eolp) (1+ (point))))
-      ('uniline--direction-lf← '(unless (bolp) (1- (point))))
-      ('uniline--direction-up↑
+    (setq dir (eval dir))
+    (uniline--switch-with-table dir
+      (uniline--direction-ri→
+       '(unless (eolp) (1+ (point))))
+      (uniline--direction-lf←
+       '(unless (bolp) (1- (point))))
+      (uniline--direction-up↑
        '(save-excursion
           (let ((p (current-column)))
             (and (eq (forward-line -1) 0)
                  (eq (move-to-column p) p)
                  (point)))))
-      ('uniline--direction-dw↓ '
-       (save-excursion
-         (let ((p (current-column)))
-           (and (eq (forward-line 1) 0)
-                (eq (move-to-column p) p)
-                (point)))))
-      (_ (error "Bad direction")))))
+      (uniline--direction-dw↓
+       '(save-excursion
+          (let ((p (current-column)))
+            (and (eq (forward-line 1) 0)
+                 (eq (move-to-column p) p)
+                 (point))))))))
 
 (defun uniline--char-after ()
   "Same as `char-after', except for right and bottom edges of buffer.
@@ -1029,19 +1076,38 @@ Reverse of `uniline--char-to-4quadb'"))
     "Convert a UNICODE character to a quadrant bitmap.
 Reverse of `uniline--4quadb-to-char'"))
 
-(defvar-local uniline--which-quadrant 0
+;; Elementary 4quadb are the 4 quadrant characters with
+;; a quarter block in each of the 4 corners.
+;; We give them numbers and associated constants:
+;;
+;; uniline--quadrant-up-ri 1: here──→───╮
+;;                                    ╭─┴╮
+;; uniline--quadrant-up-lf 0: here──→─┤▘▝│
+;; uniline--quadrant-dw-lf 2: here──→─┤▖▗│
+;;                                    ╰─┬╯
+;; uniline--quadrant-dw-ri 3: here──→───╯
+;;
+;; Actually, those constants are also bit-numbers.
+;; For instance, the character ▚ is made of two quarter blocks
+;;  - one in the up-left corner           → constant 0
+;;  - the other in the down-right corner  → constant 3
+;; The position in the `uniline--4quadb-to-char' of ▚
+;; will be 2^0 + 2^3 = 9
+;; This convention makes it convenient to use bit-wise primitive
+;; like `logior' `logand' `ash'
+
+(eval-and-compile
+  (defconst uniline--quadrant-up-lf 0) (defmacro uniline--quadrant-up-lf () 0)
+  (defconst uniline--quadrant-up-ri 1) (defmacro uniline--quadrant-up-ri () 1)
+  (defconst uniline--quadrant-dw-lf 2) (defmacro uniline--quadrant-dw-lf () 2)
+  (defconst uniline--quadrant-dw-ri 3) (defmacro uniline--quadrant-dw-ri () 3))
+
+(defvar-local uniline--which-quadrant (uniline--quadrant-up-lf)
   "Where is the quadrant cursor.
 To draw lines with quadrant-blocks like this ▙▄▟▀,
 it is required to keep track where is the
 quadrant-cursor.  It can be at 4 sub-locations:
-north-east, south-west, etc.
-
-1: here──→───╮
-           ╭─┴╮
-0: here──→─┤▘▝│
-2: here──→─┤▖▗│
-           ╰─┬╯
-3: here──→───╯")
+north-east, south-west, etc.")
 
 ;;;╭──────────────────────╮
 ;;;│Inserting a character │
@@ -1166,6 +1232,7 @@ character at point."
     "Helper function to clear half a quadrant-block at point.
 Assume that point is on a quadrant-block character.
 Clear the half of this character pointing in DIR direction."
+    (setq dir (eval dir))
     `(let ((bits (uniline--get-4quadb)))
        (if bits
            (uniline--insert-4quadb
@@ -1173,11 +1240,7 @@ Clear the half of this character pointing in DIR direction."
              bits
              (eval-when-compile
                (uniline--get-4quadb
-                (pcase ',dir
-                  ('uniline--direction-up↑ ?▄)
-                  ('uniline--direction-ri→ ?▌)
-                  ('uniline--direction-dw↓ ?▀)
-                  ('uniline--direction-lf← ?▐))))))))))
+                ,(aref "▄▌▀▐" dir)))))))))
 
 ;;;╭────────────────────────────╮
 ;;;│Test blanks in the neighbour│
@@ -1206,15 +1269,11 @@ Blank include:
 - new line
 - outside buffer in the right→ or down↓ DIRections"
   (uniline--blank-at-point
-   (cond
-    ((eq dir (eval-when-compile uniline--direction-up↑))
-     (uniline--neighbour-point  uniline--direction-up↑))
-    ((eq dir (eval-when-compile uniline--direction-ri→))
-     (uniline--neighbour-point  uniline--direction-ri→))
-    ((eq dir (eval-when-compile uniline--direction-dw↓))
-     (uniline--neighbour-point  uniline--direction-dw↓))
-    ((eq dir (eval-when-compile uniline--direction-lf←))
-     (uniline--neighbour-point  uniline--direction-lf←)))))
+   (uniline--switch-with-cond dir
+     (uniline--direction-up↑ (uniline--neighbour-point uniline--direction-up↑))
+     (uniline--direction-ri→ (uniline--neighbour-point uniline--direction-ri→))
+     (uniline--direction-dw↓ (uniline--neighbour-point uniline--direction-dw↓))
+     (uniline--direction-lf← (uniline--neighbour-point uniline--direction-lf←)))))
 
 (defun uniline--blank-neighbour4 (dir)
   "Return non-nil if the neighbour of current quarter point in DIR is blank.
@@ -1225,27 +1284,43 @@ Blank include:
 - outside buffer in the right→ or down↓ DIRections
 - point is on character containing a quarter block, and the quarter-cursor
   can further move in DIR direction while point stay still."
-  (cond
-   ((eq dir (eval-when-compile uniline--direction-up↑))
-    (or
-     (memq uniline--which-quadrant '(2 3))
-     (uniline--blank-at-point
-      (uniline--neighbour-point uniline--direction-up↑))))
-   ((eq dir (eval-when-compile uniline--direction-ri→))
-    (or
-     (memq uniline--which-quadrant '(0 2))
-     (uniline--blank-at-point
-      (uniline--neighbour-point uniline--direction-ri→))))
-   ((eq dir (eval-when-compile uniline--direction-dw↓))
-    (or
-     (memq uniline--which-quadrant '(0 1))
-     (uniline--blank-at-point
-      (uniline--neighbour-point uniline--direction-dw↓))))
-   ((eq dir (eval-when-compile uniline--direction-lf←))
-    (or
-     (memq uniline--which-quadrant '(1 3))
-     (uniline--blank-at-point
-      (uniline--neighbour-point uniline--direction-lf←))))))
+  (uniline--switch-with-cond dir
+    (uniline--direction-up↑
+     (or
+      (memq uniline--which-quadrant
+            (eval-when-compile
+              (list
+               uniline--quadrant-dw-lf
+               uniline--quadrant-dw-ri)))
+      (uniline--blank-at-point
+       (uniline--neighbour-point uniline--direction-up↑))))
+    (uniline--direction-ri→
+     (or
+      (memq uniline--which-quadrant
+            (eval-when-compile
+              (list
+               uniline--quadrant-up-lf
+               uniline--quadrant-dw-lf)))
+      (uniline--blank-at-point
+       (uniline--neighbour-point uniline--direction-ri→))))
+    (uniline--direction-dw↓
+     (or
+      (memq uniline--which-quadrant
+            (eval-when-compile
+              (list
+               uniline--quadrant-up-lf
+               uniline--quadrant-up-ri)))
+      (uniline--blank-at-point
+       (uniline--neighbour-point uniline--direction-dw↓))))
+    (uniline--direction-lf←
+     (or
+      (memq uniline--which-quadrant
+            (eval-when-compile
+              (list
+               uniline--quadrant-up-ri
+               uniline--quadrant-dw-ri)))
+      (uniline--blank-at-point
+       (uniline--neighbour-point uniline--direction-lf←))))))
 
 (defun uniline--blank-neighbour (dir)
   "Return non-nil if the neighbour in DIR direction is blank.
@@ -1260,7 +1335,7 @@ or half a character away."
 ;;;╰──────────────────────────────────────────────────╯
 
 (defvar-local uniline--arrow-direction
-  uniline--direction-up↑
+  (uniline--direction-up↑)
   "Where the next arrow should point to.
 This might be 0, 1, 2, 3, as defined by the four constants
 `uniline--direction-up↑', `uniline--direction-lf←', ...")
@@ -1315,6 +1390,7 @@ BLOCKBIT and COMPBIT are bit-patterns used to manage the
 quadrant-blocks cursor `uniline--which-quadrant'.
 BLOCKBIT and COMPBIT could be deduced from DIR,
 but that would be overkill."
+    (setq dir (eval dir)) ;; to convert 'uniline--direction-dw↓ into 2
     `(progn
        (unless repeat (setq repeat 1))
        (setq uniline--arrow-direction ,dir)
@@ -1441,12 +1517,14 @@ Doing so, draw or erase glyphs, or extend region.
 - Otherwise, draw or erase pairs of half-lines.
   `uniline--brush' gives the style of line (it may be an eraser).
 When FORCE is not nil, overwrite whatever is in the buffer."
-  (cond
-   ((eq dir (eval-when-compile uniline--direction-up↑)) (uniline-write-up↑ 1 force))
-   ((eq dir (eval-when-compile uniline--direction-ri→)) (uniline-write-ri→ 1 force))
-   ((eq dir (eval-when-compile uniline--direction-dw↓)) (uniline-write-dw↓ 1 force))
-   ((eq dir (eval-when-compile uniline--direction-lf←)) (uniline-write-lf← 1 force))
-   (t (error "Bad DIR %s" dir))))
+  (funcall
+   (uniline--switch-with-table dir
+     (uniline--direction-up↑ 'uniline-write-up↑)
+     (uniline--direction-ri→ 'uniline-write-ri→)
+     (uniline--direction-dw↓ 'uniline-write-dw↓)
+     (uniline--direction-lf← 'uniline-write-lf←))
+   1
+   force))
 
 ;;;╭────╮
 ;;;│Fill│
@@ -1567,6 +1645,7 @@ Then the leakage of the two glyphs fills in E:
    ╶┬╴
     ╽
     ┗╸"
+    (setq dir (eval dir))
     (let ((odir (uniline--reverse-direction dir)))
       `(let ((here (or (uniline--get-4halfs) 0))
              (prev    ; char preceding (point) as a 4halfs-bit-pattern
@@ -1711,7 +1790,7 @@ When FORCE is not nil, overwrite whatever is there."
        (setq
         width  (+ width  width  1)
         height (+ height height 1)
-        uniline--which-quadrant 0))
+        uniline--which-quadrant (uniline--quadrant-up-lf)))
    (let ((mark-active nil)) ;; otherwise brush would be inactive
      (uniline-write-ri→ width  force)
      (uniline-write-dw↓ height force)
@@ -1745,7 +1824,7 @@ When FORCE is not nil, overwrite whatever is there."
        (setq
         width  (+ width  width )
         height (+ height height)
-        uniline--which-quadrant 3))
+        uniline--which-quadrant (uniline--quadrant-dw-ri)))
    (setq
     width  (1+ width)
     height (1+ height))
@@ -1807,7 +1886,7 @@ in that it overwrites the rectangle."
 ;;;╰──────────────╯
 
 (defvar-local uniline--text-direction
-    uniline--direction-ri→
+    (uniline--direction-ri→)
   "Direction of text insertion.
 It can be any of the 4 values of
 `uniline--direction-up↑' `-ri→' `-dw↓' `-lf←'
@@ -1821,47 +1900,47 @@ the natural cursor movement upon insertion.")
 Usually the cursor moves to the right.
 Sometimes to the left for some locales, but this is not currently handled.
 This hook fixes the cursor movement according to `uniline--text-direction'"
-  (let ((n
-         (cond
-          ((numberp current-prefix-arg)
-           current-prefix-arg)
-          ((and
-            (consp current-prefix-arg)
-            (numberp (car current-prefix-arg)))
-           (car current-prefix-arg))
-          ((null current-prefix-arg)
-           1)
-          (t (error "current-prefix-arg = %S" current-prefix-arg)))))
-    (cond
-     ((eq uniline--text-direction (eval-when-compile uniline--direction-ri→)))
-     ((eq uniline--text-direction (eval-when-compile uniline--direction-dw↓))
-      (forward-char (- n))
-      (uniline--move-to-delta-line n))
-     ((eq uniline--text-direction (eval-when-compile uniline--direction-up↑))
-      (forward-char (- n))
-      (uniline--move-to-delta-line (- n)))
-     ((eq uniline--text-direction (eval-when-compile uniline--direction-lf←))
-      (forward-char (- n))
-      (uniline--move-to-delta-column (- n)))
-     ((eq uniline--text-direction nil))
-     (t (error "Bad uniline--text-direction %S" uniline--text-direction)))))
+  (let* ((pn
+          (cond
+           ((numberp current-prefix-arg)
+            current-prefix-arg)
+           ((and
+             (consp current-prefix-arg)
+             (numberp (car current-prefix-arg)))
+            (car current-prefix-arg))
+           ((null current-prefix-arg)
+            1)
+           (t (error "current-prefix-arg = %S" current-prefix-arg))))
+         (mn (- pn)))
+    (uniline--switch-with-cond uniline--text-direction
+      (uniline--direction-ri→ ()) ;; nothing to fix
+      (uniline--direction-dw↓
+       (forward-char mn)
+       (uniline--move-to-delta-line pn))
+      (uniline--direction-up↑
+       (forward-char mn)
+       (uniline--move-to-delta-line mn))
+      (uniline--direction-lf←
+       (forward-char mn)
+       (uniline--move-to-delta-column mn))
+      (nil))))
 
 (defun uniline-text-direction-up↑ ()
   "Set text insertion direction up↑."
   (interactive)
-  (setq uniline--text-direction uniline--direction-up↑))
+  (setq uniline--text-direction (uniline--direction-up↑)))
 (defun uniline-text-direction-ri→ ()
   "Set text insertion direction right→."
   (interactive)
-  (setq uniline--text-direction uniline--direction-ri→))
+  (setq uniline--text-direction (uniline--direction-ri→)))
 (defun uniline-text-direction-dw↓ ()
   "Set text insertion direction down↓."
   (interactive)
-  (setq uniline--text-direction uniline--direction-dw↓))
+  (setq uniline--text-direction (uniline--direction-dw↓)))
 (defun uniline-text-direction-lf← ()
   "Set text insertion direction left←."
   (interactive)
-  (setq uniline--text-direction uniline--direction-lf←))
+  (setq uniline--text-direction (uniline--direction-lf←)))
 
 ;;;╭───────────────────────────╮
 ;;;│Macro calls in 4 directions│
@@ -1948,6 +2027,45 @@ it is already present in the `uniline--directional-macros' cache"
                             x)))
                       last-kbd-macro)))))))
     (kmacro-end-and-call-macro 1)))
+
+
+;; Run the following cl-loop to automatically write a bunch
+;; of 4 interactive functions
+;; They have little value, except to be an interface between
+;; `easy-menu-define', `defhydra',
+;; and the real function `uniline-call-macro-in-direction'
+
+(when nil
+  (insert "\n;; BEGIN -- Automatically generated\n")
+  (cl-loop
+   for dir in '("up↑" "ri→" "dw↓" "lf←")
+   do
+    (cl-prettyprint
+     `(defun ,(intern (format "uniline-call-macro-in-direction-%s" dir)) ()
+        ,(format "Call macro in direction %s." dir)
+        (interactive)
+        (uniline-call-macro-in-direction (,(intern (format "uniline--direction-%s" dir)))))))
+  (insert "\n;; END -- Automatically generated\n"))
+
+;; BEGIN -- Automatically generated
+
+(defun uniline-call-macro-in-direction-up↑ nil
+  "Call macro in direction up↑."
+  (interactive)
+  (uniline-call-macro-in-direction (uniline--direction-up↑)))
+(defun uniline-call-macro-in-direction-ri→ nil
+  "Call macro in direction ri→."
+  (interactive)
+  (uniline-call-macro-in-direction (uniline--direction-ri→)))
+(defun uniline-call-macro-in-direction-dw↓ nil
+  "Call macro in direction dw↓."
+  (interactive)
+  (uniline-call-macro-in-direction (uniline--direction-dw↓)))
+(defun uniline-call-macro-in-direction-lf← nil
+  "Call macro in direction lf←."
+  (interactive)
+  (uniline-call-macro-in-direction (uniline--direction-lf←)))
+;; END -- Automatically generated
 
 ;;;╭───────────────────────────╮
 ;;;│High level brush management│
@@ -2167,7 +2285,7 @@ See `uniline--insert-glyph'."
      `(defun ,(intern (format "uniline-rotate-%s" dir)) ()
         ,(format "Rotate an arrow so it points toward %s." dir)
         (interactive)
-        (uniline--rotate-arrow ,(intern (format "uniline--direction-%s" dir))))))
+        (uniline--rotate-arrow (,(intern (format "uniline--direction-%s" dir)))))))
   (insert "\n;; END -- Automatically generated\n"))
 
 ;; BEGIN -- Automatically generated
@@ -2175,20 +2293,19 @@ See `uniline--insert-glyph'."
 (defun uniline-rotate-up↑ nil
   "Rotate an arrow so it points toward up↑."
   (interactive)
-  (uniline--rotate-arrow uniline--direction-up↑))
+  (uniline--rotate-arrow (uniline--direction-up↑)))
 (defun uniline-rotate-ri→ nil
   "Rotate an arrow so it points toward ri→."
   (interactive)
-  (uniline--rotate-arrow uniline--direction-ri→))
+  (uniline--rotate-arrow (uniline--direction-ri→)))
 (defun uniline-rotate-dw↓ nil
   "Rotate an arrow so it points toward dw↓."
   (interactive)
-  (uniline--rotate-arrow uniline--direction-dw↓))
+  (uniline--rotate-arrow (uniline--direction-dw↓)))
 (defun uniline-rotate-lf← nil
   "Rotate an arrow so it points toward lf←."
   (interactive)
-  (uniline--rotate-arrow uniline--direction-lf←))
-
+  (uniline--rotate-arrow (uniline--direction-lf←)))
 ;; END -- Automatically generated
 
 ;;;╭───────╮
@@ -2207,7 +2324,7 @@ When FORCE is not nil, overwrite whatever is in the buffer."
   (while (not (uniline--blank-at-point (point)))
     (uniline--move-to-delta-column 1))
 
-  (let ((dir uniline--direction-dw↓)
+  (let ((dir (uniline--direction-dw↓))
         (e)
         (start (point-marker))
         (q uniline--which-quadrant)
@@ -2223,11 +2340,11 @@ When FORCE is not nil, overwrite whatever is in the buffer."
          q
          (setq
           uniline--which-quadrant
-          (cond
-           ((eq dir (eval-when-compile uniline--direction-up↑)) 3)
-           ((eq dir (eval-when-compile uniline--direction-ri→)) 2)
-           ((eq dir (eval-when-compile uniline--direction-dw↓)) 0)
-           ((eq dir (eval-when-compile uniline--direction-lf←)) 1)))))
+          (uniline--switch-with-table dir
+            (uniline--direction-up↑ uniline--quadrant-dw-ri)
+            (uniline--direction-ri→ uniline--quadrant-dw-lf)
+            (uniline--direction-dw↓ uniline--quadrant-up-lf)
+            (uniline--direction-lf← uniline--quadrant-up-ri)))))
     (while
         (progn
           (cond
@@ -2239,32 +2356,40 @@ When FORCE is not nil, overwrite whatever is in the buffer."
            (t (error "Cursor is surrounded by walls")))
           (cond
            ((and
-             (eq dir (eval-when-compile uniline--direction-lf←))
+             (eq dir (uniline--direction-lf←))
              (uniline--at-border-p uniline--direction-lf←)
              (if (eq uniline--brush :block)
-                 (memq uniline--which-quadrant '(0 2))
+                 (memq uniline--which-quadrant
+                       (eval-when-compile
+                         (list
+                          uniline--quadrant-up-lf
+                          uniline--quadrant-dw-lf)))
                t))
             (while
                 (and
                  (= (forward-line -1) 0)
                  (not (uniline--blank-at-point (point)))))
             (if (uniline--at-border-p uniline--direction-up↑)
-                (setq dir uniline--direction-up↑
+                (setq dir (uniline--direction-up↑)
                       uniline--which-quadrant 1)
-              (setq dir uniline--direction-ri→
+              (setq dir (uniline--direction-ri→)
                     uniline--which-quadrant 2)))
            ((and
-             (eq dir (eval-when-compile uniline--direction-up↑))
+             (eq dir (uniline--direction-up↑))
              (uniline--at-border-p uniline--direction-up↑)
              (if (eq uniline--brush :block)
-                 (memq uniline--which-quadrant '(0 1))
+                 (memq uniline--which-quadrant
+                       (eval-when-compile
+                         (list
+                          uniline--quadrant-up-lf
+                          uniline--quadrant-up-ri)))
                t))
             (while
                 (progn
                   (forward-char 1)
                   (not (uniline--blank-at-point (point)))))
-            (setq dir uniline--direction-dw↓)
-            (setq uniline--which-quadrant 0))
+            (setq dir (uniline--direction-dw↓))
+            (setq uniline--which-quadrant (uniline--quadrant-up-lf)))
            (t
             (uniline--write dir force)
             (setq n (1+ n))))
@@ -2288,17 +2413,19 @@ When FORCE is not nil, overwrite whatever is in the buffer."
 
 (defun uniline--is-font (letter)
   "Check if current font is the one presented by LETTER."
-  (cond
-   ((eq letter ?d) (string-match "DejaVu"      (frame-parameter nil 'font)))
-   ((eq letter ?u) (string-match "Unifont"     (frame-parameter nil 'font)))
-   ((eq letter ?h) (string-match "Hack"        (frame-parameter nil 'font)))
-   ((eq letter ?b) (string-match "JetBrain"    (frame-parameter nil 'font)))
-   ((eq letter ?c) (string-match "Cascadia"    (frame-parameter nil 'font)))
-   ((eq letter ?a) (string-match "Agave"       (frame-parameter nil 'font)))
-   ((eq letter ?j) (string-match "Julia"       (frame-parameter nil 'font)))
-   ((eq letter ?f) (string-match "FreeMono"    (frame-parameter nil 'font)))
-   ((eq letter ?i) (string-match "Iosevka"     (frame-parameter nil 'font)))
-   ((eq letter ?s) (string-match "Source Code" (frame-parameter nil 'font)))))
+  (let ((name
+         (uniline--switch-with-table letter
+          (?d "DejaVu"     )
+          (?u "Unifont"    )
+          (?h "Hack"       )
+          (?b "JetBrain"   )
+          (?c "Cascadia"   )
+          (?a "Agave"      )
+          (?j "Julia"      )
+          (?f "FreeMono"   )
+          (?i "Iosevka"    )
+          (?s "Source Code"))))
+    (and name (string-match name (frame-parameter nil 'font)))))
 
 (defun uniline--is-font-str (letter)
   "Return a glyph if current font is the one presented by LETTER."
@@ -2347,12 +2474,11 @@ When FORCE is not nil, overwrite whatever is in the buffer."
 (defun uniline--text-direction-str ()
   "Return a textual representation of current text direction."
   (interactive)
-  (cond
-   ((eq uniline--text-direction (eval-when-compile uniline--direction-up↑)) "↑")
-   ((eq uniline--text-direction (eval-when-compile uniline--direction-ri→)) "→")
-   ((eq uniline--text-direction (eval-when-compile uniline--direction-dw↓)) "↓")
-   ((eq uniline--text-direction (eval-when-compile uniline--direction-lf←)) "←")
-   (t " ")))
+  (uniline--switch-with-table uniline--text-direction
+    (uniline--direction-up↑ "↑")
+    (uniline--direction-ri→ "→")
+    (uniline--direction-dw↓ "↓")
+    (uniline--direction-lf← "←")))
 
 (defhydra uniline-hydra-arrows
   (:hint nil
@@ -2477,10 +2603,10 @@ Otherwise, the arrows & shapes hydra is invoked."
 │_<left>_  call ← │_q_ _RET_ exit    │
 ╰^^───────────────┴^─^─^───^─────────╯"
   ("e"       (kmacro-end-and-call-macro 1))
-  ("<right>" (uniline-call-macro-in-direction uniline--direction-ri→))
-  ("<up>"    (uniline-call-macro-in-direction uniline--direction-up↑))
-  ("<down>"  (uniline-call-macro-in-direction uniline--direction-dw↓))
-  ("<left>"  (uniline-call-macro-in-direction uniline--direction-lf←))
+  ("<right>" uniline-call-macro-in-direction-ri→)
+  ("<up>"    uniline-call-macro-in-direction-up↑)
+  ("<down>"  uniline-call-macro-in-direction-dw↓)
+  ("<left>"  uniline-call-macro-in-direction-lf←)
   ("TAB" uniline-toggle-hydra-hints)
   ("q"   () :exit t)
   ("RET" () :exit t))
@@ -2553,10 +2679,7 @@ just put everything in sync."
   (interactive)
   (unless notoggle
     (setq uniline-hint-style
-          (cond
-           ((eq uniline-hint-style t) 1)
-           ((eq uniline-hint-style 1) t)
-           (t t))))
+          (if (eq uniline-hint-style t) 1 t)))
   (cl-loop
    for hydra in
    '(uniline-hydra-arrows
@@ -2646,14 +2769,14 @@ And backup previous settings."
   "Computes the string which appears in the mode-line."
   (format
    " %cUniline%c"
-   (cond
-    ((null uniline--text-direction) ? )
-    ((eq uniline--text-direction uniline--direction-up↑) ?↑)
-    ((eq uniline--text-direction uniline--direction-ri→) ?→)
-    ((eq uniline--text-direction uniline--direction-dw↓) ?↓)
-    ((eq uniline--text-direction uniline--direction-lf←) ?←))
-   (pcase uniline--brush
-     ('nil   ? )
+   (uniline--switch-with-table uniline--text-direction
+     (nil                    ? )
+     (uniline--direction-up↑ ?↑)
+     (uniline--direction-ri→ ?→)
+     (uniline--direction-dw↓ ?↓)
+     (uniline--direction-lf← ?←))
+   (uniline--switch-with-table uniline--brush
+     (nil    ? )
      (0      ?/)
      (1      ?┼)
      (2      ?╋)
@@ -2857,10 +2980,10 @@ And backup previous settings."
      ["contour overw" (uniline-contour t)]
      ["fill" uniline-fill])
     ("Text insertion direction"
-     ["→ right" uniline-text-direction-ri→ :keys "INS C-<right>" :style radio :selected (eq uniline--text-direction uniline--direction-ri→)]
-     ["↑ up"    uniline-text-direction-up↑ :keys "INS C-<up>   " :style radio :selected (eq uniline--text-direction uniline--direction-up↑)]
-     ["← left"  uniline-text-direction-lf← :keys "INS C-<left> " :style radio :selected (eq uniline--text-direction uniline--direction-lf←)]
-     ["↓ down"  uniline-text-direction-dw↓ :keys "INS C-<down> " :style radio :selected (eq uniline--text-direction uniline--direction-dw↓)])
+     ["→ right" uniline-text-direction-ri→ :keys "INS C-<right>" :style radio :selected (eq uniline--text-direction (uniline--direction-ri→))]
+     ["↑ up"    uniline-text-direction-up↑ :keys "INS C-<up>   " :style radio :selected (eq uniline--text-direction (uniline--direction-up↑))]
+     ["← left"  uniline-text-direction-lf← :keys "INS C-<left> " :style radio :selected (eq uniline--text-direction (uniline--direction-lf←))]
+     ["↓ down"  uniline-text-direction-dw↓ :keys "INS C-<down> " :style radio :selected (eq uniline--text-direction (uniline--direction-dw↓))])
     "----"
     ["large hints sizes" uniline-toggle-hydra-hints :keys "TAB or C-h TAB" :style toggle :selected (eq uniline-hint-style t)]
     ("Font"
