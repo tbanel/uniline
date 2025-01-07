@@ -305,31 +305,6 @@ In the bottom & right directions the buffer is infinite."
       (uniline--direction-dw↓ nil)
       (uniline--direction-lf← '(bolp)))))
 
-(eval-when-compile ; not needed at runtime
-  (defmacro uniline--neighbour-point (dir)
-    "Return the (point) one char away from current (point) in DIR direction.
-Return nil if no such point exists because it would fall
-outside the buffer.
-The buffer is not modified."
-    (setq dir (eval dir))
-    (uniline--switch-with-table dir
-      (uniline--direction-ri→
-       '(unless (eolp) (1+ (point))))
-      (uniline--direction-lf←
-       '(unless (bolp) (1- (point))))
-      (uniline--direction-up↑
-       '(save-excursion
-          (let ((p (current-column)))
-            (and (eq (forward-line -1) 0)
-                 (eq (move-to-column p) p)
-                 (point)))))
-      (uniline--direction-dw↓
-       '(save-excursion
-          (let ((p (current-column)))
-            (and (eq (forward-line 1) 0)
-                 (eq (move-to-column p) p)
-                 (point))))))))
-
 (defun uniline--char-after ()
   "Same as `char-after', except for right and bottom edges of buffer.
 Outside the buffer, return a blank character."
@@ -1247,11 +1222,13 @@ Clear the half of this character pointing in DIR direction."
 ;;;╰────────────────────────────╯
 
 (defun uniline--blank-at-point (p)
-  "Return non-nil if P points to a 4halfs character.
+  "Return non-nil if P points to a 4halfs or 4quadb character.
 This includes
-- a blank character,
-- or a new line
-- or nil
+- a blank
+- a 4half drawing character like ┴ ┻ ╩
+- a 4quad drawing character like ▙
+- a new line
+- P is nil
 The last two cases will be changed to an actual blank character by
 virtue of the infinite buffer."
   (or
@@ -1261,13 +1238,43 @@ virtue of the infinite buffer."
    (uniline--get-4halfs (char-after p))
    (uniline--get-4quadb (char-after p))))
 
+(eval-when-compile ; not needed at runtime
+  (defmacro uniline--neighbour-point (dir)
+    "Return the (point) one char away from current (point) in DIR direction.
+Return nil if no such point exists because it would fall outside the buffer.
+The buffer is not modified."
+    (setq dir (eval dir))
+    (uniline--switch-with-table dir
+      (uniline--direction-ri→
+       '(unless (eolp) (1+ (point))))
+      (uniline--direction-lf←
+       '(unless (bolp) (1- (point))))
+      (uniline--direction-up↑
+       '(let ((here (point))
+              (c (current-column)))
+          (prog1
+              (and (eq (forward-line -1) 0)
+                   (eq (move-to-column c) c)
+                   (point))
+            (goto-char here))))
+      (uniline--direction-dw↓
+       '(let ((here (point))
+              (c (current-column)))
+          (prog1
+              (and (eq (forward-line 1) 0)
+                   (eq (move-to-column c) c)
+                   (point))
+            (goto-char here)))))))
+
 (defun uniline--blank-neighbour1 (dir)
   "Return non-nil if the neighbour of current point in DIR is blank.
 The neighbour is one character away in the DIR direction.
 Blank include:
 - actual blank
+- 4half drawing character like ┴ ┻ ╩
+- 4quad drawing character like ▙
 - new line
-- outside buffer in the right→ or down↓ DIRections"
+- neighbour is outside buffer."
   (uniline--blank-at-point
    (uniline--switch-with-cond dir
      (uniline--direction-up↑ (uniline--neighbour-point uniline--direction-up↑))
@@ -1276,59 +1283,32 @@ Blank include:
      (uniline--direction-lf← (uniline--neighbour-point uniline--direction-lf←)))))
 
 (defun uniline--blank-neighbour4 (dir)
-  "Return non-nil if the neighbour of current quarter point in DIR is blank.
-The neighbour is half a character away in the DIR direction.
-Blank include:
-- actual blank
-- new line
-- outside buffer in the right→ or down↓ DIRections
-- point is on character containing a quarter block, and the quarter-cursor
-  can further move in DIR direction while point stay still."
-  (uniline--switch-with-cond dir
-    (uniline--direction-up↑
-     (or
-      (memq uniline--which-quadrant
-            (eval-when-compile
-              (list
-               uniline--quadrant-dw-lf
-               uniline--quadrant-dw-ri)))
-      (uniline--blank-at-point
-       (uniline--neighbour-point uniline--direction-up↑))))
-    (uniline--direction-ri→
-     (or
-      (memq uniline--which-quadrant
-            (eval-when-compile
-              (list
-               uniline--quadrant-up-lf
-               uniline--quadrant-dw-lf)))
-      (uniline--blank-at-point
-       (uniline--neighbour-point uniline--direction-ri→))))
-    (uniline--direction-dw↓
-     (or
-      (memq uniline--which-quadrant
-            (eval-when-compile
-              (list
-               uniline--quadrant-up-lf
-               uniline--quadrant-up-ri)))
-      (uniline--blank-at-point
-       (uniline--neighbour-point uniline--direction-dw↓))))
-    (uniline--direction-lf←
-     (or
-      (memq uniline--which-quadrant
-            (eval-when-compile
-              (list
-               uniline--quadrant-up-ri
-               uniline--quadrant-dw-ri)))
-      (uniline--blank-at-point
-       (uniline--neighbour-point uniline--direction-lf←))))))
+  "Return non-nil if the quarter point cursor can move in DIR
+while staying on the same (point)."
+  (eq
+   (logand
+    (ash 1 uniline--which-quadrant)
+    (uniline--switch-with-table dir
+      (uniline--direction-up↑ (uniline--get-4quadb ?▄))
+      (uniline--direction-ri→ (uniline--get-4quadb ?▌))
+      (uniline--direction-dw↓ (uniline--get-4quadb ?▀))
+      (uniline--direction-lf← (uniline--get-4quadb ?▐))))
+   0))
 
 (defun uniline--blank-neighbour (dir)
   "Return non-nil if the neighbour in DIR direction is blank.
-Depending on `uniline--brush', the neighbour may be one character away,
-or half a character away."
-  (if (eq uniline--brush :block)
-      (uniline--blank-neighbour4 dir)
-    (uniline--blank-neighbour1 dir)))
+Blank include:
+- actual blank
+- 4half drawing character like ┴ ┻ ╩
+- 4quad drawing character like ▙
+- new line
+- neighbour is outside buffer
+- when the cursor is :block and there is still room to move in DIRection
+  while staying on the same (point)."
+  (or
+   (and (eq uniline--brush :block)
+        (uniline--blank-neighbour4 dir))
+   (and (uniline--blank-neighbour1 dir))))
 
 ;;;╭──────────────────────────────────────────────────╮
 ;;;│High level drawing in half-lines & quadrant-blocks│
