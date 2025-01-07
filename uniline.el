@@ -2247,8 +2247,7 @@ See `uniline--insert-glyph'."
     (when (car ligne) ;; if (point) is on a directional arrow
       (uniline--insert-char ;; then change its direction
        (nth (1+ dir) (cadr ligne)))
-      (setq uniline--arrow-direction dir)
-      )))
+      (setq uniline--arrow-direction dir))))
 
 ;; Run the following cl-loop to automatically write a bunch
 ;; of 4 interactive functions
@@ -2351,9 +2350,9 @@ When FORCE is not nil, overwrite whatever is in the buffer."
                  (not (uniline--blank-at-point (point)))))
             (if (uniline--at-border-p uniline--direction-up↑)
                 (setq dir (uniline--direction-up↑)
-                      uniline--which-quadrant 1)
+                      uniline--which-quadrant (uniline--quadrant-up-ri))
               (setq dir (uniline--direction-ri→)
-                    uniline--which-quadrant 2)))
+                    uniline--which-quadrant (uniline--quadrant-dw-lf))))
            ((and
              (eq dir (uniline--direction-up↑))
              (uniline--at-border-p uniline--direction-up↑)
