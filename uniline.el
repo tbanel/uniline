@@ -2692,16 +2692,16 @@ It is a list containing:
        (eval-when-compile
          (uniline--color-hint
           "\
- ╭─^^────────────╴Uniline╶╴mode╶────────────────────────╮
- │      ^→ ↓ ← ↑^          draw lines with current brush│
- │^Ctrl  → ↓ ← ↑^          overwrite                    │
- │^Shift → ↓ ← ↑^          extend selection             │
- │^- + = # DEL RET^        change brush style           │
- │^INS^ without selection  insert glyphs, change font   │
- │^INS^ with    selection  handle rectangles            │
- │^C-h TAB^                switch small-large hints     │
- │^C-c C-c^                quit uniline                 │
- ╰─^^───────────────────────────────────────────────────╯")))
+ ╭─^^────────────╴Uniline╶╴mode╶─────────────────────────────╮
+ │^(Ctrl) → ↓ ← ↑^  (overwrite)/draw lines with current brush│
+ │^Shift  → ↓ ← ↑^         extend selection                  │
+ │^- + = # DEL RET^        change brush style                │
+ │^INS^ without selection  insert glyphs, change font        │
+ │^INS^ with    selection  handle rectangles                 │
+ │^C-h TAB^                switch small/large hints          │
+ │^M-: (info \"uniline\")^   info documentation page           │
+ │^C-c C-c^                quit uniline                      │
+ ╰─^^────────────────────────────────────────────────────────╯")))
       ((eq uniline-hint-style 1)
        (eval-when-compile
          (uniline--color-hint
@@ -2977,6 +2977,7 @@ And backup previous settings."
      ["Unifont"             (set-frame-font "Unifont"            ) :keys "INS f u" :style radio :selected (uniline--is-font ?u)]
      ["Agave"               (set-frame-font "Agave"              ) :keys "INS f a" :style radio :selected (uniline--is-font ?a)]
      ["permanently configure" uniline-customize-face               :keys "INS f *"])
+    ["info" (info "uniline") :keys "M-: (info \"uniline\")"]
     ["quit Uniline Mode" uniline-mode t] ))
 
 (provide 'uniline)

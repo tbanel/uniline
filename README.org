@@ -3,7 +3,7 @@
 #+OPTIONS: ^:{} authors:Thierry Banel, toc:nil
 #+LATEX_HEADER: \usepackage{pmboxdraw}
 
-*New*: double arrows ↕ ↔
+*New*: info manual
 
 * Getting started in 10 seconds
 
@@ -204,21 +204,21 @@ characters wide downward, type: =M-12 <down>=
 * Brush style
 Set the current brush with:
 
-- = - = single thin line
+- ~-~ single thin line
   =╭─┬─╮=
 
-- = + = single thick line
+- ~+~ single thick line
   =┏━┳━┓=
 
-- = = = double line
+- ~=~ double line
   =╔═╦═╗=
 
-- = # = quarter block
+- ~#~ quarter block
   =▙▄▟▀=
 
-- =<delete>= eraser
+- ~<delete>~ eraser
 
-- =<return>= move without drawing anything
+- ~<return>~ move without drawing anything
 
 The current bush and the current text direction (see below) are
 reflected in the mode-line (at the bottom of the Emacs screen). It
@@ -343,9 +343,9 @@ If needed, change the brush with any of
  =- + = # <delete>=
 
 then hit
-- =    r= to draw a rectangle inside the selection
-- =  S-R= to draw a rectangle outside the selection
-- =  C-r= to overwrite a rectangle inside the selection
+- =r= to draw a rectangle inside the selection
+- =S-R= to draw a rectangle outside the selection
+- =C-r= to overwrite a rectangle inside the selection
 - =C-S-R= to overwrite a rectangle outside the selection
 
 [[file:images/draw-rectangle.png]]
@@ -434,7 +434,7 @@ one way, and yanked another way.
          ╰───────────╯
 #+end_example
 
-Choose or change the brush style with any of =-,+,=_,#,<delete>_=. Put
+Choose or change the brush style with any of =-,+,=_,#,<delete>=. Put
 the cursor anywhere on the shape or outside but touching it. Then
 type:
 
@@ -509,12 +509,10 @@ Usually, inserting text in a buffer moves the cursor to the right. (And
 sometimes to the left for some locales). Any of the 4 directions can be
 selected under Uniline. Just type any of:
 
-#+begin_example
-  INS C-<up>
-  INS C-<right>
-  INS C-<down>
-  INS C-<left>
-#+end_example
+  - =INS C-<up>=
+  - =INS C-<right>=
+  - =INS C-<down>=
+  - =INS C-<left>=
 
 The current direction is reflected in the mode-line, just before the
 word "uniline".
@@ -706,12 +704,12 @@ choice for everyone.
 
 =Picture-mode= and =uniline-mode= are compatible. Their features overlap
 somehow:
-- Both implement an unlimited buffer in east an south directions.
+- Both implement an unlimited buffer in east and south directions.
 - Both visually truncate long lines (actual text is not truncated).
 - Both set the overwrite mode (=uniline-mode= activates
   =overwrite-mode=, while =picture-mode= re-implements it)
-- Both are able to draw rectangles (=uniline-mode= in UNICODE, picture in
-  ASCII), copy and yank them.
+- Both are able to draw rectangles (=uniline-mode= in UNICODE,
+  =picture-mode= in ASCII), copy and yank them.
 
 They also have features unique to each:
 - =Picture-mode= writes in 8 possible directions
@@ -721,7 +719,7 @@ They also have features unique to each:
 ** Compatibility with Artist-mode
 
 =Artist-mode= and =uniline-mode= are mostly incompatible. This is because
-=Artist-mode= preempts the arrow keys, which give access to a large part
+=artist-mode= preempts the arrow keys, which give access to a large part
 of =uniline-mode= features.
 
 However, it is possible to use both one after the other.
@@ -888,7 +886,9 @@ Add the following lines to your =.emacs= file,
 and reload it, if not already done:
 
 #+begin_example
-(add-to-list 'package-archives '("melpa" . "http://melpa.org/packages/") t)
+(add-to-list 'package-archives
+             '("melpa" . "http://melpa.org/packages/")
+             t)
 (package-initialize)
 #+end_example
 
