@@ -1234,9 +1234,11 @@ virtue of the infinite buffer."
   (or
    (not p)
    (= (point-max) p) ;; corner case
-   (eq (char-after p) ?\n)
-   (uniline--get-4halfs (char-after p))
-   (uniline--get-4quadb (char-after p))))
+   (let ((c (char-after p)))
+     (or
+      (eq c ?\n)
+      (uniline--get-4halfs c)
+      (uniline--get-4quadb c)))))
 
 (eval-when-compile ; not needed at runtime
   (defmacro uniline--neighbour-point (dir)
