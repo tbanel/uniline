@@ -243,7 +243,7 @@ The =<insert>= key is a prefix for other keys:
 Why =<insert>=? Because:
 - =Uniline= tries to leave their original meaning to as much keys as
   possible,
-- the standard meaning of =<insert>= is to toggle the overwrite mode;
+- the standard meaning of =<insert>= is to toggle the =overwrite-mode=;
   but =Uniline= is already in =overwrite-mode=, and de-activating
   overwrite would break =Uniline=.
 
@@ -267,13 +267,13 @@ that the line drawing follows.
 
 Actually, there are tons of arrows of all styles in the UNICODE
 standard. Unfortunately, the support by fonts is weak. So =Uniline=
-restrains itself to those five safe arrows.
+restrains itself to those six safe arrows.
 
-To insert an arrow, type: =<insert>a= or =<insert>aa= or =<insert>aaa=. (=a=
+To insert an arrow, type: =<insert> a= or =<insert> a a= or =<insert> a a a=. (=a=
 cycles through the 5 styles, =A= cycles backward).
 
-=<insert>4a= is equivalent to =<insert>aaaa=, which is also equivalent to
-=<insert>AAA=. Those 3 shortcuts insert an arrow of this style: =▵▹▿◃=. The
+=<insert> 4 a= is equivalent to =<insert> a a a a=, which is also equivalent to
+=<insert> A A A=. Those 3 shortcuts insert an arrow of this style: =▵▹▿◃=. The
 actual direction where the arrow points follows the last movement of
 the cursor.
 
@@ -285,19 +285,19 @@ There are a few other UNICODE characters which are mono-space and
 symmetric in the 4 directions. They are great at line intersections:
 
 To insert a square =□ ■ ▫ ▪ ◇ ◆ ◊= type:
-=<insert>sss...= (=s= cycles, =S= cycles backward).
+=<insert> s s s...= (=s= cycles, =S= cycles backward).
 
 To insert a circular shape =· ∙ • ● ◦ Ø ø= type:
-=<insert>ooo...= (=o= cycles, =O= cycles backward).
+=<insert> o o o...= (=o= cycles, =O= cycles backward).
 
 To insert a cross shape =╳ ÷ × ± ¤= type:
-=<insert>xxx...= (=x= cycles, =X= cycles backward).
+=<insert> x x x...= (=x= cycles, =X= cycles backward).
 
 To insert a usual ASCII letter or symbol, just type it.
 
 As the keys =- + = #= are preempted by =Uniline= mode, to type them,
-prefix them with =<insert>=. Example: =<insert>-= inserts a =-= and
-=<insert>+= inserts a =+=.
+prefix them with =<insert>=. Example: =<insert> -= inserts a =-= and
+=<insert> += inserts a =+=.
 
 [[file:images/insert-glyphs.png]]
 
@@ -377,10 +377,10 @@ was not.
 Use arrow keys to move the rectangle around. A numeric prefix may be
 used to move the rectangle that many characters. Be sure to specify
 the numeric prefix with just digits, without the =Alt= key. Typing
-=15<left>= moves the rectangle 15 characters to the left. =M-15<left>=
+=15 <left>= moves the rectangle 15 characters to the left. =M-15 <left>=
 does not work.
 
-Press =q=, =RET=, or =C-g= to stop moving the rectangle.
+Press =q=, =<return>=, or =C-g= to stop moving the rectangle.
 
 The =C-_= key may also be used to undo the previous movements, even
 though the selection is still active.
@@ -449,7 +449,7 @@ line on the contour path, it is overwritten.
 
 The shape is distinguished because it floats in a blank characters
 ocean. For the shake of the contour function, blank characters are
-those containing lines as drawn by Uniline (including true blank
+those containing lines as drawn by =Uniline= (including true blank
 characters). Locations outside the buffer are also considered blank.
 
 The algorithm has an upper limit of 10000 steps. This avoids an
@@ -480,7 +480,7 @@ a boundary.
 
 Put the cursor anywhere in the hole. Then type:
 
-=INS i=
+=<insert> i=
 
 Answer by giving a character to fill the hole.
 
@@ -494,11 +494,11 @@ by the suggested fonts.
 ring will be chosen as the filling character. The kill ring is filled
 by functions like =C-k= or =M-w=, which remove text from the buffer.
 
-Typing =RET= aborts the filling operation.
+Typing =<return>= aborts the filling operation.
 
 A rectangular shape may also be filled.
 - Mark a region
-- =INS i=
+- =<insert> i=
 - answer which character should be used to fill.
 
 There is no limit on the area to fill. Therefore, the filling
@@ -507,18 +507,18 @@ operation may flood the entire buffer (but no more).
 * Text direction
 Usually, inserting text in a buffer moves the cursor to the right. (And
 sometimes to the left for some locales). Any of the 4 directions can be
-selected under Uniline. Just type any of:
+selected under =Uniline=. Just type any of:
 
-  - =INS C-<up>=
-  - =INS C-<right>=
-  - =INS C-<down>=
-  - =INS C-<left>=
+  - =<insert> C-<up>=
+  - =<insert> C-<right>=
+  - =<insert> C-<down>=
+  - =<insert> C-<left>=
 
 The current direction is reflected in the mode-line, just before the
-word "uniline".
+word ="uniline"=.
 
 * Macros
-Uniline adds directional macros to the Emacs standard macros.
+=Uniline= adds directional macros to the Emacs standard macros.
 
 Record a macro as usual with =C-x (= … =C-x )=.
 
@@ -605,7 +605,7 @@ which give arbitrary widths to non-ASCII characters. That is bad for
 the kind of drawings done by =Uniline=.
 
 You may want to try any of the 10 suggested fonts. Just hit the
-corresponding entry in the =Uniline= menu, or type =<insert>f=. You may
+corresponding entry in the =Uniline= menu, or type =<insert> f=. You may
 also execute the above Lisp commands like that:
 
 =M-: (set-frame-font "DejaVu Sans Mono")=
@@ -613,7 +613,7 @@ also execute the above Lisp commands like that:
 This setting is for the current session only. If you want to make it
 permanent, you may use the Emacs customization:
 
-=INS f *=
+=<insert> f *=
 
 or
 
@@ -628,11 +628,14 @@ To know which font Emacs has chosen for a given character, type:
 
 =C-u C-x ==
 
+Note that none of those commands downloads a font from the Web.
+The font should already be available.
+
 * Text menus (Hydra)
-Casual usage of Uniline should be easy: just move the point, and lines
+Casual usage of =Uniline= should be easy: just move the point, and lines
 are traced.
 
-More complex actions are summoned by the =INS= key, with or without
+More complex actions are summoned by the =<insert>= key, with or without
 selection. This is a single key to remember. Then a textual menu is
 displayed, giving the possible keys continuations and their
 meaning. All that is achieved by the =Hydra= library, which is now part
@@ -650,7 +653,7 @@ To do so, type:
 - =C-h TAB= at the top-level
 
 This will flip between the two sizes of textual menus. It also affects
-the welcome message, the one displayed when entering the uniline minor
+the welcome message, the one displayed when entering the =Uniline= minor
 mode.
 
 The current size is controlled by the =uniline-hint-style= variable:
@@ -661,7 +664,7 @@ The current size is controlled by the =uniline-hint-style= variable:
 The variable is "buffer-local", which means that it can take distinct
 values on distinct buffers.
 
-There are no customizable uniline variables (not yet). This does not
+There are no customizable =Uniline= variables (not yet). This does not
 prevent customizing =uniline-hint-style= for future sessions. For
 instance, in the =~/.emacs= file, there might be:
 
@@ -699,7 +702,7 @@ choice for everyone.
 
 #+end_example
 
-* How Uniline behaves with its environment?
+* How =Uniline= behaves with its environment?
 ** Compatibility with Picture-mode
 
 =Picture-mode= and =uniline-mode= are compatible. Their features overlap
@@ -729,7 +732,7 @@ However, it is possible to use both one after the other.
 =Whitespace-mode= and =uniline-mode= are mostly compatible.
 
 Why activate =whitespace-mode= while in =uniline-mode=? Because
-=uniline-mode= creates a lot of white-spaces to implement an infinite
+=Uniline= creates a lot of white-spaces to implement an infinite
 buffer. And it is funny to look at this activity.
 
 To make =uniline-mode= and =whitespace-mode= fully compatible, disable
@@ -811,7 +814,7 @@ this works:
 #+end_example
 
 Note that corners of thin lines should be sharp. There is no support
-for rounded corners. Uniline does not (yet) draw sharp thin
+for rounded corners. =Uniline= does not (yet) draw sharp thin
 corners. But it can recognize them.
 
 To export this Org Mode example to PDF through LaTex, type:
@@ -840,7 +843,7 @@ Just try to get away from =^L=, =^T= and such when drawing with
 ** Emacs on the Linux console
 Linux consoles are the 7 non-graphic screens which can be accessed
 usually typing =C-M-F1=, =C-M-F2=, and so on. Such a screen is also
-presented when connecting through ssh into a non-graphical server.
+presented when connecting through =ssh= or =tls= into a non-graphical server.
 
 By default they use a font
 named "Fixed" with poor support for Unicode. However, it supports
@@ -939,7 +942,7 @@ In this example, =C-<insert>= was chosen. You can use whatever keys combination 
   flowers, parchments, all in ASCII art.
 
 - =org-drawio=: a bridge between the Draw.Io editor and Emacs, producing
-  drawing similar to those of =Uniline=, but in .svg.
+  drawing similar to those of =Uniline=, but in =.svg=.
 
 - =syntree=: draws ASCII trees on-the-fly from description.
 
