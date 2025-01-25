@@ -1213,9 +1213,11 @@ Clear the half of this character pointing in DIR direction."
            (uniline--insert-4quadb
             (logand
              bits
-             (eval-when-compile
-               (uniline--get-4quadb
-                ,(aref "▄▌▀▐" dir)))))))))
+             ,(uniline--switch-with-table dir
+                (uniline--direction-up↑ (uniline--get-4quadb ?▄))
+                (uniline--direction-ri→ (uniline--get-4quadb ?▌))
+                (uniline--direction-dw↓ (uniline--get-4quadb ?▀))
+                (uniline--direction-lf← (uniline--get-4quadb ?▐)))))))))
 
 ;;;╭────────────────────────────╮
 ;;;│Test blanks in the neighbour│
