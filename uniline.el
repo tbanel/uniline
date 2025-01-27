@@ -1597,14 +1597,11 @@ in `rectangle-mark-mode'."
               (begx (progn (goto-char beg) (current-column)))
               (begy (1- (line-number-at-pos)))
               (endx (progn (goto-char end) (current-column)))
-              (endy (line-number-at-pos))
-              (height (- endy begy))
-              (width  (- endx begx)))
+              (endy (line-number-at-pos)))
          (when (< endx begx)
            (setq endx (prog1 begx (setq begx endx)))
-           (setq width (- width))
-           (setq beg (- beg width))
-           (setq end (+ end width)))
+           (setq beg (+ beg begx (- endx)))
+           (setq end (+ end endx (- begx))))
          ,@body
          (uniline--move-to-lin-col (1- endy) endx)
          (set-mark (point))
@@ -1669,16 +1666,16 @@ defaulting to 1."
    repeat (or repeat 1)
    do
    (uniline--operate-on-rectangle
-    (if (eq begy 0) (setq height (1- height)))
     (setq
      begy (max (1- begy) 0)
      endy (max (1- endy) 0))
     (cl-loop
-     repeat width
-     for x from begx
+     for x from begx below endx
      do
      (uniline--move-to-lin-col endy x)
-     (uniline--translate-1xsize-slice uniline--direction-up↑ height)))))
+     (uniline--translate-1xsize-slice
+      uniline--direction-up↑
+      (- endy begy))))))
 
 (defun uniline-move-rect-ri→ (repeat)
   "Move the rectangle marked by selection one char to the left.
@@ -1691,11 +1688,12 @@ defaulting to 1."
    do
    (uniline--operate-on-rectangle
     (cl-loop
-     repeat height
-     for y from begy
+     for y from begy below endy
      do
      (uniline--move-to-lin-col y begx)
-     (uniline--translate-1xsize-slice uniline--direction-ri→ width))
+     (uniline--translate-1xsize-slice
+      uniline--direction-ri→
+      (- endx begx)))
     (setq
      begx (1+ begx)
      endx (1+ endx)))))
@@ -1711,14 +1709,15 @@ defaulting to 1."
    do
    (uniline--operate-on-rectangle
     (cl-loop
-     repeat width
-     for x from begx
+     for x from begx below endx
      do
      (uniline--move-to-lin-col begy x)
-     (uniline--translate-1xsize-slice uniline--direction-dw↓ height))
-   (setq
-    begy (1+ begy)
-    endy (1+ endy)))))
+     (uniline--translate-1xsize-slice
+      uniline--direction-dw↓
+      (- endy begy)))
+    (setq
+     begy (1+ begy)
+     endy (1+ endy)))))
 
 (defun uniline-move-rect-lf← (repeat)
   "Move the rectangle marked by selection one char to the left.
@@ -1730,16 +1729,16 @@ defaulting to 1."
    repeat (or repeat 1)
    do
    (uniline--operate-on-rectangle
-    (if (eq begx 0) (setq width (1- width)))
     (setq
      begx (max (1- begx) 0)
      endx (max (1- endx) 0))
     (cl-loop
-     repeat height
-     for y from begy
+     for y from begy below endy
      do
      (uniline--move-to-lin-col y endx)
-     (uniline--translate-1xsize-slice uniline--direction-lf← width)))))
+     (uniline--translate-1xsize-slice
+      uniline--direction-lf←
+      (- endx begx))))))
 
 (defun uniline-fill-rectangle ()
   "Fill the rectangle marked by selection.
@@ -1749,12 +1748,11 @@ See `uniline--choose-fill-char'."
   (let ((char (uniline--choose-fill-char)))
     (uniline--operate-on-rectangle
      (cl-loop
-      repeat height
-      for y from begy
+      for y from begy below endy
       do
       (uniline--move-to-lin-col y begx)
       (cl-loop
-       repeat width
+       for x from begx below endx
        do
        (uniline--insert-char char)
        (uniline--move-to-delta-column 1))))))
@@ -1766,20 +1764,19 @@ double line, block, or eraser.
 When FORCE is not nil, overwrite whatever is there."
   (interactive)
   (uniline--operate-on-rectangle
-   (setq
-    width  (1- width)
-    height (1- height))
-   (goto-char beg)
-   (if (eq uniline--brush :block)
-       (setq
-        width  (+ width  width  1)
-        height (+ height height 1)
-        uniline--which-quadrant (uniline--quadrant-up-lf)))
-   (let ((mark-active nil)) ;; otherwise brush would be inactive
-     (uniline-write-ri→ width  force)
-     (uniline-write-dw↓ height force)
-     (uniline-write-lf← width  force)
-     (uniline-write-up↑ height force))))
+   (let ((width  (- endx begx 1))
+         (height (- endy begy 1)))
+     (goto-char beg)
+     (if (eq uniline--brush :block)
+         (setq
+          width  (+ width  width  1)
+          height (+ height height 1)
+          uniline--which-quadrant (uniline--quadrant-up-lf)))
+     (let ((mark-active nil)) ;; otherwise brush would be inactive
+       (uniline-write-ri→ width  force)
+       (uniline-write-dw↓ height force)
+       (uniline-write-lf← width  force)
+       (uniline-write-up↑ height force)))))
 
 (defun uniline-overwrite-inner-rectangle ()
   "Draws a rectangle inside a rectangular selection.
@@ -1796,32 +1793,31 @@ double line, block, or eraser.
 When FORCE is not nil, overwrite whatever is there."
   (interactive)
   (uniline--operate-on-rectangle
-   (goto-char beg)
-   (if (<= begx 0)                      ; at leftmost side of buffer
-       (setq width (1- width))
-     (uniline--move-to-delta-column -1))
-   (when (eq begy 0)                     ; at the top of buffer
-     (goto-char (point-min))
-     (insert ?\n))
-   (forward-line -1)
-   (if (eq uniline--brush :block)
-       (setq
-        width  (+ width  width )
-        height (+ height height)
-        uniline--which-quadrant (uniline--quadrant-dw-ri)))
-   (setq
-    width  (1+ width)
-    height (1+ height))
-   (uniline--move-to-column (1- begx))
-   (let ((mark-active nil))             ; otherwise brush is inactive
+   (let ((width  (- endx begx -1))
+         (height (- endy begy -1))
+         (mark-active nil))             ; otherwise brush is inactive
+     (goto-char beg)
+     (if (<= begx 0)                    ; at leftmost side of buffer
+         (setq width (1- width))
+       (uniline--move-to-delta-column -1))
+     (when (eq begy 0)                  ; at the top of buffer
+       (goto-char (point-min))
+       (insert ?\n))
+     (forward-line -1)
+     (if (eq uniline--brush :block)
+         (setq
+          width  (+ width  width  -1)
+          height (+ height height -1)
+          uniline--which-quadrant (uniline--quadrant-dw-ri)))
+     (uniline--move-to-column (1- begx))
      (uniline-write-ri→ width  force)
      (uniline-write-dw↓ height force)
      (uniline-write-lf← width  force)
      (if (> begx 0)
-         (uniline-write-up↑ height force)))
-   (when (eq begy 0)
-     (goto-char (point-min))
-     (delete-line))))
+         (uniline-write-up↑ height force))
+     (when (eq begy 0)
+       (goto-char (point-min))
+       (delete-line)))))
 
 (defun uniline-overwrite-outer-rectangle ()
   "Draws a rectangle outside a rectangular selection.
@@ -1850,7 +1846,6 @@ It differs from the standard Emacs `yank-rectangle'
 in that it overwrites the rectangle."
   (interactive)
   (uniline--operate-on-rectangle
-   height ;; suppress warning
    (goto-char beg)
    (cl-loop
     for line in killed-rectangle
