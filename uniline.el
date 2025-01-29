@@ -305,10 +305,11 @@ In the bottom & right directions the buffer is infinite."
       (uniline--direction-dw↓ nil)
       (uniline--direction-lf← '(bolp)))))
 
-(defun uniline--char-after ()
+(defun uniline--char-after (&optional point)
   "Same as `char-after', except for right and bottom edges of buffer.
-Outside the buffer, return a blank character."
-  (let ((c (char-after)))
+Outside the buffer, return a blank character.
+POINT default to `(point)', as for `char-after'"
+  (let ((c (char-after point)))
     (if (or (not c) (eq c ?\n))
         ?  ;; eol & eob are considered blank
       c)))
@@ -1235,7 +1236,7 @@ The last two cases will be changed to an actual blank character by
 virtue of the infinite buffer."
   (or
    (not p)
-   (= (point-max) p) ;; corner case
+   (<= (point-max) p) ;; corner case
    (let ((c (char-after p)))
      (or
       (eq c ?\n)
@@ -1632,7 +1633,7 @@ Then the leakage of the two glyphs fills in E:
              (prev    ; char preceding (point) as a 4halfs-bit-pattern
               (let ((p (uniline--neighbour-point ,odir)))
                 (or
-                 (and p (uniline--get-4halfs (char-after p)))
+                 (and p (uniline--get-4halfs (uniline--char-after p)))
                  0))))
          ;; mask pairs of bits in the desired direction
          (setq
