@@ -1294,10 +1294,10 @@ while staying on the same (point)."
    (logand
     (ash 1 uniline--which-quadrant)
     (uniline--switch-with-table dir
-      (uniline--direction-up↑ (uniline--get-4quadb ?▄))
-      (uniline--direction-ri→ (uniline--get-4quadb ?▌))
-      (uniline--direction-dw↓ (uniline--get-4quadb ?▀))
-      (uniline--direction-lf← (uniline--get-4quadb ?▐))))
+      (uniline--direction-up↑ (uniline--get-4quadb ?▀))
+      (uniline--direction-ri→ (uniline--get-4quadb ?▐))
+      (uniline--direction-dw↓ (uniline--get-4quadb ?▄))
+      (uniline--direction-lf← (uniline--get-4quadb ?▌))))
    0))
 
 (defun uniline--blank-neighbour (dir)
