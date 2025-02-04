@@ -284,11 +284,12 @@ directly (uniline--move-to-delta-line -1) and such,
 with no overhead."
     (declare (debug (form)))
     (unless nb (setq nb 1))
-    (uniline--switch-with-cond dir
-      (uniline--direction-up↑ `(uniline--move-to-delta-line   (- ,nb)))
-      (uniline--direction-ri→ `(uniline--move-to-delta-column    ,nb) )
-      (uniline--direction-dw↓ `(uniline--move-to-delta-line      ,nb) )
-      (uniline--direction-lf← `(uniline--move-to-delta-column (- ,nb))))))
+    (let ((mnb (if (fixnump nb) (- nb) `(- ,nb))))
+      (uniline--switch-with-cond dir
+        (uniline--direction-up↑ `(uniline--move-to-delta-line   ,mnb))
+        (uniline--direction-ri→ `(uniline--move-to-delta-column , nb))
+        (uniline--direction-dw↓ `(uniline--move-to-delta-line   , nb))
+        (uniline--direction-lf← `(uniline--move-to-delta-column ,mnb))))))
 
 (eval-when-compile ; not needed at runtime
   (defmacro uniline--at-border-p (dir)
@@ -1023,9 +1024,23 @@ LIST is `uniline--glyphs-fbw'."
 
 ;; Hereafter `4quadb' means a representation of a quadrant-block
 ;; UNICODE character as a single number.  This number must hold
-;; all combinations of the 4 quarter-of-a-blocks.  Each of the 4
+;; all combinations of the 4 quarter-of-a-blocks.  Each of the 4 quarters
 ;; may be present or absent.  Therfore `4quadb' is a number from 0
 ;; to 2x2x2x2 = 16.
+;; Hereafter, the arbitrary choosen bits allocation is as follow:
+;;
+;;  2^1: here──→───╮
+;;               ╭─┴╮
+;;  2^0: here──→─┤▘▝│
+;;  2^2: here──→─┤▖▗│
+;;               ╰─┬╯
+;;  2^3: here──→───╯
+;;
+;; For instance, the character ▚ is made of two quarter blocks
+;;  - one in the up-left corner           → constant 2^0
+;;  - the other in the down-right corner  → constant 2^3
+;; The position in the `uniline--4quadb-to-char' of ▚
+;; will be 2^0 + 2^3 = 9
 
 (eval-and-compile
   (defconst uniline--4quadb-to-char
@@ -1038,6 +1053,11 @@ LIST is `uniline--glyphs-fbw'."
 A quadrant bitmap is a number in [0..16) made of 4 bits.
 Each bit says whether or not there is a quadrant-block
 at a position.
+The order of characters in this table is not important,
+provided that a particular quarter is always represented
+by the same bit, and this bit is 1 when this quarter is black.
+Everything in the code hereafter follow the choosen ordering
+of this table.
 Reverse of `uniline--char-to-4quadb'"))
 
 (eval-and-compile
@@ -1051,39 +1071,6 @@ Reverse of `uniline--char-to-4quadb'"))
         table))
     "Convert a UNICODE character to a quadrant bitmap.
 Reverse of `uniline--4quadb-to-char'"))
-
-;; Elementary 4quadb are the 4 quadrant characters with
-;; a quarter block in each of the 4 corners.
-;; We give them numbers and associated constants:
-;;
-;; uniline--quadrant-up-ri 1: here──→───╮
-;;                                    ╭─┴╮
-;; uniline--quadrant-up-lf 0: here──→─┤▘▝│
-;; uniline--quadrant-dw-lf 2: here──→─┤▖▗│
-;;                                    ╰─┬╯
-;; uniline--quadrant-dw-ri 3: here──→───╯
-;;
-;; Actually, those constants are also bit-numbers.
-;; For instance, the character ▚ is made of two quarter blocks
-;;  - one in the up-left corner           → constant 0
-;;  - the other in the down-right corner  → constant 3
-;; The position in the `uniline--4quadb-to-char' of ▚
-;; will be 2^0 + 2^3 = 9
-;; This convention makes it convenient to use bit-wise primitive
-;; like `logior' `logand' `ash'
-
-(eval-and-compile
-  (defconst uniline--quadrant-up-lf 0) (defmacro uniline--quadrant-up-lf () 0)
-  (defconst uniline--quadrant-up-ri 1) (defmacro uniline--quadrant-up-ri () 1)
-  (defconst uniline--quadrant-dw-lf 2) (defmacro uniline--quadrant-dw-lf () 2)
-  (defconst uniline--quadrant-dw-ri 3) (defmacro uniline--quadrant-dw-ri () 3))
-
-(defvar-local uniline--which-quadrant (uniline--quadrant-up-lf)
-  "Where is the quadrant cursor.
-To draw lines with quadrant-blocks like this ▙▄▟▀,
-it is required to keep track where is the
-quadrant-cursor.  It can be at 4 sub-locations:
-north-east, south-west, etc.")
 
 ;;;╭──────────────────────╮
 ;;;│Inserting a character │
@@ -1133,9 +1120,11 @@ It represents a UNICODE character like ┬ found at (point).
 If CHAR is given, use this CHAR instead of the character
 found at (point).
 Return nil if the character is not a 4halfs character."
-    `(aref
-      uniline--char-to-4halfs
-      ,(or char '(uniline--char-after)))))
+    (if (fixnump char)
+        (aref uniline--char-to-4halfs char)
+      `(aref
+        uniline--char-to-4halfs
+        ,(or char '(uniline--char-after))))))
 
 (eval-when-compile ; not needed at runtime
   (defmacro uniline--get-4quadb (&optional char)
@@ -1144,9 +1133,11 @@ It represents a UNICODE character like ▙ found at (point).
 If CHAR is given, use this CHAR instead of the character
 found at (point).
 Return nil if the character is not a 4quadb character."
-    `(aref
-      uniline--char-to-4quadb
-      ,(or char '(uniline--char-after)))))
+    (if (fixnump char)
+        (aref uniline--char-to-4quadb char)
+      `(aref
+        uniline--char-to-4quadb
+        ,(or char '(uniline--char-after))))))
 
 (eval-when-compile ; not needed at runtime
   (defsubst uniline--insert-4halfs (4halfs)
@@ -1167,6 +1158,13 @@ The (point) does not move."
 ;;;╭───────────────────────────────────────────────────────────────╮
 ;;;│Low level management of ▙▄▟▀ quadrant-blocks UNICODE characters│
 ;;;╰───────────────────────────────────────────────────────────────╯
+
+(defvar-local uniline--which-quadrant (uniline--get-4quadb ?▘)
+  "Where is the quadrant cursor.
+To draw lines with quadrant-blocks like this ▙▄▟▀,
+it is required to keep track where is the
+quadrant-cursor.  It can be at 4 sub-locations:
+north-east, south-west, etc.")
 
 (defun uniline--quadrant-undo (i)
   "Re-position `uniline--which-quadrant' on undo.
@@ -1201,7 +1199,7 @@ character at point."
           (and force 0))))
     (if bits
         (uniline--insert-4quadb
-         (logior bits (ash 1 uniline--which-quadrant))))))
+         (logior bits uniline--which-quadrant)))))
 
 (eval-when-compile ; not needed at runtime
   (defmacro uniline--clear-two-4quadb (dir)
@@ -1292,7 +1290,7 @@ Blank include:
 while staying on the same (point)."
   (eq
    (logand
-    (ash 1 uniline--which-quadrant)
+    uniline--which-quadrant
     (uniline--switch-with-table dir
       (uniline--direction-up↑ (uniline--get-4quadb ?▀))
       (uniline--direction-ri→ (uniline--get-4quadb ?▐))
@@ -1356,7 +1354,7 @@ When FORCE is not nil, overwrite a possible non-4halfs character."
                (uniline--clear-two-4quadb ,dir))))))))
 
 (eval-when-compile ; not needed at runtime
-  (defmacro uniline--write-impl (dir blockbit compbit)
+  (defmacro uniline--write-impl (dir force)
     "Move cursor in direction DIR drawing or erasing lines.
 Or extending region.
 This is an implementation function for the 4 actual functions.
@@ -1370,11 +1368,7 @@ REPEAT is the length of the line to draw or erase,
 or the number of quadrant-blocks to draw,
 or the length to extend region.
 REPEAT defaults to 1.
-When FORCE is not nil, overwrite characters which are not lines.
-BLOCKBIT and COMPBIT are bit-patterns used to manage the
-quadrant-blocks cursor `uniline--which-quadrant'.
-BLOCKBIT and COMPBIT could be deduced from DIR,
-but that would be overkill."
+When FORCE is not nil, overwrite characters which are not lines."
     (setq dir (eval dir)) ;; to convert 'uniline--direction-dw↓ into 2
     `(progn
        (unless repeat (setq repeat 1))
@@ -1385,29 +1379,54 @@ but that would be overkill."
          ;; region is marked, continue extending it
          (uniline--move-in-direction ,dir repeat)
          (setq deactivate-mark nil))
+
         ((eq uniline--brush :block)
          ;; draw quadrant-blocks ▝▙▄▌
          (cl-loop
           repeat repeat
           do
           (uniline--store-undo-quadrant-cursor)
-          (if (eq (logand uniline--which-quadrant ,blockbit) ,compbit)
+
+          (if (eq
+               (logand
+                uniline--which-quadrant
+                ,(uniline--switch-with-table dir
+                   ((uniline--direction-up↑) (uniline--get-4quadb ?▄))
+                   ((uniline--direction-ri→) (uniline--get-4quadb ?▌))
+                   ((uniline--direction-dw↓) (uniline--get-4quadb ?▀))
+                   ((uniline--direction-lf←) (uniline--get-4quadb ?▐))))
+               0)
               (uniline--move-in-direction ,dir))
+
           (setq uniline--which-quadrant
-                (logxor uniline--which-quadrant ,blockbit))
-          (uniline--write-one-4quadb force)))
+                ,(cond
+                  ((memq dir (list uniline--direction-up↑ uniline--direction-dw↓))
+                   '(uniline--switch-with-table uniline--which-quadrant
+                      ((uniline--get-4quadb ?▘) (uniline--get-4quadb ?▖))
+                      ((uniline--get-4quadb ?▖) (uniline--get-4quadb ?▘))
+                      ((uniline--get-4quadb ?▗) (uniline--get-4quadb ?▝))
+                      ((uniline--get-4quadb ?▝) (uniline--get-4quadb ?▗))))
+                  ((memq dir (list uniline--direction-ri→ uniline--direction-lf←))
+                   '(uniline--switch-with-table uniline--which-quadrant
+                      ((uniline--get-4quadb ?▘) (uniline--get-4quadb ?▝))
+                      ((uniline--get-4quadb ?▖) (uniline--get-4quadb ?▗))
+                      ((uniline--get-4quadb ?▗) (uniline--get-4quadb ?▖))
+                      ((uniline--get-4quadb ?▝) (uniline--get-4quadb ?▘))))))
+
+          (uniline--write-one-4quadb ,force)))
+
         (t
          ;; draw lines ╰──╮
          (cl-loop
           repeat repeat
           do
-          (uniline--write-one-4halfs ,dir force)
+          (uniline--write-one-4halfs ,dir ,force)
           until (uniline--at-border-p ,dir)
           do
           (uniline--move-in-direction ,dir)
           (uniline--write-one-4halfs
            ,(uniline--reverse-direction dir)
-           force)))))))
+           ,force)))))))
 
 (defun uniline-write-up↑ (repeat &optional force)
   "Move cursor up drawing or erasing glyphs, or extending region.
@@ -1422,7 +1441,7 @@ or the length to extend region.
 REPEAT defaults to 1.
 When FORCE is not nil, overwrite characters which are not lines."
   (interactive "P")
-  (uniline--write-impl uniline--direction-up↑ 2 0))
+  (uniline--write-impl uniline--direction-up↑ force))
 
 (defun uniline-write-ri→ (repeat &optional force)
   "Move cursor right drawing or erasing glyphs, or extending region.
@@ -1437,7 +1456,7 @@ or the length to extend region.
 REPEAT defaults to 1.
 When FORCE is not nil, overwrite characters which are not lines."
   (interactive "P")
-  (uniline--write-impl uniline--direction-ri→ 1 1))
+  (uniline--write-impl uniline--direction-ri→ force))
 
 (defun uniline-write-dw↓ (repeat &optional force)
   "Move cursor down drawing or erasing glyphs, or extending region.
@@ -1452,7 +1471,7 @@ or the length to extend region.
 REPEAT defaults to 1.
 When FORCE is not nil, overwrite characters which are not lines."
   (interactive "P")
-  (uniline--write-impl uniline--direction-dw↓ 2 2))
+  (uniline--write-impl uniline--direction-dw↓ force))
 
 (defun uniline-write-lf← (repeat &optional force)
   "Move cursor left drawing or erasing glyphs, or extending region.
@@ -1467,7 +1486,7 @@ or the length to extend region.
 REPEAT defaults to 1.
 When FORCE is not nil, overwrite characters which are not lines."
   (interactive "P")
-  (uniline--write-impl uniline--direction-lf← 1 0))
+  (uniline--write-impl uniline--direction-lf← force))
 
 (defun uniline-overwrite-up↑ (repeat)
   "Like `uniline-write-up↑' but overwriting.
@@ -1772,7 +1791,7 @@ When FORCE is not nil, overwrite whatever is there."
          (setq
           width  (+ width  width  1)
           height (+ height height 1)
-          uniline--which-quadrant (uniline--quadrant-up-lf)))
+          uniline--which-quadrant (uniline--get-4quadb ?▘)))
      (let ((mark-active nil)) ;; otherwise brush would be inactive
        (uniline-write-ri→ width  force)
        (uniline-write-dw↓ height force)
@@ -1809,7 +1828,7 @@ When FORCE is not nil, overwrite whatever is there."
          (setq
           width  (+ width  width  -1)
           height (+ height height -1)
-          uniline--which-quadrant (uniline--quadrant-dw-ri)))
+          uniline--which-quadrant (uniline--get-4quadb ?▗)))
      (uniline--move-to-column (1- begx))
      (uniline-write-ri→ width  force)
      (uniline-write-dw↓ height force)
@@ -2320,10 +2339,10 @@ When FORCE is not nil, overwrite whatever is in the buffer."
          (setq
           uniline--which-quadrant
           (uniline--switch-with-table dir
-            (uniline--direction-up↑ uniline--quadrant-dw-ri)
-            (uniline--direction-ri→ uniline--quadrant-dw-lf)
-            (uniline--direction-dw↓ uniline--quadrant-up-lf)
-            (uniline--direction-lf← uniline--quadrant-up-ri)))))
+            (uniline--direction-up↑ (uniline--get-4quadb ?▗))
+            (uniline--direction-ri→ (uniline--get-4quadb ?▖))
+            (uniline--direction-dw↓ (uniline--get-4quadb ?▘))
+            (uniline--direction-lf← (uniline--get-4quadb ?▝))))))
     (while
         (progn
           (cond
@@ -2338,11 +2357,10 @@ When FORCE is not nil, overwrite whatever is in the buffer."
              (eq dir (uniline--direction-lf←))
              (uniline--at-border-p uniline--direction-lf←)
              (if (eq uniline--brush :block)
-                 (memq uniline--which-quadrant
-                       (eval-when-compile
-                         (list
-                          uniline--quadrant-up-lf
-                          uniline--quadrant-dw-lf)))
+                 (eq
+                  (logand uniline--which-quadrant
+                          (uniline--get-4quadb ?▐))
+                  0)
                t))
             (while
                 (and
@@ -2350,25 +2368,24 @@ When FORCE is not nil, overwrite whatever is in the buffer."
                  (not (uniline--blank-at-point (point)))))
             (if (uniline--at-border-p uniline--direction-up↑)
                 (setq dir (uniline--direction-up↑)
-                      uniline--which-quadrant (uniline--quadrant-up-ri))
+                      uniline--which-quadrant (uniline--get-4quadb ?▝))
               (setq dir (uniline--direction-ri→)
-                    uniline--which-quadrant (uniline--quadrant-dw-lf))))
+                    uniline--which-quadrant (uniline--get-4quadb ?▖))))
            ((and
              (eq dir (uniline--direction-up↑))
              (uniline--at-border-p uniline--direction-up↑)
              (if (eq uniline--brush :block)
-                 (memq uniline--which-quadrant
-                       (eval-when-compile
-                         (list
-                          uniline--quadrant-up-lf
-                          uniline--quadrant-up-ri)))
+                 (eq
+                  (logand uniline--which-quadrant
+                          (uniline--get-4quadb ?▄))
+                  0)
                t))
             (while
                 (progn
                   (forward-char 1)
                   (not (uniline--blank-at-point (point)))))
             (setq dir (uniline--direction-dw↓))
-            (setq uniline--which-quadrant (uniline--quadrant-up-lf)))
+            (setq uniline--which-quadrant (uniline--get-4quadb ?▘)))
            (t
             (uniline--write dir force)
             (setq n (1+ n))))

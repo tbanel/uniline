@@ -56,7 +56,7 @@ RESULT is a string representing the expected result."
   (ignore-errors (kill-buffer "*uniline-interactive*"))
   (switch-to-buffer "*uniline-interactive*")
   (uniline-mode 1)
-  (setq uniline--which-quadrant (uniline--quadrant-up-lf))
+  (setq uniline--which-quadrant (uniline--get-4quadb ?▘))
   (execute-kbd-macro (kbd commands))
   
   (setq uniline-bench-result
