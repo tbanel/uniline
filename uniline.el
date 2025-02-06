@@ -1095,7 +1095,7 @@ Reverse of `uniline--4quadb-to-char'"))
 (defun uniline--insert-char (char)
   "Insert CHAR in overwrite mode avoiding cursor moving."
   ;; `insert' before `delete-char' to preserve `point-marker'
-  (insert (if (eq char ?\n) ?  char))
+  (insert char)
   (or (eolp) (delete-char 1))
   (backward-char))
 
