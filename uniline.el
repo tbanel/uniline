@@ -2356,12 +2356,11 @@ When FORCE is not nil, overwrite whatever is in the buffer."
            ((and
              (eq dir (uniline--direction-lf←))
              (uniline--at-border-p uniline--direction-lf←)
-             (if (eq uniline--brush :block)
+             (or (not (eq uniline--brush :block))
                  (eq
                   (logand uniline--which-quadrant
                           (uniline--get-4quadb ?▐))
-                  0)
-               t))
+                  0)))
             (while
                 (and
                  (= (forward-line -1) 0)
@@ -2374,12 +2373,11 @@ When FORCE is not nil, overwrite whatever is in the buffer."
            ((and
              (eq dir (uniline--direction-up↑))
              (uniline--at-border-p uniline--direction-up↑)
-             (if (eq uniline--brush :block)
+             (or (not (eq uniline--brush :block))
                  (eq
                   (logand uniline--which-quadrant
                           (uniline--get-4quadb ?▄))
-                  0)
-               t))
+                  0)))
             (while
                 (progn
                   (forward-char 1)
