@@ -13,7 +13,7 @@ File: uniline.info,  Node: Top,  Next: Getting started in 10 seconds,  Up: (dir)
 Uniline
 *******
 
-*New*: info manual
+*New*: fine tweak at the quarter character scale
 
 * Menu:
 
@@ -31,6 +31,7 @@ Uniline
 * Flood-fill::
 * Text direction::
 * Macros::
+* Fine tweaking::
 * Which fonts?::
 * Text menus (Hydra)::
 * Line spacing::
@@ -597,7 +598,7 @@ selected under ‘Uniline’.  Just type any of:
 word ‘"uniline"’.
 
 
-File: uniline.info,  Node: Macros,  Next: Which fonts?,  Prev: Text direction,  Up: Top
+File: uniline.info,  Node: Macros,  Next: Fine tweaking,  Prev: Text direction,  Up: Top
 
 14 Macros
 *********
@@ -662,9 +663,53 @@ call a macro in 4 directions, closing a square:
 
 
 
-File: uniline.info,  Node: Which fonts?,  Next: Text menus (Hydra),  Prev: Macros,  Up: Top
+File: uniline.info,  Node: Fine tweaking,  Next: Which fonts?,  Prev: Macros,  Up: Top
 
-15 Which fonts?
+15 Fine tweaking
+****************
+
+
+
+
+      convert this  ═══▶   into that
+     ╭───────────╮        ╭───────────╮
+     │╶───┬────▷ │        │╶───╮────▷ │
+     │    │      │        │    │      │
+     │           │        │           │
+     │    ▀▀▀    │        │    ▀▟▀    │
+     ╰───────────╯        ╰───────────╯
+
+
+   At the crossing of lines, it may be appealing to do small
+adjustments.  In the above example, we removed a segment of line which
+occupies 1/4 of a character.  This cannot be achieve with line tracing
+alone.  We also modified a quarter-block line in a non-obvious way.
+
+   • Put the point (the cursor) on the character where lines cross each
+     other.
+   • type ‘INS S-<right> S-<right>’
+
+   ‘<right>’ here refers to the right part of the character under the
+point.  The 1/4 line segment will cycle through all displayable forms.
+On the second stroke, no segment will be displayed, which is what we
+want.
+
+   Caveat!  The UNICODE standard does not define all possible
+combinations including double line segments.  (It does for all
+combinations of thin and tick lines).  So sometimes, when working with
+double lines, the process may be frustrating.
+
+   This works also for lines made of quarter-blocks.  There are 4
+quarter-blocks in a character, either on or off.  Each of the 4 shifted
+keyboard arrows flips a quarter-block on-and-off.
+
+   In the above example, the effect was achieved with: ‘INS S-<up>
+S-<down> S-<left>’
+
+
+File: uniline.info,  Node: Which fonts?,  Next: Text menus (Hydra),  Prev: Fine tweaking,  Up: Top
+
+16 Which fonts?
 ***************
 
 A mono-space character font must be used.  It must also support UNICODE.
@@ -717,7 +762,7 @@ font should already be available.
 
 File: uniline.info,  Node: Text menus (Hydra),  Next: Line spacing,  Prev: Which fonts?,  Up: Top
 
-16 Text menus (Hydra)
+17 Text menus (Hydra)
 *********************
 
 Casual usage of ‘Uniline’ should be easy: just move the point, and lines
@@ -767,7 +812,7 @@ the ‘~/.emacs’ buffer.
 
 File: uniline.info,  Node: Line spacing,  Next: How Uniline behaves with its environment?,  Prev: Text menus (Hydra),  Up: Top
 
-17 Line spacing
+18 Line spacing
 ***************
 
 The ‘line-spacing’ setting in Emacs can change the display of a sketch.
@@ -795,7 +840,7 @@ of choice for everyone.
 
 File: uniline.info,  Node: How Uniline behaves with its environment?,  Next: Installation,  Prev: Line spacing,  Up: Top
 
-18 How ‘Uniline’ behaves with its environment?
+19 How ‘Uniline’ behaves with its environment?
 **********************************************
 
 * Menu:
@@ -814,7 +859,7 @@ File: uniline.info,  Node: How Uniline behaves with its environment?,  Next: Ins
 
 File: uniline.info,  Node: Compatibility with Picture-mode,  Next: Compatibility with Artist-mode,  Up: How Uniline behaves with its environment?
 
-18.1 Compatibility with Picture-mode
+19.1 Compatibility with Picture-mode
 ====================================
 
 ‘Picture-mode’ and ‘uniline-mode’ are compatible.  Their features
@@ -834,7 +879,7 @@ overlap somehow:
 
 File: uniline.info,  Node: Compatibility with Artist-mode,  Next: Compatibility with Whitespace-mode,  Prev: Compatibility with Picture-mode,  Up: How Uniline behaves with its environment?
 
-18.2 Compatibility with Artist-mode
+19.2 Compatibility with Artist-mode
 ===================================
 
 ‘Artist-mode’ and ‘uniline-mode’ are mostly incompatible.  This is
@@ -846,7 +891,7 @@ large part of ‘uniline-mode’ features.
 
 File: uniline.info,  Node: Compatibility with Whitespace-mode,  Next: Compatibility with Org Mode,  Prev: Compatibility with Artist-mode,  Up: How Uniline behaves with its environment?
 
-18.3 Compatibility with Whitespace-mode
+19.3 Compatibility with Whitespace-mode
 =======================================
 
 ‘Whitespace-mode’ and ‘uniline-mode’ are mostly compatible.
@@ -868,7 +913,7 @@ attached to newlines.  And ‘uniline-mode’ makes heavy use of
 
 File: uniline.info,  Node: Compatibility with Org Mode,  Next: Org Mode and LaTex,  Prev: Compatibility with Whitespace-mode,  Up: How Uniline behaves with its environment?
 
-18.4 Compatibility with Org Mode
+19.4 Compatibility with Org Mode
 ================================
 
 You may want to customize the shift extension mode in ‘Org Mode’.  This
@@ -888,7 +933,7 @@ the buffer.
 
 File: uniline.info,  Node: Org Mode and LaTex,  Next: What about \t tabs?,  Prev: Compatibility with Org Mode,  Up: How Uniline behaves with its environment?
 
-18.5 Org Mode and LaTex
+19.5 Org Mode and LaTex
 =======================
 
 Use the ‘pmboxdraw’ LaTex module.  This gives limited support for "box
@@ -951,7 +996,7 @@ But it can recognize them.
 
 File: uniline.info,  Node: What about \t tabs?,  Next: What about ^L page separation?,  Prev: Org Mode and LaTex,  Up: How Uniline behaves with its environment?
 
-18.6 What about ‘\t’ tabs?
+19.6 What about ‘\t’ tabs?
 ==========================
 
 Some files may contain tabs (the character ‘\t’).  Those include
@@ -967,7 +1012,7 @@ invisible.  So be cautious if tabs have a special meaning in the file.
 
 File: uniline.info,  Node: What about ^L page separation?,  Next: Emacs on the Linux console,  Prev: What about \t tabs?,  Up: How Uniline behaves with its environment?
 
-18.7 What about ‘^L’ page separation?
+19.7 What about ‘^L’ page separation?
 =====================================
 
 ‘Uniline’ does not work well with ‘^L’ (page separation) character.
@@ -981,7 +1026,7 @@ characters occupy twice the width of a normal character.
 
 File: uniline.info,  Node: Emacs on the Linux console,  Next: Emacs on a graphical terminal emulator,  Prev: What about ^L page separation?,  Up: How Uniline behaves with its environment?
 
-18.8 Emacs on the Linux console
+19.8 Emacs on the Linux console
 ===============================
 
 Linux consoles are the 7 non-graphic screens which can be accessed
@@ -1001,7 +1046,7 @@ can be found here: <https://www.emacswiki.org/emacs/MissingKeys>
 
 File: uniline.info,  Node: Emacs on a graphical terminal emulator,  Next: Emacs on Windows,  Prev: Emacs on the Linux console,  Up: How Uniline behaves with its environment?
 
-18.9 Emacs on a graphical terminal emulator
+19.9 Emacs on a graphical terminal emulator
 ===========================================
 
 This is the Emacs launched from a terminal typing ‘emacs -nw’.  In this
@@ -1022,7 +1067,7 @@ file:
 
 File: uniline.info,  Node: Emacs on Windows,  Prev: Emacs on a graphical terminal emulator,  Up: How Uniline behaves with its environment?
 
-18.10 Emacs on Windows
+19.10 Emacs on Windows
 ======================
 
 On Windows the only native mono-spaced fonts are ‘Lucida Console’ and
@@ -1039,7 +1084,7 @@ unaligned result though.  They should be avoided under ‘Consolas’:
 
 File: uniline.info,  Node: Installation,  Next: Related packages,  Prev: How Uniline behaves with its environment?,  Up: Top
 
-19 Installation
+20 Installation
 ***************
 
 Add the following lines to your ‘.emacs’ file, and reload it, if not
@@ -1076,7 +1121,7 @@ combination you want.  ‘<insert>’ happens to also be the key used inside
 
 File: uniline.info,  Node: Related packages,  Next: Author contributors,  Prev: Installation,  Up: Top
 
-20 Related packages
+21 Related packages
 *******************
 
    • ‘artist-mode’: the ASCII art mode built into Emacs.
@@ -1153,7 +1198,7 @@ File: uniline.info,  Node: Related packages,  Next: Author contributors,  Prev: 
 
 File: uniline.info,  Node: Author contributors,  Next: License,  Prev: Related packages,  Up: Top
 
-21 Author, contributors
+22 Author, contributors
 ***********************
 
    • Thierry Banel, author
@@ -1168,7 +1213,7 @@ File: uniline.info,  Node: Author contributors,  Next: License,  Prev: Related p
 
 File: uniline.info,  Node: License,  Prev: Author contributors,  Up: Top
 
-22 License
+23 License
 **********
 
 Copyright (C) 2024-2025 Thierry Banel
@@ -1190,38 +1235,39 @@ along with this program.  If not, see <http://www.gnu.org/licenses/>.
 
 Tag Table:
 Node: Top75
-Node: Getting started in 10 seconds1143
-Node: Pure UNICODE text diagrams in Emacs1473
-Node: Minor mode9091
-Node: Drawing lines9639
-Node: Brush style10315
-Node: The <insert> key11035
-Node: Arrows glyphs ▷ ▶ → ▹ ▸ ↔11869
-Node: Intersection glyphs ■ ◆ ●13177
-Node: Drawing rectangles15825
-Node: Moving rectangles17799
-Node: Tracing a contour19676
-Node: Flood-fill21443
-Node: Text direction23192
-Node: Macros23733
-Node: Which fonts?27093
-Node: Text menus (Hydra)28941
-Node: Line spacing30901
-Node: How Uniline behaves with its environment?32329
-Node: Compatibility with Picture-mode32881
-Node: Compatibility with Artist-mode33799
-Node: Compatibility with Whitespace-mode34318
-Node: Compatibility with Org Mode35218
-Node: Org Mode and LaTex36004
-Node: What about \t tabs?37905
-Node: What about ^L page separation?38553
-Node: Emacs on the Linux console39176
-Node: Emacs on a graphical terminal emulator40130
-Node: Emacs on Windows41053
-Node: Installation41700
-Node: Related packages42731
-Node: Author contributors45438
-Node: License45898
+Node: Getting started in 10 seconds1191
+Node: Pure UNICODE text diagrams in Emacs1521
+Node: Minor mode9139
+Node: Drawing lines9687
+Node: Brush style10363
+Node: The <insert> key11083
+Node: Arrows glyphs ▷ ▶ → ▹ ▸ ↔11917
+Node: Intersection glyphs ■ ◆ ●13225
+Node: Drawing rectangles15873
+Node: Moving rectangles17847
+Node: Tracing a contour19724
+Node: Flood-fill21491
+Node: Text direction23240
+Node: Macros23781
+Node: Fine tweaking27142
+Node: Which fonts?28937
+Node: Text menus (Hydra)30792
+Node: Line spacing32752
+Node: How Uniline behaves with its environment?34180
+Node: Compatibility with Picture-mode34732
+Node: Compatibility with Artist-mode35650
+Node: Compatibility with Whitespace-mode36169
+Node: Compatibility with Org Mode37069
+Node: Org Mode and LaTex37855
+Node: What about \t tabs?39756
+Node: What about ^L page separation?40404
+Node: Emacs on the Linux console41027
+Node: Emacs on a graphical terminal emulator41981
+Node: Emacs on Windows42904
+Node: Installation43551
+Node: Related packages44582
+Node: Author contributors47289
+Node: License47749
 
 End Tag Table
 
