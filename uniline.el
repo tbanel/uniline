@@ -2257,16 +2257,65 @@ See `uniline--insert-glyph'."
   (uniline--insert-glyph 'x t repeat))
 ;; END -- Automatically generated
 
-(defun uniline--rotate-arrow (dir)
-  "Rotate an arrow so it points toward DIR."
-  (let ((ligne
-         (gethash
-          (uniline--char-after)
-          uniline--glyphs-reverse-hash-fw)))
-    (when (car ligne) ;; if (point) is on a directional arrow
-      (uniline--insert-char ;; then change its direction
-       (nth (1+ dir) (cadr ligne)))
-      (setq uniline--arrow-direction dir))))
+(eval-when-compile ; not needed at runtime
+  (defmacro uniline--rotate-arrow (dir)
+    "Rotate an arrow, or tweak a 4halfs or a 4quadb.
+- If character under point is a known arrow, turn it in DIR direction.
+- If character under point is a combination of 4halfs lines,
+then change the 4half segment pointing in the DIR direction.
+Repeateadly changing in the same direction cycles through at most
+4 characters (with thin, thick, double, or no line at all in DIR
+direction). Sometimes, the cycle is shorter than 4, because UNICODE
+does not define all combinations of 4halfs when one of them is a
+double line.
+- If character under point is a combination of 4quadb blocks,
+then flip the block in DIR direction on-and-off. As the blocks are
+in the 4 corners of the character, DIR cannot point exactly to a block.
+Instead DIR is twisted 45° from the actual direction of the block."
+    (setq dir (eval dir)) ; turn symbol like --direction-dw↓ to number like 2
+    (let* ((dir1 (1+ dir))
+           (dir2 (* 2 dir))
+           (ash3dir2 (ash 3 dir2))
+           (ash1dir2 (ash 1 dir2))
+           (notash3dir2 (lognot ash3dir2))
+           (dir4
+            (uniline--get-4quadb
+             (uniline--switch-with-table dir
+               (uniline--direction-up↑ ?▘)
+               (uniline--direction-ri→ ?▝)
+               (uniline--direction-dw↓ ?▗)
+               (uniline--direction-lf← ?▖)))))
+
+      `(let ((pat                       ; pattern
+              (gethash
+               (uniline--char-after)
+               uniline--glyphs-reverse-hash-fw)))
+         (cond
+          ;; If (point) is on a directional arrow
+          ((car pat)
+           (uniline--insert-char        ; then change its direction
+            (nth ,dir1 (cadr pat)))
+           (setq uniline--arrow-direction ,dir))
+
+          ;; If point is on lines crossing
+          ((setq pat (uniline--get-4halfs))
+           (let ((patdir (logand pat ,   ash3dir2)) ; pattern in DIR
+                 (patnot (logand pat ,notash3dir2)) ; pattern not in DIR
+                 patnew)                            ; new pattern to insert
+             (while               ; search for valid UNICODE
+                 (progn           ; with one 4half segment changed
+                   (setq patdir (logand (+ patdir ,ash1dir2) ,ash3dir2))
+                   (setq patnew (logior patnot patdir))
+                   (not
+                    (eq
+                     (uniline--get-4halfs
+                      (aref uniline--4halfs-to-char patnew))
+                     patnew))))
+             (uniline--insert-4halfs patnew)))
+
+          ;; If point is on a quarter-char
+          ((setq pat (uniline--get-4quadb))
+           (uniline--insert-4quadb (logxor pat ,dir4))))))))
 
 ;; Run the following cl-loop to automatically write a bunch
 ;; of 4 interactive functions
@@ -2281,27 +2330,42 @@ See `uniline--insert-glyph'."
    do
     (cl-prettyprint
      `(defun ,(intern (format "uniline-rotate-%s" dir)) ()
-        ,(format "Rotate an arrow so it points toward %s." dir)
+        ,(format "Rotate an arrow or tweak 4halfs.
+If character under point is an arrow, turn it %s.
+If character under point is a combination of 4halfs lines,
+then change the 4half segment pointing %s."
+                 dir dir)
         (interactive)
         (uniline--rotate-arrow (,(intern (format "uniline--direction-%s" dir)))))))
   (insert "\n;; END -- Automatically generated\n"))
-
 ;; BEGIN -- Automatically generated
 
 (defun uniline-rotate-up↑ nil
-  "Rotate an arrow so it points toward up↑."
+  "Rotate an arrow or tweak 4halfs.
+If character under point is an arrow, turn it up↑.
+If character under point is a combination of 4halfs lines,
+then change the 4half segment pointing up↑."
   (interactive)
   (uniline--rotate-arrow (uniline--direction-up↑)))
 (defun uniline-rotate-ri→ nil
-  "Rotate an arrow so it points toward ri→."
+  "Rotate an arrow or tweak 4halfs.
+If character under point is an arrow, turn it ri→.
+If character under point is a combination of 4halfs lines,
+then change the 4half segment pointing ri→."
   (interactive)
   (uniline--rotate-arrow (uniline--direction-ri→)))
 (defun uniline-rotate-dw↓ nil
-  "Rotate an arrow so it points toward dw↓."
+  "Rotate an arrow or tweak 4halfs.
+If character under point is an arrow, turn it dw↓.
+If character under point is a combination of 4halfs lines,
+then change the 4half segment pointing dw↓."
   (interactive)
   (uniline--rotate-arrow (uniline--direction-dw↓)))
 (defun uniline-rotate-lf← nil
-  "Rotate an arrow so it points toward lf←."
+  "Rotate an arrow or tweak 4halfs.
+If character under point is an arrow, turn it lf←.
+If character under point is a combination of 4halfs lines,
+then change the 4half segment pointing lf←."
   (interactive)
   (uniline--rotate-arrow (uniline--direction-lf←)))
 ;; END -- Automatically generated
@@ -2486,9 +2550,9 @@ When FORCE is not nil, overwrite whatever is in the buffer."
 ╭^─^─^Insert glyph^─────╮╭^Rotate arrow^╮╭^Text dir────^╮╭^─Contour─^╮╭^─^─^─^─^─^─^─^────────────╮
 │_a_,_A_rrow ▷ ▶ → ▹ ▸ ↔││_S-<left>_  ← ││_C-<left>_  ← ││_c_ contour││_-_ _+_ _=_ _#_ self-insert│
 │_s_,_S_quare  □ ■ ◇ ◆ ◊││_S-<right>_ → ││_C-<right>_ → ││_C_ ovwrt  ││_f_ ^^^^^^      choose font│
-│_o_,_O_-shape · ● ◦ Ø ø││_S-<up>_    ↑ ││_C-<up>_    ↑ │╭^─Fill────^╮│_TAB_   ^^^^^^  short hint │
+│_o_,_O_-shape · ● ◦ Ø ø││_S-<up>_    ↑ ││_C-<up>_    ↑ │╭^─────────^╮│_TAB_   ^^^^^^  short hint │
 │_x_,_X_-cross ╳ ÷ × ± ¤││_S-<down>_  ↓ ││_C-<down>_  ↓ ││_i_ fill   ││_q_ _RET_ ^^^^  exit       │
-╰^─^─^─^────────────────╯╰^─^───────────╯╰^─^───────────╯╰^─^────────╯╰^─^─^─^─^─^─^─^────────────╯"))
+╰^─^─^─^────────────────╯╰^Tweak glyph─^╯╰^─^───────────╯╰^─Fill────^╯╰^─^─^─^─^─^─^─^────────────╯"))
   ("a" uniline-insert-fw-arrow )
   ("A" uniline-insert-bw-arrow )
   ("s" uniline-insert-fw-square)
@@ -2646,7 +2710,7 @@ text within will be colored."
       ,uniline-hydra-arrows/hint
     ,(eval-when-compile
        (uniline--color-hint
-        "glyph:^aAsSoOxX-+=#^ arr-dir:^S-←→↑↓^ text-dir:^C-←→↑↓^ ^c^-ontour f-^i^-ll ^f^-onts ^TAB^")))
+        "glyph:^aAsSoOxX-+=#^ arr&tweak:^S-←→↑↓^ text-dir:^C-←→↑↓^ ^c^-ontour f-^i^-ll ^f^-onts ^TAB^")))
  uniline-hydra-fonts/hint
  `(if (eq uniline-hint-style t)
       ,uniline-hydra-fonts/hint
@@ -2839,6 +2903,11 @@ And backup previous settings."
 │ \\[uniline-hydra-arrows/uniline-rotate-ri→]	point arrow → right
 │ \\[uniline-hydra-arrows/uniline-rotate-up↑]	point arrow ↑ up
 │ \\[uniline-hydra-arrows/uniline-rotate-dw↓]	point arrow ↓ down
+├─Tweak 1/4 line─────────────╴
+│ \\[uniline-hydra-arrows/uniline-rotate-lf←]	change ¼ line ← left
+│ \\[uniline-hydra-arrows/uniline-rotate-ri→]	change ¼ line → right
+│ \\[uniline-hydra-arrows/uniline-rotate-up↑]	change ¼ line ↑ up
+│ \\[uniline-hydra-arrows/uniline-rotate-dw↓]	change ¼ line ↓ down
 ├─Text direction─────────────╴
 │ Usually when typing text, cursor moves to the right.
 │ \\[uniline-hydra-arrows/uniline-text-direction-up↑-and-exit]	text goes up   ↑
@@ -2955,10 +3024,10 @@ And backup previous settings."
      ["insert square □ ■ ◇ ◆ ◊"  uniline-insert-fw-square :keys "INS s"]
      ["insert oshape · ● ◦ Ø ø"  uniline-insert-fw-oshape :keys "INS o"]
      ["insert cross ╳ ÷ × ± ¤"   uniline-insert-fw-cross  :keys "INS x"]
-     ["rotate arrow → right"     uniline-rotate-ri→ :keys "INS S-<right>"]
-     ["rotate arrow ↑ up"        uniline-rotate-up↑ :keys "INS S-<up>   "]
-     ["rotate arrow ← left"      uniline-rotate-lf← :keys "INS S-<left> "]
-     ["rotate arrow ↓ down"      uniline-rotate-dw↓ :keys "INS S-<down> "])
+     ["rotate arrow, tweak ¼ line → right" uniline-rotate-ri→ :keys "INS S-<right>"]
+     ["rotate arrow, tweak ¼ line ↑ up"    uniline-rotate-up↑ :keys "INS S-<up>   "]
+     ["rotate arrow, tweak ¼ line ← left"  uniline-rotate-lf← :keys "INS S-<left> "]
+     ["rotate arrow, tweak ¼ line ↓ down"  uniline-rotate-dw↓ :keys "INS S-<down> "])
     ("Rectangular region" :active (region-active-p)
      ["move selection right" uniline-move-rect-ri→ :keys "INS <right>"]
      ["move selection left"  uniline-move-rect-lf← :keys "INS <left> "]

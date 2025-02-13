@@ -3,7 +3,7 @@
 #+OPTIONS: ^:{} authors:Thierry Banel, toc:nil
 #+LATEX_HEADER: \usepackage{pmboxdraw}
 
-*New*: info manual
+*New*: fine tweak at the quarter character scale
 
 * Getting started in 10 seconds
 
@@ -582,6 +582,47 @@ call a macro in 4 directions, closing a square:
   ╰╯╰╯╰╯╰╯╰╯╰╯      ▽ ▽ ▽ ▽ ▽ ▽     ╰─╯ ╰─╯ ╰─╯ ╰─╯       ╰─╯ ╰─╯ ╰─╯ ╰─╯
 
 #+end_example
+
+* Fine tweaking
+
+[[file:images/fine-tweaking.png]]
+
+#+begin_example
+
+    convert this  ═══▶   into that
+   ╭───────────╮        ╭───────────╮
+   │╶───┬────▷ │        │╶───╮────▷ │
+   │    │      │        │    │      │
+   │           │        │           │
+   │    ▀▀▀    │        │    ▀▟▀    │
+   ╰───────────╯        ╰───────────╯
+
+#+end_example
+
+At the crossing of lines, it may be appealing to do small
+adjustments. In the above example, we removed a segment of line which
+occupies 1/4 of a character. This cannot be achieve with line tracing
+alone. We also modified a quarter-block line in a non-obvious way.
+
+- Put the point (the cursor) on the character where lines cross each other.
+- type =INS S-<right> S-<right>=
+
+=<right>= here refers to the right part of the character under the
+point. The 1/4 line segment will cycle through all displayable
+forms. On the second stroke, no segment will be displayed, which is
+what we want.
+
+Caveat! The UNICODE standard does not define all possible combinations
+including double line segments. (It does for all combinations of thin
+and tick lines). So sometimes, when working with double lines, the
+process may be frustrating.
+
+This works also for lines made of quarter-blocks. There are 4
+quarter-blocks in a character, either on or off. Each of the 4 shifted
+keyboard arrows flips a quarter-block on-and-off.
+
+In the above example, the effect was achieved with:
+=INS S-<up> S-<down> S-<left>=
 
 * Which fonts?
 A mono-space character font must be used. It must also support UNICODE.
