@@ -198,12 +198,12 @@ Exchange left with right, up with down."
 
 (defsubst uniline--turn-right (dir)
   "Return DIR turned 90° clockwise.
-DIR & returned value are in [0,1,2,3]."
+DIR & returned values are in [0,1,2,3]."
   (mod (1+ dir) 4))
 
 (defsubst uniline--turn-left (dir)
   "Return DIR turned 90° anti-clockwise.
-DIR & returned value are in [0,1,2,3]."
+DIR & returned values are in [0,1,2,3]."
   (mod (1- dir) 4))
 
 (defsubst uniline--move-to-column (x)
@@ -1597,14 +1597,13 @@ Assumes that a selection is active.
 The variables
   BEG BEGX BEGY  (point, column, line of beginning)
   END ENDX ENDY  (point, column, line of ending)
-  WIDTH HEIGHT   (of selection)
 are made available to BODY for easy handling of the selection.
 The selection may be reversed in any way, the variables
 are sets as if the selection was made from
 the upper-most, left-most to the lower-most, right-most points.
 It works even when in `rectangle-mark-mode'.
 Note that ENDX & ENDY point outside the selection in such a way that
-WIDTH=ENDX-BEGX, HEIGHT=ENDY-BEGY
+ENDX-BEGX is the width of the rectangle, ENDY-BEGY is the height
 After execution of the body, selection is activated
 from BEGX,BEGY inclusive to ENDX,ENDY exclusive
 in `rectangle-mark-mode'."
@@ -1620,8 +1619,8 @@ in `rectangle-mark-mode'."
               (endy (line-number-at-pos)))
          (when (< endx begx)
            (setq endx (prog1 begx (setq begx endx)))
-           (setq beg (+ beg begx (- endx)))
-           (setq end (+ end endx (- begx))))
+           (setq beg (+ beg (- begx endx)))
+           (setq end (+ end (- endx begx))))
          ,@body
          (uniline--move-to-lin-col (1- endy) endx)
          (set-mark (point))
