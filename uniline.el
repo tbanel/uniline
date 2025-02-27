@@ -1114,7 +1114,7 @@ nil: no action except cursor movements
 :block block drawing like ▙▄▟▀")
 
 (eval-when-compile ; not needed at runtime
-  (defmacro uniline--get-4halfs (&optional char)
+  (defmacro uniline--4halfs-after (&optional char)
     "Return a bit pattern (a 4halfs).
 It represents a UNICODE character like ┬ found at (point).
 If CHAR is given, use this CHAR instead of the character
@@ -1127,7 +1127,7 @@ Return nil if the character is not a 4halfs character."
         ,(or char '(uniline--char-after))))))
 
 (eval-when-compile ; not needed at runtime
-  (defmacro uniline--get-4quadb (&optional char)
+  (defmacro uniline--4quadb-after (&optional char)
     "Return a bit pattern (a 4quadb).
 It represents a UNICODE character like ▙ found at (point).
 If CHAR is given, use this CHAR instead of the character
@@ -1159,7 +1159,7 @@ The (point) does not move."
 ;;;│Low level management of ▙▄▟▀ quadrant-blocks UNICODE characters│
 ;;;╰───────────────────────────────────────────────────────────────╯
 
-(defvar-local uniline--which-quadrant (uniline--get-4quadb ?▘)
+(defvar-local uniline--which-quadrant (uniline--4quadb-after ?▘)
   "Where is the quadrant cursor.
 To draw lines with quadrant-blocks like this ▙▄▟▀,
 it is required to keep track where is the
@@ -1195,7 +1195,7 @@ character at point."
       (uniline--insert-char ? ))
   (let ((bits
          (or
-          (uniline--get-4quadb)
+          (uniline--4quadb-after)
           (and force 0))))
     (if bits
         (uniline--insert-4quadb
@@ -1207,22 +1207,22 @@ character at point."
 Assume that point is on a quadrant-block character.
 Clear the half of this character pointing in DIR direction."
     (setq dir (eval dir))
-    `(let ((bits (uniline--get-4quadb)))
+    `(let ((bits (uniline--4quadb-after)))
        (if bits
            (uniline--insert-4quadb
             (logand
              bits
              ,(uniline--switch-with-table dir
-                (uniline--direction-up↑ (uniline--get-4quadb ?▄))
-                (uniline--direction-ri→ (uniline--get-4quadb ?▌))
-                (uniline--direction-dw↓ (uniline--get-4quadb ?▀))
-                (uniline--direction-lf← (uniline--get-4quadb ?▐)))))))))
+                (uniline--direction-up↑ (uniline--4quadb-after ?▄))
+                (uniline--direction-ri→ (uniline--4quadb-after ?▌))
+                (uniline--direction-dw↓ (uniline--4quadb-after ?▀))
+                (uniline--direction-lf← (uniline--4quadb-after ?▐)))))))))
 
 ;;;╭────────────────────────────╮
 ;;;│Test blanks in the neighbour│
 ;;;╰────────────────────────────╯
 
-(defun uniline--blank-at-point (p)
+(defun uniline--blank-after (p)
   "Return non-nil if P points to a 4halfs or 4quadb character.
 This includes
 - a blank
@@ -1238,8 +1238,8 @@ virtue of the infinite buffer."
    (let ((c (char-after p)))
      (or
       (eq c ?\n)
-      (uniline--get-4halfs c)
-      (uniline--get-4quadb c)))))
+      (uniline--4halfs-after c)
+      (uniline--4quadb-after c)))))
 
 (eval-when-compile ; not needed at runtime
   (defmacro uniline--neighbour-point (dir)
@@ -1278,7 +1278,7 @@ Blank include:
 - 4quad drawing character like ▙
 - new line
 - neighbour is outside buffer."
-  (uniline--blank-at-point
+  (uniline--blank-after
    (uniline--switch-with-cond dir
      (uniline--direction-up↑ (uniline--neighbour-point uniline--direction-up↑))
      (uniline--direction-ri→ (uniline--neighbour-point uniline--direction-ri→))
@@ -1292,10 +1292,10 @@ while staying on the same (point)."
    (logand
     uniline--which-quadrant
     (uniline--switch-with-table dir
-      (uniline--direction-up↑ (uniline--get-4quadb ?▀))
-      (uniline--direction-ri→ (uniline--get-4quadb ?▐))
-      (uniline--direction-dw↓ (uniline--get-4quadb ?▄))
-      (uniline--direction-lf← (uniline--get-4quadb ?▌))))
+      (uniline--direction-up↑ (uniline--4quadb-after ?▀))
+      (uniline--direction-ri→ (uniline--4quadb-after ?▐))
+      (uniline--direction-dw↓ (uniline--4quadb-after ?▄))
+      (uniline--direction-lf← (uniline--4quadb-after ?▌))))
    0))
 
 (defun uniline--blank-neighbour (dir)
@@ -1334,7 +1334,7 @@ When FORCE is not nil, overwrite a possible non-4halfs character."
        (if (eolp)
            (uniline--insert-char ? ))
        (if uniline--brush
-           (let ((bits (or (uniline--get-4halfs) (and ,force 0))))
+           (let ((bits (or (uniline--4halfs-after) (and ,force 0))))
              (cond
               ;; 1st case: (char-after) is a line-character like ╶┤,
               ;; or any character if FORCE
@@ -1391,10 +1391,10 @@ When FORCE is not nil, overwrite characters which are not lines."
                (logand
                 uniline--which-quadrant
                 ,(uniline--switch-with-table dir
-                   ((uniline--direction-up↑) (uniline--get-4quadb ?▄))
-                   ((uniline--direction-ri→) (uniline--get-4quadb ?▌))
-                   ((uniline--direction-dw↓) (uniline--get-4quadb ?▀))
-                   ((uniline--direction-lf←) (uniline--get-4quadb ?▐))))
+                   ((uniline--direction-up↑) (uniline--4quadb-after ?▄))
+                   ((uniline--direction-ri→) (uniline--4quadb-after ?▌))
+                   ((uniline--direction-dw↓) (uniline--4quadb-after ?▀))
+                   ((uniline--direction-lf←) (uniline--4quadb-after ?▐))))
                0)
               (uniline--move-in-direction ,dir))
 
@@ -1402,16 +1402,16 @@ When FORCE is not nil, overwrite characters which are not lines."
                 ,(cond
                   ((memq dir (list uniline--direction-up↑ uniline--direction-dw↓))
                    '(uniline--switch-with-table uniline--which-quadrant
-                      ((uniline--get-4quadb ?▘) (uniline--get-4quadb ?▖))
-                      ((uniline--get-4quadb ?▖) (uniline--get-4quadb ?▘))
-                      ((uniline--get-4quadb ?▗) (uniline--get-4quadb ?▝))
-                      ((uniline--get-4quadb ?▝) (uniline--get-4quadb ?▗))))
+                      ((uniline--4quadb-after ?▘) (uniline--4quadb-after ?▖))
+                      ((uniline--4quadb-after ?▖) (uniline--4quadb-after ?▘))
+                      ((uniline--4quadb-after ?▗) (uniline--4quadb-after ?▝))
+                      ((uniline--4quadb-after ?▝) (uniline--4quadb-after ?▗))))
                   ((memq dir (list uniline--direction-ri→ uniline--direction-lf←))
                    '(uniline--switch-with-table uniline--which-quadrant
-                      ((uniline--get-4quadb ?▘) (uniline--get-4quadb ?▝))
-                      ((uniline--get-4quadb ?▖) (uniline--get-4quadb ?▗))
-                      ((uniline--get-4quadb ?▗) (uniline--get-4quadb ?▖))
-                      ((uniline--get-4quadb ?▝) (uniline--get-4quadb ?▘))))))
+                      ((uniline--4quadb-after ?▘) (uniline--4quadb-after ?▝))
+                      ((uniline--4quadb-after ?▖) (uniline--4quadb-after ?▗))
+                      ((uniline--4quadb-after ?▗) (uniline--4quadb-after ?▖))
+                      ((uniline--4quadb-after ?▝) (uniline--4quadb-after ?▘))))))
 
           (uniline--write-one-4quadb ,force)))
 
@@ -1647,11 +1647,11 @@ Then the leakage of the two glyphs fills in E:
     ┗╸"
     (setq dir (eval dir))
     (let ((odir (uniline--reverse-direction dir)))
-      `(let ((here (or (uniline--get-4halfs) 0))
+      `(let ((here (or (uniline--4halfs-after) 0))
              (prev    ; char preceding (point) as a 4halfs-bit-pattern
               (let ((p (uniline--neighbour-point ,odir)))
                 (or
-                 (and p (uniline--get-4halfs (uniline--char-after p)))
+                 (and p (uniline--4halfs-after (uniline--char-after p)))
                  0))))
          ;; mask pairs of bits in the desired direction
          (setq
@@ -1790,7 +1790,7 @@ When FORCE is not nil, overwrite whatever is there."
          (setq
           width  (+ width  width  1)
           height (+ height height 1)
-          uniline--which-quadrant (uniline--get-4quadb ?▘)))
+          uniline--which-quadrant (uniline--4quadb-after ?▘)))
      (let ((mark-active nil)) ;; otherwise brush would be inactive
        (uniline-write-ri→ width  force)
        (uniline-write-dw↓ height force)
@@ -1827,7 +1827,7 @@ When FORCE is not nil, overwrite whatever is there."
          (setq
           width  (+ width  width  -1)
           height (+ height height -1)
-          uniline--which-quadrant (uniline--get-4quadb ?▗)))
+          uniline--which-quadrant (uniline--4quadb-after ?▗)))
      (uniline--move-to-column (1- begx))
      (uniline-write-ri→ width  force)
      (uniline-write-dw↓ height force)
@@ -2278,7 +2278,7 @@ Instead DIR is twisted 45° from the actual direction of the block."
            (ash1dir2 (ash 1 dir2))
            (notash3dir2 (lognot ash3dir2))
            (dir4
-            (uniline--get-4quadb
+            (uniline--4quadb-after
              (uniline--switch-with-table dir
                (uniline--direction-up↑ ?▘)
                (uniline--direction-ri→ ?▝)
@@ -2297,7 +2297,7 @@ Instead DIR is twisted 45° from the actual direction of the block."
            (setq uniline--arrow-direction ,dir))
 
           ;; If point is on lines crossing
-          ((setq pat (uniline--get-4halfs))
+          ((setq pat (uniline--4halfs-after))
            (let ((patdir (logand pat ,   ash3dir2)) ; pattern in DIR
                  (patnot (logand pat ,notash3dir2)) ; pattern not in DIR
                  patnew)                            ; new pattern to insert
@@ -2307,13 +2307,13 @@ Instead DIR is twisted 45° from the actual direction of the block."
                    (setq patnew (logior patnot patdir))
                    (not
                     (eq
-                     (uniline--get-4halfs
+                     (uniline--4halfs-after
                       (aref uniline--4halfs-to-char patnew))
                      patnew))))
              (uniline--insert-4halfs patnew)))
 
           ;; If point is on a quarter-char
-          ((setq pat (uniline--get-4quadb))
+          ((setq pat (uniline--4quadb-after))
            (uniline--insert-4quadb (logxor pat ,dir4))))))))
 
 ;; Run the following cl-loop to automatically write a bunch
@@ -2382,7 +2382,7 @@ The style of the contour is determined by the current brush.
 This includes possibly the eraser, which erases an actual contour.
 When FORCE is not nil, overwrite whatever is in the buffer."
   (interactive)
-  (while (not (uniline--blank-at-point (point)))
+  (while (not (uniline--blank-after (point)))
     (uniline--move-to-delta-column 1))
 
   (let ((dir (uniline--direction-dw↓))
@@ -2402,10 +2402,10 @@ When FORCE is not nil, overwrite whatever is in the buffer."
          (setq
           uniline--which-quadrant
           (uniline--switch-with-table dir
-            (uniline--direction-up↑ (uniline--get-4quadb ?▗))
-            (uniline--direction-ri→ (uniline--get-4quadb ?▖))
-            (uniline--direction-dw↓ (uniline--get-4quadb ?▘))
-            (uniline--direction-lf← (uniline--get-4quadb ?▝))))))
+            (uniline--direction-up↑ (uniline--4quadb-after ?▗))
+            (uniline--direction-ri→ (uniline--4quadb-after ?▖))
+            (uniline--direction-dw↓ (uniline--4quadb-after ?▘))
+            (uniline--direction-lf← (uniline--4quadb-after ?▝))))))
     (while
         (progn
           (cond
@@ -2422,31 +2422,31 @@ When FORCE is not nil, overwrite whatever is in the buffer."
              (or (not (eq uniline--brush :block))
                  (eq
                   (logand uniline--which-quadrant
-                          (uniline--get-4quadb ?▐))
+                          (uniline--4quadb-after ?▐))
                   0)))
             (while
                 (and
                  (= (forward-line -1) 0)
-                 (not (uniline--blank-at-point (point)))))
+                 (not (uniline--blank-after (point)))))
             (if (uniline--at-border-p uniline--direction-up↑)
                 (setq dir (uniline--direction-up↑)
-                      uniline--which-quadrant (uniline--get-4quadb ?▝))
+                      uniline--which-quadrant (uniline--4quadb-after ?▝))
               (setq dir (uniline--direction-ri→)
-                    uniline--which-quadrant (uniline--get-4quadb ?▖))))
+                    uniline--which-quadrant (uniline--4quadb-after ?▖))))
            ((and
              (eq dir (uniline--direction-up↑))
              (uniline--at-border-p uniline--direction-up↑)
              (or (not (eq uniline--brush :block))
                  (eq
                   (logand uniline--which-quadrant
-                          (uniline--get-4quadb ?▄))
+                          (uniline--4quadb-after ?▄))
                   0)))
             (while
                 (progn
                   (forward-char 1)
-                  (not (uniline--blank-at-point (point)))))
+                  (not (uniline--blank-after (point)))))
             (setq dir (uniline--direction-dw↓))
-            (setq uniline--which-quadrant (uniline--get-4quadb ?▘)))
+            (setq uniline--which-quadrant (uniline--4quadb-after ?▘)))
            (t
             (uniline--write dir force)
             (setq n (1+ n))))
