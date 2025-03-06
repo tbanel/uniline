@@ -65,7 +65,7 @@ File: uniline.info,  Node: Getting started in 10 seconds,  Next: Pure UNICODE te
 *******************************
 
    • Type ‘M-x uniline-mode’
-   • Move cursor with the arrow-keys on the keyboard ‘→ ↑ ↓ ←’
+   • Move cursor with the arrow-keys on the keyboard ‘→ ← ↑ ↓’
    • Quit ‘C-c C-c’
 
 

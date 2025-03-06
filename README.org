@@ -8,7 +8,7 @@
 * Getting started in 10 seconds
 
 - Type =M-x uniline-mode=
-- Move cursor with the arrow-keys on the keyboard =→ ↑ ↓ ←=
+- Move cursor with the arrow-keys on the keyboard =→ ← ↑ ↓=
 - Quit =C-c C-c=
 
 * Pure UNICODE text diagrams in Emacs

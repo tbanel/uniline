@@ -339,7 +339,7 @@ Each of those half lines may have one of 4 styles:
   2: thick line
   3: double line
 Example: ╀ has description 2 1 1 1
-thick=2 upward, and thin=1 in the other direction
+thick=2 upward, and thin=1 in the other directions
 The parameter URLD is a list of 4 numbers in [0..3]
 for the 4 directions.
 A single number encoding all possible combinations has a
@@ -1576,13 +1576,13 @@ identical characters."
           (goto-char (pop stack))
           (when (eq (char-after) currentchar) ; not (uniline--char-after) !
             (uniline--insert-char char)
-            (if (setq p (uniline--neighbour-point uniline-direction-lf←))
+            (if (setq p (uniline--neighbour-point uniline-direction-up↑))
                 (push p stack))
             (if (setq p (uniline--neighbour-point uniline-direction-ri→))
                 (push p stack))
-            (if (setq p (uniline--neighbour-point uniline-direction-up↑))
-                (push p stack))
             (if (setq p (uniline--neighbour-point uniline-direction-dw↓))
+                (push p stack))
+            (if (setq p (uniline--neighbour-point uniline-direction-lf←))
                 (push p stack)))))))
 
 ;;;╭───────────────────────────────────╮
@@ -1912,15 +1912,15 @@ This hook fixes the cursor movement according to `uniline-text-direction'"
          (mn (- pn)))
     (uniline--switch-with-cond uniline-text-direction
       (uniline-direction-ri→ ()) ;; nothing to fix
+      (uniline-direction-lf←
+       (forward-char mn)
+       (uniline-move-to-delta-column mn))
       (uniline-direction-dw↓
        (forward-char mn)
        (uniline-move-to-delta-line pn))
       (uniline-direction-up↑
        (forward-char mn)
        (uniline-move-to-delta-line mn))
-      (uniline-direction-lf←
-       (forward-char mn)
-       (uniline-move-to-delta-column mn))
       (nil))))
 
 (defun uniline-text-direction-up↑ ()
@@ -1961,20 +1961,20 @@ Each entry has 2 slots:
       ;;   ╭─keystroke as used in keyboard macros
       ;;   │      ╭─direction of the keystroke
       ;;   │      │      shift-control modifiers╮
-      ;;   │      │                      ╭──────╯
-      ;;   ▽      ▽                      ▽
+      ;;   │      │                     ╭───────╯
+      ;;   ▽      ▽                     ▽
+      (  up    ,uniline-direction-up↑)
       (  right ,uniline-direction-ri→)
       (  down  ,uniline-direction-dw↓)
       (  left  ,uniline-direction-lf←)
-      (  up    ,uniline-direction-up↑)
+      (S-up    ,uniline-direction-up↑ . S)
       (S-right ,uniline-direction-ri→ . S)
       (S-down  ,uniline-direction-dw↓ . S)
       (S-left  ,uniline-direction-lf← . S)
-      (S-up    ,uniline-direction-up↑ . S)
+      (C-up    ,uniline-direction-up↑ . C)
       (C-right ,uniline-direction-ri→ . C)
       (C-down  ,uniline-direction-dw↓ . C)
-      (C-left  ,uniline-direction-lf← . C)
-      (C-up    ,uniline-direction-up↑ . C))
+      (C-left  ,uniline-direction-lf← . C))
     "Temporary table of conversion between keystrokes and uniline directions.
 It will be converted into 2 hashtables for both conversions."))
 
@@ -2565,9 +2565,9 @@ When FORCE is not nil, overwrite whatever is in the buffer."
   ("S-<up>"    uniline-rotate-up↑)
   ("S-<down>"  uniline-rotate-dw↓)
   ("C-<right>" uniline-text-direction-ri→ :exit t)
+  ("C-<left>"  uniline-text-direction-lf← :exit t)
   ("C-<up>"    uniline-text-direction-up↑ :exit t)
   ("C-<down>"  uniline-text-direction-dw↓ :exit t)
-  ("C-<left>"  uniline-text-direction-lf← :exit t)
   ("<kp-subtract>" uniline--self-insert--)
   ("<kp-add>"      uniline--self-insert-+)
   ("-" self-insert-command)
@@ -2600,14 +2600,14 @@ When FORCE is not nil, overwrite whatever is in the buffer."
   ;; Docstring MUST begin with an empty line to benefit from substitutions
   "
 ╭^Move ^rect╮╭────^Draw^ rect────╮╭^─Rect^─╮╭^Brush^╮╭──^Misc^─────────╮
-│_<left>_  ←││_r_     trace inner││_c_ copy││_-_ ╭─╯││_C-/_ undo       │
-│_<right>_ →││_R_     trace outer││_k_ kill││_+_ ┏━┛││_f_   choose font│
+│_<right>_ →││_r_     trace inner││_c_ copy││_-_ ╭─╯││_C-/_ undo       │
+│_<left>_  ←││_R_     trace outer││_k_ kill││_+_ ┏━┛││_f_   choose font│
 │_<up>_    ↑││_C-r_   ovewr inner││_y_ yank││_=_ ╔═╝││_TAB_ sort hint  │
 │_<down>_  ↓││_C-S-R_ ovewr outer│╰^^┬─────╯╯_#_ ▄▄▟││_RET_ exit       │
 ╰^─────^────╯│_i_     fill       │ ^^│_<delete>_ DEL│╰^───^────────────╯
  ^     ^     ╰^────^─────────────╯ ^^╰^────────^────╯"
-  ("<left>"  uniline-move-rect-lf←)
   ("<right>" uniline-move-rect-ri→)
+  ("<left>"  uniline-move-rect-lf←)
   ("<up>"    uniline-move-rect-up↑)
   ("<down>"  uniline-move-rect-dw↓)
   ("r"     uniline-draw-inner-rectangle)
@@ -2655,15 +2655,15 @@ Otherwise, the arrows & shapes hydra is invoked."
   "
 ╭^^Call macro in direction╶^^^^──────╮
 │_<right>_ call → │_e_ usual call^^  │
-│_<up>_    call ↑ │^ ^ ^   ^         │
-│_<down>_  call ↓ │_TAB_^^ short hint│
-│_<left>_  call ← │_q_ _RET_ exit    │
+│_<left>_  call ← │^ ^ ^   ^         │
+│_<up>_    call ↑ │_TAB_^^ short hint│
+│_<down>_  call ↓ │_q_ _RET_ exit    │
 ╰^^───────────────┴^─^─^───^─────────╯"
   ("e"       (kmacro-end-and-call-macro 1))
   ("<right>" uniline-call-macro-in-direction-ri→)
+  ("<left>"  uniline-call-macro-in-direction-lf←)
   ("<up>"    uniline-call-macro-in-direction-up↑)
   ("<down>"  uniline-call-macro-in-direction-dw↓)
-  ("<left>"  uniline-call-macro-in-direction-lf←)
   ("TAB" uniline-toggle-hydra-hints)
   ("q"   () :exit t)
   ("RET" () :exit t))
@@ -2709,7 +2709,7 @@ text within will be colored."
       ,uniline-hydra-arrows/hint
     ,(eval-when-compile
        (uniline--color-hint
-        "glyph:^aAsSoOxX-+=#^ arr&tweak:^S-←→↑↓^ text-dir:^C-←→↑↓^ ^c^-ontour f-^i^-ll ^f^-onts ^TAB^")))
+        "glyph:^aAsSoOxX-+=#^ arr&tweak:^S-→←↑↓^ text-dir:^C-→←↑↓^ ^c^-ontour f-^i^-ll ^f^-onts ^TAB^")))
  uniline-hydra-fonts/hint
  `(if (eq uniline-hint-style t)
       ,uniline-hydra-fonts/hint
@@ -2721,13 +2721,13 @@ text within will be colored."
       ,uniline-hydra-moverect/hint
     ,(eval-when-compile
        (uniline--color-hint
-        "move: ^←→↑↓^ trace: ^rR C-rR^ copy-paste: ^cky^ f-^i^-ll brush: ^-+=# DEL^ ^f^-onts ^TAB^")))
+        "move: ^→←↑↓^ trace: ^rR C-rR^ copy-paste: ^cky^ f-^i^-ll brush: ^-+=# DEL^ ^f^-onts ^TAB^")))
  uniline-hydra-macro-exec/hint
  `(if (eq uniline-hint-style t)
       ,uniline-hydra-macro-exec/hint
     ,(eval-when-compile
        (uniline--color-hint
-        "macro exec usual: ^e^  directional: ^←→↑↓^  hint: ^TAB^"))))
+        "macro exec usual: ^e^  directional: ^→←↑↓^  hint: ^TAB^"))))
 
 (defun uniline-toggle-hydra-hints (&optional notoggle)
   "Toggle between styles of hydra hints.
@@ -2903,16 +2903,16 @@ And backup previous settings."
 │ \\[uniline-hydra-arrows/uniline-rotate-up↑]	point arrow ↑ up
 │ \\[uniline-hydra-arrows/uniline-rotate-dw↓]	point arrow ↓ down
 ├─Tweak 1/4 line─────────────╴
-│ \\[uniline-hydra-arrows/uniline-rotate-lf←]	change ¼ line ← left
 │ \\[uniline-hydra-arrows/uniline-rotate-ri→]	change ¼ line → right
+│ \\[uniline-hydra-arrows/uniline-rotate-lf←]	change ¼ line ← left
 │ \\[uniline-hydra-arrows/uniline-rotate-up↑]	change ¼ line ↑ up
 │ \\[uniline-hydra-arrows/uniline-rotate-dw↓]	change ¼ line ↓ down
 ├─Text direction─────────────╴
 │ Usually when typing text, cursor moves to the right.
-│ \\[uniline-hydra-arrows/uniline-text-direction-up↑-and-exit]	text goes up   ↑
 │ \\[uniline-hydra-arrows/uniline-text-direction-ri→-and-exit]	text goes right→
-│ \\[uniline-hydra-arrows/uniline-text-direction-dw↓-and-exit]	text goes down ↓
 │ \\[uniline-hydra-arrows/uniline-text-direction-lf←-and-exit]	text goes left ←
+│ \\[uniline-hydra-arrows/uniline-text-direction-up↑-and-exit]	text goes up   ↑
+│ \\[uniline-hydra-arrows/uniline-text-direction-dw↓-and-exit]	text goes down ↓
 ├─Insert characters──────────╴
 │ In this sub-mode, the keys `- + = #' recover their
 │ basic meaning, which is to insert this character.
@@ -2947,7 +2947,7 @@ And backup previous settings."
 ╭╴Macros─────────────────────╴\\<uniline-mode-map>
 │ Usual Emacs macros recording works as usual
 │ Last keybord macro can be twisted in any of the 4 directions
-│ \\[uniline-hydra-macro-exec/body] then → ↓ ← ↑ : directional call of last keyboard macro
+│ \\[uniline-hydra-macro-exec/body] then → ← ↑ ↓ : directional call of last keyboard macro
 ╰────────────────────────────╴
 ╭─Fonts──────────────────────╴
 │ Try out some mono-spaced fonts with support for the
@@ -2971,13 +2971,13 @@ And backup previous settings."
   :keymap
   `(
     ([right]   . uniline-write-ri→)
-    ([down ]   . uniline-write-dw↓)
     ([left ]   . uniline-write-lf←)
     ([up   ]   . uniline-write-up↑)
+    ([down ]   . uniline-write-dw↓)
     ([C-right] . uniline-overwrite-ri→)
-    ([C-down ] . uniline-overwrite-dw↓)
     ([C-left ] . uniline-overwrite-lf←)
     ([C-up   ] . uniline-overwrite-up↑)
+    ([C-down ] . uniline-overwrite-dw↓)
     ([insert]      . uniline-hydra-choose-body)
     ([insertchar]  . uniline-hydra-choose-body)
     ([?\r]           . uniline-set-brush-nil)
@@ -3024,8 +3024,8 @@ And backup previous settings."
      ["insert oshape · ● ◦ Ø ø"  uniline-insert-fw-oshape :keys "INS o"]
      ["insert cross ╳ ÷ × ± ¤"   uniline-insert-fw-cross  :keys "INS x"]
      ["rotate arrow, tweak ¼ line → right" uniline-rotate-ri→ :keys "INS S-<right>"]
-     ["rotate arrow, tweak ¼ line ↑ up"    uniline-rotate-up↑ :keys "INS S-<up>   "]
      ["rotate arrow, tweak ¼ line ← left"  uniline-rotate-lf← :keys "INS S-<left> "]
+     ["rotate arrow, tweak ¼ line ↑ up"    uniline-rotate-up↑ :keys "INS S-<up>   "]
      ["rotate arrow, tweak ¼ line ↓ down"  uniline-rotate-dw↓ :keys "INS S-<down> "])
     ("Rectangular region" :active (region-active-p)
      ["move selection right" uniline-move-rect-ri→ :keys "INS <right>"]
@@ -3043,8 +3043,8 @@ And backup previous settings."
      ["fill" uniline-fill])
     ("Text insertion direction"
      ["→ right" uniline-text-direction-ri→ :keys "INS C-<right>" :style radio :selected (eq uniline-text-direction (uniline-direction-ri→))]
-     ["↑ up"    uniline-text-direction-up↑ :keys "INS C-<up>   " :style radio :selected (eq uniline-text-direction (uniline-direction-up↑))]
      ["← left"  uniline-text-direction-lf← :keys "INS C-<left> " :style radio :selected (eq uniline-text-direction (uniline-direction-lf←))]
+     ["↑ up"    uniline-text-direction-up↑ :keys "INS C-<up>   " :style radio :selected (eq uniline-text-direction (uniline-direction-up↑))]
      ["↓ down"  uniline-text-direction-dw↓ :keys "INS C-<down> " :style radio :selected (eq uniline-text-direction (uniline-direction-dw↓))])
     "----"
     ["large hints sizes" uniline-toggle-hydra-hints :keys "TAB or C-h TAB" :style toggle :selected (eq uniline-hint-style t)]
