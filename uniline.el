@@ -660,13 +660,14 @@ which in turn is converted to ┕.")
 
 (defconst uniline--char-to-4halfs
   (eval-when-compile
-    (let ((table (make-char-table 'uniline--char-to-4halfs)))
+    (let ((table (make-hash-table)))
       (cl-loop
        for x in uniline--list-of-available-halflines
        do
-       (aset table
-             (car x)
-             (uniline--pack-4halfs (cdr x))))
+       (puthash
+        (car x)
+        (uniline--pack-4halfs (cdr x))
+        table))
       table))
   "Convert a UNICODE character to a 4halfs description.
 The UNICODE character is supposed to represent
@@ -1063,11 +1064,11 @@ Reverse of `uniline--char-to-4quadb'"))
 (eval-and-compile
   (defconst uniline--char-to-4quadb
     (eval-when-compile
-      (let ((table (make-char-table 'uniline--char-to-4quadb)))
+      (let ((table (make-hash-table)))
         (cl-loop
          for c across uniline--4quadb-to-char
          for i from 0
-         do (aset table c i))
+         do (puthash c i table))
         table))
     "Convert a UNICODE character to a quadrant bitmap.
 Reverse of `uniline--4quadb-to-char'"))
@@ -1121,10 +1122,10 @@ If CHAR is given, use this CHAR instead of the character
 found at (point).
 Return nil if the character is not a 4halfs character."
     (if (fixnump char)
-        (aref uniline--char-to-4halfs char)
-      `(aref
-        uniline--char-to-4halfs
-        ,(or char '(uniline--char-after))))))
+        (gethash char uniline--char-to-4halfs)
+      `(gethash
+        ,(or char '(uniline--char-after))
+        uniline--char-to-4halfs))))
 
 (eval-when-compile ; not needed at runtime
   (defmacro uniline--4quadb-after (&optional char)
@@ -1134,10 +1135,10 @@ If CHAR is given, use this CHAR instead of the character
 found at (point).
 Return nil if the character is not a 4quadb character."
     (if (fixnump char)
-        (aref uniline--char-to-4quadb char)
-      `(aref
-        uniline--char-to-4quadb
-        ,(or char '(uniline--char-after))))))
+        (gethash char uniline--char-to-4quadb)
+      `(gethash
+        ,(or char '(uniline--char-after))
+        uniline--char-to-4quadb))))
 
 (eval-when-compile ; not needed at runtime
   (defsubst uniline--insert-4halfs (4halfs)
