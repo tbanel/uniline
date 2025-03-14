@@ -1121,11 +1121,11 @@ It represents a UNICODE character like ┬ found at (point).
 If CHAR is given, use this CHAR instead of the character
 found at (point).
 Return nil if the character is not a 4halfs character."
-    (if (fixnump char)
-        (gethash char uniline--char-to-4halfs)
-      `(gethash
-        ,(or char '(uniline--char-after))
-        uniline--char-to-4halfs))))
+    (let ((code
+           `(gethash
+             ,(or char '(uniline--char-after))
+             uniline--char-to-4halfs)))
+      (if (fixnump char) (eval code) code))))
 
 (eval-when-compile ; not needed at runtime
   (defmacro uniline--4quadb-after (&optional char)
@@ -1134,11 +1134,11 @@ It represents a UNICODE character like ▙ found at (point).
 If CHAR is given, use this CHAR instead of the character
 found at (point).
 Return nil if the character is not a 4quadb character."
-    (if (fixnump char)
-        (gethash char uniline--char-to-4quadb)
-      `(gethash
-        ,(or char '(uniline--char-after))
-        uniline--char-to-4quadb))))
+    (let ((code
+           `(gethash
+             ,(or char '(uniline--char-after))
+             uniline--char-to-4quadb)))
+      (if (fixnump char) (eval code) code))))
 
 (eval-when-compile ; not needed at runtime
   (defsubst uniline--insert-4halfs (4halfs)
