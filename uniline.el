@@ -1096,36 +1096,37 @@ Reverse of `uniline--4quadb-to-char'"))
 ;; (aref (aref uniline--4quadb-pushed 4quadb) dir)
 
 (defconst uniline--4quadb-pushed
-  (let ((table (make-vector 16 nil)))
-    (cl-loop for i from 0 to 15
-             do (aset table i (make-vector 4 0)))
-    (cl-flet
-        ((truc (table dir &rest gugu)
-           (cl-loop for (k v) on gugu by #'cddr
-                    do
-                    (aset (aref table (uniline--4quadb-after k))
-                          dir
-                          (uniline--4quadb-after v)))
-           (cl-loop
-            for i from 0 to 15
-            do
-            (aset (aref table i)
-                  dir
-                  (logior
-                   (if (eq (logand i 1) 0) 0 (aref (aref table 1) dir))
-                   (if (eq (logand i 2) 0) 0 (aref (aref table 2) dir))
-                   (if (eq (logand i 4) 0) 0 (aref (aref table 4) dir))
-                   (if (eq (logand i 8) 0) 0 (aref (aref table 8) dir)))))))
-      (truc table uniline-direction-up↑
-            ?▖ ?▘  ?▗ ?▝)
-      (truc table uniline-direction-ri→
-            ?▘ ?▝  ?▖ ?▗)
-      (truc table uniline-direction-dw↓
-            ?▘ ?▖  ?▝ ?▗)
-      (truc table uniline-direction-lf←
-            ?▝ ?▘  ?▗ ?▖)
-      )
-    table))
+  (eval-when-compile
+    (let ((table (make-vector 16 nil)))
+      (cl-loop for i from 0 to 15
+               do (aset table i (make-vector 4 0)))
+      (cl-flet
+          ((truc (table dir &rest gugu)
+             (cl-loop for (k v) on gugu by #'cddr
+                      do
+                      (aset (aref table (uniline--4quadb-after k))
+                            dir
+                            (uniline--4quadb-after v)))
+             (cl-loop
+              for i from 0 to 15
+              do
+              (aset (aref table i)
+                    dir
+                    (logior
+                     (if (eq (logand i 1) 0) 0 (aref (aref table 1) dir))
+                     (if (eq (logand i 2) 0) 0 (aref (aref table 2) dir))
+                     (if (eq (logand i 4) 0) 0 (aref (aref table 4) dir))
+                     (if (eq (logand i 8) 0) 0 (aref (aref table 8) dir)))))))
+        (truc table uniline-direction-up↑
+              ?▖ ?▘  ?▗ ?▝)
+        (truc table uniline-direction-ri→
+              ?▘ ?▝  ?▖ ?▗)
+        (truc table uniline-direction-dw↓
+              ?▘ ?▖  ?▝ ?▗)
+        (truc table uniline-direction-lf←
+              ?▝ ?▘  ?▗ ?▖)
+        )
+      table)))
 
 ;;;╭──────────────────────╮
 ;;;│Inserting a character │
