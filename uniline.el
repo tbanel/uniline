@@ -329,6 +329,21 @@ POINT default to `(point)', as for `char-after'"
 ;; the bits manipulation primitives: `logior', `logand', `ash'.
 
 (eval-when-compile ; not needed at runtime
+  (defmacro uniline--shift-4half (4half dir)
+    "Shift 4HALF bits in DIR direction.
+4HALF is a number made of 2 bits, in the range [0..3]
+  0: no line
+  1: thin line
+  2: thick line
+  3: double line
+DIR is 1 of 4 directions:
+  0: uniline-direction-up↑
+  1: uniline-direction-ri→
+  2: uniline-direction-dw↓
+  3: uniline-direction-lf←
+The result is the bit pattern 4HALF << (2*DIR)"
+  `(ash ,4half (* 2 ,dir)))
+
   (defun uniline--pack-4halfs (urld)
     "Encode a description of lines into a single number.
 A character contains half lines upward, right, downward,
@@ -346,10 +361,10 @@ A single number encoding all possible combinations has a
 range of [0..256).  It is handy to index vectors rather than
 4 dimensions matrices."
     (logior
-     (ash (car    urld) (eval-when-compile (* 2 uniline-direction-up↑)))
-     (ash (cadr   urld) (eval-when-compile (* 2 uniline-direction-ri→)))
-     (ash (caddr  urld) (eval-when-compile (* 2 uniline-direction-dw↓)))
-     (ash (cadddr urld) (eval-when-compile (* 2 uniline-direction-lf←))))))
+     (uniline--shift-4half (car    urld) (uniline-direction-up↑))
+     (uniline--shift-4half (cadr   urld) (uniline-direction-ri→))
+     (uniline--shift-4half (caddr  urld) (uniline-direction-dw↓))
+     (uniline--shift-4half (cadddr urld) (uniline-direction-lf←)))))
 
 (eval-when-compile ; not used at runtime
   (defconst uniline--list-of-available-halflines
@@ -1346,8 +1361,8 @@ When FORCE is not nil, overwrite a possible non-4halfs character."
                 (logior
                  (logand
                   bits
-                  (eval-when-compile (lognot (ash 3 (* 2 ,dir)))))
-                 (ash uniline-brush (eval-when-compile (* 2 ,dir))))))
+                  (eval-when-compile (lognot (uniline--shift-4half 3 ,dir))))
+                 (uniline--shift-4half uniline-brush ,dir))))
               ;; 2nd case: (char-after) is a block character like ▜,
               ;; and the brush is the eraser
               ;; then clear only half of this character
@@ -1629,14 +1644,11 @@ in `rectangle-mark-mode'."
          (rectangle-mark-mode 1)))))
 
 (eval-when-compile ; not needed at runtime
-  (defmacro uniline--translate-1xsize-slice (dir size)
-    "Translate a rectangle 1 x SIZE rectangle one char.
-This is a helper function called several times to move
-a rectangle one slice at a time.
-DIR is the direction to move.
-The cursor (point) is one end of the slice.
-When moved, the 1 x SIZE rectangle leaves a blank char.
-This char is filled with leakage from its two neighbours.
+  (defmacro uniline--compute-leakage (dir)
+    "Compute lines leakage from two directions.
+When a rectangle moves, it leaves blank chars.
+Those chars are filled with leakage from their two neighbours,
+in DIR direction, and its opposite.
 For instance consider a situation like this:
    ╶┬╴
     E
@@ -1656,25 +1668,38 @@ Then the leakage of the two glyphs fills in E:
                  0))))
          ;; mask pairs of bits in the desired direction
          (setq
-          here (logand here (eval-when-compile (ash 3 (* 2 ,odir))))
-          prev (logand prev (eval-when-compile (ash 3 (* 2 ,dir)))))
+          here (logand here (uniline--shift-4half 3 ,odir))
+          prev (logand prev (uniline--shift-4half 3 ,dir)))
 
          ;; rotate pairs of bits 180°
          (setq
-          here (ash here (eval-when-compile (* 2 (- ,dir ,odir))))
-          prev (ash prev (eval-when-compile (* 2 (- ,odir ,dir)))))
+          here (uniline--shift-4half here (- ,dir ,odir))
+          prev (uniline--shift-4half prev (- ,odir ,dir)))
 
-         ;; initialize `hand' with the computed leakage from neighbours
-         ;; then iterate to move one char at a time, keeping it in `hand'
-         (let ((hand (aref uniline--4halfs-to-char (logior here prev))))
-           (cl-loop
-            repeat ,size
-            do
-            (setq hand
-                  (prog1 (uniline--char-after)
-                    (uniline--insert-char hand)))
-            (uniline--move-in-direction ,dir))
-           (uniline--insert-char hand))))))
+         ;; return the blank char with leakage from neighbours.
+         (aref uniline--4halfs-to-char (logior here prev))))))
+
+(eval-when-compile ; not needed at runtime
+  (defmacro uniline--translate-1xsize-slice (dir size)
+    "Translate a rectangle 1 x SIZE rectangle one char.
+This is a helper function called several times to move
+a rectangle one slice at a time.
+DIR is the direction to move.
+The cursor (point) is one end of the slice.
+When moved, the 1 x SIZE rectangle leaves a blank char.
+This char is filled with leakage from its two neighbours."
+    (setq dir (eval dir))
+    ;; initialize `hand' with the computed leakage from neighbours
+    ;; then iterate to move one char at a time, keeping it in `hand'
+    `(let ((hand (uniline--compute-leakage ,dir)))
+       (cl-loop
+        repeat ,size
+        do
+        (setq hand
+              (prog1 (uniline--char-after)
+                (uniline--insert-char hand)))
+        (uniline--move-in-direction ,dir))
+       (uniline--insert-char hand))))
 
 (defun uniline-move-rect-up↑ (repeat)
   "Move the rectangle marked by selection one line upper.
@@ -2274,9 +2299,8 @@ in the 4 corners of the character, DIR cannot point exactly to a block.
 Instead DIR is twisted 45° from the actual direction of the block."
     (setq dir (eval dir)) ; turn symbol like --direction-dw↓ to number like 2
     (let* ((dir1 (1+ dir))
-           (dir2 (* 2 dir))
-           (ash3dir2 (ash 3 dir2))
-           (ash1dir2 (ash 1 dir2))
+           (ash3dir2 (uniline--shift-4half 3 dir))
+           (ash1dir2 (uniline--shift-4half 1 dir))
            (notash3dir2 (lognot ash3dir2))
            (dir4
             (uniline--4quadb-after
