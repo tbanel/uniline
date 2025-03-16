@@ -1092,74 +1092,41 @@ Reverse of `uniline--4quadb-to-char'"))
 ;; telling what it becomes when pushed half-a-char-width
 ;; in all 4 directions
 ;; For instance [▞] pushed → becomes [▗], pushed ↑ becomes [▘]
-
-(cl-flet
-    ((create-dir-vector-local (table orig &rest body)
-       (aset table (uniline--4quadb-after orig)
-             (let ((vec (make-vector 4 nil)))
-               (cl-loop
-                for c in body
-                do (aset vec (eval (car c))
-                         (uniline--4quadb-after (cadr c))))
-               vec))))
-  (let ((table (make-vector 16 nil)))
-    (create-dir-vector-local table ?▘
-                             '(uniline-direction-up↑ ? )
-                             '(uniline-direction-ri→ ?▝)
-                             '(uniline-direction-dw↓ ?▖)
-                             '(uniline-direction-lf← ? ))
-    table))
-
+;; Access:
+;; (aref (aref uniline--4quadb-pushed 4quadb) dir)
 
 (defconst uniline--4quadb-pushed
   (let ((table (make-vector 16 nil)))
-    ;; first hand-fill the single-bit entries
-    (aset table (uniline--4quadb-after ?▘)
-          `[,(uniline--4quadb-after ? )
-            ,(uniline--4quadb-after ?▝)
-            ,(uniline--4quadb-after ?▖)
-            ,(uniline--4quadb-after ? )])
-
-    (aset table (uniline--4quadb-after ?▘)
-          (let ((vec (make-vector 4 nil)))
-            (aset vec uniline-direction-up↑ (uniline--4quadb-after ? ))
-            (aset vec uniline-direction-ri→ (uniline--4quadb-after ?▝))
-            (aset vec uniline-direction-dw↓ (uniline--4quadb-after ?▖))
-            (aset vec uniline-direction-lf← (uniline--4quadb-after ? ))
-            vec))
-    
-    (aset table (uniline--4quadb-after ?▝)
-          `[,(uniline--4quadb-after ? )
-            ,(uniline--4quadb-after ? )
-            ,(uniline--4quadb-after ?▗)
-            ,(uniline--4quadb-after ?▘)])
-    (aset table (uniline--4quadb-after ?▖)
-          `[,(uniline--4quadb-after ?▘)
-            ,(uniline--4quadb-after ?▗)
-            ,(uniline--4quadb-after ? )
-            ,(uniline--4quadb-after ? )])
-    (aset table (uniline--4quadb-after ?▗)
-          `[,(uniline--4quadb-after ?▝)
-            ,(uniline--4quadb-after ? )
-            ,(uniline--4quadb-after ? )
-            ,(uniline--4quadb-after ?▖)])
-    ;; then automatically fill the multi-bits entries
-    (cl-loop
-     for i from 0 to 15
-     do
-     (aset table i
-           (apply #'vector
-            (cl-loop
-             for dir from 0 to 3
-             collect
-             (logior
-              (if (eq (logand i 1) 0) 0 (aref (aref table 1) dir))
-              (if (eq (logand i 2) 0) 0 (aref (aref table 2) dir))
-              (if (eq (logand i 4) 0) 0 (aref (aref table 4) dir))
-              (if (eq (logand i 8) 0) 0 (aref (aref table 8) dir))
-              )))))
+    (cl-loop for i from 0 to 15
+             do (aset table i (make-vector 4 0)))
+    (cl-flet
+        ((truc (table dir &rest gugu)
+           (cl-loop for (k v) on gugu by #'cddr
+                    do
+                    (aset (aref table (uniline--4quadb-after k))
+                          dir
+                          (uniline--4quadb-after v)))
+           (cl-loop
+            for i from 0 to 15
+            do
+            (aset (aref table i)
+                  dir
+                  (logior
+                   (if (eq (logand i 1) 0) 0 (aref (aref table 1) dir))
+                   (if (eq (logand i 2) 0) 0 (aref (aref table 2) dir))
+                   (if (eq (logand i 4) 0) 0 (aref (aref table 4) dir))
+                   (if (eq (logand i 8) 0) 0 (aref (aref table 8) dir)))))))
+      (truc table uniline-direction-up↑
+            ?▖ ?▘  ?▗ ?▝)
+      (truc table uniline-direction-ri→
+            ?▘ ?▝  ?▖ ?▗)
+      (truc table uniline-direction-dw↓
+            ?▘ ?▖  ?▝ ?▗)
+      (truc table uniline-direction-lf←
+            ?▝ ?▘  ?▗ ?▖)
+      )
     table))
-    
+
 ;;;╭──────────────────────╮
 ;;;│Inserting a character │
 ;;;╰──────────────────────╯
