@@ -1720,6 +1720,21 @@ Then the leakage of the two glyphs fills in E:
          (aref uniline--4halfs-to-char (logior here prev))))))
 
 (eval-when-compile ; not needed at runtime
+  (defmacro uniline--compute-leakage-quadb (dir)
+    (setq dir (eval dir))
+    (let ((odir (uniline--reverse-direction dir)))
+      `(let ((here (or (uniline--4quadb-after) 0))
+             (prev    ; char preceding (point) as a 4halfs-bit-pattern
+              (let ((p (uniline--neighbour-point ,odir)))
+                (or
+                 (and p (uniline--4quadb-after (uniline--char-after p)))
+                 0))))
+         (setq
+          here (aref (aref uniline--4quadb-pushed here) ,dir)
+          prev (aref (aref uniline--4quadb-pushed prev) ,odir))
+         (aref uniline--4quadb-to-char (logior here prev))))))
+
+(eval-when-compile ; not needed at runtime
   (defmacro uniline--translate-1xsize-slice (dir size)
     "Translate a rectangle 1 x SIZE rectangle one char.
 This is a helper function called several times to move
@@ -1732,6 +1747,8 @@ This char is filled with leakage from its two neighbours."
     ;; initialize `hand' with the computed leakage from neighbours
     ;; then iterate to move one char at a time, keeping it in `hand'
     `(let ((hand (uniline--compute-leakage ,dir)))
+       (if (eq hand ? )
+           (setq hand (uniline--compute-leakage-quadb ,dir)))
        (cl-loop
         repeat ,size
         do
