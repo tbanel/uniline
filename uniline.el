@@ -1088,6 +1088,47 @@ Reverse of `uniline--char-to-4quadb'"))
     "Convert a UNICODE character to a quadrant bitmap.
 Reverse of `uniline--4quadb-to-char'"))
 
+(defconst uniline--4quadb-pushed
+  (eval-when-compile
+    (let ((table (make-vector 16 nil))) ;      ╭─╴fill with zero as many
+      (cl-loop for i from 0 to 15       ;      ▽  entries will be zero anyway
+               do (aset table i (make-vector 4 0)))
+      (cl-flet
+          ((fill-dir (table dir &rest keyvals)
+             ;; first seed the TABLE entries for single-bit quadrant blocks
+             ;; and what they become when pushed in DIR direction
+             (cl-loop for (k v) on keyvals by #'cddr
+                      do
+                      (aset (aref table (gethash k uniline--char-to-4quadb))
+                            dir
+                            (gethash v uniline--char-to-4quadb)))
+             ;; then fill in entries for all 16 quadrant blocks, by logically
+             ;; composing their bits from single-bits
+             (cl-loop
+              for i from 0 to 15
+              do
+              (aset (aref table i)  ;  ╭╴consider each of the 4 bits
+                    dir             ;  │ and if bit=1, get entry╶╮
+                    (logior         ;  ▽                         ▽
+                     (if (eq (logand i 1) 0) 0 (aref (aref table 1) dir))
+                     (if (eq (logand i 2) 0) 0 (aref (aref table 2) dir))
+                     (if (eq (logand i 4) 0) 0 (aref (aref table 4) dir))
+                     (if (eq (logand i 8) 0) 0 (aref (aref table 8) dir)))))))
+        (fill-dir table uniline-direction-up↑
+              ?▖ ?▘  ?▗ ?▝)
+        (fill-dir table uniline-direction-ri→
+              ?▘ ?▝  ?▖ ?▗)
+        (fill-dir table uniline-direction-dw↓
+              ?▘ ?▖  ?▝ ?▗)
+        (fill-dir table uniline-direction-lf←
+              ?▝ ?▘  ?▗ ?▖))
+      table))
+  "For each of the 16 quadrant blocks, this table tells what it becomes
+when pushed half-a-char-width in all 4 directions.
+For instance [▞] pushed right→ becomes [▗], pushed up↑ becomes [▘]
+Access it with this snippet:
+(aref (aref uniline--4quadb-pushed 4quadb) dir)")
+
 ;;;╭──────────────────────╮
 ;;;│Inserting a character │
 ;;;╰──────────────────────╯
@@ -1644,8 +1685,8 @@ in `rectangle-mark-mode'."
          (rectangle-mark-mode 1)))))
 
 (eval-when-compile ; not needed at runtime
-  (defmacro uniline--compute-leakage (dir)
-    "Compute lines leakage from two directions.
+  (defmacro uniline--compute-leakage-4halfs (dir)
+    "Compute lines leakage from two directions for 4halfs characters.
 When a rectangle moves, it leaves blank chars.
 Those chars are filled with leakage from their two neighbours,
 in DIR direction, and its opposite.
@@ -1680,6 +1721,34 @@ Then the leakage of the two glyphs fills in E:
          (aref uniline--4halfs-to-char (logior here prev))))))
 
 (eval-when-compile ; not needed at runtime
+  (defmacro uniline--compute-leakage-quadb (dir)
+    "Compute lines leakage from two directions for 4quadb characters.
+When a rectangle moves, it leaves blank chars.
+Those chars are filled with leakage from their two neighbours,
+in DIR direction, and its opposite.
+For instance consider a situation like this:
+    ▌
+    E
+    ▙
+where E is the char leaved empty after translation.
+Then the leakage of the two glyphs fills in E:
+    ▌
+    ▌
+    ▙"
+    (setq dir (eval dir))
+    (let ((odir (uniline--reverse-direction dir)))
+      `(let ((here (or (uniline--4quadb-after) 0))
+             (prev    ; char preceding (point) as a 4quadb-bit-pattern
+              (let ((p (uniline--neighbour-point ,odir)))
+                (or
+                 (and p (uniline--4quadb-after (uniline--char-after p)))
+                 0))))
+         (setq
+          here (aref (aref uniline--4quadb-pushed here) ,dir)
+          prev (aref (aref uniline--4quadb-pushed prev) ,odir))
+         (aref uniline--4quadb-to-char (logior here prev))))))
+
+(eval-when-compile ; not needed at runtime
   (defmacro uniline--translate-1xsize-slice (dir size)
     "Translate a rectangle 1 x SIZE rectangle one char.
 This is a helper function called several times to move
@@ -1691,7 +1760,9 @@ This char is filled with leakage from its two neighbours."
     (setq dir (eval dir))
     ;; initialize `hand' with the computed leakage from neighbours
     ;; then iterate to move one char at a time, keeping it in `hand'
-    `(let ((hand (uniline--compute-leakage ,dir)))
+    `(let ((hand (uniline--compute-leakage-4halfs ,dir)))
+       (if (eq hand ? )
+           (setq hand (uniline--compute-leakage-quadb ,dir)))
        (cl-loop
         repeat ,size
         do
