@@ -3,7 +3,7 @@
 #+OPTIONS: ^:{} authors:Thierry Banel, toc:nil
 #+LATEX_HEADER: \usepackage{pmboxdraw}
 
-*New*: fine tweak at the quarter character scale
+*New*: Lines extension upon moving rectangles now also happens for quadrant-block lines
 
 * Getting started in 10 seconds
 
