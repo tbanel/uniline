@@ -1090,44 +1090,44 @@ Reverse of `uniline--4quadb-to-char'"))
 
 (defconst uniline--4quadb-pushed
   (eval-when-compile
-    (let ((table (make-vector 16 nil))) ;      ╭─╴fill with zero as many
-      (cl-loop for i from 0 to 15       ;      ▽  entries will be zero anyway
-               do (aset table i (make-vector 4 0)))
+    (let ((table (make-vector 4 nil))) ;        ╭─╴fill with zero because many
+      (cl-loop for i from 0 to 3       ;        ▽  entries will be zero anyway
+               do (aset table i (make-vector 16 0)))
       (cl-flet
-          ((fill-dir (table dir &rest keyvals)
+          ((fill-dir (subtable &rest keyvals)
              ;; first seed the TABLE entries for single-bit quadrant blocks
              ;; and what they become when pushed in DIR direction
              (cl-loop for (k v) on keyvals by #'cddr
                       do
-                      (aset (aref table (gethash k uniline--char-to-4quadb))
-                            dir
+                      (aset subtable
+                            (gethash k uniline--char-to-4quadb)
                             (gethash v uniline--char-to-4quadb)))
              ;; then fill in entries for all 16 quadrant blocks, by logically
              ;; composing their bits from single-bits
              (cl-loop
               for i from 0 to 15
-              do
-              (aset (aref table i)  ;  ╭╴consider each of the 4 bits
-                    dir             ;  │ and if bit=1, get entry╶╮
-                    (logior         ;  ▽                         ▽
-                     (if (eq (logand i 1) 0) 0 (aref (aref table 1) dir))
-                     (if (eq (logand i 2) 0) 0 (aref (aref table 2) dir))
-                     (if (eq (logand i 4) 0) 0 (aref (aref table 4) dir))
-                     (if (eq (logand i 8) 0) 0 (aref (aref table 8) dir)))))))
-        (fill-dir table uniline-direction-up↑
-              ?▖ ?▘  ?▗ ?▝)
-        (fill-dir table uniline-direction-ri→
-              ?▘ ?▝  ?▖ ?▗)
-        (fill-dir table uniline-direction-dw↓
-              ?▘ ?▖  ?▝ ?▗)
-        (fill-dir table uniline-direction-lf←
-              ?▝ ?▘  ?▗ ?▖))
+              do             ;  ╭╴consider each of the 4 bits
+              (aset subtable ;  │ and if bit=1, get entry╶────╮
+                    i        ;  ╰──────╮                      │
+                    (logior  ;         ▽                      ▽
+                     (if (eq (logand i 1) 0) 0 (aref subtable 1))
+                     (if (eq (logand i 2) 0) 0 (aref subtable 2))
+                     (if (eq (logand i 4) 0) 0 (aref subtable 4))
+                     (if (eq (logand i 8) 0) 0 (aref subtable 8)))))))
+        (fill-dir (aref table uniline-direction-up↑)
+                  ?▖ ?▘  ?▗ ?▝)
+        (fill-dir (aref table uniline-direction-ri→)
+                  ?▘ ?▝  ?▖ ?▗)
+        (fill-dir (aref table uniline-direction-dw↓)
+                  ?▘ ?▖  ?▝ ?▗)
+        (fill-dir (aref table uniline-direction-lf←)
+                  ?▝ ?▘  ?▗ ?▖))
       table))
   "For each of the 16 quadrant blocks, this table tells what it becomes
 when pushed half-a-char-width in all 4 directions.
 For instance [▞] pushed right→ becomes [▗], pushed up↑ becomes [▘]
 Access it with this snippet:
-(aref (aref uniline--4quadb-pushed 4quadb) dir)")
+(aref (aref uniline--4quadb-pushed dir) 4quadb)")
 
 ;;;╭──────────────────────╮
 ;;;│Inserting a character │
@@ -1744,8 +1744,8 @@ Then the leakage of the two glyphs fills in E:
                  (and p (uniline--4quadb-after (uniline--char-after p)))
                  0))))
          (setq
-          here (aref (aref uniline--4quadb-pushed here) ,dir)
-          prev (aref (aref uniline--4quadb-pushed prev) ,odir))
+          here (aref (aref uniline--4quadb-pushed ,dir ) here)
+          prev (aref (aref uniline--4quadb-pushed ,odir) prev))
          (aref uniline--4quadb-to-char (logior here prev))))))
 
 (eval-when-compile ; not needed at runtime
