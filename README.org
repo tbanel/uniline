@@ -224,12 +224,16 @@ The current bush and the current text direction (see below) are
 reflected in the mode-line (at the bottom of the Emacs screen). It
 looks like this:
 
+[[file:images/mode-line.png]]
+
 #+begin_example
-        ╭─current brush
-        ▽
-→Uniline┼
-△
-╰──current text direction
+
+  current text                  current
+     direction╶────╮       ╭───╴brush
+                   ▼       ▼
+ ══════════════════╧═══════╧══════════════
+ U:** buff    (... →Uniline┼ ...)
+ ═════════════════════════════════════════
 
 #+end_example
 
@@ -241,7 +245,7 @@ The =<insert>= key is a prefix for other keys:
 - for trying a choice of mono-spaced fonts.
 
 Why =<insert>=? Because:
-- =Uniline= tries to leave their original meaning to as much keys as
+- =Uniline= tries to leave their original meaning to as many keys as
   possible,
 - the standard meaning of =<insert>= is to toggle the =overwrite-mode=;
   but =Uniline= is already in =overwrite-mode=, and de-activating
@@ -259,18 +263,23 @@ that the line drawing follows.
 
 #+begin_example
 
-    △    ▵    ↑    ▲    ▴
-   ◁ ▷  ◃ ▹  ← →  ◀ ▶  ◂ ▸
-    ▽    ▿    ↓    ▼    ▾
+   □
+   ╰─◁──▷─╮       □─╮ ╭─╮ ╭─╮ ╭─□
+   ╭─◀──▶─╯         △ ▲ ↑ ▵ ▴ ↕
+   ╰─←──→─╮         │ │ │ │ │ │
+   ╭─◃──▹─╯         ▽ ▼ ↓ ▿ ▾ ↕
+   ╰─◂──▸─╮         ╰─╯ ╰─╯ ╰─╯
+   ╭─↔──↔─╯
+   □
 
 #+end_example
 
 Actually, there are tons of arrows of all styles in the UNICODE
-standard. Unfortunately, the support by fonts is weak. So =Uniline=
+standard. Unfortunately, support by fonts is weak. So =Uniline=
 restrains itself to those six safe arrows.
 
 To insert an arrow, type: =<insert> a= or =<insert> a a= or =<insert> a a a=. (=a=
-cycles through the 5 styles, =A= cycles backward).
+cycles through the 6 styles, =A= cycles backward).
 
 =<insert> 4 a= is equivalent to =<insert> a a a a=, which is also equivalent to
 =<insert> A A A=. Those 3 shortcuts insert an arrow of this style: =▵▹▿◃=. The
@@ -492,9 +501,9 @@ by the suggested fonts.
 
 =C-y= is also an option. The first character in the top of the kill
 ring will be chosen as the filling character. The kill ring is filled
-by functions like =C-k= or =M-w=, which remove text from the buffer.
+by functions like =C-k= or =M-w=.
 
-Typing =<return>= aborts the filling operation.
+Typing =<return>= or =C-g= aborts the filling operation.
 
 A rectangular shape may also be filled.
 - Mark a region
