@@ -13,7 +13,8 @@ File: uniline.info,  Node: Top,  Next: Getting started in 10 seconds,  Up: (dir)
 Uniline
 *******
 
-*New*: fine tweak at the quarter character scale
+*New*: Lines extension upon moving rectangles now also happens for
+quadrant-block lines
 
 * Menu:
 
@@ -282,11 +283,15 @@ Set the current brush with:
 reflected in the mode-line (at the bottom of the Emacs screen).  It
 looks like this:
 
-             ╭─current brush
-             ▽
-     →Uniline┼
-     △
-     ╰──current text direction
+
+
+
+      current text                  current
+         direction╶────╮       ╭───╴brush
+                       ▼       ▼
+     ══════════════════╧═══════╧══════════════
+     U:** buff    (... →Uniline┼ ...)
+     ═════════════════════════════════════════
 
 
 
@@ -302,7 +307,7 @@ The ‘<insert>’ key is a prefix for other keys:
    • for trying a choice of mono-spaced fonts.
 
    Why ‘<insert>’?  Because:
-   • ‘Uniline’ tries to leave their original meaning to as much keys as
+   • ‘Uniline’ tries to leave their original meaning to as many keys as
      possible,
    • the standard meaning of ‘<insert>’ is to toggle the
      ‘overwrite-mode’; but ‘Uniline’ is already in ‘overwrite-mode’, and
@@ -324,17 +329,22 @@ that the line drawing follows.
 
 
 
-      △    ▵    ↑    ▲    ▴
-     ◁ ▷  ◃ ▹  ← →  ◀ ▶  ◂ ▸
-      ▽    ▿    ↓    ▼    ▾
+     □
+     ╰─◁──▷─╮       □─╮ ╭─╮ ╭─╮ ╭─□
+     ╭─◀──▶─╯         △ ▲ ↑ ▵ ▴ ↕
+     ╰─←──→─╮         │ │ │ │ │ │
+     ╭─◃──▹─╯         ▽ ▼ ↓ ▿ ▾ ↕
+     ╰─◂──▸─╮         ╰─╯ ╰─╯ ╰─╯
+     ╭─↔──↔─╯
+     □
 
 
    Actually, there are tons of arrows of all styles in the UNICODE
-standard.  Unfortunately, the support by fonts is weak.  So ‘Uniline’
+standard.  Unfortunately, support by fonts is weak.  So ‘Uniline’
 restrains itself to those six safe arrows.
 
    To insert an arrow, type: ‘<insert> a’ or ‘<insert> a a’ or ‘<insert>
-a a a’.  (‘a’ cycles through the 5 styles, ‘A’ cycles backward).
+a a a’.  (‘a’ cycles through the 6 styles, ‘A’ cycles backward).
 
    ‘<insert> 4 a’ is equivalent to ‘<insert> a a a a’, which is also
 equivalent to ‘<insert> A A A’.  Those 3 shortcuts insert an arrow of
@@ -568,9 +578,9 @@ supported by the suggested fonts.
 
    ‘C-y’ is also an option.  The first character in the top of the kill
 ring will be chosen as the filling character.  The kill ring is filled
-by functions like ‘C-k’ or ‘M-w’, which remove text from the buffer.
+by functions like ‘C-k’ or ‘M-w’.
 
-   Typing ‘<return>’ aborts the filling operation.
+   Typing ‘<return>’ or ‘C-g’ aborts the filling operation.
 
    A rectangular shape may also be filled.
    • Mark a region
@@ -1403,40 +1413,40 @@ along with this program.  If not, see <http://www.gnu.org/licenses/>.
 
 Tag Table:
 Node: Top75
-Node: Getting started in 10 seconds1204
-Node: Pure UNICODE text diagrams in Emacs1534
-Node: Minor mode9152
-Node: Drawing lines9700
-Node: Brush style10376
-Node: The <insert> key11096
-Node: Arrows glyphs ▷ ▶ → ▹ ▸ ↔11930
-Node: Intersection glyphs ■ ◆ ●13238
-Node: Drawing rectangles15886
-Node: Moving rectangles17860
-Node: Tracing a contour19737
-Node: Flood-fill21504
-Node: Text direction23253
-Node: Macros23794
-Node: Fine tweaking27155
-Node: Which fonts?28950
-Node: Text menus (Hydra)30805
-Node: Line spacing32765
-Node: How Uniline behaves with its environment?34193
-Node: Compatibility with Picture-mode34741
-Node: Compatibility with Artist-mode35659
-Node: Compatibility with Whitespace-mode36178
-Node: Compatibility with Org Mode37078
-Node: Org Mode and LaTex37864
-Node: What about \t tabs?39765
-Node: What about ^L page separation?40413
-Node: Emacs on the Linux console41036
-Node: Emacs on a graphical terminal emulator41990
-Node: Emacs on Windows42913
-Node: Lisp API43560
-Node: Installation48722
-Node: Related packages49720
-Node: Author contributors52427
-Node: License52887
+Node: Getting started in 10 seconds1243
+Node: Pure UNICODE text diagrams in Emacs1573
+Node: Minor mode9191
+Node: Drawing lines9739
+Node: Brush style10415
+Node: The <insert> key11507
+Node: Arrows glyphs ▷ ▶ → ▹ ▸ ↔12341
+Node: Intersection glyphs ■ ◆ ●13898
+Node: Drawing rectangles16546
+Node: Moving rectangles18520
+Node: Tracing a contour20397
+Node: Flood-fill22164
+Node: Text direction23891
+Node: Macros24432
+Node: Fine tweaking27793
+Node: Which fonts?29588
+Node: Text menus (Hydra)31443
+Node: Line spacing33403
+Node: How Uniline behaves with its environment?34831
+Node: Compatibility with Picture-mode35379
+Node: Compatibility with Artist-mode36297
+Node: Compatibility with Whitespace-mode36816
+Node: Compatibility with Org Mode37716
+Node: Org Mode and LaTex38502
+Node: What about \t tabs?40403
+Node: What about ^L page separation?41051
+Node: Emacs on the Linux console41674
+Node: Emacs on a graphical terminal emulator42628
+Node: Emacs on Windows43551
+Node: Lisp API44198
+Node: Installation49360
+Node: Related packages50358
+Node: Author contributors53065
+Node: License53525
 
 End Tag Table
 

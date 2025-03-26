@@ -718,10 +718,10 @@ There are no customizable =Uniline= variables (not yet). This does not
 prevent customizing =uniline-hint-style= for future sessions. For
 instance, in the =~/.emacs= file, there might be:
 
-#+begin_example
+#+begin_src elisp
 (use-package uniline
   :config (set-default 'uniline-hint-style 1))
-#+end_example
+#+end_src
 
 This setting gives one-liner messages. It can be changed later on a buffer
 per buffer basis with the =TAB= key. Note the use of =set-default=. Using
@@ -915,12 +915,12 @@ If you decide to bind globally =C-<insert>= to the toggling of
 for =C-<insertchar>=, for example with =use-package= in your
 =~/.emacs= file:
 
-#+begin_example
+#+begin_src elisp
 (use-package uniline
   :defer t
   :bind ("C-<insert>"     . uniline-mode)
   :bind ("C-<insertchar>" . uniline-mode))
-#+end_example
+#+end_src
 
 ** Emacs on Windows
 On Windows the only native mono-spaced fonts are =Lucida Console= and
@@ -972,7 +972,7 @@ except the functions also update the mode-line.
 For instance, if we want to create a function to draw a "plus" sign,
 we can code it as follows:
 
-#+begin_example
+#+begin_src elisp
 (defun uniline-draw-plus ()
   (interactive)
   (uniline-write-ri→ 1)
@@ -987,7 +987,7 @@ we can code it as follows:
   (uniline-write-up↑ 1)
   (uniline-write-ri→ 1)
   (uniline-write-up↑ 1))
-#+end_example
+#+end_src
 
 Calling =M-x uniline-draw-plus= will result in this nice little
 plus-shape:
@@ -1006,7 +1006,7 @@ plus-shape:
 We may modify the function to accept the size of the shape as a
 parameter:
 
-#+begin_example
+#+begin_src elisp
 (defun uniline-draw-plus (size)
   (interactive "Nsize? ")
   (uniline-write-ri→ size)
@@ -1021,7 +1021,7 @@ parameter:
   (uniline-write-up↑ size)
   (uniline-write-ri→ size)
   (uniline-write-up↑ size))
-#+end_example
+#+end_src
 
 The =(interactive "Nsize? ")= form prompt user for the size of the shape
 if not given as a parameter.
@@ -1107,12 +1107,12 @@ directions:
 Add the following lines to your =.emacs= file,
 and reload it, if not already done:
 
-#+begin_example
+#+begin_src elisp
 (add-to-list 'package-archives
              '("melpa" . "http://melpa.org/packages/")
              t)
 (package-initialize)
-#+end_example
+#+end_src
 
 Alternately you may customize this variable:
 
@@ -1122,24 +1122,24 @@ M-x customize-variable package-archives
 
 Then download the package:
 
-#+begin_example
+#+begin_src elisp
 (package-install "uniline")
-#+end_example
+#+end_src
 
 Alternately, you can download the Lisp file, and load it:
 
-#+BEGIN_EXAMPLE
+#+begin_src elisp
 (load-file "uniline.el")
-#+END_EXAMPLE
+#+end_src
 
 You may want to give =uniline-mode= a key-binding. =use-package=
 in your =$HOME/.emacs= file is great for that:
 
-#+begin_example
+#+begin_src elisp
 (use-package uniline
   :defer t
   :bind ("C-<insert>" . uniline-mode))
-#+end_example
+#+end_src
 
 In this example, =C-<insert>= was chosen. You can use whatever keys combination you want.
 =<insert>= happens to also be the key used inside =Uniline=.
