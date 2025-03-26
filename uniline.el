@@ -199,12 +199,12 @@ Exchange left with right, up with down."
 (defsubst uniline--turn-right (dir)
   "Return DIR turned 90° clockwise.
 DIR & returned values are in [0,1,2,3]."
-  (mod (1+ dir) 4))
+  (% (1+ dir) 4))
 
 (defsubst uniline--turn-left (dir)
   "Return DIR turned 90° anti-clockwise.
 DIR & returned values are in [0,1,2,3]."
-  (mod (1- dir) 4))
+  (% (+ 3 dir) 4))
 
 (defsubst uniline-move-to-column (x)
   "Move to column X staying on the same line.
@@ -2116,7 +2116,7 @@ it is already present in the `uniline--directional-macros' cache"
                           (if y
                               (gethash
                                (cons
-                                (mod (+ (car y) dir 3) 4)
+                                (% (+ (car y) dir 3) 4)
                                 (cdr y))
                                uniline--dir-shift-to-keystroke)
                             x)))
