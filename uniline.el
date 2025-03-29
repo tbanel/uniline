@@ -164,47 +164,53 @@ an EXPRN, it just returns it as is.
 It is expanded into a lookup into a vector or a plist, depending on the CASES.
 It it faster than an equivalent (cond) form."
     (declare (indent 1))
-    (let ((max
-           (cl-loop
-            for c in body
-            for e = (eval (car c))
-            always (and (fixnump e) (<= 0 e 30))
-            maximize e)))
+    (let* ((lambda
+            (if (eq (caar body) 'lambda)
+                (pop body)))
+           (max
+            (cl-loop
+             for c in body
+             for e = (eval (car c))
+             always (and (fixnump e) (<= 0 e 30))
+             maximize e)))
       (if max
           ;; create a vector for fast lookup
           (let ((vec (make-vector (1+ max) nil)))
             (cl-loop
              for c in body
-             do (aset vec (eval (car c)) (eval (cadr c))))
+             do (aset
+                 vec
+                 (eval (car c))
+                 (if lambda
+                     (funcall lambda (eval (car c)))
+                   (eval (cadr c)))))
             `(aref ,vec ,dir))
         ;; create a plist for versatile lookup
         `(plist-get
           ',(cl-loop
              for c in body
              collect (eval (car c))
-             collect (eval (cadr c)))
+             collect (if lambda
+                         (funcall lambda (eval (car c)))
+                       (eval (cadr c))))
           ,dir)))))
 
 (eval-when-compile ; not needed at runtime
-  (defun uniline--reverse-direction (dir)
+  (defsubst uniline--reverse-direction (dir)
     "Reverse DIR.
 DIR is any of the 4 `uniline-direction-*'.
 Exchange left with right, up with down."
-    (uniline--switch-with-table dir
-      (uniline-direction-up↑ uniline-direction-dw↓)
-      (uniline-direction-ri→ uniline-direction-lf←)
-      (uniline-direction-dw↓ uniline-direction-up↑)
-      (uniline-direction-lf← uniline-direction-ri→))))
+    (% (+ 2 dir) 4))
 
-(defsubst uniline--turn-right (dir)
-  "Return DIR turned 90° clockwise.
+  (defsubst uniline--turn-right (dir)
+    "Return DIR turned 90° clockwise.
 DIR & returned values are in [0,1,2,3]."
-  (% (1+ dir) 4))
+    (% (1+ dir) 4))
 
-(defsubst uniline--turn-left (dir)
-  "Return DIR turned 90° anti-clockwise.
+  (defsubst uniline--turn-left (dir)
+    "Return DIR turned 90° anti-clockwise.
 DIR & returned values are in [0,1,2,3]."
-  (% (+ 3 dir) 4))
+    (% (+ 3 dir) 4)))
 
 (defsubst uniline-move-to-column (x)
   "Move to column X staying on the same line.
@@ -342,7 +348,10 @@ DIR is 1 of 4 directions:
   2: uniline-direction-dw↓
   3: uniline-direction-lf←
 The result is the bit pattern 4HALF << (2*DIR)"
-  `(ash ,4half (* 2 ,dir)))
+    `(ash ,4half
+          ,(if (fixnump dir)
+               (* 2 dir)
+             `(* 2 ,dir))))
 
   (defun uniline--pack-4halfs (urld)
     "Encode a description of lines into a single number.
@@ -1088,46 +1097,55 @@ Reverse of `uniline--char-to-4quadb'"))
     "Convert a UNICODE character to a quadrant bitmap.
 Reverse of `uniline--4quadb-to-char'"))
 
-(defconst uniline--4quadb-pushed
-  (eval-when-compile
-    (let ((table (make-vector 4 nil))) ;        ╭─╴fill with zero because many
-      (cl-loop for i from 0 to 3       ;        ▽  entries will be zero anyway
-               do (aset table i (make-vector 16 0)))
-      (cl-flet
-          ((fill-dir (subtable &rest keyvals)
-             ;; first seed the TABLE entries for single-bit quadrant blocks
-             ;; and what they become when pushed in DIR direction
-             (cl-loop for (k v) on keyvals by #'cddr
-                      do
-                      (aset subtable
-                            (gethash k uniline--char-to-4quadb)
-                            (gethash v uniline--char-to-4quadb)))
-             ;; then fill in entries for all 16 quadrant blocks, by logically
-             ;; composing their bits from single-bits
-             (cl-loop
-              for i from 0 to 15
-              do             ;  ╭╴consider each of the 4 bits
-              (aset subtable ;  │ and if bit=1, get entry╶────╮
-                    i        ;  ╰──────╮                      │
-                    (logior  ;         ▽                      ▽
-                     (if (eq (logand i 1) 0) 0 (aref subtable 1))
-                     (if (eq (logand i 2) 0) 0 (aref subtable 2))
-                     (if (eq (logand i 4) 0) 0 (aref subtable 4))
-                     (if (eq (logand i 8) 0) 0 (aref subtable 8)))))))
-        (fill-dir (aref table uniline-direction-up↑)
-                  ?▖ ?▘  ?▗ ?▝)
-        (fill-dir (aref table uniline-direction-ri→)
-                  ?▘ ?▝  ?▖ ?▗)
-        (fill-dir (aref table uniline-direction-dw↓)
-                  ?▘ ?▖  ?▝ ?▗)
-        (fill-dir (aref table uniline-direction-lf←)
-                  ?▝ ?▘  ?▗ ?▖))
-      table))
-  "For each of the 16 quadrant blocks, this table tells what it becomes
+(eval-when-compile
+  (defconst uniline--4quadb-pushed
+    (eval-when-compile
+      (let ((table (make-vector 4 nil))) ;        ╭─╴fill with zero because many
+        (cl-loop for i from 0 to 3 ;        ▽  entries will be zero anyway
+                 do (aset table i (make-vector 16 0)))
+        (cl-flet
+            ((fill-dir (subtable &rest keyvals)
+               ;; first seed the TABLE entries for single-bit quadrant blocks
+               ;; and what they become when pushed in DIR direction
+               (cl-loop for (k v) on keyvals by #'cddr
+                        do
+                        (aset subtable
+                              (gethash k uniline--char-to-4quadb)
+                              (gethash v uniline--char-to-4quadb)))
+               ;; then fill in entries for all 16 quadrant blocks, by logically
+               ;; composing their bits from single-bits
+               (cl-loop
+                for i from 0 to 15
+                do                  ;  ╭╴consider each of the 4 bits
+                (aset subtable      ;  │ and if bit=1, get entry╶────╮
+                      i             ;  ╰──────╮                      │
+                      (logior       ;         ▽                      ▽
+                       (if (eq (logand i 1) 0) 0 (aref subtable 1))
+                       (if (eq (logand i 2) 0) 0 (aref subtable 2))
+                       (if (eq (logand i 4) 0) 0 (aref subtable 4))
+                       (if (eq (logand i 8) 0) 0 (aref subtable 8)))))))
+          (fill-dir (aref table uniline-direction-up↑)
+                    ?▖ ?▘  ?▗ ?▝)
+          (fill-dir (aref table uniline-direction-ri→)
+                    ?▘ ?▝  ?▖ ?▗)
+          (fill-dir (aref table uniline-direction-dw↓)
+                    ?▘ ?▖  ?▝ ?▗)
+          (fill-dir (aref table uniline-direction-lf←)
+                    ?▝ ?▘  ?▗ ?▖))
+        table))
+    "For each of the 16 quadrant blocks, this table tells what it becomes
 when pushed half-a-char-width in all 4 directions.
 For instance [▞] pushed right→ becomes [▗], pushed up↑ becomes [▘]
 Access it with this snippet:
-(aref (aref uniline--4quadb-pushed dir) 4quadb)")
+(uniline--4quadb-pushed dir 4quadb)")
+
+  (defmacro uniline--4quadb-pushed (dir 4quadb)
+    "Accessor to the `uniline--4quadb-pushed' array.
+Folds to a single number if DIR & 4QUADB are themselves numbers."
+    (if (and (fixnump dir)
+             (fixnump 4quadb))
+        (aref (aref uniline--4quadb-pushed dir) 4quadb)
+      `(aref (aref uniline--4quadb-pushed ,dir) ,4quadb))))
 
 ;;;╭──────────────────────╮
 ;;;│Inserting a character │
@@ -1269,11 +1287,7 @@ Clear the half of this character pointing in DIR direction."
            (uniline--insert-4quadb
             (logand
              bits
-             ,(uniline--switch-with-table dir
-                (uniline-direction-up↑ (uniline--4quadb-after ?▄))
-                (uniline-direction-ri→ (uniline--4quadb-after ?▌))
-                (uniline-direction-dw↓ (uniline--4quadb-after ?▀))
-                (uniline-direction-lf← (uniline--4quadb-after ?▐)))))))))
+             ,(uniline--4quadb-pushed dir (uniline--4quadb-after ?█))))))))
 
 ;;;╭────────────────────────────╮
 ;;;│Test blanks in the neighbour│
@@ -1342,17 +1356,19 @@ Blank include:
      (uniline-direction-dw↓ (uniline--neighbour-point uniline-direction-dw↓))
      (uniline-direction-lf← (uniline--neighbour-point uniline-direction-lf←)))))
 
-(defun uniline--blank-neighbour4 (dir)
+(defsubst uniline--blank-neighbour4 (dir)
   "Return non-nil if the quarter point cursor can move in DIR
 while staying on the same (point)."
   (eq
    (logand
     uniline--which-quadrant
     (uniline--switch-with-table dir
-      (uniline-direction-up↑ (uniline--4quadb-after ?▀))
-      (uniline-direction-ri→ (uniline--4quadb-after ?▐))
-      (uniline-direction-dw↓ (uniline--4quadb-after ?▄))
-      (uniline-direction-lf← (uniline--4quadb-after ?▌))))
+      (lambda (dir)
+        (uniline--4quadb-pushed dir (uniline--4quadb-after ?█)))
+      (uniline-direction-up↑)
+      (uniline-direction-ri→)
+      (uniline-direction-dw↓)
+      (uniline-direction-lf←)))
    0))
 
 (defun uniline--blank-neighbour (dir)
@@ -1402,7 +1418,7 @@ When FORCE is not nil, overwrite a possible non-4halfs character."
                 (logior
                  (logand
                   bits
-                  (eval-when-compile (lognot (uniline--shift-4half 3 ,dir))))
+                  ,(lognot (uniline--shift-4half 3 dir)))
                  (uniline--shift-4half uniline-brush ,dir))))
               ;; 2nd case: (char-after) is a block character like ▜,
               ;; and the brush is the eraser
@@ -1447,11 +1463,9 @@ When FORCE is not nil, overwrite characters which are not lines."
           (if (eq
                (logand
                 uniline--which-quadrant
-                ,(uniline--switch-with-table dir
-                   ((uniline-direction-up↑) (uniline--4quadb-after ?▄))
-                   ((uniline-direction-ri→) (uniline--4quadb-after ?▌))
-                   ((uniline-direction-dw↓) (uniline--4quadb-after ?▀))
-                   ((uniline-direction-lf←) (uniline--4quadb-after ?▐))))
+                ,(uniline--4quadb-pushed
+                  (uniline--reverse-direction dir)
+                  (uniline--4quadb-after ?█)))
                0)
               (uniline--move-in-direction ,dir))
 
@@ -1709,13 +1723,13 @@ Then the leakage of the two glyphs fills in E:
                  0))))
          ;; mask pairs of bits in the desired direction
          (setq
-          here (logand here (uniline--shift-4half 3 ,odir))
-          prev (logand prev (uniline--shift-4half 3 ,dir)))
+          here (logand here ,(uniline--shift-4half 3 odir))
+          prev (logand prev ,(uniline--shift-4half 3 dir)))
 
          ;; rotate pairs of bits 180°
          (setq
-          here (uniline--shift-4half here (- ,dir ,odir))
-          prev (uniline--shift-4half prev (- ,odir ,dir)))
+          here (uniline--shift-4half here ,(- dir odir))
+          prev (uniline--shift-4half prev ,(- odir dir)))
 
          ;; return the blank char with leakage from neighbours.
          (aref uniline--4halfs-to-char (logior here prev))))))
@@ -1744,8 +1758,8 @@ Then the leakage of the two glyphs fills in E:
                  (and p (uniline--4quadb-after (uniline--char-after p)))
                  0))))
          (setq
-          here (aref (aref uniline--4quadb-pushed ,dir ) here)
-          prev (aref (aref uniline--4quadb-pushed ,odir) prev))
+          here (uniline--4quadb-pushed , dir here)
+          prev (uniline--4quadb-pushed ,odir prev))
          (aref uniline--4quadb-to-char (logior here prev))))))
 
 (eval-when-compile ; not needed at runtime
@@ -2374,13 +2388,9 @@ Instead DIR is twisted 45° from the actual direction of the block."
            (ash1dir2 (uniline--shift-4half 1 dir))
            (notash3dir2 (lognot ash3dir2))
            (dir4
-            (uniline--4quadb-after
-             (uniline--switch-with-table dir
-               (uniline-direction-up↑ ?▘)
-               (uniline-direction-ri→ ?▝)
-               (uniline-direction-dw↓ ?▗)
-               (uniline-direction-lf← ?▖)))))
-
+            (uniline--4quadb-pushed
+             (uniline--turn-left dir)
+             (uniline--4quadb-pushed dir (uniline--4quadb-after ?█)))))
       `(let ((pat                       ; pattern
               (gethash
                (uniline--char-after)
@@ -2498,10 +2508,16 @@ When FORCE is not nil, overwrite whatever is in the buffer."
          (setq
           uniline--which-quadrant
           (uniline--switch-with-table dir
-            (uniline-direction-up↑ (uniline--4quadb-after ?▗))
-            (uniline-direction-ri→ (uniline--4quadb-after ?▖))
-            (uniline-direction-dw↓ (uniline--4quadb-after ?▘))
-            (uniline-direction-lf← (uniline--4quadb-after ?▝))))))
+            (lambda (dir)
+              (uniline--4quadb-pushed
+               (uniline--reverse-direction dir)
+               (uniline--4quadb-pushed
+                (uniline--turn-right dir)
+                (uniline--4quadb-after ?█))))
+            (uniline-direction-up↑)
+            (uniline-direction-ri→)
+            (uniline-direction-dw↓)
+            (uniline-direction-lf←)))))
     (while
         (progn
           (cond
