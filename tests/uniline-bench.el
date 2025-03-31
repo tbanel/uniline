@@ -57,7 +57,7 @@ RESULT is a string representing the expected result."
   (switch-to-buffer "*uniline-interactive*")
   (uniline-mode 1)
   (hydra-keyboard-quit) ;; clear any left-over from previous bench
-  (setq uniline--which-quadrant (uniline--4quadb-after ?▘))
+  (setq uniline--which-quadrant (uniline--char-to-4quadb ?▘))
   (execute-kbd-macro (kbd commands))
   
   (setq uniline-bench-result

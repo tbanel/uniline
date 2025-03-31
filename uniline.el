@@ -321,6 +321,97 @@ POINT default to `(point)', as for `char-after'"
         ?  ;; eol & eob are considered blank
       c)))
 
+;;;╭───────────────────╮
+;;;│Perfect hash tables│
+;;;╰───────────────────╯
+
+;; When an hash-table is constant, with entries known at compile-time,
+;; then a perfect hash-table can be built. Perfect means that there
+;; are no collisions: each bucket contains one entry, or none, never
+;; two entries. This makes the hash-table very efficient. Access to a
+;; key-value pair boils down to just:
+;; (aref some-constant-vector (% key size))
+;; The usual multiple entries scanning can be entirely bypassed.
+;;
+;; The hash-function is (% key size)
+;; The trick is to find the smallest size such that no two keys are hashed
+;; to the same value. Then this size is the length of the
+;; some-constant-vector. Finding the size can be done once and for all by
+;; brute force. That is, checking increasing sizes until one generates
+;; zero collisions. This is guaranteed to succeed, at most with a size
+;; equal to the largest key.
+;;
+;; Of course, this works only for numerical keys. For strings or other
+;; structures used as keys, they should first be converted to numbers
+;; by applying sxhash-equal. Unfortunately, sxhash-equal is not stable
+;; across versions of Emacs or even sessions. So those perfect
+;; hash-tables only work for keys in the range of fixnump (up to at least
+;; half a billion).
+;;
+;; Usage:
+;; - Write a function or an anonymous lambda to fill in the key-value pairs.
+;;   This function or lambda should have a parameter, the setter.
+;;   Fill the hash-table by calling repeatedly:
+;;      (funcall setter key value)
+;; - Create a getter for the perfect hash-table by calling:
+;;     (uniline--defun-perfect-hash name-of-getter doc fill-function-or-lambda)
+;;   No setter is required as this hash-table is supposed to be constant.
+;;   The getter includes and hide the hash-table as a constant vector.
+;;   This will create a:
+;;     (defun name-of-getter (key) …)
+;;
+;; Why not build a perfect hash-table on top of a regular Emacs hash-table?
+;; This is possible through the standard define-hash-table-test function,
+;; to pass-in a custom hash-function, and the :size parameter of
+;;   (make-hash-table :size 150)
+;; Unfortunately, the given size is not honored in the *.elc compiled file.
+;; A shorter size is automatically defined, resulting in collisions, and
+;; ruining the whole purpose of collision-less hash-tables.
+;; Hence this special new collision-less hash-table definition. As a bonus,
+;; its structure is lighter than the standard hash-tables, as it does not
+;; need the linked list of key-value pairs required to disambiguate
+;; collisions.
+
+(eval-when-compile ; not needed at runtime
+  (defmacro uniline--defun-perfect-hash (name doc fill &optional size)
+    "Create a perfect, collision-less, hash-table.
+NAME is the name of the getter to be defun.
+FILL is a function or lambda that is responsible for filling
+the table. Its parameter is the setter into the hash-table.
+FILL will be called once only, when loading or compiling the
+*.el file. Once compiled, FILL is no longer need, and can be
+discarded from the *.elc file.
+SIZE is an optional hint for the size of the undelying vector.
+SIZE default to 1. Giving a hint avoids trying sizes from 1
+to SIZE-1 to no avail."
+    (declare (doc-string 2) (indent 2))
+    (let ((vect))
+      (unless
+          (cl-loop
+           for size from (or size 1) to 10000
+           if
+           (let* ((nb 0)
+                  (set (lambda (k v)
+                         (if (and
+                              (aref vect (% k size))
+                              (not (eq (car (aref vect (% k size))) k)))
+                             (setq nb (1+ nb)))
+                         (aset vect (% k size) (cons k v)))))
+             (setq vect (make-vector size nil))
+             (funcall fill set)
+             (eq nb 0))
+           return t)
+        (error "no size avoinding collisions found up to 10000"))
+      (message "hash table optimal size = %s" (length vect))
+      `(defun ,name (x)
+         ,doc
+         (let ((pair
+                (aref (eval-when-compile ,vect)
+                      (% x ,(length vect)))))
+           (and pair
+                (eq (car pair) x)
+                (cdr pair)))))))
+
 ;;;╭─────────────────────────────────────────────────────╮
 ;;;│Reference tables of ┼ 4 half-lines UNICODE characters│
 ;;;╰─────────────────────────────────────────────────────╯
@@ -682,34 +773,16 @@ So for instance
 is encoded into up +4*ri +16*dw +64*lf = 9,
 which in turn is converted to ┕.")
 
-(defconst uniline--char-to-4halfs
-  (eval-when-compile
-    (let ((table (make-hash-table)))
-      (cl-loop
-       for x in uniline--list-of-available-halflines
-       do
-       (puthash
-        (car x)
-        (uniline--pack-4halfs (cdr x))
-        table))
-      table))
-  "Convert a UNICODE character to a 4halfs description.
-The UNICODE character is supposed to represent
-a combination of half lines in 4 directions
-and in 4 brush styles.
-The retrieved value is a4halfs description is (UP RI DW LF)
-packed into a single integer.
-If the UNICODE character is not a box-drawing one, nil
-is returned.
-So for instance, the character ┸ is converted to (2 1 0 1)
-meaning:
-  2 = thick up
-  1 = thin right
-  0 = blank down
-  1 = thin left
-Values (2 1 0 1) are encoded into 2 + 4*1 + 0*16 + 1*64 = 70
-This table is the reverse of `uniline--4halfs-to-char'
-without the fall-back characters.")
+(uniline--defun-perfect-hash uniline--char-to-4halfs
+    "Reverse of `uniline--4halfs-to-char'"
+  (lambda (setter)
+    (cl-loop
+     for x in uniline--list-of-available-halflines
+     do
+     (funcall setter
+              (car x)
+              (uniline--pack-4halfs (cdr x)))))
+  135)
 
 (when nil
 
@@ -1005,43 +1078,43 @@ Using `eq'."
       (pop list))
     (cdr list))
 
-  (defun uniline--make-hash (list)
+  (defun uniline--make-glyph-hash (list setter)
     "Helper function to build `uniline--glyphs-reverse-hash-*'.
 Used only at package initialization.
 LIST is `uniline--glyphs-fbw'."
-    (let ((hh (make-hash-table)))
-      (cl-loop
-       for ll on list
-       do
-       (if (cddar ll)
-           ;; glyph is directional, like ▲ ▶ ▼ ◀
-           (cl-loop
-            for cc in (cdar ll)
-            for i from 0
-            do (puthash
-                cc
-                (cons
-                 (if (uniline--duplicate (car ll))
-                     t    ; special case ↕↔↕↔ is NOT fully directional
-                   i)     ; fully directional, i gives the direction
-                 ll)
-                hh))
-         ;; glyph is not directional, like ■ ● ◆
-         (puthash (cadar ll) (cons nil ll) hh))
-       ;; explicitly break out of circular list
-       if (eq (cdr ll) list)
-       return nil)
-      hh)))
+    (cl-loop
+     for ll on list
+     do
+     (if (cddar ll)
+         ;; glyph is directional, like ▲ ▶ ▼ ◀
+         (cl-loop
+          for cc in (cdar ll)
+          for i from 0
+          do (funcall
+              setter
+              cc
+              (cons
+               (if (uniline--duplicate (car ll))
+                   t      ; special case ↕↔↕↔ is NOT fully directional
+                 i)       ; fully directional, i gives the direction
+               ll)))
+       ;; glyph is not directional, like ■ ● ◆
+       (funcall setter (cadar ll) (cons nil ll)))
+     ;; explicitly break out of circular list
+     if (eq (cdr ll) list)
+     return nil)))
 
-(defconst uniline--glyphs-reverse-hash-fw
-  (eval-when-compile
-    (uniline--make-hash uniline--glyphs-fw))
-  "Same as `uniline--glyphs-fw' reversing keys & values.")
+(uniline--defun-perfect-hash uniline--glyphs-reverse-hash-fw
+    "Reverse of `uniline--glyphs-fw'"
+  (lambda (setter)
+    (uniline--make-glyph-hash uniline--glyphs-fw setter))
+  114)
 
-(defconst uniline--glyphs-reverse-hash-bw
-  (eval-when-compile
-    (uniline--make-hash uniline--glyphs-bw))
-  "Same as `uniline--glyphs-bw' reversing keys & values.")
+(uniline--defun-perfect-hash uniline--glyphs-reverse-hash-bw
+    "Reverse of `uniline--glyphs-fw'"
+  (lambda (setter)
+    (uniline--make-glyph-hash uniline--glyphs-bw setter))
+  114)
 
 ;;;╭───────────────────────────────────────────────────────────╮
 ;;;│Reference tables of ▙▄▟▀ quadrant-blocks UNICODE characters│
@@ -1082,22 +1155,28 @@ The order of characters in this table is not important,
 provided that a particular quarter is always represented
 by the same bit, and this bit is 1 when this quarter is black.
 Everything in the code hereafter follow the choosen ordering
-of this table.
-Reverse of `uniline--char-to-4quadb'"))
+of this table."))
 
 (eval-and-compile
-  (defconst uniline--char-to-4quadb
-    (eval-when-compile
-      (let ((table (make-hash-table)))
-        (cl-loop
-         for c across uniline--4quadb-to-char
-         for i from 0
-         do (puthash c i table))
-        table))
-    "Convert a UNICODE character to a quadrant bitmap.
-Reverse of `uniline--4quadb-to-char'"))
+  (uniline--defun-perfect-hash uniline--char-to-4quadb1
+      "Reverse of `uniline--4quadb-to-char'"
+    (lambda (setter)
+      (cl-loop
+       for c across uniline--4quadb-to-char
+       for i from 0
+       do (funcall setter c i)))
+    33))
 
-(eval-when-compile
+(eval-and-compile
+  (defmacro uniline--char-to-4quadb (char)
+    "Return a bit pattern (a 4quadb).
+It represents a UNICODE character like ?▙ in CHAR.
+Return nil if CHAR is not a 4quadb character."
+    (if (fixnump char)
+        (uniline--char-to-4quadb1  char)
+      `( uniline--char-to-4quadb1 ,char))))
+
+(eval-and-compile
   (defconst uniline--4quadb-pushed
     (eval-when-compile
       (let ((table (make-vector 4 nil))) ;        ╭─╴fill with zero because many
@@ -1110,8 +1189,8 @@ Reverse of `uniline--4quadb-to-char'"))
                (cl-loop for (k v) on keyvals by #'cddr
                         do
                         (aset subtable
-                              (gethash k uniline--char-to-4quadb)
-                              (gethash v uniline--char-to-4quadb)))
+                              (uniline--char-to-4quadb k)
+                              (uniline--char-to-4quadb v)))
                ;; then fill in entries for all 16 quadrant blocks, by logically
                ;; composing their bits from single-bits
                (cl-loop
@@ -1189,32 +1268,6 @@ nil: no action except cursor movements
 :block block drawing like ▙▄▟▀")
 
 (eval-when-compile ; not needed at runtime
-  (defmacro uniline--4halfs-after (&optional char)
-    "Return a bit pattern (a 4halfs).
-It represents a UNICODE character like ┬ found at (point).
-If CHAR is given, use this CHAR instead of the character
-found at (point).
-Return nil if the character is not a 4halfs character."
-    (let ((code
-           `(gethash
-             ,(or char '(uniline--char-after))
-             uniline--char-to-4halfs)))
-      (if (fixnump char) (eval code) code))))
-
-(eval-when-compile ; not needed at runtime
-  (defmacro uniline--4quadb-after (&optional char)
-    "Return a bit pattern (a 4quadb).
-It represents a UNICODE character like ▙ found at (point).
-If CHAR is given, use this CHAR instead of the character
-found at (point).
-Return nil if the character is not a 4quadb character."
-    (let ((code
-           `(gethash
-             ,(or char '(uniline--char-after))
-             uniline--char-to-4quadb)))
-      (if (fixnump char) (eval code) code))))
-
-(eval-when-compile ; not needed at runtime
   (defsubst uniline--insert-4halfs (4halfs)
     "Insert at (point) a UNICODE like ┬.
 The UNICODE character is described by the 4HALFS bits pattern.
@@ -1234,7 +1287,7 @@ The (point) does not move."
 ;;;│Low level management of ▙▄▟▀ quadrant-blocks UNICODE characters│
 ;;;╰───────────────────────────────────────────────────────────────╯
 
-(defvar-local uniline--which-quadrant (uniline--4quadb-after ?▘)
+(defvar-local uniline--which-quadrant (uniline--char-to-4quadb ?▘)
   "Where is the quadrant cursor.
 To draw lines with quadrant-blocks like this ▙▄▟▀,
 it is required to keep track where is the
@@ -1270,7 +1323,7 @@ character at point."
       (uniline--insert-char ? ))
   (let ((bits
          (or
-          (uniline--4quadb-after)
+          (uniline--char-to-4quadb (uniline--char-after))
           (and force 0))))
     (if bits
         (uniline--insert-4quadb
@@ -1282,12 +1335,12 @@ character at point."
 Assume that point is on a quadrant-block character.
 Clear the half of this character pointing in DIR direction."
     (setq dir (eval dir))
-    `(let ((bits (uniline--4quadb-after)))
+    `(let ((bits (uniline--char-to-4quadb (uniline--char-after))))
        (if bits
            (uniline--insert-4quadb
             (logand
              bits
-             ,(uniline--4quadb-pushed dir (uniline--4quadb-after ?█))))))))
+             ,(uniline--4quadb-pushed dir (uniline--char-to-4quadb ?█))))))))
 
 ;;;╭────────────────────────────╮
 ;;;│Test blanks in the neighbour│
@@ -1309,8 +1362,8 @@ virtue of the infinite buffer."
    (let ((c (char-after p)))
      (or
       (eq c ?\n)
-      (uniline--4halfs-after c)
-      (uniline--4quadb-after c)))))
+      (uniline--char-to-4halfs c)
+      (uniline--char-to-4quadb c)))))
 
 (eval-when-compile ; not needed at runtime
   (defmacro uniline--neighbour-point (dir)
@@ -1364,7 +1417,7 @@ while staying on the same (point)."
     uniline--which-quadrant
     (uniline--switch-with-table dir
       (lambda (dir)
-        (uniline--4quadb-pushed dir (uniline--4quadb-after ?█)))
+        (uniline--4quadb-pushed dir (uniline--char-to-4quadb ?█)))
       (uniline-direction-up↑)
       (uniline-direction-ri→)
       (uniline-direction-dw↓)
@@ -1407,7 +1460,10 @@ When FORCE is not nil, overwrite a possible non-4halfs character."
        (if (eolp)
            (uniline--insert-char ? ))
        (if uniline-brush
-           (let ((bits (or (uniline--4halfs-after) (and ,force 0))))
+           (let ((bits
+                  (or
+                   (uniline--char-to-4halfs (uniline--char-after))
+                   (and ,force 0))))
              (cond
               ;; 1st case: (char-after) is a line-character like ╶┤,
               ;; or any character if FORCE
@@ -1465,7 +1521,7 @@ When FORCE is not nil, overwrite characters which are not lines."
                 uniline--which-quadrant
                 ,(uniline--4quadb-pushed
                   (uniline--reverse-direction dir)
-                  (uniline--4quadb-after ?█)))
+                  (uniline--char-to-4quadb ?█)))
                0)
               (uniline--move-in-direction ,dir))
 
@@ -1473,16 +1529,16 @@ When FORCE is not nil, overwrite characters which are not lines."
                 ,(cond
                   ((memq dir (list uniline-direction-up↑ uniline-direction-dw↓))
                    '(uniline--switch-with-table uniline--which-quadrant
-                      ((uniline--4quadb-after ?▘) (uniline--4quadb-after ?▖))
-                      ((uniline--4quadb-after ?▖) (uniline--4quadb-after ?▘))
-                      ((uniline--4quadb-after ?▗) (uniline--4quadb-after ?▝))
-                      ((uniline--4quadb-after ?▝) (uniline--4quadb-after ?▗))))
+                      ((uniline--char-to-4quadb ?▘) (uniline--char-to-4quadb ?▖))
+                      ((uniline--char-to-4quadb ?▖) (uniline--char-to-4quadb ?▘))
+                      ((uniline--char-to-4quadb ?▗) (uniline--char-to-4quadb ?▝))
+                      ((uniline--char-to-4quadb ?▝) (uniline--char-to-4quadb ?▗))))
                   ((memq dir (list uniline-direction-ri→ uniline-direction-lf←))
                    '(uniline--switch-with-table uniline--which-quadrant
-                      ((uniline--4quadb-after ?▘) (uniline--4quadb-after ?▝))
-                      ((uniline--4quadb-after ?▖) (uniline--4quadb-after ?▗))
-                      ((uniline--4quadb-after ?▗) (uniline--4quadb-after ?▖))
-                      ((uniline--4quadb-after ?▝) (uniline--4quadb-after ?▘))))))
+                      ((uniline--char-to-4quadb ?▘) (uniline--char-to-4quadb ?▝))
+                      ((uniline--char-to-4quadb ?▖) (uniline--char-to-4quadb ?▗))
+                      ((uniline--char-to-4quadb ?▗) (uniline--char-to-4quadb ?▖))
+                      ((uniline--char-to-4quadb ?▝) (uniline--char-to-4quadb ?▘))))))
 
           (uniline--write-one-4quadb ,force)))
 
@@ -1715,11 +1771,11 @@ Then the leakage of the two glyphs fills in E:
     ┗╸"
     (setq dir (eval dir))
     (let ((odir (uniline--reverse-direction dir)))
-      `(let ((here (or (uniline--4halfs-after) 0))
+      `(let ((here (or (uniline--char-to-4halfs (uniline--char-after)) 0))
              (prev    ; char preceding (point) as a 4halfs-bit-pattern
               (let ((p (uniline--neighbour-point ,odir)))
                 (or
-                 (and p (uniline--4halfs-after (uniline--char-after p)))
+                 (and p (uniline--char-to-4halfs (uniline--char-after p)))
                  0))))
          ;; mask pairs of bits in the desired direction
          (setq
@@ -1751,11 +1807,11 @@ Then the leakage of the two glyphs fills in E:
     ▙"
     (setq dir (eval dir))
     (let ((odir (uniline--reverse-direction dir)))
-      `(let ((here (or (uniline--4quadb-after) 0))
+      `(let ((here (or (uniline--char-to-4quadb (uniline--char-after)) 0))
              (prev    ; char preceding (point) as a 4quadb-bit-pattern
               (let ((p (uniline--neighbour-point ,odir)))
                 (or
-                 (and p (uniline--4quadb-after (uniline--char-after p)))
+                 (and p (uniline--char-to-4quadb (uniline--char-after p)))
                  0))))
          (setq
           here (uniline--4quadb-pushed , dir here)
@@ -1901,7 +1957,7 @@ When FORCE is not nil, overwrite whatever is there."
          (setq
           width  (+ width  width  1)
           height (+ height height 1)
-          uniline--which-quadrant (uniline--4quadb-after ?▘)))
+          uniline--which-quadrant (uniline--char-to-4quadb ?▘)))
      (let ((mark-active nil)) ;; otherwise brush would be inactive
        (uniline-write-ri→ width  force)
        (uniline-write-dw↓ height force)
@@ -1938,7 +1994,7 @@ When FORCE is not nil, overwrite whatever is there."
          (setq
           width  (+ width  width  -1)
           height (+ height height -1)
-          uniline--which-quadrant (uniline--4quadb-after ?▗)))
+          uniline--which-quadrant (uniline--char-to-4quadb ?▗)))
      (uniline-move-to-column (1- begx))
      (uniline-write-ri→ width  force)
      (uniline-write-dw↓ height force)
@@ -2260,10 +2316,10 @@ of the same command."
          ;;   △       △         current character is
          ;;   │       ╰────────╴this one
          ;;   ╰────────────────╴and it has NO orientation
-         (gethash (uniline--char-after)
-                  (if back
-                      uniline--glyphs-reverse-hash-bw
-                    uniline--glyphs-reverse-hash-fw))))
+
+         (if back
+             (uniline--glyphs-reverse-hash-bw (uniline--char-after))
+           (  uniline--glyphs-reverse-hash-fw (uniline--char-after)))))
     (if (and
          line                  ; current character is one the known glyphs
          (fixnump (car line))) ; it has a north-south-east-west orientation
@@ -2390,11 +2446,9 @@ Instead DIR is twisted 45° from the actual direction of the block."
            (dir4
             (uniline--4quadb-pushed
              (uniline--turn-left dir)
-             (uniline--4quadb-pushed dir (uniline--4quadb-after ?█)))))
+             (uniline--4quadb-pushed dir (uniline--char-to-4quadb ?█)))))
       `(let ((pat                       ; pattern
-              (gethash
-               (uniline--char-after)
-               uniline--glyphs-reverse-hash-fw)))
+              (uniline--glyphs-reverse-hash-fw (uniline--char-after))))
          (cond
           ;; If (point) is on a directional arrow
           ((car pat)
@@ -2403,7 +2457,7 @@ Instead DIR is twisted 45° from the actual direction of the block."
            (setq uniline--arrow-direction ,dir))
 
           ;; If point is on lines crossing
-          ((setq pat (uniline--4halfs-after))
+          ((setq pat (uniline--char-to-4halfs (uniline--char-after)))
            (let ((patdir (logand pat ,   ash3dir2)) ; pattern in DIR
                  (patnot (logand pat ,notash3dir2)) ; pattern not in DIR
                  patnew)                            ; new pattern to insert
@@ -2413,13 +2467,13 @@ Instead DIR is twisted 45° from the actual direction of the block."
                    (setq patnew (logior patnot patdir))
                    (not
                     (eq
-                     (uniline--4halfs-after
+                     (uniline--char-to-4halfs
                       (aref uniline--4halfs-to-char patnew))
                      patnew))))
              (uniline--insert-4halfs patnew)))
 
           ;; If point is on a quarter-char
-          ((setq pat (uniline--4quadb-after))
+          ((setq pat (uniline--char-to-4quadb (uniline--char-after)))
            (uniline--insert-4quadb (logxor pat ,dir4))))))))
 
 ;; Run the following cl-loop to automatically write a bunch
@@ -2513,7 +2567,7 @@ When FORCE is not nil, overwrite whatever is in the buffer."
                (uniline--reverse-direction dir)
                (uniline--4quadb-pushed
                 (uniline--turn-right dir)
-                (uniline--4quadb-after ?█))))
+                (uniline--char-to-4quadb ?█))))
             (uniline-direction-up↑)
             (uniline-direction-ri→)
             (uniline-direction-dw↓)
@@ -2534,7 +2588,7 @@ When FORCE is not nil, overwrite whatever is in the buffer."
              (or (not (eq uniline-brush :block))
                  (eq
                   (logand uniline--which-quadrant
-                          (uniline--4quadb-after ?▐))
+                          (uniline--char-to-4quadb ?▐))
                   0)))
             (while
                 (and
@@ -2542,23 +2596,23 @@ When FORCE is not nil, overwrite whatever is in the buffer."
                  (not (uniline--blank-after (point)))))
             (if (uniline--at-border-p uniline-direction-up↑)
                 (setq dir (uniline-direction-up↑)
-                      uniline--which-quadrant (uniline--4quadb-after ?▝))
+                      uniline--which-quadrant (uniline--char-to-4quadb ?▝))
               (setq dir (uniline-direction-ri→)
-                    uniline--which-quadrant (uniline--4quadb-after ?▖))))
+                    uniline--which-quadrant (uniline--char-to-4quadb ?▖))))
            ((and
              (eq dir (uniline-direction-up↑))
              (uniline--at-border-p uniline-direction-up↑)
              (or (not (eq uniline-brush :block))
                  (eq
                   (logand uniline--which-quadrant
-                          (uniline--4quadb-after ?▄))
+                          (uniline--char-to-4quadb ?▄))
                   0)))
             (while
                 (progn
                   (forward-char 1)
                   (not (uniline--blank-after (point)))))
             (setq dir (uniline-direction-dw↓))
-            (setq uniline--which-quadrant (uniline--4quadb-after ?▘)))
+            (setq uniline--which-quadrant (uniline--char-to-4quadb ?▘)))
            (t
             (uniline--write dir force)
             (setq n (1+ n))))
