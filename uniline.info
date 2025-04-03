@@ -1383,8 +1383,15 @@ File: uniline.info,  Node: Author contributors,  Next: License,  Prev: Related p
 
    Feedback:
 
+   • Chris Rayner (@riscy), gave recommendations prior to insertion in
+     MELPA
+
+   • Adam Porter (@alphapapa), suggested submitting Uniline to ELPA;
+     should I?
+
    • Joost Kremers <https://github.com/joostkremers> found a bug in the
      minor-mode key-binding definitions, and incompatibility with
+
    • DogLooksGood <https://github.com/DogLooksGood> gave feedback on
      inserting usual characters not moving the cursor
 
@@ -1446,7 +1453,7 @@ Node: Lisp API44198
 Node: Installation49360
 Node: Related packages50358
 Node: Author contributors53065
-Node: License53525
+Node: License53698
 
 End Tag Table
 

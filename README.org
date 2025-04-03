@@ -1220,8 +1220,15 @@ In this example, =C-<insert>= was chosen. You can use whatever keys combination 
 
 Feedback:
 
+- Chris Rayner (@riscy), gave recommendations prior to insertion in
+  MELPA
+
+- Adam Porter (@alphapapa), suggested submitting Uniline to ELPA;
+  should I?
+
 - Joost Kremers https://github.com/joostkremers found a bug in the
   minor-mode key-binding definitions, and incompatibility with
+
 - DogLooksGood https://github.com/DogLooksGood gave feedback on
   inserting usual characters not moving the cursor
 
