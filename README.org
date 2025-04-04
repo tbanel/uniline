@@ -3,15 +3,52 @@
 #+OPTIONS: ^:{} authors:Thierry Banel, toc:nil
 #+LATEX_HEADER: \usepackage{pmboxdraw}
 
-*New*: Lines extension upon moving rectangles now also happens for quadrant-block lines
-
 * Getting started in 10 seconds
+:PROPERTIES:
+:CUSTOM_ID: getting-started-in-10-seconds
+:END:
 
 - Type =M-x uniline-mode=
 - Move cursor with the arrow-keys on the keyboard =→ ← ↑ ↓=
 - Quit =C-c C-c=
 
+* Table of Contents
+:PROPERTIES:
+:TOC:      :include all :depth 1 :force () :ignore (this) :local (nothing)
+:CUSTOM_ID: table-of-contents
+:END:
+
+:CONTENTS:
+- [[#getting-started-in-10-seconds][Getting started in 10 seconds]]
+- [[#pure-unicode-text-diagrams-in-emacs][Pure UNICODE text diagrams in Emacs]]
+- [[#minor-mode][Minor mode]]
+- [[#drawing-lines][Drawing lines]]
+- [[#brush-style][Brush style]]
+- [[#the-insert-key][The <insert> key]]
+- [[#arrows-glyphs------][Arrows glyphs ▷ ▶ → ▹ ▸ ↔]]
+- [[#intersection-glyphs---][Intersection glyphs ■ ◆ ●]]
+- [[#drawing-rectangles][Drawing rectangles]]
+- [[#moving-rectangles][Moving rectangles]]
+- [[#tracing-a-contour][Tracing a contour]]
+- [[#flood-fill][Flood-fill]]
+- [[#text-direction][Text direction]]
+- [[#macros][Macros]]
+- [[#fine-tweaking][Fine tweaking]]
+- [[#which-fonts][Which fonts?]]
+- [[#text-menus-hydra][Text menus (Hydra)]]
+- [[#line-spacing][Line spacing]]
+- [[#how-uniline-behaves-with-its-environment][How Uniline behaves with its environment?]]
+- [[#lisp-api][Lisp API]]
+- [[#installation][Installation]]
+- [[#related-packages][Related packages]]
+- [[#author-contributors][Author, contributors]]
+- [[#license][License]]
+:END:
+
 * Pure UNICODE text diagrams in Emacs
+:PROPERTIES:
+:CUSTOM_ID: pure-unicode-text-diagrams-in-emacs
+:END:
 Draw diagrams like those:
 
 Document a command:
@@ -172,6 +209,9 @@ display them does not support UNICODE block characters. See bellow the
 paragraph "Which fonts?".
 
 * Minor mode
+:PROPERTIES:
+:CUSTOM_ID: minor-mode
+:END:
 =Uniline= is a minor mode. Activate it temporarily:
 
  =M-x uniline-mode=
@@ -187,6 +227,9 @@ truncation. Also, a hollow cursor is provided. Those settings are
 reset to their previous state when exiting =uniline-mode=.
 
 * Drawing lines
+:PROPERTIES:
+:CUSTOM_ID: drawing-lines
+:END:
 Use keyboard arrows to draw lines.
 
 By default, drawing lines only happens over empty space or over other
@@ -202,6 +245,9 @@ The usual numeric prefix is available. For instance, to draw a line 12
 characters wide downward, type: =M-12 <down>=
 
 * Brush style
+:PROPERTIES:
+:CUSTOM_ID: brush-style
+:END:
 Set the current brush with:
 
 - ~-~ single thin line
@@ -238,6 +284,9 @@ looks like this:
 #+end_example
 
 * The =<insert>= key
+:PROPERTIES:
+:CUSTOM_ID: the-insert-key
+:END:
 The =<insert>= key is a prefix for other keys:
 - for drawing arrows, squares, crosses, o-shapes glyphs,
 - for handling rectangles,
@@ -254,6 +303,9 @@ Why =<insert>=? Because:
 So preempting =<insert>= does not sacrifices anything.
 
 * Arrows glyphs =▷ ▶ → ▹ ▸ ↔=
+:PROPERTIES:
+:CUSTOM_ID: arrows-glyphs------
+:END:
 At any time, an arrow may be drawn. The arrow points in the direction
 that the line drawing follows.
 
@@ -290,6 +342,9 @@ To change the direction of the arrow, use shift-arrow, for example:
 =S-<up>= will change from =→= to =↑=.
 
 * Intersection glyphs =■ ◆ ●=
+:PROPERTIES:
+:CUSTOM_ID: intersection-glyphs---
+:END:
 There are a few other UNICODE characters which are mono-space and
 symmetric in the 4 directions. They are great at line intersections:
 
@@ -340,6 +395,9 @@ prefix them with =<insert>=. Example: =<insert> -= inserts a =-= and
 #+end_example
 
 * Drawing rectangles
+:PROPERTIES:
+:CUSTOM_ID: drawing-rectangles
+:END:
 To draw a rectangle in one shot, select a rectangular region with
 =C-SPC= or =C-x SPC= and move the cursor.
 
@@ -380,6 +438,9 @@ The usual =C-_= or =C-/= keys may be hit to undo, even with the region still
 active visually.
 
 * Moving rectangles
+:PROPERTIES:
+:CUSTOM_ID: moving-rectangles
+:END:
 Select a region, then press =<insert>=. The selection becomes rectangular if it
 was not.
 
@@ -429,6 +490,9 @@ and killed rectangles, =killed-rectangle=. So, a rectangle can be killed
 one way, and yanked another way.
 
 * Tracing a contour
+:PROPERTIES:
+:CUSTOM_ID: tracing-a-contour
+:END:
 
 [[file:images/contour-tracing.png]]
 
@@ -469,6 +533,9 @@ a second to run. For shapes really huge, you may launch the contour
 command once again, at the point where the previous run ended.
 
 * Flood-fill
+:PROPERTIES:
+:CUSTOM_ID: flood-fill
+:END:
 
 [[file:images/flood-fill.png]]
 
@@ -514,6 +581,9 @@ There is no limit on the area to fill. Therefore, the filling
 operation may flood the entire buffer (but no more).
 
 * Text direction
+:PROPERTIES:
+:CUSTOM_ID: text-direction
+:END:
 Usually, inserting text in a buffer moves the cursor to the right. (And
 sometimes to the left for some locales). Any of the 4 directions can be
 selected under =Uniline=. Just type any of:
@@ -527,6 +597,9 @@ The current direction is reflected in the mode-line, just before the
 word ="uniline"=.
 
 * Macros
+:PROPERTIES:
+:CUSTOM_ID: macros
+:END:
 =Uniline= adds directional macros to the Emacs standard macros.
 
 Record a macro as usual with =C-x (= … =C-x )=.
@@ -593,6 +666,9 @@ call a macro in 4 directions, closing a square:
 #+end_example
 
 * Fine tweaking
+:PROPERTIES:
+:CUSTOM_ID: fine-tweaking
+:END:
 
 [[file:images/fine-tweaking.png]]
 
@@ -634,6 +710,9 @@ In the above example, the effect was achieved with:
 =INS S-<up> S-<down> S-<left>=
 
 * Which fonts?
+:PROPERTIES:
+:CUSTOM_ID: which-fonts
+:END:
 A mono-space character font must be used. It must also support UNICODE.
 
 Not all fonts are born equal.
@@ -682,6 +761,9 @@ Note that none of those commands downloads a font from the Web.
 The font should already be available.
 
 * Text menus (Hydra)
+:PROPERTIES:
+:CUSTOM_ID: text-menus-hydra
+:END:
 Casual usage of =Uniline= should be easy: just move the point, and lines
 are traced.
 
@@ -728,6 +810,9 @@ per buffer basis with the =TAB= key. Note the use of =set-default=. Using
 =setq= instead would assign the value =1= only in the =~/.emacs= buffer.
 
 * Line spacing
+:PROPERTIES:
+:CUSTOM_ID: line-spacing
+:END:
 The =line-spacing= setting in Emacs can change the display of a sketch.
 
 The best looking effect is given by:
@@ -753,6 +838,9 @@ choice for everyone.
 #+end_example
 
 * How =Uniline= behaves with its environment?
+:PROPERTIES:
+:CUSTOM_ID: how-uniline-behaves-with-its-environment
+:END:
 ** Compatibility with Picture-mode
 
 =Picture-mode= and =uniline-mode= are compatible. Their features overlap
@@ -934,6 +1022,9 @@ result though. They should be avoided under =Consolas=: =△▶▹◇◆=
 Of course, other fonts may be installed. It is quite easy.
 
 * Lisp API
+:PROPERTIES:
+:CUSTOM_ID: lisp-api
+:END:
 Could Uniline be programmed (versus used interactively)?
 Yes!
 
@@ -1103,6 +1194,9 @@ directions:
 - =uniline-move-to-delta-line=
 
 * Installation
+:PROPERTIES:
+:CUSTOM_ID: installation
+:END:
 
 Add the following lines to your =.emacs= file,
 and reload it, if not already done:
@@ -1145,6 +1239,9 @@ In this example, =C-<insert>= was chosen. You can use whatever keys combination 
 =<insert>= happens to also be the key used inside =Uniline=.
 
 * Related packages
+:PROPERTIES:
+:CUSTOM_ID: related-packages
+:END:
 
 - =artist-mode=: the ASCII art mode built into Emacs.
 
@@ -1216,6 +1313,9 @@ In this example, =C-<insert>= was chosen. You can use whatever keys combination 
 - =vim drawit ascii diagrams=: in Vin, in ASCII
 
 * Author, contributors
+:PROPERTIES:
+:CUSTOM_ID: author-contributors
+:END:
 - Thierry Banel, author
 
 Feedback:
@@ -1233,6 +1333,9 @@ Feedback:
   inserting usual characters not moving the cursor
 
 * License
+:PROPERTIES:
+:CUSTOM_ID: license
+:END:
 Copyright (C) 2024-2025  Thierry Banel
 
 Uniline is free software: you can redistribute it and/or modify it under

@@ -13,9 +13,6 @@ File: uniline.info,  Node: Top,  Next: Getting started in 10 seconds,  Up: (dir)
 Uniline
 *******
 
-*New*: Lines extension upon moving rectangles now also happens for
-quadrant-block lines
-
 * Menu:
 
 * Getting started in 10 seconds::
@@ -1420,40 +1417,40 @@ along with this program.  If not, see <http://www.gnu.org/licenses/>.
 
 Tag Table:
 Node: Top75
-Node: Getting started in 10 seconds1243
-Node: Pure UNICODE text diagrams in Emacs1573
-Node: Minor mode9191
-Node: Drawing lines9739
-Node: Brush style10415
-Node: The <insert> key11507
-Node: Arrows glyphs ▷ ▶ → ▹ ▸ ↔12341
-Node: Intersection glyphs ■ ◆ ●13898
-Node: Drawing rectangles16546
-Node: Moving rectangles18520
-Node: Tracing a contour20397
-Node: Flood-fill22164
-Node: Text direction23891
-Node: Macros24432
-Node: Fine tweaking27793
-Node: Which fonts?29588
-Node: Text menus (Hydra)31443
-Node: Line spacing33403
-Node: How Uniline behaves with its environment?34831
-Node: Compatibility with Picture-mode35379
-Node: Compatibility with Artist-mode36297
-Node: Compatibility with Whitespace-mode36816
-Node: Compatibility with Org Mode37716
-Node: Org Mode and LaTex38502
-Node: What about \t tabs?40403
-Node: What about ^L page separation?41051
-Node: Emacs on the Linux console41674
-Node: Emacs on a graphical terminal emulator42628
-Node: Emacs on Windows43551
-Node: Lisp API44198
-Node: Installation49360
-Node: Related packages50358
-Node: Author contributors53065
-Node: License53698
+Node: Getting started in 10 seconds1154
+Node: Pure UNICODE text diagrams in Emacs1484
+Node: Minor mode9102
+Node: Drawing lines9650
+Node: Brush style10326
+Node: The <insert> key11418
+Node: Arrows glyphs ▷ ▶ → ▹ ▸ ↔12252
+Node: Intersection glyphs ■ ◆ ●13809
+Node: Drawing rectangles16457
+Node: Moving rectangles18431
+Node: Tracing a contour20308
+Node: Flood-fill22075
+Node: Text direction23802
+Node: Macros24343
+Node: Fine tweaking27704
+Node: Which fonts?29499
+Node: Text menus (Hydra)31354
+Node: Line spacing33314
+Node: How Uniline behaves with its environment?34742
+Node: Compatibility with Picture-mode35290
+Node: Compatibility with Artist-mode36208
+Node: Compatibility with Whitespace-mode36727
+Node: Compatibility with Org Mode37627
+Node: Org Mode and LaTex38413
+Node: What about \t tabs?40314
+Node: What about ^L page separation?40962
+Node: Emacs on the Linux console41585
+Node: Emacs on a graphical terminal emulator42539
+Node: Emacs on Windows43462
+Node: Lisp API44109
+Node: Installation49271
+Node: Related packages50269
+Node: Author contributors52976
+Node: License53609
 
 End Tag Table
 
