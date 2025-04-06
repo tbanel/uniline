@@ -328,89 +328,61 @@ POINT default to `(point)', as for `char-after'"
 ;; When an hash-table is constant, with entries known at compile-time,
 ;; then a perfect hash-table can be built. Perfect means that there
 ;; are no collisions: each bucket contains one entry, or none, never
-;; two entries. This makes the hash-table very efficient. Access to a
-;; key-value pair boils down to just:
-;; (aref some-constant-vector (% key size))
+;; two entries. This makes the hash-table very efficient. 
 ;; The usual multiple entries scanning can be entirely bypassed.
 ;;
-;; The hash-function is (% key size)
-;; The trick is to find the smallest size such that no two keys are hashed
-;; to the same value. Then this size is the length of the
-;; some-constant-vector. Finding the size can be done once and for all by
-;; brute force. That is, checking increasing sizes until one generates
-;; zero collisions. This is guaranteed to succeed, at most with a size
-;; equal to the largest key.
+;; Uniline has 6 constant hash-tables. We want to make them
+;; perfect, collision-less. 3 Options:
 ;;
-;; Of course, this works only for numerical keys. For strings or other
-;; structures used as keys, they should first be converted to numbers
-;; by applying sxhash-equal. Unfortunately, sxhash-equal is not stable
-;; across versions of Emacs or even sessions. So those perfect
-;; hash-tables only work for keys in the range of fixnump (up to at least
-;; half a billion).
+;; 1- Define a custom hash-function like
+;;    (% key 191)
+;;    by looking for the right constant like 191, we can get a
+;;    collision-less hash-table
+;;    as shown by (internal--hash-table-histogram)
+;;  - Unfortunately, this makes the resulting hash-table roughly
+;;    3 times slower than a regular (make-hash-table), even one
+;;    with collisions.
 ;;
-;; Usage:
-;; - Write a function or an anonymous lambda to fill in the key-value pairs.
-;;   This function or lambda should have a parameter, the setter.
-;;   Fill the hash-table by calling repeatedly:
-;;      (funcall setter key value)
-;; - Create a getter for the perfect hash-table by calling:
-;;     (uniline--defun-perfect-hash name-of-getter doc fill-function-or-lambda)
-;;   No setter is required as this hash-table is supposed to be constant.
-;;   The getter includes and hide the hash-table as a constant vector.
-;;   This will create a:
-;;     (defun name-of-getter (key) …)
+;; 2- Use a custom vector instead of a hash-table, along with a
+;;    hashing function like
+;;    (% key (length custom-vector))
+;;    This amounts to re-creating hash-tables with vectors.
+;;  - The result is slightly slower than (make-hash-table), even
+;;    with collisions, about 30% slower.
 ;;
-;; Why not build a perfect hash-table on top of a regular Emacs hash-table?
-;; This is possible through the standard define-hash-table-test function,
-;; to pass-in a custom hash-function, and the :size parameter of
-;;   (make-hash-table :size 150)
-;; Unfortunately, the given size is not honored in the *.elc compiled file.
-;; A shorter size is automatically defined, resulting in collisions, and
-;; ruining the whole purpose of collision-less hash-tables.
-;; Hence this special new collision-less hash-table definition. As a bonus,
-;; its structure is lighter than the standard hash-tables, as it does not
-;; need the linked list of key-value pairs required to disambiguate
-;; collisions.
+;; 3- Use a standard hash-table and tweak its size
+;;    (make-hash-table :size 114)
+;;  - Unfortunately, the specified size is not retrained in the
+;;    compiled *.elc file
+;;    Beside, the specified size gets rounded to the next power of 2
+;;
+;; 4- Create the constant hash-table with
+;;    (make-hash-table :size 114)
+;;    when loading the compiled *.elc file
+;;    Store in the *.elc a list of pairs (key . value)
+;;  - This bypasses the #s(hash-table …) form that was handy in the
+;;    *.elc, but at no cost in the *.elc size and almost nothing
+;;    for the hash-table creation process at load-time
+;;
+;; This 4th solution is implemented hereafter through a macro
+;; which bundles:
+;;   - (defconst …)
+;;   - (make-hash-table :size my-preferred-size)
+;;   - populating the hash-table from a list of pairs loaded from *.elc
 
-(eval-when-compile ; not needed at runtime
-  (defmacro uniline--defun-perfect-hash (name doc fill &optional size)
-    "Create a perfect, collision-less, hash-table.
-NAME is the name of the getter to be defun.
-FILL is a function or lambda that is responsible for filling
-the table. Its parameter is the setter into the hash-table.
-FILL will be called once only, when loading or compiling the
-*.el file. Once compiled, FILL is no longer need, and can be
-discarded from the *.elc file.
-SIZE is an optional hint for the size of the undelying vector.
-SIZE default to 1. Giving a hint avoids trying sizes from 1
-to SIZE-1 to no avail."
-    (declare (doc-string 2) (indent 2))
-    (let ((vect))
-      (unless
-          (cl-loop
-           for size from (or size 1) to 10000
-           if
-           (let* ((nb 0)
-                  (set (lambda (k v)
-                         (if (and
-                              (aref vect (% k size))
-                              (not (eq (car (aref vect (% k size))) k)))
-                             (setq nb (1+ nb)))
-                         (aset vect (% k size) (cons k v)))))
-             (setq vect (make-vector size nil))
-             (funcall fill set)
-             (eq nb 0))
-           return t)
-        (error "no size avoinding collisions found up to 10000"))
-      (message "hash table optimal size = %s" (length vect))
-      `(defun ,name (x)
-         ,doc
-         (let ((pair
-                (aref (eval-when-compile ,vect)
-                      (% x ,(length vect)))))
-           (and pair
-                (eq (car pair) x)
-                (cdr pair)))))))
+(eval-when-compile ;; not needed at runtime
+  (defmacro uniline--defconst-hash-table (name pairs size test doc)
+    "Bundles construction of a constant hash-table in one place.
+NAME is the name of the hash-table to be passed to `defconst'
+PAIRS is a list of (key . value) pairs to populate the table
+SIZE is the desired number of buckets
+TEST is the comparison function between 2 keys, like `eq' or `equal'"
+    `(defconst ,name
+       (let ((table (make-hash-table :size ,size :test ,test)))
+         (dolist (pair ,pairs)
+           (puthash (car pair) (cdr pair) table))
+         table)
+       ,doc)))
 
 ;;;╭─────────────────────────────────────────────────────╮
 ;;;│Reference tables of ┼ 4 half-lines UNICODE characters│
@@ -773,16 +745,35 @@ So for instance
 is encoded into up +4*ri +16*dw +64*lf = 9,
 which in turn is converted to ┕.")
 
-(uniline--defun-perfect-hash uniline--char-to-4halfs
-    "Reverse of `uniline--4halfs-to-char'"
-  (lambda (setter)
-    (cl-loop
-     for x in uniline--list-of-available-halflines
-     do
-     (funcall setter
-              (car x)
-              (uniline--pack-4halfs (cdr x)))))
-  135)
+(uniline--defconst-hash-table
+ uniline--char-to-4halfs
+ (eval-when-compile
+   (cl-loop
+    for x in uniline--list-of-available-halflines
+     collect
+     (cons (car x)
+           (uniline--pack-4halfs (cdr x)))))
+ 255 'eq
+ "Convert a UNICODE character to a 4halfs description.
+The UNICODE character is supposed to represent
+a combination of half lines in 4 directions
+and in 4 brush styles.
+The retrieved value is a4halfs description is (UP RI DW LF)
+packed into a single integer.
+If the UNICODE character is not a box-drawing one, nil
+is returned.
+So for instance, the character ┸ is converted to (2 1 0 1)
+meaning:
+  2 = thick up
+  1 = thin right
+  0 = blank down
+  1 = thin left
+Values (2 1 0 1) are encoded into 2 + 4*1 + 0*16 + 1*64 = 70
+This table is the reverse of `uniline--4halfs-to-char'
+without the fall-back characters.")
+
+;; is it collision-less?
+;; (internal--hash-table-histogram uniline--char-to-4halfs)
 
 (when nil
 
@@ -1078,43 +1069,52 @@ Using `eq'."
       (pop list))
     (cdr list))
 
-  (defun uniline--make-glyph-hash (list setter)
+  (defun uniline--make-glyph-hash (list)
     "Helper function to build `uniline--glyphs-reverse-hash-*'.
 Used only at package initialization.
 LIST is `uniline--glyphs-fbw'."
-    (cl-loop
-     for ll on list
-     do
-     (if (cddar ll)
-         ;; glyph is directional, like ▲ ▶ ▼ ◀
-         (cl-loop
-          for cc in (cdar ll)
-          for i from 0
-          do (funcall
-              setter
-              cc
-              (cons
-               (if (uniline--duplicate (car ll))
-                   t      ; special case ↕↔↕↔ is NOT fully directional
-                 i)       ; fully directional, i gives the direction
-               ll)))
-       ;; glyph is not directional, like ■ ● ◆
-       (funcall setter (cadar ll) (cons nil ll)))
-     ;; explicitly break out of circular list
-     if (eq (cdr ll) list)
-     return nil)))
+    (let ((pairs ()))
+      (cl-loop
+       for ll on list
+       do
+       (if (cddar ll)
+           ;; glyph is directional, like ▲ ▶ ▼ ◀
+           (cl-loop
+            for cc in (cdar ll)
+            for i from 0
+            do (push
+                (cons
+                 cc
+                 (cons
+                  (if (uniline--duplicate (car ll))
+                      t      ; special case ↕↔↕↔ is NOT fully directional
+                    i)       ; fully directional, i gives the direction
+                  ll))
+                pairs))
+         ;; glyph is not directional, like ■ ● ◆
+         (push (cons (cadar ll) (cons nil ll)) pairs))
+       ;; explicitly break out of circular list
+       if (eq (cdr ll) list)
+       return nil)
+      pairs)))
 
-(uniline--defun-perfect-hash uniline--glyphs-reverse-hash-fw
-    "Reverse of `uniline--glyphs-fw'"
-  (lambda (setter)
-    (uniline--make-glyph-hash uniline--glyphs-fw setter))
-  114)
+(uniline--defconst-hash-table
+ uniline--glyphs-reverse-hash-fw
+ (eval-when-compile
+   (uniline--make-glyph-hash uniline--glyphs-fw))
+ 127 'eq
+ "Same as `uniline--glyphs-fw' reversing keys & values.")
 
-(uniline--defun-perfect-hash uniline--glyphs-reverse-hash-bw
-    "Reverse of `uniline--glyphs-fw'"
-  (lambda (setter)
-    (uniline--make-glyph-hash uniline--glyphs-bw setter))
-  114)
+(uniline--defconst-hash-table
+ uniline--glyphs-reverse-hash-bw
+ (eval-when-compile
+   (uniline--make-glyph-hash uniline--glyphs-bw))
+ 127 'eq
+ "Same as `uniline--glyphs-bw' reversing keys & values.")
+
+;; are they collision-less?
+;; (internal--hash-table-histogram uniline--glyphs-reverse-hash-fw)
+;; (internal--hash-table-histogram uniline--glyphs-reverse-hash-bw)
 
 ;;;╭───────────────────────────────────────────────────────────╮
 ;;;│Reference tables of ▙▄▟▀ quadrant-blocks UNICODE characters│
@@ -1158,14 +1158,19 @@ Everything in the code hereafter follow the choosen ordering
 of this table."))
 
 (eval-and-compile
-  (uniline--defun-perfect-hash uniline--char-to-4quadb1
-      "Reverse of `uniline--4quadb-to-char'"
-    (lambda (setter)
-      (cl-loop
-       for c across uniline--4quadb-to-char
-       for i from 0
-       do (funcall setter c i)))
-    33))
+  (uniline--defconst-hash-table
+   uniline--char-to-4quadb1
+   (eval-when-compile
+     (cl-loop
+      for c across uniline--4quadb-to-char
+      for i from 0
+      collect (cons c i)))
+   63 'eq
+   "Convert a UNICODE character to a quadrant bitmap.
+Reverse of `uniline--4quadb-to-char'"))
+
+;; is it collision-less?
+;; (internal--hash-table-histogram uniline--char-to-4quadb1)
 
 (eval-and-compile
   (defmacro uniline--char-to-4quadb (char)
@@ -1173,8 +1178,8 @@ of this table."))
 It represents a UNICODE character like ?▙ in CHAR.
 Return nil if CHAR is not a 4quadb character."
     (if (fixnump char)
-        (uniline--char-to-4quadb1  char)
-      `( uniline--char-to-4quadb1 ,char))))
+        (gethash  char uniline--char-to-4quadb1)
+      `( gethash ,char uniline--char-to-4quadb1))))
 
 (eval-and-compile
   (defconst uniline--4quadb-pushed
@@ -1362,7 +1367,7 @@ virtue of the infinite buffer."
    (let ((c (char-after p)))
      (or
       (eq c ?\n)
-      (uniline--char-to-4halfs c)
+      (gethash c uniline--char-to-4halfs)
       (uniline--char-to-4quadb c)))))
 
 (eval-when-compile ; not needed at runtime
@@ -1462,7 +1467,7 @@ When FORCE is not nil, overwrite a possible non-4halfs character."
        (if uniline-brush
            (let ((bits
                   (or
-                   (uniline--char-to-4halfs (uniline--char-after))
+                   (gethash (uniline--char-after) uniline--char-to-4halfs)
                    (and ,force 0))))
              (cond
               ;; 1st case: (char-after) is a line-character like ╶┤,
@@ -1771,11 +1776,16 @@ Then the leakage of the two glyphs fills in E:
     ┗╸"
     (setq dir (eval dir))
     (let ((odir (uniline--reverse-direction dir)))
-      `(let ((here (or (uniline--char-to-4halfs (uniline--char-after)) 0))
+      `(let ((here
+              (or
+               (gethash (uniline--char-after) uniline--char-to-4halfs)
+               0))
              (prev    ; char preceding (point) as a 4halfs-bit-pattern
               (let ((p (uniline--neighbour-point ,odir)))
                 (or
-                 (and p (uniline--char-to-4halfs (uniline--char-after p)))
+                 (and
+                  p
+                  (gethash (uniline--char-after p) uniline--char-to-4halfs))
                  0))))
          ;; mask pairs of bits in the desired direction
          (setq
@@ -2145,25 +2155,31 @@ Each entry has 2 slots:
     "Temporary table of conversion between keystrokes and uniline directions.
 It will be converted into 2 hashtables for both conversions."))
 
-(defconst uniline--keystroke-to-dir-shift
-  (eval-when-compile
-    (let ((table (make-hash-table)))
-      (cl-loop
-       for entry in uniline--directional-keystrokes-table
-       do
-       (puthash (car entry) (cdr entry) table))
-      table))
-  "Hashtable to convert a directional keystroke into Uniline constants.")
+(uniline--defconst-hash-table
+ uniline--keystroke-to-dir-shift
+ (eval-when-compile
+   (cl-loop
+    for entry in uniline--directional-keystrokes-table
+    collect (cons (car entry) (cdr entry))))
+ 31 'eq
+ "Hashtable to convert a directional keystroke into Uniline constants.")
 
-(defconst uniline--dir-shift-to-keystroke
-  (eval-when-compile
-    (let ((table (make-hash-table :test #'equal)))
-      (cl-loop
-       for entry in uniline--directional-keystrokes-table
-       do
-       (puthash (cdr entry) (car entry) table))
-      table))
-  "Hashtable to convert Uniline directional constants into keystrokes.")
+;; is it collision-less?
+;; (internal--hash-table-histogram  uniline--keystroke-to-dir-shift)
+;; (internal--hash-table-index-size uniline--keystroke-to-dir-shift)
+
+(uniline--defconst-hash-table
+ uniline--dir-shift-to-keystroke
+ (eval-when-compile
+   (cl-loop
+    for entry in uniline--directional-keystrokes-table
+    collect (cons (cdr entry) (car entry))))
+ 31 'equal
+ "Hashtable to convert Uniline directional constants into keystrokes.")
+
+;; is it collision-less?
+;; (internal--hash-table-histogram  uniline--dir-shift-to-keystroke)
+;; (internal--hash-table-index-size uniline--dir-shift-to-keystroke)
 
 (defun uniline-call-macro-in-direction (dir)
   "Call last keybord macro twisted in DIR direction.
@@ -2316,10 +2332,11 @@ of the same command."
          ;;   △       △         current character is
          ;;   │       ╰────────╴this one
          ;;   ╰────────────────╴and it has NO orientation
-
-         (if back
-             (uniline--glyphs-reverse-hash-bw (uniline--char-after))
-           (  uniline--glyphs-reverse-hash-fw (uniline--char-after)))))
+         (gethash
+          (uniline--char-after)
+          (cond
+           (back uniline--glyphs-reverse-hash-bw)
+           (t    uniline--glyphs-reverse-hash-fw)))))
     (if (and
          line                  ; current character is one the known glyphs
          (fixnump (car line))) ; it has a north-south-east-west orientation
@@ -2448,7 +2465,8 @@ Instead DIR is twisted 45° from the actual direction of the block."
              (uniline--turn-left dir)
              (uniline--4quadb-pushed dir (uniline--char-to-4quadb ?█)))))
       `(let ((pat                       ; pattern
-              (uniline--glyphs-reverse-hash-fw (uniline--char-after))))
+              (gethash (uniline--char-after)
+                       uniline--glyphs-reverse-hash-fw)))
          (cond
           ;; If (point) is on a directional arrow
           ((car pat)
@@ -2457,7 +2475,7 @@ Instead DIR is twisted 45° from the actual direction of the block."
            (setq uniline--arrow-direction ,dir))
 
           ;; If point is on lines crossing
-          ((setq pat (uniline--char-to-4halfs (uniline--char-after)))
+          ((setq pat (gethash (uniline--char-after) uniline--char-to-4halfs))
            (let ((patdir (logand pat ,   ash3dir2)) ; pattern in DIR
                  (patnot (logand pat ,notash3dir2)) ; pattern not in DIR
                  patnew)                            ; new pattern to insert
@@ -2467,8 +2485,9 @@ Instead DIR is twisted 45° from the actual direction of the block."
                    (setq patnew (logior patnot patdir))
                    (not
                     (eq
-                     (uniline--char-to-4halfs
-                      (aref uniline--4halfs-to-char patnew))
+                     (gethash
+                      (aref uniline--4halfs-to-char patnew)
+                      uniline--char-to-4halfs)
                      patnew))))
              (uniline--insert-4halfs patnew)))
 
