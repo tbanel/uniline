@@ -136,6 +136,11 @@
   (defconst uniline-direction-ri→ 1) (defmacro uniline-direction-ri→ () 1)
   (defconst uniline-direction-dw↓ 2) (defmacro uniline-direction-dw↓ () 2)
   (defconst uniline-direction-lf← 3) (defmacro uniline-direction-lf← () 3))
+;;                  △       △                          △
+;; usual constant╶──╯       ╰──────────────────────╮   │
+;; when we insist in having a numeric byte-code:   │   │
+;;   constant 2╶───────────────────────────────────╯   │
+;;   varref uniline-direction-dw↓╶─────────────────────╯
 
 (eval-when-compile ; not needed at runtime
 
@@ -328,7 +333,7 @@ POINT default to `(point)', as for `char-after'"
 ;; When an hash-table is constant, with entries known at compile-time,
 ;; then a perfect hash-table can be built. Perfect means that there
 ;; are no collisions: each bucket contains one entry, or none, never
-;; two entries. This makes the hash-table very efficient. 
+;; two entries. This makes the hash-table very efficient.
 ;; The usual multiple entries scanning can be entirely bypassed.
 ;;
 ;; Uniline has 6 constant hash-tables. We want to make them
@@ -390,9 +395,19 @@ TEST is the comparison function between 2 keys, like `eq' or `equal'"
 
 ;; Hereafter `4halfs' means a representation of a UNICODE character
 ;; made of half-lines, like ┖ or ┶, as a single number.
+;;  ←← ↓↓ →→ ↑↑   directions
+;;  □□ □□ □□ ■■
+;;  76 54 32 10   bits
 ;; There are 4 half-lines, one in each direction
 ;; (north, east, west, south).  Each half line may have one of
-;; 4 styles: blank ( ), thin (─), thick (━), double (═).
+;; 4 styles:
+;;         ╭────────╴style of line
+;;         │   ╭┬────two bits
+;;         ▼   ▼▼
+;; blank  ( )  □□
+;; thin   (─)  □■
+;; thick  (━)  ■□
+;; double (═)  ■■
 ;; So a `4halfs' number goes from 0 to 4x4x4x4 = 256.
 ;; This representation is great because it is easily handled by
 ;; the bits manipulation primitives: `logior', `logand', `ash'.
@@ -426,7 +441,9 @@ Each of those half lines may have one of 4 styles:
   2: thick line
   3: double line
 Example: ╀ has description 2 1 1 1
-thick=2 upward, and thin=1 in the other directions
+                           ▲ ▲ ▲ ▲
+thick=2 upward╶────────────╯ ╰─┴─┴──╮
+and thin=1 in the other directions╶─╯
 The parameter URLD is a list of 4 numbers in [0..3]
 for the 4 directions.
 A single number encoding all possible combinations has a
@@ -440,9 +457,9 @@ range of [0..256).  It is handy to index vectors rather than
 
 (eval-when-compile ; not used at runtime
   (defconst uniline--list-of-available-halflines
-    '(;;╭──unicode char
-      ;;│  ╭───4half description
-      ;;▽  ▽
+    '(;;╭───────────────unicode char
+      ;;│  ╭─┬─┬─┬──────4half description
+      ;;▽  ▽ ▽ ▽ ▽
       ( ?  0 0 0 0 )
       ( ?╵ 1 0 0 0 )
       ( ?╹ 2 0 0 0 )
@@ -564,8 +581,8 @@ range of [0..256).  It is handy to index vectors rather than
 
 (eval-when-compile ; not used at runtime
   (defconst uniline--list-of-double-halflines
-    '(;;   ╭─missing ╭───replacement
-      ;;   │         │         │
+    '(;;   ╭─missing ╭─┬─replacement
+      ;;   │         │ ╰───────╮
       ;;   ▽         ▽         ▽
       ((0 0 0 3) (0 0 0 2)) ;; ╸
       ((0 0 2 3) (0 0 3 3)) ;; ╗
@@ -1122,9 +1139,9 @@ LIST is `uniline--glyphs-fbw'."
 
 ;; Hereafter `4quadb' means a representation of a quadrant-block
 ;; UNICODE character as a single number.  This number must hold
-;; all combinations of the 4 quarter-of-a-blocks.  Each of the 4 quarters
-;; may be present or absent.  Therfore `4quadb' is a number from 0
-;; to 2x2x2x2 = 16.
+;; all combinations of the 4 quarter-of-a-blocks.
+;; Each of the 4 quarters may be present or absent.
+;; Therfore `4quadb' is a number from 0 to 2x2x2x2 = 16.
 ;; Hereafter, the arbitrary choosen bits allocation is as follow:
 ;;
 ;;  2^1: here──→───╮
@@ -1228,8 +1245,8 @@ Access it with this snippet:
 Folds to a single number if DIR & 4QUADB are themselves numbers."
     (if (and (fixnump dir)
              (fixnump 4quadb))
-        (aref (aref uniline--4quadb-pushed dir) 4quadb)
-      `(aref (aref uniline--4quadb-pushed ,dir) ,4quadb))))
+        (aref (aref uniline--4quadb-pushed  dir)  4quadb)
+      ` (aref (aref uniline--4quadb-pushed ,dir) ,4quadb))))
 
 ;;;╭──────────────────────╮
 ;;;│Inserting a character │
@@ -1345,7 +1362,10 @@ Clear the half of this character pointing in DIR direction."
            (uniline--insert-4quadb
             (logand
              bits
-             ,(uniline--4quadb-pushed dir (uniline--char-to-4quadb ?█))))))))
+             ,(uniline--4quadb-pushed
+               dir
+               (uniline--char-to-4quadb ?█) ; this is constant 15 = 0b1111
+               )))))))
 
 ;;;╭────────────────────────────╮
 ;;;│Test blanks in the neighbour│
@@ -1422,7 +1442,10 @@ while staying on the same (point)."
     uniline--which-quadrant
     (uniline--switch-with-table dir
       (lambda (dir)
-        (uniline--4quadb-pushed dir (uniline--char-to-4quadb ?█)))
+        (uniline--4quadb-pushed
+         dir
+         (uniline--char-to-4quadb ?█) ; this is constant 15 = 0b1111
+         ))
       (uniline-direction-up↑)
       (uniline-direction-ri→)
       (uniline-direction-dw↓)
@@ -1470,7 +1493,7 @@ When FORCE is not nil, overwrite a possible non-4halfs character."
                    (gethash (uniline--char-after) uniline--char-to-4halfs)
                    (and ,force 0))))
              (cond
-              ;; 1st case: (char-after) is a line-character like ╶┤,
+              ;; 1st case: (char-after) is a line-character like ├,
               ;; or any character if FORCE
               ;; then change a half-line of this character
               ;; for example changing it from ├ to ┽
@@ -1531,6 +1554,10 @@ When FORCE is not nil, overwrite characters which are not lines."
               (uniline--move-in-direction ,dir))
 
           (setq uniline--which-quadrant
+                ;; this huge expression is evaluated only at compile time
+                ;; and folded to a mere, fast reference to a constant vector
+                ;; for instance:
+                ;; (aref [nil 4 8 nil 1 nil nil nil 2] uniline--which-quadrant)
                 ,(cond
                   ((memq dir (list uniline-direction-up↑ uniline-direction-dw↓))
                    '(uniline--switch-with-table uniline--which-quadrant
@@ -1741,7 +1768,7 @@ from BEGX,BEGY inclusive to ENDX,ENDY exclusive
 in `rectangle-mark-mode'."
     (declare (debug (body)))
     `(when (region-active-p)
-       (rectangle-mark-mode -1)     ; otherwise sometimes end is wrong
+       (rectangle-mark-mode -1) ; otherwise sometimes end is wrong
        (let* ((deactivate-mark) ; kludge needed to avoid deactivating the mark
               (beg (region-beginning))
               (end (region-end))
@@ -1856,7 +1883,12 @@ This char is filled with leakage from its two neighbours."
   "Move the rectangle marked by selection one line upper.
 Truncate the selection if it touches the upper side of the buffer.
 REPEAT tells how many characters the rectangle should move,
-defaulting to 1."
+defaulting to 1.
+    ↑ ↑ ↑ ↑
+    ░░░░░░░
+    ░░░░░░░
+    ░░░░░░░
+"
   (interactive "P")
   (cl-loop
    repeat (or repeat 1)
@@ -1877,7 +1909,11 @@ defaulting to 1."
   "Move the rectangle marked by selection one char to the left.
 The buffer is infinite at its right side.
 REPEAT tells how many characters the rectangle should move,
-defaulting to 1."
+defaulting to 1.
+    ░░░░░░░→
+    ░░░░░░░→
+    ░░░░░░░→
+"
   (interactive "P")
   (cl-loop
    repeat (or repeat 1)
@@ -1898,7 +1934,12 @@ defaulting to 1."
   "Move the rectangle marked by selection one line down.
 The buffer is infinite at the bottom.
 REPEAT tells how many characters the rectangle should move,
-defaulting to 1."
+defaulting to 1.
+    ░░░░░░░
+    ░░░░░░░
+    ░░░░░░░
+    ↓ ↓ ↓ ↓
+"
   (interactive "P")
   (cl-loop
    repeat (or repeat 1)
@@ -1919,7 +1960,11 @@ defaulting to 1."
   "Move the rectangle marked by selection one char to the left.
 Truncate the selection if it touches the left side of the buffer.
 REPEAT tells how many characters the rectangle should move,
-defaulting to 1."
+defaulting to 1.
+   ←░░░░░░░
+   ←░░░░░░░
+   ←░░░░░░░
+"
   (interactive "P")
   (cl-loop
    repeat (or repeat 1)
@@ -1939,7 +1984,11 @@ defaulting to 1."
 (defun uniline-fill-rectangle ()
   "Fill the rectangle marked by selection.
 Interactively choose the filling character.
-See `uniline--choose-fill-char'."
+See `uniline--choose-fill-char'.
+    ░░░░░░░
+    ░░░░░░░
+    ░░░░░░░
+"
   (interactive)
   (let ((char (uniline--choose-fill-char)))
     (uniline--operate-on-rectangle
@@ -2209,7 +2258,6 @@ it is already present in the `uniline--directional-macros' cache"
                       last-kbd-macro)))))))
     (kmacro-end-and-call-macro 1)))
 
-
 ;; Run the following cl-loop to automatically write a bunch
 ;; of 4 interactive functions
 ;; They have little value, except to be an interface between
@@ -2463,7 +2511,10 @@ Instead DIR is twisted 45° from the actual direction of the block."
            (dir4
             (uniline--4quadb-pushed
              (uniline--turn-left dir)
-             (uniline--4quadb-pushed dir (uniline--char-to-4quadb ?█)))))
+             (uniline--4quadb-pushed
+              dir
+              (uniline--char-to-4quadb ?█) ; this is constant 15 = 0b1111
+              ))))
       `(let ((pat                       ; pattern
               (gethash (uniline--char-after)
                        uniline--glyphs-reverse-hash-fw)))
@@ -2559,7 +2610,13 @@ For the sake of the contour, a non-blank character is any character
 not in the 4halfs set.
 The style of the contour is determined by the current brush.
 This includes possibly the eraser, which erases an actual contour.
-When FORCE is not nil, overwrite whatever is in the buffer."
+When FORCE is not nil, overwrite whatever is in the buffer.
+ ╭──────╮
+ │AAAAAA╰─╮
+ ╰─╮AAAAAA│
+   │AA╭───╯
+   ╰──╯
+"
   (interactive)
   (while (not (uniline--blank-after (point)))
     (uniline-move-to-delta-column 1))
