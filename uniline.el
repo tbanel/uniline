@@ -780,16 +780,17 @@ So for instance
 is encoded into up +4*ri +16*dw +64*lf = 9,
 which in turn is converted to ┕."))
 
-(uniline--defconst-hash-table
- uniline--char-to-4halfs
- (eval-when-compile
-   (cl-loop
-    for x in uniline--list-of-available-halflines
-     collect
-     (cons (car x)
-           (uniline--pack-4halfs (cdr x)))))
- 255 'eq
- "Convert a UNICODE character to a 4halfs description.
+(eval-and-compile
+  (uniline--defconst-hash-table
+   uniline--char-to-4halfs
+   (eval-when-compile
+     (cl-loop
+      for x in uniline--list-of-available-halflines
+      collect
+      (cons (car x)
+            (uniline--pack-4halfs (cdr x)))))
+   255 'eq
+   "Convert a UNICODE character to a 4halfs description.
 The UNICODE character is supposed to represent
 a combination of half lines in 4 directions
 and in 4 brush styles.
@@ -805,7 +806,7 @@ meaning:
   1 = thin left
 Values (2 1 0 1) are encoded into 2 + 4*1 + 0*16 + 1*64 = 70
 This table is the reverse of `uniline--4halfs-to-char'
-without the fall-back characters.")
+without the fall-back characters."))
 
 ;; is it collision-less?
 ;; (internal--hash-table-histogram uniline--char-to-4halfs)
