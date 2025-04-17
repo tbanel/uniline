@@ -453,7 +453,14 @@ range of [0..256).  It is handy to index vectors rather than
      (uniline--shift-4half (car    urld) (uniline-direction-up↑))
      (uniline--shift-4half (cadr   urld) (uniline-direction-ri→))
      (uniline--shift-4half (caddr  urld) (uniline-direction-dw↓))
-     (uniline--shift-4half (cadddr urld) (uniline-direction-lf←)))))
+     (uniline--shift-4half (cadddr urld) (uniline-direction-lf←))))
+
+  (defun uniline--unpack-4halfs (4halfs)
+    (list
+     (logand (ash 4halfs (* -2 uniline-direction-up↑)) 3)
+     (logand (ash 4halfs (* -2 uniline-direction-ri→)) 3)
+     (logand (ash 4halfs (* -2 uniline-direction-dw↓)) 3)
+     (logand (ash 4halfs (* -2 uniline-direction-lf←)) 3))))
 
 (eval-when-compile ; not used at runtime
   (defconst uniline--list-of-available-halflines
@@ -472,8 +479,12 @@ range of [0..256).  It is handy to index vectors rather than
       ( ?┗ 2 2 0 0 )
       ( ?╷ 0 0 1 0 )
       ;;( ?| 1 0 1 0 ) ;; recognize vertical ASCII pipe
-      ( ?│ 1 0 1 0 )
-      ( ?┃ 2 0 2 0 )
+      ( ?┆ 1 0 1 0 )
+      ( ?┊ 1 0 1 0 )
+      ( ?│ 1 0 1 0 ) ;; prefer plain lines
+      ( ?┇ 2 0 2 0 )
+      ( ?┋ 2 0 2 0 )
+      ( ?┃ 2 0 2 0 ) ;; prefer plain lines
       ( ?╿ 2 0 1 0 )
       ( ?┌ 0 1 1 0 )
       ( ?╭ 0 1 1 0 ) ;; prefer rounded corner
@@ -495,7 +506,10 @@ range of [0..256).  It is handy to index vectors rather than
       ( ?╯ 1 0 0 1 ) ;; prefer rounded corner
       ( ?┚ 2 0 0 1 )
       ;;( ?- 0 1 0 1 ) ;; recognize ASCII minus
-      ( ?─ 0 1 0 1 )
+      ( ?┄ 0 1 0 1 )
+      ( ?┈ 0 1 0 1 )
+      ( ?╌ 0 1 0 1 )
+      ( ?─ 0 1 0 1 ) ;; prefer plain lines
       ( ?┴ 1 1 0 1 )
       ( ?┸ 2 1 0 1 )
       ( ?╼ 0 2 0 1 )
@@ -527,7 +541,10 @@ range of [0..256).  It is handy to index vectors rather than
       ( ?╾ 0 1 0 2 )
       ( ?┵ 1 1 0 2 )
       ( ?┹ 2 1 0 2 )
-      ( ?━ 0 2 0 2 )
+      ( ?┉ 0 2 0 2 )
+      ( ?┅ 0 2 0 2 )
+      ( ?╍ 0 2 0 2 )
+      ( ?━ 0 2 0 2 ) ;; prefer plain lines
       ( ?┷ 1 2 0 2 )
       ( ?┻ 2 2 0 2 )
       ( ?┑ 0 0 1 2 )
@@ -732,24 +749,25 @@ range of [0..256).  It is handy to index vectors rather than
       ((3 3 3 2) (3 3 3 3)) ;; ╬
       )))
 
-(defconst uniline--4halfs-to-char
-  (eval-when-compile
-    (let ((table (make-vector (* 4 4 4 4) nil)))
-      (cl-loop
-       for x in uniline--list-of-available-halflines
-       do
-       (aset table
-             (uniline--pack-4halfs (cdr x))
-             (car x)))
-      (cl-loop
-       for x in uniline--list-of-double-halflines
-       do
-       (aset table
-             (uniline--pack-4halfs (car x))
-             (aref table
-                   (uniline--pack-4halfs (cadr x)))))
-      table))
-  "Convert a 4halfs description to a UNICODE character.
+(eval-and-compile
+  (defconst uniline--4halfs-to-char
+    (eval-when-compile
+      (let ((table (make-vector (* 4 4 4 4) nil)))
+        (cl-loop
+         for x in uniline--list-of-available-halflines
+         do
+         (aset table
+               (uniline--pack-4halfs (cdr x))
+               (car x)))
+        (cl-loop
+         for x in uniline--list-of-double-halflines
+         do
+         (aset table
+               (uniline--pack-4halfs (car x))
+               (aref table
+                     (uniline--pack-4halfs (cadr x)))))
+        table))
+    "Convert a 4halfs description to a UNICODE character.
 The 4halfs description is (UP RI DW LF)
 packed into a single integer.
 As there are no UNICODE character for every combination,
@@ -760,7 +778,7 @@ So for instance
   dw=0 (blank down),
   lf=0 (blank left),
 is encoded into up +4*ri +16*dw +64*lf = 9,
-which in turn is converted to ┕.")
+which in turn is converted to ┕."))
 
 (uniline--defconst-hash-table
  uniline--char-to-4halfs
@@ -2701,6 +2719,292 @@ When FORCE is not nil, overwrite whatever is in the buffer.
     (set-marker start nil)
     (message "drew a %s steps contour" n)))
 
+;;;╭─────────────────────────────╮
+;;;│Dashed lines and other styles│
+;;;╰─────────────────────────────╯
+
+(defun uniline--change-style-hash (fromto)
+  "Change some characters to similar characters in a rectangular selection.
+FROMTO is a hash-table telling what are the characters replacements.
+The changes are reversible in a single undo command."
+    (interactive)
+    (uniline--operate-on-rectangle
+     (let ((handle (prepare-change-group)))
+       (cl-loop
+        for y from begy below endy
+        do
+        (uniline-move-to-line y)
+        (cl-loop
+         for x from begx below endx
+         do
+         (uniline-move-to-column x)
+         (let ((rep (gethash (uniline--char-after) fromto)))
+           (if rep
+               (uniline--insert-char rep)))))
+       (undo-amalgamate-change-group handle)
+       (accept-change-group handle))))
+
+(defconst uniline--char-to-dot-3-2-char
+  (eval-when-compile
+    (let ((table (make-hash-table)))
+      (puthash ?─ ?╌ table)
+      (puthash ?┄ ?╌ table)
+      (puthash ?┈ ?╌ table)
+      (puthash ?━ ?╍ table)
+      (puthash ?═ ?╍ table)
+      (puthash ?┅ ?╍ table)
+      (puthash ?┉ ?╍ table)
+      (puthash ?│ ?┆ table)
+      (puthash ?┊ ?┆ table)
+      (puthash ?┃ ?┇ table)
+      (puthash ?║ ?┇ table)
+      (puthash ?┋ ?┇ table)
+      table)))
+
+(defun uniline-change-style-dot-3-2 ()
+  "Change plain lines to dashed lines in a rectangular selection.
+It retains thickness of the lines.
+Vertical lines will be 3-dots, while horizontal will be 2-dots."
+  (interactive)
+  (uniline--change-style-hash uniline--char-to-dot-3-2-char))
+
+(defconst uniline--char-to-dot-4-4-char
+  (eval-when-compile
+    (let ((table (make-hash-table)))
+      (puthash ?─ ?┈ table)
+      (puthash ?┄ ?┈ table)
+      (puthash ?╌ ?┈ table)
+      (puthash ?━ ?┉ table)
+      (puthash ?═ ?┉ table)
+      (puthash ?┅ ?┉ table)
+      (puthash ?╍ ?┉ table)
+      (puthash ?│ ?┊ table)
+      (puthash ?┆ ?┊ table)
+      (puthash ?┃ ?┋ table)
+      (puthash ?║ ?┋ table)
+      (puthash ?┇ ?┋ table)
+      table)))
+
+(defun uniline-change-style-dot-4-4 ()
+  "Change plain lines to dashed lines in a rectangular selection.
+It retains thickness of the lines.
+Vertical and horizontzl lines will be 4-dots."
+  (interactive)
+  (uniline--change-style-hash uniline--char-to-dot-4-4-char))
+
+(defconst uniline--char-to-standard-char
+  (eval-when-compile
+    (let ((table (make-hash-table)))
+      (puthash ?┄ ?─ table)
+      (puthash ?┈ ?─ table)
+      (puthash ?╌ ?─ table)
+      (puthash ?┉ ?━ table)
+      (puthash ?┅ ?━ table)
+      (puthash ?╍ ?━ table)
+      (puthash ?┆ ?│ table)
+      (puthash ?┊ ?│ table)
+      (puthash ?┇ ?┃ table)
+      (puthash ?┋ ?┃ table)
+      (puthash ?┐ ?╮ table)
+      (puthash ?└ ?╰ table)
+      (puthash ?┌ ?╭ table)
+      (puthash ?┘ ?╯ table)
+      (puthash ?^ ?△ table)
+      (puthash ?v ?▽ table)
+      (puthash ?> ?▷ table)
+      (puthash ?< ?◁ table)
+      (puthash ?- ?─ table)
+      (puthash ?_ ?─ table)
+      (puthash ?| ?│ table)
+      (puthash ?\" ?║ table)
+      (puthash ?= ?═ table)
+      table)))
+
+(defun uniline-change-style-standard ()
+  "Change fancy lines styles to standard ones in a rectangular selection.
+This includes dashed lines, which become plain while preserving thickness,
+and hard corners which become rounded."
+    (interactive)
+  (uniline--change-style-hash uniline--char-to-standard-char)
+  (uniline--operate-on-rectangle
+   (let ((handle (prepare-change-group)))
+     (cl-loop
+      for y from begy below endy
+      do
+      (uniline-move-to-line y)
+      (cl-loop
+       for x from begx below endx
+       do
+       (uniline-move-to-column x)
+       (let ((c (uniline--char-after))
+             (bits 0))
+         (cond
+          ((or (eq c ?+) (eq c ?/) (eq c ?\\))
+           (cl-loop
+            for dir in '(0 1 2 3)
+            do
+            (let ((neighbour
+                   (uniline--switch-with-cond dir
+                     (uniline-direction-up↑ (uniline--neighbour-point uniline-direction-up↑))
+                     (uniline-direction-ri→ (uniline--neighbour-point uniline-direction-ri→))
+                     (uniline-direction-dw↓ (uniline--neighbour-point uniline-direction-dw↓))
+                     (uniline-direction-lf← (uniline--neighbour-point uniline-direction-lf←)))))
+              (when neighbour
+                (let ((b
+                       (gethash
+                        (uniline--char-after neighbour)
+                        uniline--char-to-4halfs)))
+                  (when b
+                    (setq b
+                          (logand
+                           b
+                           (ash 3 (* 2 (% (+ dir 2) 4)))))
+                    (setq bits
+                          (logior
+                           bits
+                           (ash b  4)
+                           (ash b -4)))))
+                (if (memq (uniline--char-after neighbour) '(?+ ?/ ?\\))
+                    (setq bits
+                          (logior
+                           bits
+                           (ash 1 (* 2 dir))
+                           ))))))))
+         (unless (eq bits 0)
+           (uniline--insert-4halfs (logand bits 255))))
+       (undo-amalgamate-change-group handle)
+       (accept-change-group handle))))
+   ))
+
+(defconst uniline--char-to-hard-corner-char
+  (eval-when-compile
+    (let ((table (make-hash-table)))
+      (puthash ?╮ ?┐ table)
+      (puthash ?╰ ?└ table)
+      (puthash ?╭ ?┌ table)
+      (puthash ?╯ ?┘ table)
+      table)))
+
+(defun uniline-change-style-hard-corners ()
+  "Change rounded corners to hard corners in a rectangular selection.
+This happens only for thin-lines corners, as UNICODE does not define
+thick-line or double-line rounded corners."
+    (interactive)
+  (uniline--change-style-hash uniline--char-to-hard-corner-char))
+
+(defconst uniline--char-to-thin-char
+  (eval-when-compile
+    (let ((table (make-hash-table)))
+      (cl-loop
+       for c being hash-keys of uniline--char-to-4halfs
+       using (hash-values v)
+       for 4halfs
+       = (uniline--pack-4halfs
+          (cl-loop
+           for u in (uniline--unpack-4halfs v)
+           collect (if (or (eq u 2) (eq u 3)) 1 u)))
+       unless (eq 4halfs v)
+       do (puthash
+           c
+           (aref uniline--4halfs-to-char 4halfs)
+           table))
+      (puthash ?┅ ?┄ table)
+      (puthash ?┉ ?┈ table)
+      (puthash ?╍ ?╌ table)
+      (puthash ?┇ ?┆ table)
+      (puthash ?┋ ?┊ table)
+      (puthash ?▲ ?△ table)
+      (puthash ?▶ ?▷ table)
+      (puthash ?▼ ?▽ table)
+      (puthash ?◀ ?◁ table)
+      (puthash ?▴ ?▵ table)
+      (puthash ?▸ ?▹ table)
+      (puthash ?▾ ?▿ table)
+      (puthash ?◂ ?◃ table)
+      (puthash ?■ ?□ table)
+      (puthash ?▪ ?▫ table)
+      (puthash ?◆ ?◇ table)
+      (puthash ?• ?◦ table)
+      table)))
+
+(defun uniline-change-style-thin ()
+  ""
+  (interactive)
+  (uniline--change-style-hash uniline--char-to-thin-char))
+
+(defconst uniline--char-to-thick-char
+  (eval-when-compile
+    (let ((table (make-hash-table)))
+      (cl-loop
+       for c being hash-keys of uniline--char-to-4halfs
+       using (hash-values v)
+       for 4halfs
+       = (uniline--pack-4halfs
+          (cl-loop
+           for u in (uniline--unpack-4halfs v)
+           collect (if (or (eq u 1) (eq u 3)) 2 u)))
+       unless (eq 4halfs v)
+       do (puthash
+           c
+           (aref uniline--4halfs-to-char 4halfs)
+           table))
+      (puthash ?┄ ?┅ table)
+      (puthash ?┈ ?┉ table)
+      (puthash ?╌ ?╍ table)
+      (puthash ?┆ ?┇ table)
+      (puthash ?┊ ?┋ table)
+      (puthash ?△ ?▲ table)
+      (puthash ?▷ ?▶ table)
+      (puthash ?▽ ?▼ table)
+      (puthash ?◁ ?◀ table)
+      (puthash ?▵ ?▴ table)
+      (puthash ?▹ ?▸ table)
+      (puthash ?▿ ?▾ table)
+      (puthash ?◃ ?◂ table)
+      (puthash ?□ ?■ table)
+      (puthash ?▫ ?▪ table)
+      (puthash ?◇ ?◆ table)
+      (puthash ?◦ ?• table)
+      table)))
+
+(defun uniline-change-style-thick ()
+  ""
+  (interactive)
+  (uniline--change-style-hash uniline--char-to-thick-char))
+
+(defconst uniline--char-to-double-line
+  (eval-when-compile
+    (let ((table (make-hash-table)))
+      (cl-loop
+       for c being hash-keys of uniline--char-to-4halfs
+       using (hash-values v)
+       for 4halfs
+       = (uniline--pack-4halfs
+          (cl-loop
+           for u in (uniline--unpack-4halfs v)
+           collect (if (or (eq u 1) (eq u 2)) 3 u)))
+       unless (eq 4halfs v)
+       do (puthash
+           c
+           (aref uniline--4halfs-to-char 4halfs)
+           table))
+      (puthash ?┄ ?═ table)
+      (puthash ?┅ ?═ table)
+      (puthash ?┈ ?═ table)
+      (puthash ?┉ ?═ table)
+      (puthash ?╌ ?═ table)
+      (puthash ?╍ ?═ table)
+      (puthash ?┆ ?║ table)
+      (puthash ?┇ ?║ table)
+      (puthash ?┊ ?║ table)
+      (puthash ?┋ ?║ table)
+      table)))
+
+(defun uniline-change-style-double ()
+  ""
+  (interactive)
+  (uniline--change-style-hash uniline--char-to-double-line))
+
 ;;;╭────────────────╮
 ;;;│Hydra interfaces│
 ;;;╰────────────────╯
@@ -2835,6 +3139,39 @@ When FORCE is not nil, overwrite whatever is in the buffer.
   (interactive)
   (deactivate-mark))
 
+(defhydra uniline-hydra-alt-styles
+  (:pre (rectangle-mark-mode 1)
+   :hint nil
+   :exit nil)
+  ;; Docstring MUST begin with an empty line to benefit from substitutions
+  "
+╭^─^───────╮╭^─Alt styles^──╮╭─^─^────────╮
+│_-_ thin  ││_3_ 3x2 dots   ││_0_ standard│
+│_+_ thick ││_4_ 4x4 dots   ││_a_ aa2u    │
+│_=_ double││_h_ hard corner││_RET_ quit  │
+╰^─^───────╯╰^─^────────────╯╰─^─^────────╯"
+  ("3"             uniline-change-style-dot-3-2)
+  ("<kp-3>"        uniline-change-style-dot-3-2)
+  ("4"             uniline-change-style-dot-4-4)
+  ("<kp-4>"        uniline-change-style-dot-4-4)
+  ("h"             uniline-change-style-hard-corners)
+  ("0"             uniline-change-style-standard)
+  ("<kp-0>"        uniline-change-style-standard)
+  ("-"             uniline-change-style-thin)
+  ("<kp-subtract>" uniline-change-style-thin)
+  ("c"             uniline-change-style-thin)
+  ("+"             uniline-change-style-thick)
+  ("<kp-add>"      uniline-change-style-thick)
+  ("b"             uniline-change-style-thick)
+  ("="             uniline-change-style-double)
+  ("a"       aa2u-rectangle)
+  ("C-x C-x" rectangle-exchange-point-and-mark)
+  ("C-/"     uniline--hydra-rect-undo)
+  ("C-_"     uniline--hydra-rect-undo)
+  ("C-x u"   uniline--hydra-rect-undo)
+  ("TAB"     uniline-toggle-hydra-hints)
+  ("RET"     uniline--hydra-rect-quit :exit t))
+
 (defhydra uniline-hydra-moverect
   (:pre (rectangle-mark-mode 1)
    :hint nil
@@ -2842,21 +3179,24 @@ When FORCE is not nil, overwrite whatever is in the buffer.
   ;; Docstring MUST begin with an empty line to benefit from substitutions
   "
 ╭^Move ^rect╮╭────^Draw^ rect────╮╭^─Rect^─╮╭^Brush^╮╭──^Misc^─────────╮
-│_<right>_ →││_r_     trace inner││_c_ copy││_-_ ╭─╯││_C-/_ undo       │
+│_<right>_ →││_r_     trace inner││_c_ copy││_-_ ╭─╯││_s_   alt styles │
 │_<left>_  ←││_R_     trace outer││_k_ kill││_+_ ┏━┛││_f_   choose font│
-│_<up>_    ↑││_C-r_   ovewr inner││_y_ yank││_=_ ╔═╝││_TAB_ sort hint  │
-│_<down>_  ↓││_C-S-R_ ovewr outer│╰^^┬─────╯╯_#_ ▄▄▟││_RET_ exit       │
-╰^─────^────╯│_i_     fill       │ ^^│_<delete>_ DEL│╰^───^────────────╯
- ^     ^     ╰^────^─────────────╯ ^^╰^────────^────╯"
+│_<up>_    ↑││_C-r_   ovewr inner││_y_ yank││_=_ ╔═╝││_C-/_ undo       │
+│_<down>_  ↓││_C-S-R_ ovewr outer│╰^^┬─────╯╯_#_ ▄▄▟││_TAB_ sort hint  │
+╰^─────^────╯│_i_     fill       │ ^^│_<delete>_ DEL││_RET_ exit       │
+ ^     ^     ╰^────^─────────────╯ ^^╰^────────^────╯╰^───^────────────╯
+"
   ("<right>" uniline-move-rect-ri→)
   ("<left>"  uniline-move-rect-lf←)
   ("<up>"    uniline-move-rect-up↑)
   ("<down>"  uniline-move-rect-dw↓)
+
   ("r"     uniline-draw-inner-rectangle)
   ("R"     uniline-draw-outer-rectangle)
   ("C-r"   uniline-overwrite-inner-rectangle)
   ("C-S-R" uniline-overwrite-outer-rectangle)
   ("i"     uniline-fill-rectangle)
+
   ("c"   uniline-copy-rectangle)
   ("k"   uniline-kill-rectangle)
   ("y"   uniline-yank-rectangle)
@@ -2871,7 +3211,8 @@ When FORCE is not nil, overwrite whatever is in the buffer.
   ("="              uniline-set-brush-3)
   ("#"              uniline-set-brush-block)
   ("TAB" uniline-toggle-hydra-hints)
-  ("f"     uniline-hydra-fonts/body :exit t)
+  ("f"     uniline-hydra-fonts/body      :exit t)
+  ("s"     uniline-hydra-alt-styles/body :exit t)
   ("C-/"   uniline--hydra-rect-undo :exit t)
   ("C-_"   uniline--hydra-rect-undo :exit t)
   ("C-x u" uniline--hydra-rect-undo :exit t)
@@ -2963,13 +3304,19 @@ text within will be colored."
       ,uniline-hydra-moverect/hint
     ,(eval-when-compile
        (uniline--color-hint
-        "move: ^→←↑↓^ trace: ^rR C-rR^ copy-paste: ^cky^ f-^i^-ll brush: ^-+=# DEL^ ^f^-onts ^TAB^")))
+        "move: ^→←↑↓^ trace: ^rR C-rR^ copy-paste: ^cky^ f-^i^-ll brush: ^-+=# DEL^ ^s^tyle ^f^-onts ^TAB^")))
  uniline-hydra-macro-exec/hint
  `(if (eq uniline-hint-style t)
       ,uniline-hydra-macro-exec/hint
     ,(eval-when-compile
        (uniline--color-hint
-        "macro exec usual: ^e^  directional: ^→←↑↓^  hint: ^TAB^"))))
+        "macro exec usual: ^e^  directional: ^→←↑↓^  hint: ^TAB^")))
+ uniline-hydra-alt-styles/hint
+ `(if (eq uniline-hint-style t)
+      ,uniline-hydra-alt-styles/hint
+    ,(eval-when-compile
+       (uniline--color-hint
+        "alt styles, brush: ^-+=^, dashed: ^34^ corners: ^h^ standard: ^0^ ^a^a2u"))))
 
 (defun uniline-toggle-hydra-hints (&optional notoggle)
   "Toggle between styles of hydra hints.

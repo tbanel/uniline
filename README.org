@@ -3,6 +3,9 @@
 #+OPTIONS: ^:{} authors:Thierry Banel, toc:nil
 #+LATEX_HEADER: \usepackage{pmboxdraw}
 
+*New*: alternative dashed lines styles and ASCII to UNICODE. Select a
+rectangle and type =INS s=.
+
 * Getting started in 10 seconds
 :PROPERTIES:
 :CUSTOM_ID: getting-started-in-10-seconds
@@ -709,6 +712,119 @@ keyboard arrows flips a quarter-block on-and-off.
 In the above example, the effect was achieved with:
 =INS S-<up> S-<down> S-<left>=
 
+* Dashed lines and other styles
+
+[[file:images/four-styles.png]]
+
+#+begin_example
+
+   ╭────▷───╮   ┏━━━━▶━━━┓   ╔════▶═══╗
+   │ ╭─□──╮ │   ┃ ┏━■━━┓ ┃   ║ ╔═■══╗ ║
+   △ │    │ ▽   ▲ ┃    ┃ ▼   ▲ ║    ║ ▼
+   │ ╰───◦╯ │   ┃ ┗━━━•┛ ┃   ║ ╚═══•╝ ║
+   ╰───◁────╯   ┗━━━◀━━━━┛   ╚═══◀════╝
+
+   ╭╌╌╌╌▷╌╌╌╮   ┏╍╍╍╍▶╍╍╍┓
+   ┆ ╭╌□╌╌╮ ┆   ┇ ┏╍■╍╍┓ ┇
+   △ ┆    ┆ ▽   ▲ ┇    ┇ ▼
+   ┆ ╰╌╌╌◦╯ ┆   ┇ ┗╍╍╍•┛ ┇
+   ╰╌╌╌◁╌╌╌╌╯   ┗╍╍╍◀╍╍╍╍┛
+
+   ╭┈┈┈┈▷┈┈┈╮   ┏┉┉┉┉▶┉┉┉┓
+   ┊ ╭┈□┈┈╮ ┊   ┋ ┏┉■┉┉┓ ┋
+   △ ┊    ┊ ▽   ▲ ┋    ┋ ▼
+   ┊ ╰┈┈┈◦╯ ┊   ┋ ┗┉┉┉•┛ ┋
+   ╰┈┈┈◁┈┈┈┈╯   ┗┉┉┉◀┉┉┉┉┛
+
+#+end_example
+
+A base drawing can be converted to dashed lines. Moreover, lines can
+be made either thin or thick.
+
+- Select the rectangular area you want to operate on (with mouse drag
+  or =S-<left>=, =S-<down>= and so on).
+- Type =INS=, then =s= (as "style").
+
+You will be offered a choice of styles:
+- =3=: vertical lines will become 3 dashes per character, while
+  horizontal ones will get 2 dashes per character.
+- =4=: vertical and horizontal lines will get 4 dashes per character.
+- =h=: thin lines corners, which are usually rounded, become hard angles.
+- =+=: thin lines corners and intersections become thick, empty glyphs
+  get filled.
+- =-=: thick lines corners and intersections become thin, filled glyphs
+  are emptied.
+- ===: thick and thin lines become double lines.
+- =0=: come back to standard base-line Uniline style: plain not-dashed
+  lines, thin corner rounded, ASCII art is converted to UNICODE.
+- =a=: apply the =aa2u-rectangle= function from the unrelated
+  =ascii-art-to-unicode= package, to convert ASCII art to UNICODE (this
+  only works if =ascii-art-to-unicode= is already installed)
+
+Converting parts of a drawing from one style to another can produce
+nice looking sketches.
+
+[[file:images/same-sketch-several-styles.png]]
+
+#+begin_example
+
+   ╭───╮   ╭───╮   ╭───╮
+   │░░░│   │░░░│   │░░░┝━▶┓ ╭╌╌╌╌╌╮
+   │░░░╰───╯░░░╰───╯░░░│  ┃ ┆░░░░░╰╌╌╌╌╌╮
+   □░░░░░░░░░░░░░░░░░░░│  ┗━┥░░░░░░░░░░░┆
+   │░░░╭───╮░░░╭───╮░░░│    ┆░░░░░╭╌╌╌╌╌╯
+   ╰───╯   ╰─┰─╯   ╰─┰─╯    ╰╌╌┰╌╌╯
+             ▲       ┃         ▼
+             ┗━━━━━━━┻━━━━━━━━━┛
+
+   ┏━━━┓   ┏━━━┓   ┏━━━┓
+   ┃░░░┃   ┃░░░┃   ┃░░░┠─▷╮ ┏╍╍╍╍╍┓
+   ┃░░░┗━━━┛░░░┗━━━┛░░░┃  │ ┇░░░░░┗╍╍╍╍╍┓
+   ■░░░░░░░░░░░░░░░░░░░┃  ╰─┨░░░░░░░░░░░┇
+   ┃░░░┏━━━┓░░░┏━━━┓░░░┃    ┇░░░░░┏╍╍╍╍╍┛
+   ┗━━━┛   ┗━┯━┛   ┗━┯━┛    ┗╍╍┯╍╍┛
+             △       │         ▽
+             ╰───────┴─────────╯
+
+#+end_example
+
+* ASCII to UNICODE
+
+The standard base-line Uniline (=INS s 0=) or =aa2u-rectangle= (=INS s a=)
+conversions may be used to convert ASCII art to UNICODE. The original
+ASCII art may be drawn for instance by the =artist-mode= or the
+=picture-mode= packages.
+
+To use =aa2u-rectangle=, install the =ascii-art-to-unicode= package by
+Thien-Thi Nguyen (RIP), available on ELPA.  See
+https://elpa.gnu.org/packages/ascii-art-to-unicode.html
+
+[[file:images/ascii-2-unicode.png]]
+
+#+begin_example
+
+  +-------------+    +--+
+  |             +-->-|  +-----+   ASCII art
+  | 1  +--------+--+ | 3      |   made by
+  +----+--------+  | +----+---+   Artist-mode
+       | 2         +-<----+
+       +-----------+
+
+  ╭─────────────╮    ╭──╮
+  │             ├──▷─│  ╰─────╮   Converted to
+  │ 1  ╭────────┼──╮ │ 3      │   Uniline base style
+  ╰────┼────────╯  │ ╰────┬───╯   INS s 0
+       │ 2         ├─◁────╯
+       ╰───────────╯
+
+  ┌─────────────┐    ┌──┐
+  │             ├──>─│  └─────┐   Converted by
+  │ 1  ┌────────┼──┐ │ 3      │   aa2u-rectangle
+  └────┼────────┘  │ └────┬───┘   INS s a
+       │ 2         ├─<────┘
+       └───────────┘
+#+end_example
+
 * Which fonts?
 :PROPERTIES:
 :CUSTOM_ID: which-fonts
@@ -1250,6 +1366,8 @@ In this example, =C-<insert>= was chosen. You can use whatever keys combination 
 
 - =picture-mode=: as in =Uniline=, the buffer is infinite in east & south
   directions.
+
+- =aa2u=: ASCII art to UNICODE in Emacs.
 
 - =org-pretty-table=: Org Mode tables /appear/ to be drawn in UNICODE
   characters (actually they are still in ASCII).
