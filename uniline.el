@@ -3140,6 +3140,15 @@ thick-line or double-line rounded corners."
   (interactive)
   (deactivate-mark))
 
+(defun uniline--aa2u-rectangle ()
+  "Wrapper arround `aa2u-rectangle'."
+  (interactive)
+  (if (functionp 'aa2u-rectangle)
+      (aa2u-rectangle)
+    (message "Install the ascii-art-to-unicode package prior to using aa2u.
+It is available on ELPA.
+Or use the '0 standard' style transformer instead.")))
+
 (defhydra uniline-hydra-alt-styles
   (:pre (rectangle-mark-mode 1)
    :hint nil
@@ -3165,7 +3174,7 @@ thick-line or double-line rounded corners."
   ("<kp-add>"      uniline-change-style-thick)
   ("b"             uniline-change-style-thick)
   ("="             uniline-change-style-double)
-  ("a"       aa2u-rectangle)
+  ("a"             uniline--aa2u-rectangle)
   ("C-x C-x" rectangle-exchange-point-and-mark)
   ("C-/"     uniline--hydra-rect-undo)
   ("C-_"     uniline--hydra-rect-undo)
