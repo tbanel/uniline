@@ -3144,7 +3144,7 @@ thick-line or double-line rounded corners."
   "Wrapper arround `aa2u-rectangle'."
   (interactive)
   (if (functionp 'aa2u-rectangle)
-      (aa2u-rectangle)
+      (aa2u-rectangle (region-beginning) (region-end))
     (message "Install the ascii-art-to-unicode package prior to using aa2u.
 It is available on ELPA.
 Or use the '0 standard' style transformer instead.")))
@@ -3548,6 +3548,19 @@ And backup previous settings."
 │ Last keybord macro can be twisted in any of the 4 directions
 │ \\[uniline-hydra-macro-exec/body] then → ← ↑ ↓ : directional call of last keyboard macro
 ╰────────────────────────────╴
+╭╴Alternate styles───────────╴
+│ highlight a region (a rectangle) then \\<uniline-mode-map>\\[uniline-hydra-choose-body] \\<uniline-hydra-moverect/keymap>\\[uniline-hydra-moverect/uniline-hydra-alt-styles/body-and-exit]\\<uniline-hydra-alt-styles/keymap>
+│ This enters a menu where alternative styles are applied
+│ to the rectangular selection
+│ \\[uniline-hydra-alt-styles/uniline-change-style-dot-3-2] make 3 dots vertical, 2 dots horizontal lines
+│ \\[uniline-hydra-alt-styles/uniline-change-style-dot-4-4] make 4 dots vertical and horizontal lines
+│ \\[uniline-hydra-alt-styles/uniline-change-style-hard-corners] convert round corners to hard ones
+│ \\[uniline-hydra-alt-styles/uniline-change-style-thin] make thin lines
+│ \\[uniline-hydra-alt-styles/uniline-change-style-thick] make thick lines
+│ \\[uniline-hydra-alt-styles/uniline-change-style-double] make double lines
+│ \\[uniline-hydra-alt-styles/uniline-change-style-standard] come back to standard base line style, including from ASCII art
+│ \\[uniline-hydra-alt-styles/uniline--aa2u-rectangle] apply external package aa2u conversion from ASCII art to UNICODE
+╰────────────────────────────╴
 ╭─Fonts──────────────────────╴
 │ Try out some mono-spaced fonts with support for the
 │ required UNICODE characters.
@@ -3636,10 +3649,19 @@ And backup previous settings."
      ["overwrite rectangle inside selection" uniline-overwrite-inner-rectangle :keys "INS C-r"]
      ["overwrite rectangle around selection" uniline-overwrite-outer-rectangle :keys "INS C-R"]
      ["fill" uniline-fill-rectangle :keys "INS i"])
+    ("Alternate styles" :active (region-active-p)
+     ["thin lines"          uniline-change-style-thin     :keys "INS s -"]
+     ["thick lines"         uniline-change-style-thick    :keys "INS s +"]
+     ["double lines"        uniline-change-style-double   :keys "INS s ="]
+     ["3 dots vert, 2 dots horiz" uniline-change-style-dot-3-2 :keys "INS s 3"]
+     ["4 dots vert & horiz" uniline-change-style-dot-4-4  :keys "INS s 4"]
+     ["hard corners"    uniline-change-style-hard-corners :keys "INS s h"]
+     ["back to standard"    uniline-change-style-standard :keys "INS s 0"]
+     ["aa2u (ext. package)" uniline--aa2u-rectangle       :keys "INS s a"])
     ("Fill & contour"
-     ["contour" uniline-contour]
-     ["contour overw" (uniline-contour t)]
-     ["fill" uniline-fill])
+     ["contour"         uniline-contour                 :keys "INS c"]
+     ["contour overw"  (uniline-contour t)              :keys "INS C"]
+     ["fill" (uniline-fill (uniline--choose-fill-char)) :keys "INS i"])
     ("Text insertion direction"
      ["→ right" uniline-text-direction-ri→ :keys "INS C-<right>" :style radio :selected (eq uniline-text-direction (uniline-direction-ri→))]
      ["← left"  uniline-text-direction-lf← :keys "INS C-<left> " :style radio :selected (eq uniline-text-direction (uniline-direction-lf←))]
