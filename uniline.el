@@ -3144,7 +3144,7 @@ thick-line or double-line rounded corners."
   "Wrapper arround `aa2u-rectangle'."
   (interactive)
   (if (functionp 'aa2u-rectangle)
-      (aa2u-rectangle (region-beginning) (region-end))
+      (eval '(aa2u-rectangle (region-beginning) (region-end)))
     (message "Install the ascii-art-to-unicode package prior to using aa2u.
 It is available on ELPA.
 Or use the '0 standard' style transformer instead.")))
