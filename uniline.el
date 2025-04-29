@@ -3617,11 +3617,11 @@ And backup previous settings."
     ["write left"      uniline-write-lf←     t]
     ["write up"        uniline-write-up↑     t]
     ["write down"      uniline-write-dw↓     t]
-    "----"
-    ["overwrite right" uniline-overwrite-ri→ t]
-    ["overwrite left"  uniline-overwrite-lf← t]
-    ["overwrite up"    uniline-overwrite-up↑ t]
-    ["overwrite down"  uniline-overwrite-dw↓ t]
+    ("Overwrite"
+     ["overwrite right" uniline-overwrite-ri→ t]
+     ["overwrite left"  uniline-overwrite-lf← t]
+     ["overwrite up"    uniline-overwrite-up↑ t]
+     ["overwrite down"  uniline-overwrite-dw↓ t])
     "----"
     ["─ light brush"   uniline-set-brush-1     :style radio :selected (eq uniline-brush 1     )]
     ["━ heavy brush"   uniline-set-brush-2     :style radio :selected (eq uniline-brush 2     )]
@@ -3634,16 +3634,22 @@ And backup previous settings."
      ["insert arrow ▷ ▶ → ▹ ▸ ↔" uniline-insert-fw-arrow  :keys "INS a"]
      ["insert square □ ■ ◇ ◆ ◊"  uniline-insert-fw-square :keys "INS s"]
      ["insert oshape · ● ◦ Ø ø"  uniline-insert-fw-oshape :keys "INS o"]
-     ["insert cross ╳ ÷ × ± ¤"   uniline-insert-fw-cross  :keys "INS x"]
+     ["insert cross ╳ ÷ × ± ¤"   uniline-insert-fw-cross  :keys "INS x"])
+    ("Rotate arrow, tweak ¼ line"
      ["rotate arrow, tweak ¼ line → right" uniline-rotate-ri→ :keys "INS S-<right>"]
-     ["rotate arrow, tweak ¼ line ← left"  uniline-rotate-lf← :keys "INS S-<left> "]
-     ["rotate arrow, tweak ¼ line ↑ up"    uniline-rotate-up↑ :keys "INS S-<up>   "]
-     ["rotate arrow, tweak ¼ line ↓ down"  uniline-rotate-dw↓ :keys "INS S-<down> "])
+     ["rotate arrow, tweak ¼ line ← left"  uniline-rotate-lf← :keys "INS S-<left>" ]
+     ["rotate arrow, tweak ¼ line ↑ up"    uniline-rotate-up↑ :keys "INS S-<up>"   ]
+     ["rotate arrow, tweak ¼ line ↓ down"  uniline-rotate-dw↓ :keys "INS S-<down>" ])
     ("Rectangular region" :active (region-active-p)
      ["move selection right" uniline-move-rect-ri→ :keys "INS <right>"]
-     ["move selection left"  uniline-move-rect-lf← :keys "INS <left> "]
-     ["move selection up"    uniline-move-rect-up↑ :keys "INS <up>   "]
-     ["move selection down"  uniline-move-rect-dw↓ :keys "INS <down> "]
+     ["move selection left"  uniline-move-rect-lf← :keys "INS <left>" ]
+     ["move selection up"    uniline-move-rect-up↑ :keys "INS <up>"   ]
+     ["move selection down"  uniline-move-rect-dw↓ :keys "INS <down>" ]
+     "----"
+     ["copy"         uniline-copy-rectangle :keys "INS c"]
+     ["kill"         uniline-kill-rectangle :keys "INS k"]
+     ["yank, paste"  uniline-yank-rectangle :keys "INS y"]
+     "----"
      ["trace rectangle inside selection" uniline-draw-inner-rectangle :keys "INS r"]
      ["trace rectangle around selection" uniline-draw-outer-rectangle :keys "INS R"]
      ["overwrite rectangle inside selection" uniline-overwrite-inner-rectangle :keys "INS C-r"]
