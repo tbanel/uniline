@@ -1763,6 +1763,37 @@ identical characters."
             (if (setq p (uniline--neighbour-point uniline-direction-lf←))
                 (push p stack)))))))
 
+;;;╭────────────────────────╮
+;;;│Undo rectangle selection│
+;;;╰────────────────────────╯
+
+;; Rectangle functions operate on a visually highlighted rectangular selection
+;; Keeping the selection highlighted
+;;  - after changing the rectangle (move, fill, contour, kill, yank…)
+;;  - when undoing a rectangle change
+;; gives a sense of confidence.
+;; To achieve that, we add the point and mark (the selection) into the
+;; regular Emacs undo machinery, so as to restore it.
+
+(defun uniline--undo-restore-selection (i p)
+  "Function called by the Emacs undo system to restore selection.
+I is the mark,
+P is the point."
+  (set-mark i)
+  (goto-char p)
+  (activate-mark)
+  (rectangle-mark-mode 1)
+  (setq deactivate-mark nil))
+
+(defun uniline--record-undo-rectangle-selection ()
+  "Add the selection (point and mark) into the Emacs undo stack."
+  (setq buffer-undo-list
+        `((apply
+           uniline--undo-restore-selection
+           ,(mark)
+           ,(point))
+          ,@buffer-undo-list)))
+
 ;;;╭───────────────────────────────────╮
 ;;;│High level management of rectangles│
 ;;;╰───────────────────────────────────╯
@@ -1909,6 +1940,7 @@ defaulting to 1.
     ░░░░░░░
 "
   (interactive "P")
+  (uniline--record-undo-rectangle-selection)
   (cl-loop
    repeat (or repeat 1)
    do
@@ -1934,6 +1966,7 @@ defaulting to 1.
     ░░░░░░░→
 "
   (interactive "P")
+  (uniline--record-undo-rectangle-selection)
   (cl-loop
    repeat (or repeat 1)
    do
@@ -1960,6 +1993,7 @@ defaulting to 1.
     ↓ ↓ ↓ ↓
 "
   (interactive "P")
+  (uniline--record-undo-rectangle-selection)
   (cl-loop
    repeat (or repeat 1)
    do
@@ -1985,6 +2019,7 @@ defaulting to 1.
    ←░░░░░░░
 "
   (interactive "P")
+  (uniline--record-undo-rectangle-selection)
   (cl-loop
    repeat (or repeat 1)
    do
@@ -2010,6 +2045,7 @@ See `uniline--choose-fill-char'.
 "
   (interactive)
   (let ((char (uniline--choose-fill-char)))
+    (uniline--record-undo-rectangle-selection)
     (uniline--operate-on-rectangle
      (cl-loop
       for y from begy below endy
@@ -2027,6 +2063,7 @@ Use the current brush style, which may be thin, thick,
 double line, block, or eraser.
 When FORCE is not nil, overwrite whatever is there."
   (interactive)
+  (uniline--record-undo-rectangle-selection)
   (uniline--operate-on-rectangle
    (let ((width  (- endx begx 1))
          (height (- endy begy 1)))
@@ -2056,6 +2093,7 @@ Use the current brush style, which may be thin, thick,
 double line, block, or eraser.
 When FORCE is not nil, overwrite whatever is there."
   (interactive)
+  (uniline--record-undo-rectangle-selection)
   (uniline--operate-on-rectangle
    (let ((width  (- endx begx -1))
          (height (- endy begy -1))
@@ -2101,6 +2139,7 @@ Overwrite whatever is there."
 It differs from the standard Emacs `kill-rectangle'
 in that it leaves a rectangle of space characters."
   (interactive)
+  (uniline--record-undo-rectangle-selection)
   (copy-rectangle-as-kill (region-beginning) (region-end))
   (clear-rectangle        (region-beginning) (region-end)))
 
@@ -2109,6 +2148,7 @@ in that it leaves a rectangle of space characters."
 It differs from the standard Emacs `yank-rectangle'
 in that it overwrites the rectangle."
   (interactive)
+  (uniline--record-undo-rectangle-selection)
   (uniline--operate-on-rectangle
    (goto-char beg)
    (cl-loop
@@ -2767,6 +2807,7 @@ The changes are reversible in a single undo command."
 It retains thickness of the lines.
 Vertical lines will be 3-dots, while horizontal will be 2-dots."
   (interactive)
+  (uniline--record-undo-rectangle-selection)
   (uniline--change-style-hash uniline--char-to-dot-3-2-char))
 
 (defconst uniline--char-to-dot-4-4-char
@@ -2791,6 +2832,7 @@ Vertical lines will be 3-dots, while horizontal will be 2-dots."
 It retains thickness of the lines.
 Vertical and horizontzl lines will be 4-dots."
   (interactive)
+  (uniline--record-undo-rectangle-selection)
   (uniline--change-style-hash uniline--char-to-dot-4-4-char))
 
 (defconst uniline--char-to-standard-char
@@ -2825,7 +2867,8 @@ Vertical and horizontzl lines will be 4-dots."
   "Change fancy lines styles to standard ones in a rectangular selection.
 This includes dashed lines, which become plain while preserving thickness,
 and hard corners which become rounded."
-    (interactive)
+  (interactive)
+  (uniline--record-undo-rectangle-selection)
   (uniline--change-style-hash uniline--char-to-standard-char)
   (uniline--operate-on-rectangle
    (let ((handle (prepare-change-group)))
@@ -2890,7 +2933,8 @@ and hard corners which become rounded."
   "Change rounded corners to hard corners in a rectangular selection.
 This happens only for thin-lines corners, as UNICODE does not define
 thick-line or double-line rounded corners."
-    (interactive)
+  (interactive)
+  (uniline--record-undo-rectangle-selection)
   (uniline--change-style-hash uniline--char-to-hard-corner-char))
 
 (defconst uniline--char-to-thin-char
@@ -2931,6 +2975,7 @@ thick-line or double-line rounded corners."
 (defun uniline-change-style-thin ()
   ""
   (interactive)
+  (uniline--record-undo-rectangle-selection)
   (uniline--change-style-hash uniline--char-to-thin-char))
 
 (defconst uniline--char-to-thick-char
@@ -2971,6 +3016,7 @@ thick-line or double-line rounded corners."
 (defun uniline-change-style-thick ()
   ""
   (interactive)
+  (uniline--record-undo-rectangle-selection)
   (uniline--change-style-hash uniline--char-to-thick-char))
 
 (defconst uniline--char-to-double-line
@@ -3004,6 +3050,7 @@ thick-line or double-line rounded corners."
 (defun uniline-change-style-double ()
   ""
   (interactive)
+  (uniline--record-undo-rectangle-selection)
   (uniline--change-style-hash uniline--char-to-double-line))
 
 ;;;╭────────────────╮
@@ -3130,7 +3177,9 @@ thick-line or double-line rounded corners."
   ("RET" ()                     :exit t))
 
 (defun uniline--hydra-rect-undo ()
-  "Make undo work outside selection."
+  "Make undo work outside selection.
+The selection will be recovered by the undo machinery,
+and highlighted."
   (interactive)
   (deactivate-mark)
   (undo))
@@ -3143,8 +3192,18 @@ thick-line or double-line rounded corners."
 (defun uniline--aa2u-rectangle ()
   "Wrapper arround `aa2u-rectangle'."
   (interactive)
+  (uniline--record-undo-rectangle-selection)
   (if (functionp 'aa2u-rectangle)
-      (eval '(aa2u-rectangle (region-beginning) (region-end)))
+      (uniline--operate-on-rectangle
+       ;; here we use `eval' on purpose, to get a loose coupling
+       ;; with the `ascii-art-to-unicode' package; if not installed
+       ;; the native compiler may complain that `aa2u-rectangle'
+       ;; is not defined; no longer with `eval'.
+       ;; but long after compiling `uniline', if the
+       ;; `ascii-art-to-unicode' package is eventually installed,
+       ;; the `aa2u-rectangle' will be called without the need to
+       ;; recompile or native-recompile `uniline'.
+       (eval `(aa2u-rectangle ,beg ,end)))
     (message "Install the ascii-art-to-unicode package prior to using aa2u.
 It is available on ELPA.
 Or use the '0 standard' style transformer instead.")))
@@ -3169,12 +3228,23 @@ Or use the '0 standard' style transformer instead.")))
   ("<kp-0>"        uniline-change-style-standard)
   ("-"             uniline-change-style-thin)
   ("<kp-subtract>" uniline-change-style-thin)
-  ("c"             uniline-change-style-thin)
   ("+"             uniline-change-style-thick)
   ("<kp-add>"      uniline-change-style-thick)
-  ("b"             uniline-change-style-thick)
   ("="             uniline-change-style-double)
   ("a"             uniline--aa2u-rectangle)
+  ;; copy here the bindings for handling rectangles
+  ("<right>" uniline-move-rect-ri→)
+  ("<left>"  uniline-move-rect-lf←)
+  ("<up>"    uniline-move-rect-up↑)
+  ("<down>"  uniline-move-rect-dw↓)
+  ("r"       uniline-draw-inner-rectangle)
+  ("R"       uniline-draw-outer-rectangle)
+  ("C-r"     uniline-overwrite-inner-rectangle)
+  ("C-S-R"   uniline-overwrite-outer-rectangle)
+  ("i"       uniline-fill-rectangle)
+  ("f"       uniline-hydra-fonts/body :exit t)
+  ("s"       uniline-hydra-moverect/body :exit t)
+  ;; misc.
   ("C-x C-x" rectangle-exchange-point-and-mark)
   ("C-/"     uniline--hydra-rect-undo)
   ("C-_"     uniline--hydra-rect-undo)
@@ -3210,6 +3280,7 @@ Or use the '0 standard' style transformer instead.")))
   ("c"   uniline-copy-rectangle)
   ("k"   uniline-kill-rectangle)
   ("y"   uniline-yank-rectangle)
+
   ("<delete>"       uniline-set-brush-0)
   ("<deletechar>"   uniline-set-brush-0)
   ("C-<delete>"     uniline-set-brush-0)
@@ -3220,12 +3291,13 @@ Or use the '0 standard' style transformer instead.")))
   ("<kp-add>"       uniline-set-brush-2)
   ("="              uniline-set-brush-3)
   ("#"              uniline-set-brush-block)
+
   ("TAB" uniline-toggle-hydra-hints)
   ("f"     uniline-hydra-fonts/body      :exit t)
   ("s"     uniline-hydra-alt-styles/body :exit t)
-  ("C-/"   uniline--hydra-rect-undo :exit t)
-  ("C-_"   uniline--hydra-rect-undo :exit t)
-  ("C-x u" uniline--hydra-rect-undo :exit t)
+  ("C-/"   uniline--hydra-rect-undo)
+  ("C-_"   uniline--hydra-rect-undo)
+  ("C-x u" uniline--hydra-rect-undo)
   ("C-x C-x" rectangle-exchange-point-and-mark)
   ("RET"   uniline--hydra-rect-quit :exit t))
 
