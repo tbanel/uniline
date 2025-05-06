@@ -28,6 +28,7 @@ rectangle and type ‘INS s’.
 * Intersection glyphs ■ ◆ ●::
 * Drawing rectangles::
 * Moving rectangles::
+* Copying, killing, yanking rectangles: Copying killing yanking rectangles.
 * Tracing a contour::
 * Flood-fill::
 * Text direction::
@@ -452,7 +453,7 @@ active when ‘shift-select-mode’ is non-nil.
 region still active visually.
 
 
-File: uniline.info,  Node: Moving rectangles,  Next: Tracing a contour,  Prev: Drawing rectangles,  Up: Top
+File: uniline.info,  Node: Moving rectangles,  Next: Copying killing yanking rectangles,  Prev: Drawing rectangles,  Up: Top
 
 10 Moving rectangles
 ********************
@@ -486,8 +487,13 @@ though the selection is still active.
                      │
                      ▼
 
-   A rectangle can be copied or killed, then yanked somewhere else.
-Press:
+
+File: uniline.info,  Node: Copying killing yanking rectangles,  Next: Tracing a contour,  Prev: Moving rectangles,  Up: Top
+
+11 Copying, killing, yanking rectangles
+***************************************
+
+A rectangle can be copied or killed, then yanked somewhere else.  Press:
    • ‘c’ to copy
    • ‘k’ to kill
    • ‘y’ to yank (aka paste)
@@ -497,17 +503,21 @@ Press:
    • ‘C-x r k’ kill rectangle
    • ‘C-x r y’ yank killed rectangle
 
-   The difference is that ‘Uniline’ rectangles when killed and yanked,
-do not move surrounding characters.
+   The first difference is that ‘Uniline’ rectangles when killed and
+yanked, do not move surrounding characters.
+
+   The second difference is that the white characters of the yanked
+rectangle are considered transparent.  The result is that only non-blank
+parts of the yanked rectangle are over-printed.
 
    ‘Uniline’ and Emacs standard rectangle share the same storage for
 copied and killed rectangles, ‘killed-rectangle’.  So, a rectangle can
 be killed one way, and yanked another way.
 
 
-File: uniline.info,  Node: Tracing a contour,  Next: Flood-fill,  Prev: Moving rectangles,  Up: Top
+File: uniline.info,  Node: Tracing a contour,  Next: Flood-fill,  Prev: Copying killing yanking rectangles,  Up: Top
 
-11 Tracing a contour
+12 Tracing a contour
 ********************
 
 
@@ -549,7 +559,7 @@ again, at the point where the previous run ended.
 
 File: uniline.info,  Node: Flood-fill,  Next: Text direction,  Prev: Tracing a contour,  Up: Top
 
-12 Flood-fill
+13 Flood-fill
 *************
 
 
@@ -595,7 +605,7 @@ operation may flood the entire buffer (but no more).
 
 File: uniline.info,  Node: Text direction,  Next: Macros,  Prev: Flood-fill,  Up: Top
 
-13 Text direction
+14 Text direction
 *****************
 
 Usually, inserting text in a buffer moves the cursor to the right.  (And
@@ -613,7 +623,7 @@ word ‘"uniline"’.
 
 File: uniline.info,  Node: Macros,  Next: Fine tweaking,  Prev: Text direction,  Up: Top
 
-14 Macros
+15 Macros
 *********
 
 ‘Uniline’ adds directional macros to the Emacs standard macros.
@@ -678,7 +688,7 @@ call a macro in 4 directions, closing a square:
 
 File: uniline.info,  Node: Fine tweaking,  Next: Dashed lines and other styles,  Prev: Macros,  Up: Top
 
-15 Fine tweaking
+16 Fine tweaking
 ****************
 
 
@@ -722,7 +732,7 @@ S-<down> S-<left>’
 
 File: uniline.info,  Node: Dashed lines and other styles,  Next: ASCII to UNICODE,  Prev: Fine tweaking,  Up: Top
 
-16 Dashed lines and other styles
+17 Dashed lines and other styles
 ********************************
 
 
@@ -800,7 +810,7 @@ nice looking sketches.
 
 File: uniline.info,  Node: ASCII to UNICODE,  Next: Which fonts?,  Prev: Dashed lines and other styles,  Up: Top
 
-17 ASCII to UNICODE
+18 ASCII to UNICODE
 *******************
 
 The standard base-line Uniline (‘INS s 0’) or ‘aa2u-rectangle’ (‘INS s
@@ -839,7 +849,7 @@ by Thien-Thi Nguyen (RIP), available on ELPA.  See
 
 File: uniline.info,  Node: Which fonts?,  Next: Text menus (Hydra),  Prev: ASCII to UNICODE,  Up: Top
 
-18 Which fonts?
+19 Which fonts?
 ***************
 
 A mono-space character font must be used.  It must also support UNICODE.
@@ -892,7 +902,7 @@ font should already be available.
 
 File: uniline.info,  Node: Text menus (Hydra),  Next: Line spacing,  Prev: Which fonts?,  Up: Top
 
-19 Text menus (Hydra)
+20 Text menus (Hydra)
 *********************
 
 Casual usage of ‘Uniline’ should be easy: just move the point, and lines
@@ -942,7 +952,7 @@ the ‘~/.emacs’ buffer.
 
 File: uniline.info,  Node: Line spacing,  Next: How Uniline behaves with its environment?,  Prev: Text menus (Hydra),  Up: Top
 
-20 Line spacing
+21 Line spacing
 ***************
 
 The ‘line-spacing’ setting in Emacs can change the display of a sketch.
@@ -970,7 +980,7 @@ of choice for everyone.
 
 File: uniline.info,  Node: How Uniline behaves with its environment?,  Next: Lisp API,  Prev: Line spacing,  Up: Top
 
-21 How ‘Uniline’ behaves with its environment?
+22 How ‘Uniline’ behaves with its environment?
 **********************************************
 
 * Menu:
@@ -989,7 +999,7 @@ File: uniline.info,  Node: How Uniline behaves with its environment?,  Next: Lis
 
 File: uniline.info,  Node: Compatibility with Picture-mode,  Next: Compatibility with Artist-mode,  Up: How Uniline behaves with its environment?
 
-21.1 Compatibility with Picture-mode
+22.1 Compatibility with Picture-mode
 ====================================
 
 ‘Picture-mode’ and ‘uniline-mode’ are compatible.  Their features
@@ -1009,7 +1019,7 @@ overlap somehow:
 
 File: uniline.info,  Node: Compatibility with Artist-mode,  Next: Compatibility with Whitespace-mode,  Prev: Compatibility with Picture-mode,  Up: How Uniline behaves with its environment?
 
-21.2 Compatibility with Artist-mode
+22.2 Compatibility with Artist-mode
 ===================================
 
 ‘Artist-mode’ and ‘uniline-mode’ are mostly incompatible.  This is
@@ -1021,7 +1031,7 @@ large part of ‘uniline-mode’ features.
 
 File: uniline.info,  Node: Compatibility with Whitespace-mode,  Next: Compatibility with Org Mode,  Prev: Compatibility with Artist-mode,  Up: How Uniline behaves with its environment?
 
-21.3 Compatibility with Whitespace-mode
+22.3 Compatibility with Whitespace-mode
 =======================================
 
 ‘Whitespace-mode’ and ‘uniline-mode’ are mostly compatible.
@@ -1043,7 +1053,7 @@ attached to newlines.  And ‘uniline-mode’ makes heavy use of
 
 File: uniline.info,  Node: Compatibility with Org Mode,  Next: Org Mode and LaTex,  Prev: Compatibility with Whitespace-mode,  Up: How Uniline behaves with its environment?
 
-21.4 Compatibility with Org Mode
+22.4 Compatibility with Org Mode
 ================================
 
 You may want to customize the shift extension mode in ‘Org Mode’.  This
@@ -1063,7 +1073,7 @@ the buffer.
 
 File: uniline.info,  Node: Org Mode and LaTex,  Next: What about \t tabs?,  Prev: Compatibility with Org Mode,  Up: How Uniline behaves with its environment?
 
-21.5 Org Mode and LaTex
+22.5 Org Mode and LaTex
 =======================
 
 Use the ‘pmboxdraw’ LaTex module.  This gives limited support for "box
@@ -1126,7 +1136,7 @@ But it can recognize them.
 
 File: uniline.info,  Node: What about \t tabs?,  Next: What about ^L page separation?,  Prev: Org Mode and LaTex,  Up: How Uniline behaves with its environment?
 
-21.6 What about ‘\t’ tabs?
+22.6 What about ‘\t’ tabs?
 ==========================
 
 Some files may contain tabs (the character ‘\t’).  Those include
@@ -1142,7 +1152,7 @@ invisible.  So be cautious if tabs have a special meaning in the file.
 
 File: uniline.info,  Node: What about ^L page separation?,  Next: Emacs on the Linux console,  Prev: What about \t tabs?,  Up: How Uniline behaves with its environment?
 
-21.7 What about ‘^L’ page separation?
+22.7 What about ‘^L’ page separation?
 =====================================
 
 ‘Uniline’ does not work well with ‘^L’ (page separation) character.
@@ -1156,7 +1166,7 @@ characters occupy twice the width of a normal character.
 
 File: uniline.info,  Node: Emacs on the Linux console,  Next: Emacs on a graphical terminal emulator,  Prev: What about ^L page separation?,  Up: How Uniline behaves with its environment?
 
-21.8 Emacs on the Linux console
+22.8 Emacs on the Linux console
 ===============================
 
 Linux consoles are the 7 non-graphic screens which can be accessed
@@ -1176,7 +1186,7 @@ can be found here: <https://www.emacswiki.org/emacs/MissingKeys>
 
 File: uniline.info,  Node: Emacs on a graphical terminal emulator,  Next: Emacs on Windows,  Prev: Emacs on the Linux console,  Up: How Uniline behaves with its environment?
 
-21.9 Emacs on a graphical terminal emulator
+22.9 Emacs on a graphical terminal emulator
 ===========================================
 
 This is the Emacs launched from a terminal typing ‘emacs -nw’.  In this
@@ -1197,7 +1207,7 @@ file:
 
 File: uniline.info,  Node: Emacs on Windows,  Prev: Emacs on a graphical terminal emulator,  Up: How Uniline behaves with its environment?
 
-21.10 Emacs on Windows
+22.10 Emacs on Windows
 ======================
 
 On Windows the only native mono-spaced fonts are ‘Lucida Console’ and
@@ -1214,7 +1224,7 @@ unaligned result though.  They should be avoided under ‘Consolas’:
 
 File: uniline.info,  Node: Lisp API,  Next: Installation,  Prev: How Uniline behaves with its environment?,  Up: Top
 
-22 Lisp API
+23 Lisp API
 ***********
 
 Could Uniline be programmed (versus used interactively)?  Yes!
@@ -1381,7 +1391,7 @@ directions:
 
 File: uniline.info,  Node: Installation,  Next: Related packages,  Prev: Lisp API,  Up: Top
 
-23 Installation
+24 Installation
 ***************
 
 Add the following lines to your ‘.emacs’ file, and reload it, if not
@@ -1418,7 +1428,7 @@ combination you want.  ‘<insert>’ happens to also be the key used inside
 
 File: uniline.info,  Node: Related packages,  Next: Author contributors,  Prev: Installation,  Up: Top
 
-24 Related packages
+25 Related packages
 *******************
 
    • ‘artist-mode’: the ASCII art mode built into Emacs.
@@ -1497,7 +1507,7 @@ File: uniline.info,  Node: Related packages,  Next: Author contributors,  Prev: 
 
 File: uniline.info,  Node: Author contributors,  Next: License,  Prev: Related packages,  Up: Top
 
-25 Author, contributors
+26 Author, contributors
 ***********************
 
    • Thierry Banel, author
@@ -1519,7 +1529,7 @@ File: uniline.info,  Node: Author contributors,  Next: License,  Prev: Related p
 
 File: uniline.info,  Node: License,  Prev: Author contributors,  Up: Top
 
-26 License
+27 License
 **********
 
 Copyright (C) 2024-2025 Thierry Banel
@@ -1541,42 +1551,43 @@ along with this program.  If not, see <http://www.gnu.org/licenses/>.
 
 Tag Table:
 Node: Top75
-Node: Getting started in 10 seconds1313
-Node: Pure UNICODE text diagrams in Emacs1643
-Node: Minor mode9261
-Node: Drawing lines9809
-Node: Brush style10485
-Node: The <insert> key11577
-Node: Arrows glyphs ▷ ▶ → ▹ ▸ ↔12411
-Node: Intersection glyphs ■ ◆ ●13968
-Node: Drawing rectangles16616
-Node: Moving rectangles18590
-Node: Tracing a contour20467
-Node: Flood-fill22234
-Node: Text direction23961
-Node: Macros24502
-Node: Fine tweaking27863
-Node: Dashed lines and other styles29675
-Node: ASCII to UNICODE33738
-Node: Which fonts?35466
-Node: Text menus (Hydra)37324
-Node: Line spacing39284
-Node: How Uniline behaves with its environment?40712
-Node: Compatibility with Picture-mode41260
-Node: Compatibility with Artist-mode42178
-Node: Compatibility with Whitespace-mode42697
-Node: Compatibility with Org Mode43597
-Node: Org Mode and LaTex44383
-Node: What about \t tabs?46284
-Node: What about ^L page separation?46932
-Node: Emacs on the Linux console47555
-Node: Emacs on a graphical terminal emulator48509
-Node: Emacs on Windows49432
-Node: Lisp API50079
-Node: Installation55241
-Node: Related packages56239
-Node: Author contributors58997
-Node: License59630
+Node: Getting started in 10 seconds1389
+Node: Pure UNICODE text diagrams in Emacs1719
+Node: Minor mode9337
+Node: Drawing lines9885
+Node: Brush style10561
+Node: The <insert> key11653
+Node: Arrows glyphs ▷ ▶ → ▹ ▸ ↔12487
+Node: Intersection glyphs ■ ◆ ●14044
+Node: Drawing rectangles16692
+Node: Moving rectangles18666
+Node: Copying killing yanking rectangles19910
+Node: Tracing a contour20962
+Node: Flood-fill22746
+Node: Text direction24473
+Node: Macros25014
+Node: Fine tweaking28375
+Node: Dashed lines and other styles30187
+Node: ASCII to UNICODE34250
+Node: Which fonts?35978
+Node: Text menus (Hydra)37836
+Node: Line spacing39796
+Node: How Uniline behaves with its environment?41224
+Node: Compatibility with Picture-mode41772
+Node: Compatibility with Artist-mode42690
+Node: Compatibility with Whitespace-mode43209
+Node: Compatibility with Org Mode44109
+Node: Org Mode and LaTex44895
+Node: What about \t tabs?46796
+Node: What about ^L page separation?47444
+Node: Emacs on the Linux console48067
+Node: Emacs on a graphical terminal emulator49021
+Node: Emacs on Windows49944
+Node: Lisp API50591
+Node: Installation55753
+Node: Related packages56751
+Node: Author contributors59509
+Node: License60142
 
 End Tag Table
 

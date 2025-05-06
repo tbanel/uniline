@@ -2157,7 +2157,8 @@ in that it overwrites the rectangle."
     (cl-loop
      for char across line
      do
-     (uniline--insert-char char)
+     (unless (eq char ? )
+       (uniline--insert-char char))
      (uniline-move-to-delta-column 1))
     (uniline-move-to-column begx)
     (uniline-move-to-delta-line 1))

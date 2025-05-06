@@ -32,11 +32,14 @@ rectangle and type =INS s=.
 - [[#intersection-glyphs---][Intersection glyphs ■ ◆ ●]]
 - [[#drawing-rectangles][Drawing rectangles]]
 - [[#moving-rectangles][Moving rectangles]]
+- [[#copying-killing-yanking-rectangles][Copying, killing, yanking rectangles]]
 - [[#tracing-a-contour][Tracing a contour]]
 - [[#flood-fill][Flood-fill]]
 - [[#text-direction][Text direction]]
 - [[#macros][Macros]]
 - [[#fine-tweaking][Fine tweaking]]
+- [[#dashed-lines-and-other-styles][Dashed lines and other styles]]
+- [[#ascii-to-unicode][ASCII to UNICODE]]
 - [[#which-fonts][Which fonts?]]
 - [[#text-menus-hydra][Text menus (Hydra)]]
 - [[#line-spacing][Line spacing]]
@@ -475,6 +478,11 @@ though the selection is still active.
                  ▼
 #+end_example
 
+* Copying, killing, yanking rectangles
+:PROPERTIES:
+:CUSTOM_ID: copying-killing-yanking-rectangles
+:END:
+
 A rectangle can be copied or killed, then yanked somewhere else. Press:
 - =c= to copy
 - =k= to kill
@@ -485,8 +493,12 @@ This is similar to the Emacs standard rectangle handling:
 - =C-x r k= kill rectangle
 - =C-x r y= yank killed rectangle
 
-The difference is that =Uniline= rectangles when killed and yanked, do not
-move surrounding characters.
+The first difference is that =Uniline= rectangles when killed and
+yanked, do not move surrounding characters.
+
+The second difference is that the white characters of the yanked
+rectangle are considered transparent. The result is that only
+non-blank parts of the yanked rectangle are over-printed.
 
 =Uniline= and Emacs standard rectangle share the same storage for copied
 and killed rectangles, =killed-rectangle=. So, a rectangle can be killed
@@ -713,6 +725,9 @@ In the above example, the effect was achieved with:
 =INS S-<up> S-<down> S-<left>=
 
 * Dashed lines and other styles
+:PROPERTIES:
+:CUSTOM_ID: dashed-lines-and-other-styles
+:END:
 
 [[file:images/four-styles.png]]
 
@@ -789,6 +804,9 @@ nice looking sketches.
 #+end_example
 
 * ASCII to UNICODE
+:PROPERTIES:
+:CUSTOM_ID: ascii-to-unicode
+:END:
 
 The standard base-line Uniline (=INS s 0=) or =aa2u-rectangle= (=INS s a=)
 conversions may be used to convert ASCII art to UNICODE. The original
