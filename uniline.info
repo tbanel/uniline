@@ -819,7 +819,9 @@ original ASCII art may be drawn for instance by the ‘artist-mode’ or the
 ‘picture-mode’ packages.
 
    To use ‘aa2u-rectangle’, install the ‘ascii-art-to-unicode’ package
-by Thien-Thi Nguyen (RIP), available on ELPA.  See
+by Thien-Thi Nguyen (RIP), available on ELPA.  Uniline does not requires
+a dependency on this package, by lazy evaluating any call to
+‘aa2u-rectangle’.  See
 <https://elpa.gnu.org/packages/ascii-art-to-unicode.html>
 
 
@@ -1439,7 +1441,11 @@ File: uniline.info,  Node: Related packages,  Next: Author contributors,  Prev: 
    • ‘picture-mode’: as in ‘Uniline’, the buffer is infinite in east &
      south directions.
 
-   • ‘aa2u’: ASCII art to UNICODE in Emacs.
+   • ‘ascii-art-to-unicode’ ASCII art to UNICODE in Emacs.  This is a
+     standard ELPA package by Thien-Thi Nguyen (rest in peace).  Uniline
+     may call it to convert ASCII art drawings to equivalent UNICODE.
+     Uniline arranges to not require a dependency on
+     ‘ascii-art-to-unicode’ by lazy evaluating a call to ‘aa2u’.
 
    • ‘org-pretty-table’: Org Mode tables _appear_ to be drawn in UNICODE
      characters (actually they are still in ASCII).
@@ -1526,6 +1532,12 @@ File: uniline.info,  Node: Author contributors,  Next: License,  Prev: Related p
    • DogLooksGood <https://github.com/DogLooksGood> gave feedback on
      inserting usual characters not moving the cursor
 
+   Utilities:
+
+   • Oleh Krehel alias abo-abo for his package ‘hydra’
+
+   • Thien-Thi Nguyen (RIP) for his package ‘ascii-art-to-unicode’
+
 
 File: uniline.info,  Node: License,  Prev: Author contributors,  Up: Top
 
@@ -1569,25 +1581,25 @@ Node: Macros25014
 Node: Fine tweaking28375
 Node: Dashed lines and other styles30187
 Node: ASCII to UNICODE34250
-Node: Which fonts?35978
-Node: Text menus (Hydra)37836
-Node: Line spacing39796
-Node: How Uniline behaves with its environment?41224
-Node: Compatibility with Picture-mode41772
-Node: Compatibility with Artist-mode42690
-Node: Compatibility with Whitespace-mode43209
-Node: Compatibility with Org Mode44109
-Node: Org Mode and LaTex44895
-Node: What about \t tabs?46796
-Node: What about ^L page separation?47444
-Node: Emacs on the Linux console48067
-Node: Emacs on a graphical terminal emulator49021
-Node: Emacs on Windows49944
-Node: Lisp API50591
-Node: Installation55753
-Node: Related packages56751
-Node: Author contributors59509
-Node: License60142
+Node: Which fonts?36088
+Node: Text menus (Hydra)37946
+Node: Line spacing39906
+Node: How Uniline behaves with its environment?41334
+Node: Compatibility with Picture-mode41882
+Node: Compatibility with Artist-mode42800
+Node: Compatibility with Whitespace-mode43319
+Node: Compatibility with Org Mode44219
+Node: Org Mode and LaTex45005
+Node: What about \t tabs?46906
+Node: What about ^L page separation?47554
+Node: Emacs on the Linux console48177
+Node: Emacs on a graphical terminal emulator49131
+Node: Emacs on Windows50054
+Node: Lisp API50701
+Node: Installation55863
+Node: Related packages56861
+Node: Author contributors59914
+Node: License60698
 
 End Tag Table
 

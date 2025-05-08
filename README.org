@@ -814,8 +814,10 @@ ASCII art may be drawn for instance by the =artist-mode= or the
 =picture-mode= packages.
 
 To use =aa2u-rectangle=, install the =ascii-art-to-unicode= package by
-Thien-Thi Nguyen (RIP), available on ELPA.  See
-https://elpa.gnu.org/packages/ascii-art-to-unicode.html
+Thien-Thi Nguyen (RIP), available on ELPA. Uniline does not requires a
+dependency on this package, by lazy evaluating any call to
+=aa2u-rectangle=.
+See https://elpa.gnu.org/packages/ascii-art-to-unicode.html
 
 [[file:images/ascii-2-unicode.png]]
 
@@ -1385,7 +1387,11 @@ In this example, =C-<insert>= was chosen. You can use whatever keys combination 
 - =picture-mode=: as in =Uniline=, the buffer is infinite in east & south
   directions.
 
-- =aa2u=: ASCII art to UNICODE in Emacs.
+- =ascii-art-to-unicode= ASCII art to UNICODE in Emacs. This is a
+  standard ELPA package by Thien-Thi Nguyen (rest in peace). Uniline
+  may call it to convert ASCII art drawings to equivalent
+  UNICODE. Uniline arranges to not require a dependency on
+  =ascii-art-to-unicode= by lazy evaluating a call to =aa2u=.
 
 - =org-pretty-table=: Org Mode tables /appear/ to be drawn in UNICODE
   characters (actually they are still in ASCII).
@@ -1467,6 +1473,12 @@ Feedback:
 
 - DogLooksGood https://github.com/DogLooksGood gave feedback on
   inserting usual characters not moving the cursor
+
+Utilities:
+
+- Oleh Krehel alias abo-abo for his package =hydra=
+
+- Thien-Thi Nguyen (RIP) for his package =ascii-art-to-unicode=
 
 * License
 :PROPERTIES:

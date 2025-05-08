@@ -1,4 +1,4 @@
-;;; uniline.el --- Add UNICODE based diagrams to text files -*- coding:utf-8; lexical-binding: t; -*-
+;;; uniline.el --- Add ╭─╴UNICODE╶─╮ based ╭─╴diagrams╶─╮ to ╭▶╴text files╶●╮ -*- coding:utf-8; lexical-binding: t; -*-
 
 ;; Copyright (C) 2024-2025  Thierry Banel
 
