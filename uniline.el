@@ -201,11 +201,11 @@ It it faster than an equivalent (cond) form."
           ,dir)))))
 
 (eval-when-compile ; not needed at runtime
-  (defsubst uniline--reverse-direction (dir)
+  (defmacro uniline--reverse-direction (dir)
     "Reverse DIR.
 DIR is any of the 4 `uniline-direction-*'.
 Exchange left with right, up with down."
-    (% (+ 2 dir) 4))
+    `(% (+ 2 ,dir) 4))
 
   (defsubst uniline--turn-right (dir)
     "Return DIR turned 90° clockwise.
@@ -336,7 +336,7 @@ POINT default to `(point)', as for `char-after'"
 ;; two entries. This makes the hash-table very efficient.
 ;; The usual multiple entries scanning can be entirely bypassed.
 ;;
-;; Uniline has 6 constant hash-tables. We want to make them
+;; Uniline has 13 constant hash-tables. We want to make them
 ;; perfect, collision-less. 3 Options:
 ;;
 ;; 1- Define a custom hash-function like
@@ -357,7 +357,7 @@ POINT default to `(point)', as for `char-after'"
 ;;
 ;; 3- Use a standard hash-table and tweak its size
 ;;    (make-hash-table :size 114)
-;;  - Unfortunately, the specified size is not retrained in the
+;;  - Unfortunately, the specified size is not retained in the
 ;;    compiled *.elc file
 ;;    Beside, the specified size gets rounded to the next power of 2
 ;;
@@ -382,12 +382,54 @@ NAME is the name of the hash-table to be passed to `defconst'
 PAIRS is a list of (key . value) pairs to populate the table
 SIZE is the desired number of buckets
 TEST is the comparison function between 2 keys, like `eq' or `equal'"
+    (declare (indent 1) (doc-string 5))
     `(defconst ,name
        (let ((table (make-hash-table :size ,size :test ,test)))
          (dolist (pair ,pairs)
            (puthash (car pair) (cdr pair) table))
          table)
        ,doc)))
+
+;; Display useful metrics to tune constant hash-tables
+;; those created by `uniline--defconst-hash-table'
+;; Useful only in development cycle.
+(if nil
+    (defun uniline--hash-tables-metrics ()
+      (interactive)
+      (switch-to-buffer "*hash-tables metrics*")
+      (erase-buffer)
+      (local-set-key "g" 'uniline--hash-tables-metrics)
+      (insert "try to make the last column a single element list (colision-less)\n")
+      (insert "by adjusting table size (3th parameter of `uniline--defconst-hash-table')\n")
+      (insert "type g to refresh\n\n")
+      (insert "table entries buckets index resize threshold histogram\n")
+      (cl-loop
+       for table in
+       '(uniline--char-to-4halfs
+         uniline--glyphs-reverse-hash-fw
+         uniline--glyphs-reverse-hash-bw
+         uniline--char-to-4quadb1
+         uniline--keystroke-to-dir-shift
+         uniline--dir-shift-to-keystroke
+         uniline--char-to-dot-3-2-char
+         uniline--char-to-dot-4-4-char
+         uniline--char-to-standard-char
+         uniline--char-to-hard-corner-char
+         uniline--char-to-thin-char
+         uniline--char-to-thick-char
+         uniline--char-to-double-line)
+       do
+       (let ((hash (eval table)))
+         (insert
+          (format
+           "%-33s %3d %3d %3d %5g %5g %s\n"
+           table
+           (hash-table-count hash)
+           (hash-table-size hash)
+           (internal--hash-table-index-size hash)
+           (hash-table-rehash-size hash)
+           (hash-table-rehash-threshold hash)
+           (internal--hash-table-histogram hash)))))))
 
 ;;;╭─────────────────────────────────────────────────────╮
 ;;;│Reference tables of ┼ 4 half-lines UNICODE characters│
@@ -781,16 +823,15 @@ is encoded into up +4*ri +16*dw +64*lf = 9,
 which in turn is converted to ┕."))
 
 (eval-and-compile
-  (uniline--defconst-hash-table
-   uniline--char-to-4halfs
-   (eval-when-compile
-     (cl-loop
-      for x in uniline--list-of-available-halflines
-      collect
-      (cons (car x)
-            (uniline--pack-4halfs (cdr x)))))
-   255 'eq
-   "Convert a UNICODE character to a 4halfs description.
+  (uniline--defconst-hash-table uniline--char-to-4halfs
+    (eval-when-compile
+      (cl-loop
+       for x in uniline--list-of-available-halflines
+       collect
+       (cons (car x)
+             (uniline--pack-4halfs (cdr x)))))
+    128 'eq
+    "Convert a UNICODE character to a 4halfs description.
 The UNICODE character is supposed to represent
 a combination of half lines in 4 directions
 and in 4 brush styles.
@@ -807,9 +848,6 @@ meaning:
 Values (2 1 0 1) are encoded into 2 + 4*1 + 0*16 + 1*64 = 70
 This table is the reverse of `uniline--4halfs-to-char'
 without the fall-back characters."))
-
-;; is it collision-less?
-;; (internal--hash-table-histogram uniline--char-to-4halfs)
 
 (when nil
 
@@ -1134,19 +1172,17 @@ LIST is `uniline--glyphs-fbw'."
        return nil)
       pairs)))
 
-(uniline--defconst-hash-table
- uniline--glyphs-reverse-hash-fw
- (eval-when-compile
-   (uniline--make-glyph-hash uniline--glyphs-fw))
- 127 'eq
- "Same as `uniline--glyphs-fw' reversing keys & values.")
+(uniline--defconst-hash-table uniline--glyphs-reverse-hash-fw
+  (eval-when-compile
+    (uniline--make-glyph-hash uniline--glyphs-fw))
+  128 'equal ; `equal' instead of `eq' to lower table size without collisions
+  "Same as `uniline--glyphs-fw' reversing keys & values.")
 
-(uniline--defconst-hash-table
- uniline--glyphs-reverse-hash-bw
- (eval-when-compile
-   (uniline--make-glyph-hash uniline--glyphs-bw))
- 127 'eq
- "Same as `uniline--glyphs-bw' reversing keys & values.")
+(uniline--defconst-hash-table uniline--glyphs-reverse-hash-bw
+  (eval-when-compile
+    (uniline--make-glyph-hash uniline--glyphs-bw))
+  128 'equal ; `equal' instead of `eq' to lower table size without collisions
+  "Same as `uniline--glyphs-bw' reversing keys & values.")
 
 ;; are they collision-less?
 ;; (internal--hash-table-histogram uniline--glyphs-reverse-hash-fw)
@@ -1194,19 +1230,15 @@ Everything in the code hereafter follow the choosen ordering
 of this table."))
 
 (eval-and-compile
-  (uniline--defconst-hash-table
-   uniline--char-to-4quadb1
-   (eval-when-compile
-     (cl-loop
-      for c across uniline--4quadb-to-char
-      for i from 0
-      collect (cons c i)))
-   63 'eq
-   "Convert a UNICODE character to a quadrant bitmap.
+  (uniline--defconst-hash-table uniline--char-to-4quadb1
+    (eval-when-compile
+      (cl-loop
+       for c across uniline--4quadb-to-char
+       for i from 0
+       collect (cons c i)))
+    32 'eq
+    "Convert a UNICODE character to a quadrant bitmap.
 Reverse of `uniline--4quadb-to-char'"))
-
-;; is it collision-less?
-;; (internal--hash-table-histogram uniline--char-to-4quadb1)
 
 (eval-and-compile
   (defmacro uniline--char-to-4quadb (char)
@@ -2243,8 +2275,7 @@ Each entry has 2 slots:
 
 (eval-when-compile ; not used at runtime
   (defconst uniline--directional-keystrokes-table
-    `(
-      ;;   ╭─keystroke as used in keyboard macros
+    `(;;   ╭─keystroke as used in keyboard macros
       ;;   │      ╭─direction of the keystroke
       ;;   │      │      shift-control modifiers╮
       ;;   │      │                     ╭───────╯
@@ -2264,31 +2295,22 @@ Each entry has 2 slots:
     "Temporary table of conversion between keystrokes and uniline directions.
 It will be converted into 2 hashtables for both conversions."))
 
-(uniline--defconst-hash-table
- uniline--keystroke-to-dir-shift
- (eval-when-compile
-   (cl-loop
-    for entry in uniline--directional-keystrokes-table
-    collect (cons (car entry) (cdr entry))))
- 31 'eq
- "Hashtable to convert a directional keystroke into Uniline constants.")
+(uniline--defconst-hash-table uniline--keystroke-to-dir-shift
+  (eval-when-compile uniline--directional-keystrokes-table)
+  16 'eq
+  "Hashtable to convert a directional keystroke into Uniline constants.")
+;; it is impossible to guaranty that the table will stay collision-less
+;; because keys are symbols, whose hash-values may change from
+;; one session to another
 
-;; is it collision-less?
-;; (internal--hash-table-histogram  uniline--keystroke-to-dir-shift)
-;; (internal--hash-table-index-size uniline--keystroke-to-dir-shift)
-
-(uniline--defconst-hash-table
- uniline--dir-shift-to-keystroke
- (eval-when-compile
-   (cl-loop
-    for entry in uniline--directional-keystrokes-table
-    collect (cons (cdr entry) (car entry))))
- 31 'equal
- "Hashtable to convert Uniline directional constants into keystrokes.")
-
-;; is it collision-less?
-;; (internal--hash-table-histogram  uniline--dir-shift-to-keystroke)
-;; (internal--hash-table-index-size uniline--dir-shift-to-keystroke)
+(uniline--defconst-hash-table uniline--dir-shift-to-keystroke
+  (eval-when-compile
+    (cl-loop
+     for entry in uniline--directional-keystrokes-table
+     collect (cons (cdr entry) (car entry))))
+  16 'equal ; `equal' because keys are lists, not atoms
+  "Hashtable to convert Uniline directional constants into keystrokes.")
+;; it is impossible to guaranty that the table will stay collision-less
 
 (defun uniline-call-macro-in-direction (dir)
   "Call last keybord macro twisted in DIR direction.
@@ -2786,22 +2808,23 @@ The changes are reversible in a single undo command."
        (undo-amalgamate-change-group handle)
        (accept-change-group handle))))
 
-(defconst uniline--char-to-dot-3-2-char
-  (eval-when-compile
-    (let ((table (make-hash-table)))
-      (puthash ?─ ?╌ table)
-      (puthash ?┄ ?╌ table)
-      (puthash ?┈ ?╌ table)
-      (puthash ?━ ?╍ table)
-      (puthash ?═ ?╍ table)
-      (puthash ?┅ ?╍ table)
-      (puthash ?┉ ?╍ table)
-      (puthash ?│ ?┆ table)
-      (puthash ?┊ ?┆ table)
-      (puthash ?┃ ?┇ table)
-      (puthash ?║ ?┇ table)
-      (puthash ?┋ ?┇ table)
-      table)))
+(uniline--defconst-hash-table uniline--char-to-dot-3-2-char
+  '((?─ . ?╌)
+    (?┄ . ?╌)
+    (?┈ . ?╌)
+    (?━ . ?╍)
+    (?┅ . ?╍)
+    (?┉ . ?╍)
+    (?═ . ?╍)
+    (?│ . ?┆)
+    (?╎ . ?┆)
+    (?┊ . ?┆)
+    (?┃ . ?┇)
+    (?╏ . ?┇)
+    (?┋ . ?┇)
+    (?║ . ?┇))
+  16 'eq
+  "Convert to 3 vertical & 2 horizontal dashes")
 
 (defun uniline-change-style-dot-3-2 ()
   "Change plain lines to dashed lines in a rectangular selection.
@@ -2811,22 +2834,23 @@ Vertical lines will be 3-dots, while horizontal will be 2-dots."
   (uniline--record-undo-rectangle-selection)
   (uniline--change-style-hash uniline--char-to-dot-3-2-char))
 
-(defconst uniline--char-to-dot-4-4-char
-  (eval-when-compile
-    (let ((table (make-hash-table)))
-      (puthash ?─ ?┈ table)
-      (puthash ?┄ ?┈ table)
-      (puthash ?╌ ?┈ table)
-      (puthash ?━ ?┉ table)
-      (puthash ?═ ?┉ table)
-      (puthash ?┅ ?┉ table)
-      (puthash ?╍ ?┉ table)
-      (puthash ?│ ?┊ table)
-      (puthash ?┆ ?┊ table)
-      (puthash ?┃ ?┋ table)
-      (puthash ?║ ?┋ table)
-      (puthash ?┇ ?┋ table)
-      table)))
+(uniline--defconst-hash-table uniline--char-to-dot-4-4-char
+  '((?─ . ?┈)
+    (?╌ . ?┈)
+    (?┄ . ?┈)
+    (?━ . ?┉)
+    (?╍ . ?┉)
+    (?┅ . ?┉)
+    (?═ . ?┉)
+    (?│ . ?┊)
+    (?╎ . ?┊)
+    (?┆ . ?┊)
+    (?┃ . ?┋)
+    (?╏ . ?┋)
+    (?┇ . ?┋)
+    (?║ . ?┋))
+  32 'eq
+  "Convert to 4 vertical & 4 horizontal dashes")
 
 (defun uniline-change-style-dot-4-4 ()
   "Change plain lines to dashed lines in a rectangular selection.
@@ -2836,33 +2860,55 @@ Vertical and horizontzl lines will be 4-dots."
   (uniline--record-undo-rectangle-selection)
   (uniline--change-style-hash uniline--char-to-dot-4-4-char))
 
-(defconst uniline--char-to-standard-char
-  (eval-when-compile
-    (let ((table (make-hash-table)))
-      (puthash ?┄ ?─ table)
-      (puthash ?┈ ?─ table)
-      (puthash ?╌ ?─ table)
-      (puthash ?┉ ?━ table)
-      (puthash ?┅ ?━ table)
-      (puthash ?╍ ?━ table)
-      (puthash ?┆ ?│ table)
-      (puthash ?┊ ?│ table)
-      (puthash ?┇ ?┃ table)
-      (puthash ?┋ ?┃ table)
-      (puthash ?┐ ?╮ table)
-      (puthash ?└ ?╰ table)
-      (puthash ?┌ ?╭ table)
-      (puthash ?┘ ?╯ table)
-      (puthash ?^ ?△ table)
-      (puthash ?v ?▽ table)
-      (puthash ?> ?▷ table)
-      (puthash ?< ?◁ table)
-      (puthash ?- ?─ table)
-      (puthash ?_ ?─ table)
-      (puthash ?| ?│ table)
-      (puthash ?\" ?║ table)
-      (puthash ?= ?═ table)
-      table)))
+(uniline--defconst-hash-table uniline--char-to-standard-char
+  '((?╌ . ?─)
+    (?┄ . ?─)
+    (?┈ . ?─)
+    (?╍ . ?━)
+    (?┅ . ?━)
+    (?┉ . ?━)
+    (?╎ . ?│)
+    (?┆ . ?│)
+    (?┊ . ?│)
+    (?╏ . ?┃)
+    (?┇ . ?┃)
+    (?┋ . ?┃)
+    (?┐ . ?╮)
+    (?└ . ?╰)
+    (?┌ . ?╭)
+    (?┘ . ?╯)
+;;    (?^ . ?△)
+;;    (?v . ?▽)
+;;    (?> . ?▷)
+;;    (?< . ?◁)
+    (?- . ?─)
+    (?_ . ?─)
+    (?| . ?│)
+    (?=  . ?═)
+    (?\" . ?║)
+    (?#  . ?╬))
+  64 'equal ; `equal' instead of `eq' to achieve collision-less table
+  "Convert back to base-line style")
+
+(eval-when-compile ;; not used at runtime
+  (defmacro uniline--infer-neighbour-4half (dir)
+    "Return a 4half to seamlessly connect with neighbour in DIR direction.
+Return 0 if there is no neighbour, or if neighbour is not a 4half lines."
+    (setq dir (eval dir))
+    `(let ((neighbour (uniline--neighbour-point ,dir)))
+       (if (not neighbour)
+           0
+         (setq neighbour (uniline--char-after neighbour))
+         (let ((b (gethash neighbour uniline--char-to-4halfs)))
+           (if (not b)
+               0
+             (uniline--shift-4half
+              (logand
+               3
+               (uniline--shift-4half
+                b
+                ,(- (uniline--reverse-direction dir))))
+              ,dir)))))))
 
 (defun uniline-change-style-standard ()
   "Change fancy lines styles to standard ones in a rectangular selection.
@@ -2871,6 +2917,15 @@ and hard corners which become rounded."
   (interactive)
   (uniline--record-undo-rectangle-selection)
   (uniline--change-style-hash uniline--char-to-standard-char)
+  ;; hereafter, we handle ASCII + / \
+  ;; we distinguish two cases for those characters
+  ;; - when they should be left alone as ASCII chars
+  ;; - when they are part of a future UNICODE line
+  ;; the latter case happens when any of + / \
+  ;; have a UNICODE line as a neighbour in any of the 4 direction
+  ;; for each neighbouring line, a 4half line is drawn toward
+  ;; this direction, overwriting the character
+  ;; this 4half line get the same brush style as the neighbour ─ ━ ═
   (uniline--operate-on-rectangle
    (let ((handle (prepare-change-group)))
      (cl-loop
@@ -2881,54 +2936,35 @@ and hard corners which become rounded."
        for x from begx below endx
        do
        (uniline-move-to-column x)
-       (let ((c (uniline--char-after))
-             (bits 0))
-         (cond
-          ((or (eq c ?+) (eq c ?/) (eq c ?\\))
-           (cl-loop
-            for dir in '(0 1 2 3)
-            do
-            (let ((neighbour
-                   (uniline--switch-with-cond dir
-                     (uniline-direction-up↑ (uniline--neighbour-point uniline-direction-up↑))
-                     (uniline-direction-ri→ (uniline--neighbour-point uniline-direction-ri→))
-                     (uniline-direction-dw↓ (uniline--neighbour-point uniline-direction-dw↓))
-                     (uniline-direction-lf← (uniline--neighbour-point uniline-direction-lf←)))))
-              (when neighbour
-                (let ((b
-                       (gethash
-                        (uniline--char-after neighbour)
-                        uniline--char-to-4halfs)))
-                  (when b
-                    (setq b
-                          (logand
-                           b
-                           (ash 3 (* 2 (% (+ dir 2) 4)))))
-                    (setq bits
-                          (logior
-                           bits
-                           (ash b  4)
-                           (ash b -4)))))
-                (if (memq (uniline--char-after neighbour) '(?+ ?/ ?\\))
-                    (setq bits
-                          (logior
-                           bits
-                           (ash 1 (* 2 dir))
-                           ))))))))
-         (unless (eq bits 0)
-           (uniline--insert-4halfs (logand bits 255))))
-       (undo-amalgamate-change-group handle)
-       (accept-change-group handle))))
-   ))
+       (when (memq (uniline--char-after) '(?+ ?/ ?\\ ?^ ?v ?> ?<))
+         (let ((4half
+                (logior
+                 (uniline--infer-neighbour-4half uniline-direction-up↑)
+                 (uniline--infer-neighbour-4half uniline-direction-ri→)
+                 (uniline--infer-neighbour-4half uniline-direction-dw↓)
+                 (uniline--infer-neighbour-4half uniline-direction-lf←))))
+           (if (not (eq 4half 0))
+               (cond
+                ((memq (uniline--char-after) '(?+ ?/ ?\\))
+                 (uniline--insert-4halfs 4half))
+                ((eq (uniline--char-after) ?^)
+                 (uniline--insert-char ?△))
+                ((eq (uniline--char-after) ?v)
+                 (uniline--insert-char ?▽))
+                ((eq (uniline--char-after) ?>)
+                 (uniline--insert-char ?▷))
+                ((eq (uniline--char-after) ?<)
+                 (uniline--insert-char ?◁))))))))
+     (undo-amalgamate-change-group handle)
+     (accept-change-group handle))))
 
-(defconst uniline--char-to-hard-corner-char
-  (eval-when-compile
-    (let ((table (make-hash-table)))
-      (puthash ?╮ ?┐ table)
-      (puthash ?╰ ?└ table)
-      (puthash ?╭ ?┌ table)
-      (puthash ?╯ ?┘ table)
-      table)))
+(uniline--defconst-hash-table uniline--char-to-hard-corner-char
+  '((?╮ . ?┐)
+    (?╰ . ?└)
+    (?╭ . ?┌)
+    (?╯ . ?┘))
+  4 'eq
+  "Convert rounded corners to hard ones")
 
 (defun uniline-change-style-hard-corners ()
   "Change rounded corners to hard corners in a rectangular selection.
@@ -2938,118 +2974,117 @@ thick-line or double-line rounded corners."
   (uniline--record-undo-rectangle-selection)
   (uniline--change-style-hash uniline--char-to-hard-corner-char))
 
-(defconst uniline--char-to-thin-char
+(uniline--defconst-hash-table uniline--char-to-thin-char
   (eval-when-compile
-    (let ((table (make-hash-table)))
-      (cl-loop
-       for c being hash-keys of uniline--char-to-4halfs
-       using (hash-values v)
-       for 4halfs
-       = (uniline--pack-4halfs
-          (cl-loop
-           for u in (uniline--unpack-4halfs v)
-           collect (if (or (eq u 2) (eq u 3)) 1 u)))
-       unless (eq 4halfs v)
-       do (puthash
-           c
-           (aref uniline--4halfs-to-char 4halfs)
-           table))
-      (puthash ?┅ ?┄ table)
-      (puthash ?┉ ?┈ table)
-      (puthash ?╍ ?╌ table)
-      (puthash ?┇ ?┆ table)
-      (puthash ?┋ ?┊ table)
-      (puthash ?▲ ?△ table)
-      (puthash ?▶ ?▷ table)
-      (puthash ?▼ ?▽ table)
-      (puthash ?◀ ?◁ table)
-      (puthash ?▴ ?▵ table)
-      (puthash ?▸ ?▹ table)
-      (puthash ?▾ ?▿ table)
-      (puthash ?◂ ?◃ table)
-      (puthash ?■ ?□ table)
-      (puthash ?▪ ?▫ table)
-      (puthash ?◆ ?◇ table)
-      (puthash ?• ?◦ table)
-      table)))
+    (append
+     (cl-loop
+      for c being hash-keys of uniline--char-to-4halfs
+      using (hash-values v)
+      for 4halfs
+      = (uniline--pack-4halfs
+         (cl-loop
+          for u in (uniline--unpack-4halfs v)
+          collect (if (or (eq u 2) (eq u 3)) 1 u)))
+      unless (eq 4halfs v)
+      collect (cons c (aref uniline--4halfs-to-char 4halfs)))
+     '((?┅ . ?┄)
+       (?┉ . ?┈)
+       (?╍ . ?╌)
+       (?┇ . ?┆)
+       (?┋ . ?┊)
+       (?▲ . ?△)
+       (?▶ . ?▷)
+       (?▼ . ?▽)
+       (?◀ . ?◁)
+       (?▴ . ?▵)
+       (?▸ . ?▹)
+       (?▾ . ?▿)
+       (?◂ . ?◃)
+       (?■ . ?□)
+       (?▪ . ?▫)
+       (?◆ . ?◇)
+       (?• . ?◦))))
+  256 'eq
+  "Convert black or heavy characters to white or light ones")
 
 (defun uniline-change-style-thin ()
-  ""
+  "Change bold lines and glyphs to thin ones.
+This includes plain and dashed lines (e.g. ┴ to ┻, or ┅ to ┄)
+as well as glyphs (e.g. ■ to □ or ▼ to ▽)."
   (interactive)
   (uniline--record-undo-rectangle-selection)
   (uniline--change-style-hash uniline--char-to-thin-char))
 
-(defconst uniline--char-to-thick-char
+(uniline--defconst-hash-table uniline--char-to-thick-char
   (eval-when-compile
-    (let ((table (make-hash-table)))
-      (cl-loop
-       for c being hash-keys of uniline--char-to-4halfs
-       using (hash-values v)
-       for 4halfs
-       = (uniline--pack-4halfs
-          (cl-loop
-           for u in (uniline--unpack-4halfs v)
-           collect (if (or (eq u 1) (eq u 3)) 2 u)))
-       unless (eq 4halfs v)
-       do (puthash
-           c
-           (aref uniline--4halfs-to-char 4halfs)
-           table))
-      (puthash ?┄ ?┅ table)
-      (puthash ?┈ ?┉ table)
-      (puthash ?╌ ?╍ table)
-      (puthash ?┆ ?┇ table)
-      (puthash ?┊ ?┋ table)
-      (puthash ?△ ?▲ table)
-      (puthash ?▷ ?▶ table)
-      (puthash ?▽ ?▼ table)
-      (puthash ?◁ ?◀ table)
-      (puthash ?▵ ?▴ table)
-      (puthash ?▹ ?▸ table)
-      (puthash ?▿ ?▾ table)
-      (puthash ?◃ ?◂ table)
-      (puthash ?□ ?■ table)
-      (puthash ?▫ ?▪ table)
-      (puthash ?◇ ?◆ table)
-      (puthash ?◦ ?• table)
-      table)))
+    (append
+     (cl-loop
+      for c being hash-keys of uniline--char-to-4halfs
+      using (hash-values v)
+      for 4halfs
+      = (uniline--pack-4halfs
+         (cl-loop
+          for u in (uniline--unpack-4halfs v)
+          collect (if (or (eq u 1) (eq u 3)) 2 u)))
+      unless (eq 4halfs v)
+      collect (cons c (aref uniline--4halfs-to-char 4halfs)))
+     '((?┄ . ?┅)
+       (?┈ . ?┉)
+       (?╌ . ?╍)
+       (?┆ . ?┇)
+       (?┊ . ?┋)
+       (?△ . ?▲)
+       (?▷ . ?▶)
+       (?▽ . ?▼)
+       (?◁ . ?◀)
+       (?▵ . ?▴)
+       (?▹ . ?▸)
+       (?▿ . ?▾)
+       (?◃ . ?◂)
+       (?□ . ?■)
+       (?▫ . ?▪)
+       (?◇ . ?◆)
+       (?◦ . ?•))))
+  128 'equal ; `equal' instead of `eq' to achieve a small collision-less table
+  "Convert white or light characters to black or heavy ones")
 
 (defun uniline-change-style-thick ()
-  ""
+  "Change thin lines and glyphs to bold ones.
+This includes plain and dashed lines (e.g. ┻ to ┴, or ┄ to ┅)
+as well as glyphs (e.g. □ to ■ or ▽ to ▼)."
   (interactive)
   (uniline--record-undo-rectangle-selection)
   (uniline--change-style-hash uniline--char-to-thick-char))
 
-(defconst uniline--char-to-double-line
+(uniline--defconst-hash-table uniline--char-to-double-line
   (eval-when-compile
-    (let ((table (make-hash-table)))
-      (cl-loop
-       for c being hash-keys of uniline--char-to-4halfs
-       using (hash-values v)
-       for 4halfs
-       = (uniline--pack-4halfs
-          (cl-loop
-           for u in (uniline--unpack-4halfs v)
-           collect (if (or (eq u 1) (eq u 2)) 3 u)))
-       unless (eq 4halfs v)
-       do (puthash
-           c
-           (aref uniline--4halfs-to-char 4halfs)
-           table))
-      (puthash ?┄ ?═ table)
-      (puthash ?┅ ?═ table)
-      (puthash ?┈ ?═ table)
-      (puthash ?┉ ?═ table)
-      (puthash ?╌ ?═ table)
-      (puthash ?╍ ?═ table)
-      (puthash ?┆ ?║ table)
-      (puthash ?┇ ?║ table)
-      (puthash ?┊ ?║ table)
-      (puthash ?┋ ?║ table)
-      table)))
+    (append
+     (cl-loop
+      for c being hash-keys of uniline--char-to-4halfs
+      using (hash-values v)
+      for 4halfs
+      = (uniline--pack-4halfs
+         (cl-loop
+          for u in (uniline--unpack-4halfs v)
+          collect (if (or (eq u 1) (eq u 2)) 3 u)))
+      unless (eq 4halfs v)
+      collect (cons c (aref uniline--4halfs-to-char 4halfs)))
+     '((?┄ . ?═)
+       (?┅ . ?═)
+       (?┈ . ?═)
+       (?┉ . ?═)
+       (?╌ . ?═)
+       (?╍ . ?═)
+       (?┆ . ?║)
+       (?┇ . ?║)
+       (?┊ . ?║)
+       (?┋ . ?║))))
+  128 'eq
+  "Convert any line to double line.")
 
 (defun uniline-change-style-double ()
-  ""
+  "Change thin lines and bold lines to double ones.
+This includes plain and dashed lines (e.g. ┻ to ╩, or ┄ to ═)."
   (interactive)
   (uniline--record-undo-rectangle-selection)
   (uniline--change-style-hash uniline--char-to-double-line))
