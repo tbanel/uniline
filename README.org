@@ -845,6 +845,42 @@ See https://elpa.gnu.org/packages/ascii-art-to-unicode.html
        └───────────┘
 #+end_example
 
+=INS s 0= with selection active calls the =uniline-change-style-standard=
+function. It converts what looks ASCII-art to UNICODE-art. Of course,
+there are ambiguities regarding whether a character is part of a
+sketch or not.
+
+The heuristic is to consider that a character is part of a sketch if
+it is surrounded by at least one other character which is part of a
+sketch. So, an isolated =-= minus character will be left alone, while
+two such characters =--= will be converted to UNICODE. Conversion will
+happens also for =<-= for instance.
+
+Here is a fairly convoluted ASCII-art example, along with its
+conversion by =INS s 0=:
+
+[[file:images/ascii-2-unicode-b.png]]
+
+#+begin_example
+
+       ╭─↔--<-◁-◀--━+           +--->------==+
+  /----/ Rectangle1 |-----+-----+ Rectangle2 v    v
+  |    | <uni^code> ^     "     | "quote"    +-\  ▼
+  ^^   \------------/   /-+-\   +------------+ "  v
+  |    \--+------+--/   |   |   +----\----/--+ "  >▷▶>
+  \>--\   |      |      \---/        |    |    "
+      v   \==<===/   a=b 1=2 a-to-b  +----+ ◁==/  >->
+
+       ╭─↔──◁─◁─◀──━┑           ╭───▷──────══╕
+  ╭────┤ Rectangle1 │─────╥─────┤ Rectangle2 ▽    ▽
+  │    │ <uni^code> △     ║     │ "quote"    ├─╖  ▼
+  △^   ├────────────┤   ╭─╨─╮   ├────────────┤ ║  ▽
+  │    ╰──┬──────┬──╯   │   │   ╰────┬────┬──╯ ║  ▷▷▶▷
+  ╰▷──╮   │      │      ╰───╯        │    │    ║
+      ▽   ╘══◁═══╛   a=b 1=2 a-to-b  ╰────╯ ◁══╝  ▷─▷
+
+#+end_example
+
 * Which fonts?
 :PROPERTIES:
 :CUSTOM_ID: which-fonts

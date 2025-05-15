@@ -848,6 +848,40 @@ a dependency on this package, by lazy evaluating any call to
           │ 2         ├─<────┘
           └───────────┘
 
+   ‘INS s 0’ with selection active calls the
+‘uniline-change-style-standard’ function.  It converts what looks
+ASCII-art to UNICODE-art.  Of course, there are ambiguities regarding
+whether a character is part of a sketch or not.
+
+   The heuristic is to consider that a character is part of a sketch if
+it is surrounded by at least one other character which is part of a
+sketch.  So, an isolated ‘-’ minus character will be left alone, while
+two such characters ‘--’ will be converted to UNICODE.  Conversion will
+happens also for ‘<-’ for instance.
+
+   Here is a fairly convoluted ASCII-art example, along with its
+conversion by ‘INS s 0’:
+
+
+
+
+          ╭─↔--<-◁-◀--━+           +--->------==+
+     /----/ Rectangle1 |-----+-----+ Rectangle2 v    v
+     |    | <uni^code> ^     "     | "quote"    +-\  ▼
+     ^^   \------------/   /-+-\   +------------+ "  v
+     |    \--+------+--/   |   |   +----\----/--+ "  >▷▶>
+     \>--\   |      |      \---/        |    |    "
+         v   \==<===/   a=b 1=2 a-to-b  +----+ ◁==/  >->
+
+          ╭─↔──◁─◁─◀──━┑           ╭───▷──────══╕
+     ╭────┤ Rectangle1 │─────╥─────┤ Rectangle2 ▽    ▽
+     │    │ <uni^code> △     ║     │ "quote"    ├─╖  ▼
+     △^   ├────────────┤   ╭─╨─╮   ├────────────┤ ║  ▽
+     │    ╰──┬──────┬──╯   │   │   ╰────┬────┬──╯ ║  ▷▷▶▷
+     ╰▷──╮   │      │      ╰───╯        │    │    ║
+         ▽   ╘══◁═══╛   a=b 1=2 a-to-b  ╰────╯ ◁══╝  ▷─▷
+
+
 
 File: uniline.info,  Node: Which fonts?,  Next: Text menus (Hydra),  Prev: ASCII to UNICODE,  Up: Top
 
@@ -1581,25 +1615,25 @@ Node: Macros25014
 Node: Fine tweaking28375
 Node: Dashed lines and other styles30187
 Node: ASCII to UNICODE34250
-Node: Which fonts?36088
-Node: Text menus (Hydra)37946
-Node: Line spacing39906
-Node: How Uniline behaves with its environment?41334
-Node: Compatibility with Picture-mode41882
-Node: Compatibility with Artist-mode42800
-Node: Compatibility with Whitespace-mode43319
-Node: Compatibility with Org Mode44219
-Node: Org Mode and LaTex45005
-Node: What about \t tabs?46906
-Node: What about ^L page separation?47554
-Node: Emacs on the Linux console48177
-Node: Emacs on a graphical terminal emulator49131
-Node: Emacs on Windows50054
-Node: Lisp API50701
-Node: Installation55863
-Node: Related packages56861
-Node: Author contributors59914
-Node: License60698
+Node: Which fonts?37924
+Node: Text menus (Hydra)39782
+Node: Line spacing41742
+Node: How Uniline behaves with its environment?43170
+Node: Compatibility with Picture-mode43718
+Node: Compatibility with Artist-mode44636
+Node: Compatibility with Whitespace-mode45155
+Node: Compatibility with Org Mode46055
+Node: Org Mode and LaTex46841
+Node: What about \t tabs?48742
+Node: What about ^L page separation?49390
+Node: Emacs on the Linux console50013
+Node: Emacs on a graphical terminal emulator50967
+Node: Emacs on Windows51890
+Node: Lisp API52537
+Node: Installation57699
+Node: Related packages58697
+Node: Author contributors61750
+Node: License62534
 
 End Tag Table
 

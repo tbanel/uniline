@@ -2876,56 +2876,75 @@ Vertical and horizontzl lines will be 4-dots."
     (?┐ . ?╮)
     (?└ . ?╰)
     (?┌ . ?╭)
-    (?┘ . ?╯)
-;;    (?^ . ?△)
-;;    (?v . ?▽)
-;;    (?> . ?▷)
-;;    (?< . ?◁)
-    (?- . ?─)
-    (?_ . ?─)
-    (?| . ?│)
-    (?=  . ?═)
-    (?\" . ?║)
-    (?#  . ?╬))
+    (?┘ . ?╯))
   64 'equal ; `equal' instead of `eq' to achieve collision-less table
   "Convert back to base-line style")
 
 (eval-when-compile ;; not used at runtime
   (defmacro uniline--infer-neighbour-4half (dir)
     "Return a 4half to seamlessly connect with neighbour in DIR direction.
-Return 0 if there is no neighbour, or if neighbour is not a 4half lines."
+Return 0 if there is no neighbour, or if neighbour does not look like
+a connecting line or glyph."
     (setq dir (eval dir))
-    `(let ((neighbour (uniline--neighbour-point ,dir)))
-       (if (not neighbour)
-           0
-         (setq neighbour (uniline--char-after neighbour))
-         (let ((b (gethash neighbour uniline--char-to-4halfs)))
-           (if (not b)
-               0
-             (uniline--shift-4half
-              (logand
-               3
+    (let
+        ((isvert (memq dir `(,uniline-direction-up↑ ,uniline-direction-dw↓)))
+         (ishorz (memq dir `(,uniline-direction-lf← ,uniline-direction-ri→)))
+         (odir (- (uniline--reverse-direction dir)))
+         (shift1 (uniline--shift-4half 1 dir))
+         (shift3 (uniline--shift-4half 3 dir)))
+
+      `(let ((neighbour (uniline--neighbour-point ,dir)))
+         (if (not neighbour)
+             0
+           (setq neighbour (uniline--char-after neighbour))
+           (let ((b (gethash neighbour uniline--char-to-4halfs)))
+             (cond
+              (b
                (uniline--shift-4half
-                b
-                ,(- (uniline--reverse-direction dir))))
-              ,dir)))))))
+                (logand 3 (uniline--shift-4half b ,odir))
+                ,dir))
+              ((memq neighbour '(?+ ?\\ ?/))
+               ,shift1)
+              ((eq neighbour ?#)
+               ,shift3)
+              ,@(when isvert
+                  `(((memq neighbour
+                           '(?^ ?v ?| ?△ ?▽ ?▲ ?▼ ?↑ ?↓ ?▵ ?▿ ?▴ ?▾ ?↕))
+                     ,shift1)
+                    ((eq neighbour ?\")
+                     ,shift3)))
+              ,@(when ishorz
+                  `(((memq neighbour
+                           '(?> ?< ?- ?▷ ?◁ ?▶ ?◀ ?→ ?← ?▹ ?◃ ?▸ ?◂ ?↔))
+                     ,shift1)
+                    ((eq neighbour ?=)
+                     ,shift3)))
+              (t 0))))))))
 
 (defun uniline-change-style-standard ()
   "Change fancy lines styles to standard ones in a rectangular selection.
 This includes dashed lines, which become plain while preserving thickness,
-and hard corners which become rounded."
+and hard corners which become rounded.
+Also ASCII-art is converted to UNICODE-art."
   (interactive)
   (uniline--record-undo-rectangle-selection)
   (uniline--change-style-hash uniline--char-to-standard-char)
-  ;; hereafter, we handle ASCII + / \
-  ;; we distinguish two cases for those characters
+  ;; Hereafter, we handle ASCII characters used to draw sketches
+  ;; We distinguish two cases for those characters
   ;; - when they should be left alone as ASCII chars
   ;; - when they are part of a future UNICODE line
-  ;; the latter case happens when any of + / \
-  ;; have a UNICODE line as a neighbour in any of the 4 direction
-  ;; for each neighbouring line, a 4half line is drawn toward
-  ;; this direction, overwriting the character
-  ;; this 4half line get the same brush style as the neighbour ─ ━ ═
+  ;; ASCII chars are converted to UNICODE glyphs only when they
+  ;; are surrounded by UNICODE or ASCII characters that are
+  ;; themselves part of a sketch or will be.
+  ;; Surrounding is considered depending on the orientation of the
+  ;; char: Vertical, horizontal, or both.
+  ;; So for instance:
+  ;;   -  surrounding is left and right
+  ;;   |  surrounding is up and down
+  ;;   +  surrounding is in the 4 directions
+  ;; For UNICODE box drawing characters, an attempt is made to
+  ;; complete them with half lines so that they will connect
+  ;; seamlessly with their surrounding.
   (uniline--operate-on-rectangle
    (let ((handle (prepare-change-group)))
      (cl-loop
@@ -2936,25 +2955,42 @@ and hard corners which become rounded."
        for x from begx below endx
        do
        (uniline-move-to-column x)
-       (when (memq (uniline--char-after) '(?+ ?/ ?\\ ?^ ?v ?> ?<))
-         (let ((4half
-                (logior
-                 (uniline--infer-neighbour-4half uniline-direction-up↑)
-                 (uniline--infer-neighbour-4half uniline-direction-ri→)
-                 (uniline--infer-neighbour-4half uniline-direction-dw↓)
-                 (uniline--infer-neighbour-4half uniline-direction-lf←))))
-           (if (not (eq 4half 0))
-               (cond
-                ((memq (uniline--char-after) '(?+ ?/ ?\\))
-                 (uniline--insert-4halfs 4half))
-                ((eq (uniline--char-after) ?^)
-                 (uniline--insert-char ?△))
-                ((eq (uniline--char-after) ?v)
-                 (uniline--insert-char ?▽))
-                ((eq (uniline--char-after) ?>)
-                 (uniline--insert-char ?▷))
-                ((eq (uniline--char-after) ?<)
-                 (uniline--insert-char ?◁))))))))
+       (let ((char (uniline--char-after)))
+         (if (memq char '(?^ ?v ?| ?\" ?- ?> ?< ?= ?+ ?/ ?\\ ?# ?o ?O ?.))
+           (let*
+               ((4halfvert
+                 (logior
+                  (uniline--infer-neighbour-4half uniline-direction-up↑)
+                  (uniline--infer-neighbour-4half uniline-direction-dw↓)))
+                (4halfhorz
+                 (logior
+                  (uniline--infer-neighbour-4half uniline-direction-lf←)
+                  (uniline--infer-neighbour-4half uniline-direction-ri→)))
+                (4half (logior 4halfvert 4halfhorz))
+                (newchar
+                 (or
+                  (unless (eq 4halfvert 0)
+                    (uniline--switch-with-table char
+                      (?^ ?△)
+                      (?v ?▽)
+                      (?| ?│)
+                      (?\" ?║)))
+                  (unless (eq 4halfhorz 0)
+                    (uniline--switch-with-table char
+                      (?- ?─)
+                      (?> ?▷)
+                      (?< ?◁)
+                      (?= ?═)))
+                  (unless (eq 4half 0)
+                    (uniline--switch-with-table char
+                      (?O ?●)
+                      (?o ?◦)
+                      (?. ?∙))))))
+             (if newchar
+                 (uniline--insert-char newchar)
+               (unless (eq 4half 0)
+                 (if (memq char '(?+ ?# ?/ ?\\))
+                     (uniline--insert-4halfs 4half)))))))))
      (undo-amalgamate-change-group handle)
      (accept-change-group handle))))
 
