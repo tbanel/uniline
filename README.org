@@ -145,6 +145,74 @@ Draw lines or blocks:
 
 #+end_example
 
+Outline the General Relativity equation:
+
+[[file:images/general-relativity-equation.png]]
+
+#+begin_example
+
+       ╭─────────────────────╴G: Einstein tensor
+       │                ╭────╴κ: Gravitational coupling constant
+    ╭──▽───╮        ╭───▽──╮
+  ┏━┷━━━━━━┷━━━━━━━━┷━━━━━━┷━━━┓
+  ┃ R - gR/2 + Λg = (8πG/c⁴)×T ┃◁╴General Relativity equation
+  ┗━△━━━△△━━━━━△△━━━━━━△━△━━━△━┛
+    │   ││     ││      │ │  ╭╯
+    │   ││     ││      │ │  ╰╴Energy-impulsion tensor
+    │   ││     ││      │ ╰───╴Speed of light
+    │   ││     ││      ╰─────╴Gravitational constant
+    │   ││     ╰┴────────────╴Cosmological constant
+    │   │╰──────┴────────────╴Scalar curvature
+    │   ╰───────╰────────────╴Metric tensor
+    ╰────────────────────────╴Ricci tensor
+
+  #+end_example
+
+Outline the Schrödinger equation:
+
+[[file:images/schrodinger-equation.png]]
+
+#+begin_example
+
+         ╭─────────────────────╴Derivative over time
+         │     ╭──────────╭────╴State of quantum system at time t
+         │     │          │     (the square of its absolute value
+        ╭▽─╮ ╭─▽──╮     ╭─▽──╮   is the probability density)
+  ┏━━━━━┷━━┷━┷━━━━┷━━━━━┷━━━━┷━┓
+  ┃ i ħ d/dt |Ψ(t)> = Ĥ |Ψ(t)> ┃◁─╴Schrödinger equation
+  ┗━△━△━━━━△━━━━△━━━━━△━━━━△━━━┛
+    │ │    ╰────╰─────┤────╰───╴Time
+    │ │               ╰────────╴Hamiltonian
+    │ ╰────────────────────────╴Reduced Plank constant
+    ╰──────────────────────────╴Imaginary number i²=-1
+
+#+end_example
+
+Explain the structure of a sentence in a foreign language (which one?):
+
+[[file:images/foreign-language-sentence.png]]
+
+#+begin_example
+
+   ┏━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━┓
+   ┃ the pretty table is standing ┃
+   ┗┯━━━━━━━━━━━━━━━━━━━━━━━━━━━━━┛
+    │    ╭────┬─────┬─────╴radicals
+    ↕   ╭┴╮  ╭┴─╮  ╭┴─╮
+   ┏┷━━━┿━┿━━┿━━┿━━┿━━┿━━━┓
+   ┃ la bela tablo staras ┃
+   ┗━━━━┿━┿△━┿━━┿△━┿━━┿△━━┛
+        ╰─╯│ ╰──╯│ ╰──╯│  ┏━━━━━suffixes━━━━━┓
+           │     │     ╰──╂╴as: present tense┃
+           │     │        ┃ os: future tense ┃
+           │     │        ┃ is: past tense   ┃
+           │     ╰────────╂╴ o: noun         ┃
+           ╰──────────────╂╴ a: adjective    ┃
+                          ┃  e: adverb       ┃
+                          ┗━━━━━━━━━━━━━━━━━━┛
+
+#+end_example
+
 Explain Lisp lists:
 
 [[file:images/lisp-lists.png]]

@@ -160,6 +160,69 @@ Draw diagrams like those:
          ╺━━━━━━━━━━╸time╺━━━━━━━━━━━━━━━━▶
 
 
+   Outline the General Relativity equation:
+
+
+
+
+          ╭─────────────────────╴G: Einstein tensor
+          │                ╭────╴κ: Gravitational coupling constant
+       ╭──▽───╮        ╭───▽──╮
+     ┏━┷━━━━━━┷━━━━━━━━┷━━━━━━┷━━━┓
+     ┃ R - gR/2 + Λg = (8πG/c⁴)×T ┃◁╴General Relativity equation
+     ┗━△━━━△△━━━━━△△━━━━━━△━△━━━△━┛
+       │   ││     ││      │ │  ╭╯
+       │   ││     ││      │ │  ╰╴Energy-impulsion tensor
+       │   ││     ││      │ ╰───╴Speed of light
+       │   ││     ││      ╰─────╴Gravitational constant
+       │   ││     ╰┴────────────╴Cosmological constant
+       │   │╰──────┴────────────╴Scalar curvature
+       │   ╰───────╰────────────╴Metric tensor
+       ╰────────────────────────╴Ricci tensor
+
+
+   Outline the Schrödinger equation:
+
+
+
+
+            ╭─────────────────────╴Derivative over time
+            │     ╭──────────╭────╴State of quantum system at time t
+            │     │          │     (the square of its absolute value
+           ╭▽─╮ ╭─▽──╮     ╭─▽──╮   is the probability density)
+     ┏━━━━━┷━━┷━┷━━━━┷━━━━━┷━━━━┷━┓
+     ┃ i ħ d/dt |Ψ(t)> = Ĥ |Ψ(t)> ┃◁─╴Schrödinger equation
+     ┗━△━△━━━━△━━━━△━━━━━△━━━━△━━━┛
+       │ │    ╰────╰─────┤────╰───╴Time
+       │ │               ╰────────╴Hamiltonian
+       │ ╰────────────────────────╴Reduced Plank constant
+       ╰──────────────────────────╴Imaginary number i²=-1
+
+
+   Explain the structure of a sentence in a foreign language (which
+one?):
+
+
+
+
+     ┏━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━┓
+     ┃ the pretty table is standing ┃
+     ┗┯━━━━━━━━━━━━━━━━━━━━━━━━━━━━━┛
+      │    ╭────┬─────┬─────╴radicals
+      ↕   ╭┴╮  ╭┴─╮  ╭┴─╮
+     ┏┷━━━┿━┿━━┿━━┿━━┿━━┿━━━┓
+     ┃ la bela tablo staras ┃
+     ┗━━━━┿━┿△━┿━━┿△━┿━━┿△━━┛
+          ╰─╯│ ╰──╯│ ╰──╯│  ┏━━━━━suffixes━━━━━┓
+             │     │     ╰──╂╴as: present tense┃
+             │     │        ┃ os: future tense ┃
+             │     │        ┃ is: past tense   ┃
+             │     ╰────────╂╴ o: noun         ┃
+             ╰──────────────╂╴ a: adjective    ┃
+                            ┃  e: adverb       ┃
+                            ┗━━━━━━━━━━━━━━━━━━┛
+
+
    Explain Lisp lists:
 
 
@@ -1599,41 +1662,41 @@ Tag Table:
 Node: Top75
 Node: Getting started in 10 seconds1389
 Node: Pure UNICODE text diagrams in Emacs1719
-Node: Minor mode9337
-Node: Drawing lines9885
-Node: Brush style10561
-Node: The <insert> key11653
-Node: Arrows glyphs ▷ ▶ → ▹ ▸ ↔12487
-Node: Intersection glyphs ■ ◆ ●14044
-Node: Drawing rectangles16692
-Node: Moving rectangles18666
-Node: Copying killing yanking rectangles19910
-Node: Tracing a contour20962
-Node: Flood-fill22746
-Node: Text direction24473
-Node: Macros25014
-Node: Fine tweaking28375
-Node: Dashed lines and other styles30187
-Node: ASCII to UNICODE34250
-Node: Which fonts?37924
-Node: Text menus (Hydra)39782
-Node: Line spacing41742
-Node: How Uniline behaves with its environment?43170
-Node: Compatibility with Picture-mode43718
-Node: Compatibility with Artist-mode44636
-Node: Compatibility with Whitespace-mode45155
-Node: Compatibility with Org Mode46055
-Node: Org Mode and LaTex46841
-Node: What about \t tabs?48742
-Node: What about ^L page separation?49390
-Node: Emacs on the Linux console50013
-Node: Emacs on a graphical terminal emulator50967
-Node: Emacs on Windows51890
-Node: Lisp API52537
-Node: Installation57699
-Node: Related packages58697
-Node: Author contributors61750
-Node: License62534
+Node: Minor mode13016
+Node: Drawing lines13564
+Node: Brush style14240
+Node: The <insert> key15332
+Node: Arrows glyphs ▷ ▶ → ▹ ▸ ↔16166
+Node: Intersection glyphs ■ ◆ ●17723
+Node: Drawing rectangles20371
+Node: Moving rectangles22345
+Node: Copying killing yanking rectangles23589
+Node: Tracing a contour24641
+Node: Flood-fill26425
+Node: Text direction28152
+Node: Macros28693
+Node: Fine tweaking32054
+Node: Dashed lines and other styles33866
+Node: ASCII to UNICODE37929
+Node: Which fonts?41603
+Node: Text menus (Hydra)43461
+Node: Line spacing45421
+Node: How Uniline behaves with its environment?46849
+Node: Compatibility with Picture-mode47397
+Node: Compatibility with Artist-mode48315
+Node: Compatibility with Whitespace-mode48834
+Node: Compatibility with Org Mode49734
+Node: Org Mode and LaTex50520
+Node: What about \t tabs?52421
+Node: What about ^L page separation?53069
+Node: Emacs on the Linux console53692
+Node: Emacs on a graphical terminal emulator54646
+Node: Emacs on Windows55569
+Node: Lisp API56216
+Node: Installation61378
+Node: Related packages62376
+Node: Author contributors65429
+Node: License66213
 
 End Tag Table
 
