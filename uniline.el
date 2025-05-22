@@ -215,13 +215,13 @@ DIR & returned values are in [0,1,2,3]."
   (defsubst uniline--turn-left (dir)
     "Return DIR turned 90° anti-clockwise.
 DIR & returned values are in [0,1,2,3]."
-    (% (+ 3 dir) 4)))
+    (% (+ 3 dir) 4))
 
-(defsubst uniline-move-to-column (x)
-  "Move to column X staying on the same line.
+  (defmacro uniline-move-to-column (x)
+    "Move to column X staying on the same line.
 Add blanks if line is too short.
 Move to 0 if X negative."
-  (move-to-column (max x 0) t))
+    `(move-to-column (max ,x 0) t)))
 
 (defun uniline-move-to-delta-column (x)
   "Move X characters, staying on the same line.
@@ -468,10 +468,13 @@ DIR is 1 of 4 directions:
   2: uniline-direction-dw↓
   3: uniline-direction-lf←
 The result is the bit pattern 4HALF << (2*DIR)"
-    `(ash ,4half
-          ,(if (fixnump dir)
-               (* 2 dir)
-             `(* 2 ,dir))))
+    (condition-case nil
+        (setq dir (eval dir)) ;; fold if dir is a numerical sexpr
+      (error nil))            ;; otherwise leave dir alone
+    (cond
+     ((eq dir 0)     4half)
+     ((fixnump dir)  `(ash ,4half ,(* 2 dir)))
+     (t              `(ash ,4half (* 2 ,dir)))))
 
   (defun uniline--pack-4halfs (urld)
     "Encode a description of lines into a single number.
@@ -492,17 +495,17 @@ A single number encoding all possible combinations has a
 range of [0..256).  It is handy to index vectors rather than
 4 dimensions matrices."
     (logior
-     (uniline--shift-4half (car    urld) (uniline-direction-up↑))
-     (uniline--shift-4half (cadr   urld) (uniline-direction-ri→))
-     (uniline--shift-4half (caddr  urld) (uniline-direction-dw↓))
-     (uniline--shift-4half (cadddr urld) (uniline-direction-lf←))))
+     (uniline--shift-4half (car    urld) uniline-direction-up↑)
+     (uniline--shift-4half (cadr   urld) uniline-direction-ri→)
+     (uniline--shift-4half (caddr  urld) uniline-direction-dw↓)
+     (uniline--shift-4half (cadddr urld) uniline-direction-lf←)))
 
   (defun uniline--unpack-4halfs (4halfs)
     (list
-     (logand (ash 4halfs (* -2 uniline-direction-up↑)) 3)
-     (logand (ash 4halfs (* -2 uniline-direction-ri→)) 3)
-     (logand (ash 4halfs (* -2 uniline-direction-dw↓)) 3)
-     (logand (ash 4halfs (* -2 uniline-direction-lf←)) 3))))
+     (logand (uniline--shift-4half 4halfs (- uniline-direction-up↑)) 3)
+     (logand (uniline--shift-4half 4halfs (- uniline-direction-ri→)) 3)
+     (logand (uniline--shift-4half 4halfs (- uniline-direction-dw↓)) 3)
+     (logand (uniline--shift-4half 4halfs (- uniline-direction-lf←)) 3))))
 
 (eval-when-compile ; not used at runtime
   (defconst uniline--list-of-available-halflines
@@ -1184,10 +1187,6 @@ LIST is `uniline--glyphs-fbw'."
   128 'equal ; `equal' instead of `eq' to lower table size without collisions
   "Same as `uniline--glyphs-bw' reversing keys & values.")
 
-;; are they collision-less?
-;; (internal--hash-table-histogram uniline--glyphs-reverse-hash-fw)
-;; (internal--hash-table-histogram uniline--glyphs-reverse-hash-bw)
-
 ;;;╭───────────────────────────────────────────────────────────╮
 ;;;│Reference tables of ▙▄▟▀ quadrant-blocks UNICODE characters│
 ;;;╰───────────────────────────────────────────────────────────╯
@@ -1253,7 +1252,7 @@ Return nil if CHAR is not a 4quadb character."
   (defconst uniline--4quadb-pushed
     (eval-when-compile
       (let ((table (make-vector 4 nil))) ;        ╭─╴fill with zero because many
-        (cl-loop for i from 0 to 3 ;        ▽  entries will be zero anyway
+        (cl-loop for i from 0 to 3       ;        ▽  entries will be zero anyway
                  do (aset table i (make-vector 16 0)))
         (cl-flet
             ((fill-dir (subtable &rest keyvals)
@@ -1269,9 +1268,9 @@ Return nil if CHAR is not a 4quadb character."
                (cl-loop
                 for i from 0 to 15
                 do                  ;  ╭╴consider each of the 4 bits
-                (aset subtable      ;  │ and if bit=1, get entry╶────╮
-                      i             ;  ╰──────╮                      │
-                      (logior       ;         ▽                      ▽
+                (aset subtable      ;  │ and if bit=1, get entry╶─╮
+                      i             ;  ╰─╮                      ╭─╯
+                      (logior       ;    ▽                      ▽
                        (if (eq (logand i 1) 0) 0 (aref subtable 1))
                        (if (eq (logand i 2) 0) 0 (aref subtable 2))
                        (if (eq (logand i 4) 0) 0 (aref subtable 4))
