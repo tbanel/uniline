@@ -410,7 +410,6 @@ TEST is the comparison function between 2 keys, like `eq' or `equal'"
          uniline--glyphs-reverse-hash-bw
          uniline--char-to-4quadb1
          uniline--keystroke-to-dir-shift
-         uniline--dir-shift-to-keystroke
          uniline--char-to-dot-3-2-char
          uniline--char-to-dot-4-4-char
          uniline--char-to-standard-char
@@ -2276,23 +2275,24 @@ Each entry has 2 slots:
   (defconst uniline--directional-keystrokes-table
     `(;;   ╭─keystroke as used in keyboard macros
       ;;   │      ╭─direction of the keystroke
-      ;;   │      │      shift-control modifiers╮
-      ;;   │      │                     ╭───────╯
-      ;;   ▽      ▽                     ▽
-      (  up    ,uniline-direction-up↑)
-      (  right ,uniline-direction-ri→)
-      (  down  ,uniline-direction-dw↓)
-      (  left  ,uniline-direction-lf←)
-      (S-up    ,uniline-direction-up↑ . S)
-      (S-right ,uniline-direction-ri→ . S)
-      (S-down  ,uniline-direction-dw↓ . S)
-      (S-left  ,uniline-direction-lf← . S)
-      (C-up    ,uniline-direction-up↑ . C)
-      (C-right ,uniline-direction-ri→ . C)
-      (C-down  ,uniline-direction-dw↓ . C)
-      (C-left  ,uniline-direction-lf← . C))
-    "Temporary table of conversion between keystrokes and uniline directions.
-It will be converted into 2 hashtables for both conversions."))
+      ;;   │      │   ╭╴shift-control modifiers
+      ;;   │      │   │  ╭╴arbitrary constants
+      ;;   │      │   │  ├╴greater than 3
+      ;;   │      │   │  ╰─────────────────╮
+      ;;   │      │   ╰─────────────────╮  │
+      ;;   ▽      ▽                     ▽  ▽
+      (  up    . ,(+ uniline-direction-up↑ 0))
+      (  right . ,(+ uniline-direction-ri→ 0))
+      (  down  . ,(+ uniline-direction-dw↓ 0))
+      (  left  . ,(+ uniline-direction-lf← 0))
+      (S-up    . ,(+ uniline-direction-up↑ 4))
+      (S-right . ,(+ uniline-direction-ri→ 4))
+      (S-down  . ,(+ uniline-direction-dw↓ 4))
+      (S-left  . ,(+ uniline-direction-lf← 4))
+      (C-up    . ,(+ uniline-direction-up↑ 8))
+      (C-right . ,(+ uniline-direction-ri→ 8))
+      (C-down  . ,(+ uniline-direction-dw↓ 8))
+      (C-left  . ,(+ uniline-direction-lf← 8)))))
 
 (uniline--defconst-hash-table uniline--keystroke-to-dir-shift
   (eval-when-compile uniline--directional-keystrokes-table)
@@ -2302,14 +2302,14 @@ It will be converted into 2 hashtables for both conversions."))
 ;; because keys are symbols, whose hash-values may change from
 ;; one session to another
 
-(uniline--defconst-hash-table uniline--dir-shift-to-keystroke
-  (eval-when-compile
-    (cl-loop
-     for entry in uniline--directional-keystrokes-table
-     collect (cons (cdr entry) (car entry))))
-  16 'equal ; `equal' because keys are lists, not atoms
-  "Hashtable to convert Uniline directional constants into keystrokes.")
-;; it is impossible to guaranty that the table will stay collision-less
+(defconst uniline--dir-shift-to-keystroke
+  (eval-when-compile ;; not needed at runtime
+    (let ((vec
+           (make-vector (length uniline--directional-keystrokes-table) 0)))
+      (cl-loop for r in uniline--directional-keystrokes-table
+               do (aset vec (cdr r) (car r)))
+      vec))
+  "Convert Uniline directional constants back into keystrokes.")
 
 (defun uniline-call-macro-in-direction (dir)
   "Call last keybord macro twisted in DIR direction.
@@ -2330,11 +2330,11 @@ it is already present in the `uniline--directional-macros' cache"
                       (lambda (x)
                         (let ((y (gethash x uniline--keystroke-to-dir-shift)))
                           (if y
-                              (gethash
-                               (cons
-                                (% (+ (car y) dir 3) 4)
-                                (cdr y))
-                               uniline--dir-shift-to-keystroke)
+                              (aref
+                               uniline--dir-shift-to-keystroke
+                               (logior
+                                (logand (+ y dir 3) 3)
+                                (logand y (eval-when-compile (lognot 3)))))
                             x)))
                       last-kbd-macro)))))))
     (kmacro-end-and-call-macro 1)))
