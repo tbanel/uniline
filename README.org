@@ -3,8 +3,8 @@
 #+OPTIONS: ^:{} authors:Thierry Banel, toc:nil
 #+LATEX_HEADER: \usepackage{pmboxdraw}
 
-*New*: alternative dashed lines styles and ASCII to UNICODE. Select a
-rectangle and type =INS s=.
+*New*: =Transient= interface (as an alternative to =Hydra=). Still
+experimental.
 
 * Getting started in 10 seconds
 :PROPERTIES:
@@ -17,7 +17,7 @@ rectangle and type =INS s=.
 
 * Table of Contents
 :PROPERTIES:
-:TOC:      :include all :depth 1 :force () :ignore (this) :local (nothing)
+:TOC:      :include all :depth 3 :force () :ignore (this) :local (nothing)
 :CUSTOM_ID: table-of-contents
 :END:
 
@@ -41,9 +41,21 @@ rectangle and type =INS s=.
 - [[#dashed-lines-and-other-styles][Dashed lines and other styles]]
 - [[#ascii-to-unicode][ASCII to UNICODE]]
 - [[#which-fonts][Which fonts?]]
-- [[#text-menus-hydra][Text menus (Hydra)]]
+- [[#hydra-or-tansient][Hydra or Tansient?]]
+  - [[#the-hydra-interface][The Hydra interface]]
+  - [[#the-transient-interface][The Transient interface]]
 - [[#line-spacing][Line spacing]]
 - [[#how-uniline-behaves-with-its-environment][How Uniline behaves with its environment?]]
+  - [[#compatibility-with-picture-mode][Compatibility with Picture-mode]]
+  - [[#compatibility-with-artist-mode][Compatibility with Artist-mode]]
+  - [[#compatibility-with-whitespace-mode][Compatibility with Whitespace-mode]]
+  - [[#compatibility-with-org-mode][Compatibility with Org Mode]]
+  - [[#org-mode-and-latex][Org Mode and LaTex]]
+  - [[#what-about-t-tabs][What about \t tabs?]]
+  - [[#what-about-l-page-separation][What about ^L page separation?]]
+  - [[#emacs-on-the-linux-console][Emacs on the Linux console]]
+  - [[#emacs-on-a-graphical-terminal-emulator][Emacs on a graphical terminal emulator]]
+  - [[#emacs-on-windows][Emacs on Windows]]
 - [[#lisp-api][Lisp API]]
 - [[#installation][Installation]]
 - [[#related-packages][Related packages]]
@@ -1000,9 +1012,9 @@ To know which font Emacs has chosen for a given character, type:
 Note that none of those commands downloads a font from the Web.
 The font should already be available.
 
-* Text menus (Hydra)
+* Hydra or Tansient?
 :PROPERTIES:
-:CUSTOM_ID: text-menus-hydra
+:CUSTOM_ID: hydra-or-tansient
 :END:
 Casual usage of =Uniline= should be easy: just move the point, and lines
 are traced.
@@ -1010,11 +1022,40 @@ are traced.
 More complex actions are summoned by the =<insert>= key, with or without
 selection. This is a single key to remember. Then a textual menu is
 displayed, giving the possible keys continuations and their
-meaning. All that is achieved by the =Hydra= library, which is now part
-of Emacs (thanks!).
+meaning. All that is achieved by the =Hydra= or =Transient= libraries,
+which are now part of Emacs (thanks!).
 
-For seasoned users, those multi-lines textual menus may distract them
-from their workflow. Beside, they disturb the layout of windows.
+The =Hydra= and =Transient= libraries offer similar features. Some users
+may prefer one or the other.
+
+=Uniline= was developed from day one with =Hydra=. =Transient= is a late
+addition. It is still experimental.
+
+A switch controls which interface to use:
+
+#+begin_src elisp
+(setq uniline-interface-type :hydra)
+(setq uniline-interface-type :transient)
+#+end_src
+
+The switch is relevant only when installing =Uniline=. Later on,
+changing the switch has no effect. To switch to the other interface,
+reinstall =Uniline=.
+
+** The Hydra interface
+:PROPERTIES:
+:CUSTOM_ID: the-hydra-interface
+:END:
+
+Set the switch to Hydra before installing =Uniline=:
+
+#+begin_src elisp
+(setq uniline-interface-type :hydra)
+#+end_src
+
+The multi-lines Hydra's menus are quite useful for casual users. For
+seasoned users, those huge textual menus may distract them from
+their workflow.
 
 It is now possible to switch to less distracting textual menus. They
 are displayed in the echo-area on a single line.
@@ -1022,7 +1063,7 @@ are displayed in the echo-area on a single line.
 To do so, type:
 - =TAB= within a sub-mode (glyph insertion mode, rectangle handling,
   etc.)
-- =C-h TAB= at the top-level
+- =C-h TAB= at the top-level.
 
 This will flip between the two sizes of textual menus. It also affects
 the welcome message, the one displayed when entering the =Uniline= minor
@@ -1036,7 +1077,7 @@ The current size is controlled by the =uniline-hint-style= variable:
 The variable is "buffer-local", which means that it can take distinct
 values on distinct buffers.
 
-There are no customizable =Uniline= variables (not yet). This does not
+There are no customizeable =Uniline= variables (not yet). This does not
 prevent customizing =uniline-hint-style= for future sessions. For
 instance, in the =~/.emacs= file, there might be:
 
@@ -1045,9 +1086,37 @@ instance, in the =~/.emacs= file, there might be:
   :config (set-default 'uniline-hint-style 1))
 #+end_src
 
-This setting gives one-liner messages. It can be changed later on a buffer
-per buffer basis with the =TAB= key. Note the use of =set-default=. Using
-=setq= instead would assign the value =1= only in the =~/.emacs= buffer.
+This setting gives one-liner menus. It can be changed later on a
+buffer per buffer basis with the =TAB= key. Note the use of
+=set-default=. Using =setq= instead would assign the value =1= only in the
+=~/.emacs= buffer.
+
+** The Transient interface
+:PROPERTIES:
+:CUSTOM_ID: the-transient-interface
+:END:
+
+Set the switch to =Transient= before installing =Uniline=:
+
+#+begin_src elisp
+(setq uniline-interface-type :transient)
+#+end_src
+
+=Transient= interface was added recently to =Uniline=. It is still
+experimental.
+
+Beware that in its current state, =Uniline= as packaged into =Melpa=
+declares =Hydra= as a dependency. There is no way to make the
+dependencies conditional.
+
+=Transient= is not declared as a dependency. Therefore, when choosing
+=Transient=, the =Transient= package should be installed manually (or
+automatically as a dependency on an unrelated package, like =Magit=). It
+should be installed before installing =Uniline=.
+
+The alternative to an installation-time switch would be to release two
+packages: =Uniline-hydra= and =Uniline-transient=. This would be quite
+disturbing.
 
 * Line spacing
 :PROPERTIES:
@@ -1082,6 +1151,9 @@ choice for everyone.
 :CUSTOM_ID: how-uniline-behaves-with-its-environment
 :END:
 ** Compatibility with Picture-mode
+:PROPERTIES:
+:CUSTOM_ID: compatibility-with-picture-mode
+:END:
 
 =Picture-mode= and =uniline-mode= are compatible. Their features overlap
 somehow:
@@ -1098,6 +1170,9 @@ They also have features unique to each:
 - =Uniline-mode= draws lines and arrows
 
 ** Compatibility with Artist-mode
+:PROPERTIES:
+:CUSTOM_ID: compatibility-with-artist-mode
+:END:
 
 =Artist-mode= and =uniline-mode= are mostly incompatible. This is because
 =artist-mode= preempts the arrow keys, which give access to a large part
@@ -1106,6 +1181,9 @@ of =uniline-mode= features.
 However, it is possible to use both one after the other.
 
 ** Compatibility with Whitespace-mode
+:PROPERTIES:
+:CUSTOM_ID: compatibility-with-whitespace-mode
+:END:
 
 =Whitespace-mode= and =uniline-mode= are mostly compatible.
 
@@ -1123,6 +1201,9 @@ This is due to a glitch in =move-to-column= when a visual property is
 attached to newlines. And =uniline-mode= makes heavy use of =move-to-column=.
 
 ** Compatibility with Org Mode
+:PROPERTIES:
+:CUSTOM_ID: compatibility-with-org-mode
+:END:
 You may want to customize the shift extension mode in =Org Mode=. This
 is because =Org Mode= preempts =shift-select-mode= for other useful
 purposes. Just type:
@@ -1140,6 +1221,9 @@ buffer.
 Other than that, =Uniline= is compatible with =Org Mode=
 
 ** Org Mode and LaTex
+:PROPERTIES:
+:CUSTOM_ID: org-mode-and-latex
+:END:
 Use the =pmboxdraw= LaTex module. This gives limited support for "box
 drawing" characters in LaTex documents.
 
@@ -1200,6 +1284,9 @@ To export this Org Mode example to PDF through LaTex, type:
 =C-c C-E l o=
 
 ** What about =\t= tabs?
+:PROPERTIES:
+:CUSTOM_ID: what-about-t-tabs
+:END:
 Some files may contain tabs (the character =\t=). Those include
 programming code (Python, Perl, C++, D, Rust, JavaScript and so on).
 
@@ -1210,6 +1297,9 @@ invisible. So be cautious if tabs have a special meaning in the file.
 One way to see what is going on, is to activate the =whitespace-mode=.
 
 ** What about =^L= page separation?
+:PROPERTIES:
+:CUSTOM_ID: what-about-l-page-separation
+:END:
 =Uniline= does not work well with =^L= (page separation)
 character. Nore with similar characters, like =^T=. When trying to
 draw a line over such a character, the cursor may get stuck. This is
@@ -1219,6 +1309,9 @@ Just try to get away from =^L=, =^T= and such when drawing with
 =Uniline=.
 
 ** Emacs on the Linux console
+:PROPERTIES:
+:CUSTOM_ID: emacs-on-the-linux-console
+:END:
 Linux consoles are the 7 non-graphic screens which can be accessed
 usually typing =C-M-F1=, =C-M-F2=, and so on. Such a screen is also
 presented when connecting through =ssh= or =tls= into a non-graphical server.
@@ -1233,6 +1326,9 @@ and =<insert>=. This has nothing to do with Emacs. A solution can be
 found here: https://www.emacswiki.org/emacs/MissingKeys
 
 ** Emacs on a graphical terminal emulator
+:PROPERTIES:
+:CUSTOM_ID: emacs-on-a-graphical-terminal-emulator
+:END:
 This is the Emacs launched from a terminal typing =emacs -nw=. In this
 environment, =<insert>= does not exists. It is replaced by
 =<insertchar>=. This has already been taken into account by =Uniline=
@@ -1251,6 +1347,9 @@ for =C-<insertchar>=, for example with =use-package= in your
 #+end_src
 
 ** Emacs on Windows
+:PROPERTIES:
+:CUSTOM_ID: emacs-on-windows
+:END:
 On Windows the only native mono-spaced fonts are =Lucida Console= and
 =Courier New=. They are not mono-spaced for the Unicodes used by
 =Uniline=.

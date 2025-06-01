@@ -20,7 +20,33 @@
 ;; along with this program.  If not, see <http://www.gnu.org/licenses/>.
 
 (uniline-bench
-"<return> <down> <down> <down> <right> <right> <right> <right> <right> u u u u u u <down> <left> <left> <left> <left> u u u u u u # <down> <down> <left> <left> <down> <left> <left> <left> <left> <left> <left> <left> <up> <left> <left> <left> C-_ C-_ C-_ C-_ C-_ C-_ <down> <down> <return> <up> <up> <up> <up> <kp-subtract> <left> <left> <left> <down> <down> <down> <down> <right> <right> <right> <right> <right> <right> <up> <up> <up> <up> <left> <left> <left> <return> <left> <left> <left> <left> S-<down> S-<down> S-<down> S-<down> S-<right> S-<right> S-<right> S-<right> S-<right> S-<right> S-<right> S-<right> S-<right> <insert> <right> <right> s <kp-add> <down> <down> s <kp-3> <right> s <kp-3> <down> C-_ C-_ C-_ C-_ C-_ C-_ C-_ C-_ i SPC C-_ <return> i"
+ "<return>
+ <down> <down> <down> M-5 <right>
+ u u u u u u
+ <down> <left> <left> <left> <left>
+ u u u u u u
+ #
+ <down> <down> <left> <left> <down> <left> <left> <left> <left> <left> <left> <left> <up> <left> <left> <left>
+ C-_ C-_ C-_ C-_ C-_ C-_
+ <down> <down>
+ <return>
+ <up> <up> <up> <up>
+ <kp-subtract>
+ <left> <left> <left> M-4 <down> M-6 <right> <up> <up> <up> <up> <left> <left> <left> <left>
+ <return> <left> <left> <left>
+ S-<down> S-<down> S-<down> S-<down> M-8 S-<right>
+ <insert>
+ <right> <right>
+ s <kp-add>
+ <down> <down>
+ s <kp-3>
+ <right>
+ s <kp-3>
+ <down>
+ C-_ C-_ C-_ C-_ C-_ C-_ C-_ C-_ C-_
+ i SPC
+ C-_
+ <return>"
 "\
  
  
@@ -28,5 +54,5 @@
      uuuuuu │
       │uuuuuu▖
       │  ▗▄▄▛▘
-      ╰──▐──╯ i
+      ╰──▐──╯
 ")

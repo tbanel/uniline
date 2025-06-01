@@ -56,8 +56,12 @@ RESULT is a string representing the expected result."
   (ignore-errors (kill-buffer "*uniline-interactive*"))
   (switch-to-buffer "*uniline-interactive*")
   (uniline-mode 1)
-  (hydra-keyboard-quit) ;; clear any left-over from previous bench
+  (if (fboundp 'hydra-keyboard-quit)
+      (hydra-keyboard-quit)) ;; clear any left-over from previous bench
+  (if (fboundp 'transient-quit-all)
+      (transient-quit-all))  ;; clear any left-over from previous bench
   (setq uniline--which-quadrant (uniline--char-to-4quadb ?▘))
+  (setq uniline-brush 1)
   (execute-kbd-macro (kbd commands))
   
   (setq uniline-bench-result

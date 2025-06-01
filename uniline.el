@@ -2162,7 +2162,16 @@ Overwrite whatever is there."
 (defun uniline-copy-rectangle ()
   "Copy the selected rectangle in the kill storage."
   (interactive)
-  (copy-rectangle-as-kill (region-beginning) (region-end)))
+  ;; kiel ni havis tion por Transient? xxxxxxxxxxxxxxxx
+  (rectangle-mark-mode -1)
+  (let ((beg (region-beginning))
+        (end (region-end))
+        (deactivate-mark))
+    (copy-rectangle-as-kill beg end)
+    (set-mark beg)
+    (goto-char beg))
+  (rectangle-mark-mode 1))
+  ;;(copy-rectangle-as-kill (region-beginning) (region-end)))
 
 (defun uniline-kill-rectangle ()
   "Kill the selected rectangle.
@@ -2337,7 +2346,7 @@ it is already present in the `uniline--directional-macros' cache"
                                 (logand y (eval-when-compile (lognot 3)))))
                             x)))
                       last-kbd-macro)))))))
-    (kmacro-end-and-call-macro 1)))
+      (execute-kbd-macro last-kbd-macro 1)))
 
 ;; Run the following cl-loop to automatically write a bunch
 ;; of 4 interactive functions
@@ -3124,9 +3133,72 @@ This includes plain and dashed lines (e.g. ┻ to ╩, or ┄ to ═)."
   (uniline--record-undo-rectangle-selection)
   (uniline--change-style-hash uniline--char-to-double-line))
 
-;;;╭────────────────╮
-;;;│Hydra interfaces│
-;;;╰────────────────╯
+(defun uniline--aa2u-rectangle ()
+  "Wrapper arround `aa2u-rectangle'."
+  (interactive)
+  (uniline--record-undo-rectangle-selection)
+  (if (functionp 'aa2u-rectangle)
+      (uniline--operate-on-rectangle
+       ;; here we use `eval' on purpose, to get a loose coupling
+       ;; with the `ascii-art-to-unicode' package; if not installed
+       ;; the native compiler may complain that `aa2u-rectangle'
+       ;; is not defined; no longer with `eval'.
+       ;; but long after compiling `uniline', if the
+       ;; `ascii-art-to-unicode' package is eventually installed,
+       ;; the `aa2u-rectangle' will be called without the need to
+       ;; recompile or native-recompile `uniline'.
+       (eval `(aa2u-rectangle ,beg ,end)))
+    (message "Install the ascii-art-to-unicode package prior to using aa2u.
+It is available on ELPA.
+Or use the '0 standard' style transformer instead.")))
+
+;;;╭───────────────────────────╮
+;;;│Common to Hydra & Transient│
+;;;╰───────────────────────────╯
+
+(eval-when-compile ;; check interface type only at compile-time
+
+  (defvar uniline-interface-type
+    :hydra
+    ;;:transient
+    "Which interface to activate?
+May be :hydra or :transient.
+This is a compile-time setting, without any effect at run-time.")
+
+  (cond
+   ((or (not (boundp 'uniline-interface-type))
+        (memq uniline-interface-type '(nil :hydra)))
+    (setq uniline-interface-type :hydra)
+    (unless (or (featurep 'hydra-autoloads) (featurep 'hydra))
+      (message "The Hydra interface is requested through the `uniline-interface-type' variable,
+but it seems the Hydra package is not installed.
+Try installing it prior to installing Uniline.")))
+   ((eq uniline-interface-type :transient)
+    (unless (or (featurep 'transient-autoloads) (featurep 'transient))
+      (message "The Transient interface is requested through the `uniline-interface-type' variable,
+but it seems the Transient package is not installed.
+Try installing it prior to installing Uniline.")))
+   (t (message "Neither Hydra nor Transient through the `uniline-interface-type' variable?"))))
+
+(eval-when-compile ;; unused at runtime
+  ;; Those two strange macros are an alternative to the more
+  ;; straightforward form:
+  ;; (when (eq uniline-interface-type :hydra)
+  ;;   (defun hydra-xxx …)
+  ;;   (defun hydra-yyy …))
+  ;; Unfortunatly when byte-compiling this latter form, an ugly byte-code
+  ;; is generated which loops to defun each hydra-xxx, hydra-yyy
+  ;; Why? Who knows?
+  ;; Those strange macros seem to defeat this unwanted feature.
+
+  (defmacro uniline--when-hydra (&rest body)
+    (if (eq uniline-interface-type :hydra)
+        `(progn ,@body)))
+
+  (defmacro uniline--when-transient (&rest body)
+    (if (eq uniline-interface-type :transient)
+        `(progn ,@body)))
+  )
 
 (defun uniline-customize-face ()
   "Customize a temporary font to may-be set it for future sessions."
@@ -3150,38 +3222,82 @@ This includes plain and dashed lines (e.g. ┻ to ╩, or ┄ to ═)."
     (and name (string-match name (frame-parameter nil 'font)))))
 
 (defun uniline--is-font-str (letter)
-  "Return a glyph if current font is the one presented by LETTER."
+  "Return a tick-glyph ▶ if current font is the one presented by LETTER."
   (if (uniline--is-font letter) "▶" " "))
 
-(defhydra uniline-hydra-fonts
-  (:hint nil
-   :exit nil)
-  ;; Docstring MUST begin with an empty line to benefit from substitutions
-  (concat
-   (replace-regexp-in-string
-    "_\\([dhcjbfsiua]\\)_ "
-    "_\\1_%s(uniline--is-font-str ?\\1)"
-    "\
-╭^─Try a font^─╮^ ^           ╭^─^──────────────╮╭^─^───^─^──────╮
-│_d_ DejaVu    ╰^─^───────────╯_i_ Iosevka Comfy││_*_ ^^configure│
-│_h_ Hack       _b_ JetBrains  _u_ Unifont      ││_TAB_^^ sh hint│
-│_c_ Cascadia   _f_ FreeMono   _a_ Agave        ││_RET_ _q_ exit │
-│_j_ JuliaMono  _s_ Source Code Pro^^╭──────────╯╰^─^───^─^──────╯
-╰^─^────────────^─^────────────^─^───╯"))
-  ("d" (set-frame-font "DejaVu Sans Mono"))
-  ("u" (set-frame-font "Unifont"         ))
-  ("h" (set-frame-font "Hack"            ))
-  ("b" (set-frame-font "JetBrains Mono"  ))
-  ("c" (set-frame-font "Cascadia Mono"   ))
-  ("a" (set-frame-font "Agave"           ))
-  ("j" (set-frame-font "JuliaMono"       ))
-  ("f" (set-frame-font "FreeMono"        ))
-  ("i" (set-frame-font "Iosevka Comfy Fixed"))
-  ("s" (set-frame-font "Source Code Pro" ))
-  ("*" uniline-customize-face :exit t)
-  ("TAB" uniline-toggle-hydra-hints)
-  ("q"   () :exit t)
-  ("RET" () :exit t))
+(defun uniline--font-name-ticked (letter)
+  "Return a the name of the font presented by LETTER, with a tick-glyph ▶ if current."
+  (funcall (if (uniline--is-font letter) #'cdr #'car)
+           (uniline--switch-with-table letter
+             (?d '(" DejaVu"          . "▶DejaVu"         ))
+             (?u '(" Unifont"         . "▶Unifont"        ))
+             (?h '(" Hack"            . "▶Hack"           ))
+             (?b '(" JetBrains"       . "▶JetBrains"      ))
+             (?c '(" Cascadia"        . "▶Cascadia"       ))
+             (?a '(" Agave"           . "▶Agave"          ))
+             (?j '(" Julia"           . "▶Julia"          ))
+             (?f '(" FreeMono"        . "▶FreeMono"       ))
+             (?i '(" Iosevka"         . "▶Iosevka"        ))
+             (?s '(" Source Code Pro" . "▶Source Code Pro")))))
+
+(when nil
+  ;; Those low-added-value functions are automatically generated.
+  ;; Their purpose is to avoid lambdas in the definition
+  ;; of Hydras and Tansients.
+  (insert "\n;; BEGIN -- Automatically generated\n")
+  (cl-loop
+   for f in
+   '((?d "DejaVu"          . "DejaVu Sans Mono"   )
+     (?u "Unifont"         . "Unifont"            )
+     (?h "Hack"            . "Hack"               )
+     (?b "JetBrains"       . "JetBrains Mono"     )
+     (?c "Cascadia"        . "Cascadia Mono"      )
+     (?a "Agave"           . "Agave"              )
+     (?j "Julia"           . "JuliaMono"          )
+     (?f "FreeMono"        . "FreeMono"           )
+     (?i "Iosevka"         . "Iosevka Comfy Fixed")
+     (?s "Source Code Pro" . "Source Code Pro"    ))
+   do
+   (insert
+    (format "(defun uniline--set-font-%c ()\n" (car f)))
+   (insert "  (interactive)\n")
+   (insert
+    (format "  (set-frame-font \"%s\"))\n" (cddr f))))
+  (insert "\n;; END -- Automatically generated\n"))
+
+;; BEGIN -- Automatically generated
+(defun uniline--set-font-d ()
+  (interactive)
+  (set-frame-font "DejaVu Sans Mono"))
+(defun uniline--set-font-u ()
+  (interactive)
+  (set-frame-font "Unifont"))
+(defun uniline--set-font-h ()
+  (interactive)
+  (set-frame-font "Hack"))
+(defun uniline--set-font-b ()
+  (interactive)
+  (set-frame-font "JetBrains Mono"))
+(defun uniline--set-font-c ()
+  (interactive)
+  (set-frame-font "Cascadia Mono"))
+(defun uniline--set-font-a ()
+  (interactive)
+  (set-frame-font "Agave"))
+(defun uniline--set-font-j ()
+  (interactive)
+  (set-frame-font "JuliaMono"))
+(defun uniline--set-font-f ()
+  (interactive)
+  (set-frame-font "FreeMono"))
+(defun uniline--set-font-i ()
+  (interactive)
+  (set-frame-font "Iosevka Comfy Fixed"))
+(defun uniline--set-font-s ()
+  (interactive)
+  (set-frame-font "Source Code Pro"))
+
+;; END -- Automatically generated
 
 (defun uniline--self-insert-+ ()
   "Wrapper over `self-insert-command' <kp-add>."
@@ -3202,52 +3318,7 @@ This includes plain and dashed lines (e.g. ┻ to ╩, or ┄ to ═)."
     (uniline-direction-dw↓ "↓")
     (uniline-direction-lf← "←")))
 
-(defhydra uniline-hydra-arrows
-  (:hint nil
-   :exit nil)
-  ;; Docstring MUST begin with an empty line to benefit from substitutions
-  (concat
-   (string-replace
-    "Text dir────"
-    "Text dir─╴%s(uniline-text-direction-str)╶"
-  "\
-╭^─^─^Insert glyph^─────╮╭^Rotate arrow^╮╭^Text dir────^╮╭^─Contour─^╮╭^─^─^─^─^─^─^─^────────────╮
-│_a_,_A_rrow ▷ ▶ → ▹ ▸ ↔││_S-<left>_  ← ││_C-<left>_  ← ││_c_ contour││_-_ _+_ _=_ _#_ self-insert│
-│_s_,_S_quare  □ ■ ◇ ◆ ◊││_S-<right>_ → ││_C-<right>_ → ││_C_ ovwrt  ││_f_ ^^^^^^      choose font│
-│_o_,_O_-shape · ● ◦ Ø ø││_S-<up>_    ↑ ││_C-<up>_    ↑ │╭^─────────^╮│_TAB_   ^^^^^^  short hint │
-│_x_,_X_-cross ╳ ÷ × ± ¤││_S-<down>_  ↓ ││_C-<down>_  ↓ ││_i_ fill   ││_q_ _RET_ ^^^^  exit       │
-╰^─^─^─^────────────────╯╰^Tweak glyph─^╯╰^─^───────────╯╰^─Fill────^╯╰^─^─^─^─^─^─^─^────────────╯"))
-  ("a" uniline-insert-fw-arrow )
-  ("A" uniline-insert-bw-arrow )
-  ("s" uniline-insert-fw-square)
-  ("S" uniline-insert-bw-square)
-  ("o" uniline-insert-fw-oshape)
-  ("O" uniline-insert-bw-oshape)
-  ("x" uniline-insert-fw-cross )
-  ("X" uniline-insert-bw-cross )
-  ("S-<left>"  uniline-rotate-lf←)
-  ("S-<right>" uniline-rotate-ri→)
-  ("S-<up>"    uniline-rotate-up↑)
-  ("S-<down>"  uniline-rotate-dw↓)
-  ("C-<right>" uniline-text-direction-ri→ :exit t)
-  ("C-<left>"  uniline-text-direction-lf← :exit t)
-  ("C-<up>"    uniline-text-direction-up↑ :exit t)
-  ("C-<down>"  uniline-text-direction-dw↓ :exit t)
-  ("<kp-subtract>" uniline--self-insert--)
-  ("<kp-add>"      uniline--self-insert-+)
-  ("-" self-insert-command)
-  ("+" self-insert-command)
-  ("=" self-insert-command)
-  ("#" self-insert-command)
-  ("f" uniline-hydra-fonts/body :exit t)
-  ("c" uniline-contour          :exit t)
-  ("C" (uniline-contour t)      :exit t)
-  ("i" (uniline-fill (uniline--choose-fill-char)) :exit t)
-  ("q"   ()                     :exit t)
-  ("TAB" uniline-toggle-hydra-hints)
-  ("RET" ()                     :exit t))
-
-(defun uniline--hydra-rect-undo ()
+(defun uniline--rect-undo ()
   "Make undo work outside selection.
 The selection will be recovered by the undo machinery,
 and highlighted."
@@ -3255,80 +3326,135 @@ and highlighted."
   (deactivate-mark)
   (undo))
 
-(defun uniline--hydra-rect-quit ()
+(defun uniline--rect-quit ()
   "Quit this hydra."
   (interactive)
   (deactivate-mark))
 
-(defun uniline--aa2u-rectangle ()
-  "Wrapper arround `aa2u-rectangle'."
-  (interactive)
-  (uniline--record-undo-rectangle-selection)
-  (if (functionp 'aa2u-rectangle)
-      (uniline--operate-on-rectangle
-       ;; here we use `eval' on purpose, to get a loose coupling
-       ;; with the `ascii-art-to-unicode' package; if not installed
-       ;; the native compiler may complain that `aa2u-rectangle'
-       ;; is not defined; no longer with `eval'.
-       ;; but long after compiling `uniline', if the
-       ;; `ascii-art-to-unicode' package is eventually installed,
-       ;; the `aa2u-rectangle' will be called without the need to
-       ;; recompile or native-recompile `uniline'.
-       (eval `(aa2u-rectangle ,beg ,end)))
-    (message "Install the ascii-art-to-unicode package prior to using aa2u.
-It is available on ELPA.
-Or use the '0 standard' style transformer instead.")))
+;;;╭────────────────╮
+;;;│Hydra interfaces│
+;;;╰────────────────╯
 
-(defhydra uniline-hydra-alt-styles
-  (:pre (rectangle-mark-mode 1)
-   :hint nil
-   :exit nil)
-  ;; Docstring MUST begin with an empty line to benefit from substitutions
-  "
+(uniline--when-hydra
+ (defhydra uniline-hydra-fonts
+   (:hint nil :exit nil)
+   ;; Docstring MUST begin with an empty line to benefit from substitutions
+   (concat
+    (replace-regexp-in-string
+     "_\\([dhcjbfsiua]\\)_ "
+     "_\\1_%s(uniline--is-font-str ?\\1)"
+     "\
+╭^─Try a font^─╮^ ^           ╭^─^──────────────╮╭^─^───^─^──────╮
+│_d_ DejaVu    ╰^─^───────────╯_i_ Iosevka Comfy││_*_ ^^configure│
+│_h_ Hack       _b_ JetBrains  _u_ Unifont      ││_TAB_^^ sh hint│
+│_c_ Cascadia   _f_ FreeMono   _a_ Agave        ││_RET_ _q_ exit │
+│_j_ JuliaMono  _s_ Source Code Pro^^╭──────────╯╰^─^───^─^──────╯
+╰^─^────────────^─^────────────^─^───╯"))
+   ("d" uniline--set-font-d)
+   ("u" uniline--set-font-u)
+   ("h" uniline--set-font-h)
+   ("b" uniline--set-font-b)
+   ("c" uniline--set-font-c)
+   ("a" uniline--set-font-a)
+   ("j" uniline--set-font-j)
+   ("f" uniline--set-font-f)
+   ("i" uniline--set-font-i)
+   ("s" uniline--set-font-s)
+   ("*" uniline-customize-face :exit t)
+   ("TAB" uniline-toggle-hydra-hints)
+   ("q"   () :exit t)
+   ("RET" () :exit t))
+
+ (defhydra uniline-hydra-arrows
+   (:hint nil :exit nil)
+   ;; Docstring MUST begin with an empty line to benefit from substitutions
+   (concat
+    (string-replace
+     "Text dir────"
+     "Text dir─╴%s(uniline-text-direction-str)╶"
+     "\
+╭^─^─^Insert glyph^─────╮╭^Rotate arrow^╮╭^Text dir────^╮╭^─Contour─^╮╭^─^─^─^─^─^─^─^────────────╮
+│_a_,_A_rrow ▷ ▶ → ▹ ▸ ↔││_S-<left>_  ← ││_C-<left>_  ← ││_c_ contour││_-_ _+_ _=_ _#_ self-insert│
+│_s_,_S_quare  □ ■ ◇ ◆ ◊││_S-<right>_ → ││_C-<right>_ → ││_C_ ovwrt  ││_f_ ^^^^^^      choose font│
+│_o_,_O_-shape · ● ◦ Ø ø││_S-<up>_    ↑ ││_C-<up>_    ↑ │╭^─────────^╮│_TAB_   ^^^^^^  short hint │
+│_x_,_X_-cross ╳ ÷ × ± ¤││_S-<down>_  ↓ ││_C-<down>_  ↓ ││_i_ fill   ││_q_ _RET_ ^^^^  exit       │
+╰^─^─^─^────────────────╯╰^Tweak glyph─^╯╰^─^───────────╯╰^─Fill────^╯╰^─^─^─^─^─^─^─^────────────╯"))
+   ("a" uniline-insert-fw-arrow )
+   ("A" uniline-insert-bw-arrow )
+   ("s" uniline-insert-fw-square)
+   ("S" uniline-insert-bw-square)
+   ("o" uniline-insert-fw-oshape)
+   ("O" uniline-insert-bw-oshape)
+   ("x" uniline-insert-fw-cross )
+   ("X" uniline-insert-bw-cross )
+   ("S-<left>"  uniline-rotate-lf←)
+   ("S-<right>" uniline-rotate-ri→)
+   ("S-<up>"    uniline-rotate-up↑)
+   ("S-<down>"  uniline-rotate-dw↓)
+   ("C-<right>" uniline-text-direction-ri→ :exit t)
+   ("C-<left>"  uniline-text-direction-lf← :exit t)
+   ("C-<up>"    uniline-text-direction-up↑ :exit t)
+   ("C-<down>"  uniline-text-direction-dw↓ :exit t)
+   ("<kp-subtract>" uniline--self-insert--)
+   ("<kp-add>"      uniline--self-insert-+)
+   ("-" self-insert-command)
+   ("+" self-insert-command)
+   ("=" self-insert-command)
+   ("#" self-insert-command)
+   ("f" uniline-hydra-fonts/body :exit t)
+   ("c" uniline-contour          :exit t)
+   ("C" (uniline-contour t)      :exit t)
+   ("i" (uniline-fill (uniline--choose-fill-char)) :exit t)
+   ("q"   ()                     :exit t)
+   ("TAB" uniline-toggle-hydra-hints)
+   ("RET" ()                     :exit t))
+
+ (defhydra uniline-hydra-alt-styles
+   (:pre (rectangle-mark-mode 1) :hint nil :exit nil)
+   ;; Docstring MUST begin with an empty line to benefit from substitutions
+   "
 ╭^─^───────╮╭^─Alt styles^──╮╭─^─^────────╮
 │_-_ thin  ││_3_ 3x2 dots   ││_0_ standard│
 │_+_ thick ││_4_ 4x4 dots   ││_a_ aa2u    │
 │_=_ double││_h_ hard corner││_RET_ quit  │
 ╰^─^───────╯╰^─^────────────╯╰─^─^────────╯"
-  ("3"             uniline-change-style-dot-3-2)
-  ("<kp-3>"        uniline-change-style-dot-3-2)
-  ("4"             uniline-change-style-dot-4-4)
-  ("<kp-4>"        uniline-change-style-dot-4-4)
-  ("h"             uniline-change-style-hard-corners)
-  ("0"             uniline-change-style-standard)
-  ("<kp-0>"        uniline-change-style-standard)
-  ("-"             uniline-change-style-thin)
-  ("<kp-subtract>" uniline-change-style-thin)
-  ("+"             uniline-change-style-thick)
-  ("<kp-add>"      uniline-change-style-thick)
-  ("="             uniline-change-style-double)
-  ("a"             uniline--aa2u-rectangle)
-  ;; copy here the bindings for handling rectangles
-  ("<right>" uniline-move-rect-ri→)
-  ("<left>"  uniline-move-rect-lf←)
-  ("<up>"    uniline-move-rect-up↑)
-  ("<down>"  uniline-move-rect-dw↓)
-  ("r"       uniline-draw-inner-rectangle)
-  ("R"       uniline-draw-outer-rectangle)
-  ("C-r"     uniline-overwrite-inner-rectangle)
-  ("C-S-R"   uniline-overwrite-outer-rectangle)
-  ("i"       uniline-fill-rectangle)
-  ("f"       uniline-hydra-fonts/body :exit t)
-  ("s"       uniline-hydra-moverect/body :exit t)
-  ;; misc.
-  ("C-x C-x" rectangle-exchange-point-and-mark)
-  ("C-/"     uniline--hydra-rect-undo)
-  ("C-_"     uniline--hydra-rect-undo)
-  ("C-x u"   uniline--hydra-rect-undo)
-  ("TAB"     uniline-toggle-hydra-hints)
-  ("RET"     uniline--hydra-rect-quit :exit t))
+   ("3"             uniline-change-style-dot-3-2)
+   ("<kp-3>"        uniline-change-style-dot-3-2)
+   ("4"             uniline-change-style-dot-4-4)
+   ("<kp-4>"        uniline-change-style-dot-4-4)
+   ("h"             uniline-change-style-hard-corners)
+   ("0"             uniline-change-style-standard)
+   ("<kp-0>"        uniline-change-style-standard)
+   ("-"             uniline-change-style-thin)
+   ("<kp-subtract>" uniline-change-style-thin)
+   ("+"             uniline-change-style-thick)
+   ("<kp-add>"      uniline-change-style-thick)
+   ("="             uniline-change-style-double)
+   ("a"             uniline--aa2u-rectangle)
+   ;; copy here the bindings for handling rectangles
+   ("<right>" uniline-move-rect-ri→)
+   ("<left>"  uniline-move-rect-lf←)
+   ("<up>"    uniline-move-rect-up↑)
+   ("<down>"  uniline-move-rect-dw↓)
+   ("r"       uniline-draw-inner-rectangle)
+   ("R"       uniline-draw-outer-rectangle)
+   ("C-r"     uniline-overwrite-inner-rectangle)
+   ("C-S-R"   uniline-overwrite-outer-rectangle)
+   ("i"       uniline-fill-rectangle)
+   ("f"       uniline-hydra-fonts/body :exit t)
+   ("s"       uniline-hydra-moverect/body :exit t)
+   ;; misc.
+   ("C-x C-x" rectangle-exchange-point-and-mark)
+   ("C-/"     uniline--rect-undo)
+   ("C-_"     uniline--rect-undo)
+   ("C-x u"   uniline--rect-undo)
+   ("TAB"     uniline-toggle-hydra-hints)
+   ("RET"     uniline--rect-quit :exit t))
 
-(defhydra uniline-hydra-moverect
-  (:pre (rectangle-mark-mode 1)
-   :hint nil
-   :exit nil)
-  ;; Docstring MUST begin with an empty line to benefit from substitutions
-  "
+ (defhydra uniline-hydra-moverect
+   (:pre (rectangle-mark-mode 1) :hint nil :exit nil)
+   ;; Docstring MUST begin with an empty line to benefit from substitutions
+   "
 ╭^Move ^rect╮╭────^Draw^ rect────╮╭^─Rect^─╮╭^Brush^╮╭──^Misc^─────────╮
 │_<right>_ →││_r_     trace inner││_c_ copy││_-_ ╭─╯││_s_   alt styles │
 │_<left>_  ←││_R_     trace outer││_k_ kill││_+_ ┏━┛││_f_   choose font│
@@ -3337,72 +3463,77 @@ Or use the '0 standard' style transformer instead.")))
 ╰^─────^────╯│_i_     fill       │ ^^│_<delete>_ DEL││_RET_ exit       │
  ^     ^     ╰^────^─────────────╯ ^^╰^────────^────╯╰^───^────────────╯
 "
-  ("<right>" uniline-move-rect-ri→)
-  ("<left>"  uniline-move-rect-lf←)
-  ("<up>"    uniline-move-rect-up↑)
-  ("<down>"  uniline-move-rect-dw↓)
+   ("<right>" uniline-move-rect-ri→)
+   ("<left>"  uniline-move-rect-lf←)
+   ("<up>"    uniline-move-rect-up↑)
+   ("<down>"  uniline-move-rect-dw↓)
 
-  ("r"     uniline-draw-inner-rectangle)
-  ("R"     uniline-draw-outer-rectangle)
-  ("C-r"   uniline-overwrite-inner-rectangle)
-  ("C-S-R" uniline-overwrite-outer-rectangle)
-  ("i"     uniline-fill-rectangle)
+   ("r"     uniline-draw-inner-rectangle)
+   ("R"     uniline-draw-outer-rectangle)
+   ("C-r"   uniline-overwrite-inner-rectangle)
+   ("C-S-R" uniline-overwrite-outer-rectangle)
+   ("i"     uniline-fill-rectangle)
 
-  ("c"   uniline-copy-rectangle)
-  ("k"   uniline-kill-rectangle)
-  ("y"   uniline-yank-rectangle)
+   ("c"   uniline-copy-rectangle)
+   ("k"   uniline-kill-rectangle)
+   ("y"   uniline-yank-rectangle)
 
-  ("<delete>"       uniline-set-brush-0)
-  ("<deletechar>"   uniline-set-brush-0)
-  ("C-<delete>"     uniline-set-brush-0)
-  ("C-<deletechar>" uniline-set-brush-0)
-  ("-"              uniline-set-brush-1)
-  ("<kp-subtract>"  uniline-set-brush-1)
-  ("+"              uniline-set-brush-2)
-  ("<kp-add>"       uniline-set-brush-2)
-  ("="              uniline-set-brush-3)
-  ("#"              uniline-set-brush-block)
+   ("<delete>"       uniline-set-brush-0)
+   ("<deletechar>"   uniline-set-brush-0)
+   ("C-<delete>"     uniline-set-brush-0)
+   ("C-<deletechar>" uniline-set-brush-0)
+   ("-"              uniline-set-brush-1)
+   ("<kp-subtract>"  uniline-set-brush-1)
+   ("+"              uniline-set-brush-2)
+   ("<kp-add>"       uniline-set-brush-2)
+   ("="              uniline-set-brush-3)
+   ("#"              uniline-set-brush-block)
 
-  ("TAB" uniline-toggle-hydra-hints)
-  ("f"     uniline-hydra-fonts/body      :exit t)
-  ("s"     uniline-hydra-alt-styles/body :exit t)
-  ("C-/"   uniline--hydra-rect-undo)
-  ("C-_"   uniline--hydra-rect-undo)
-  ("C-x u" uniline--hydra-rect-undo)
-  ("C-x C-x" rectangle-exchange-point-and-mark)
-  ("RET"   uniline--hydra-rect-quit :exit t))
+   ("TAB" uniline-toggle-hydra-hints)
+   ("f"     uniline-hydra-fonts/body      :exit t)
+   ("s"     uniline-hydra-alt-styles/body :exit t)
+   ("C-/"   uniline--rect-undo)
+   ("C-_"   uniline--rect-undo)
+   ("C-x u" uniline--rect-undo)
+   ("C-x C-x" rectangle-exchange-point-and-mark)
+   ("RET"   uniline--rect-quit :exit t))
 
-(defun uniline-hydra-choose-body ()
-  "Choose between two Hydras based on selection.
+ (defun uniline-launch-interface ()
+   "Choose between two Hydras based on selection.
 When selection is active, most likely user wants to act
 on a rectangle.
 Therefore the rectangle hydra is launched.
 Otherwise, the arrows & shapes hydra is invoked."
-  (interactive)
-  (let ((message-log-max)) ; avoid hint copied in *Messages*
-    (if (region-active-p)
-        (uniline-hydra-moverect/body)
-      (uniline-hydra-arrows/body))))
+   (interactive)
+   (let ((message-log-max))          ; avoid hint copied in *Messages*
+     (if (region-active-p)
+         (uniline-hydra-moverect/body)
+       (uniline-hydra-arrows/body))))
 
-(defhydra uniline-hydra-macro-exec
-  (:hint nil
-   :exit nil)
-  ;; Docstring MUST begin with an empty line to benefit from substitutions
-  "
+ (defhydra uniline-hydra-macro-exec
+   (:hint nil :exit nil)
+   ;; Docstring MUST begin with an empty line to benefit from substitutions
+   "
 ╭^^Call macro in direction╶^^^^──────╮
 │_<right>_ call → │_e_ usual call^^  │
 │_<left>_  call ← │^ ^ ^   ^         │
 │_<up>_    call ↑ │_TAB_^^ short hint│
 │_<down>_  call ↓ │_q_ _RET_ exit    │
 ╰^^───────────────┴^─^─^───^─────────╯"
-  ("e"       (kmacro-end-and-call-macro 1))
-  ("<right>" uniline-call-macro-in-direction-ri→)
-  ("<left>"  uniline-call-macro-in-direction-lf←)
-  ("<up>"    uniline-call-macro-in-direction-up↑)
-  ("<down>"  uniline-call-macro-in-direction-dw↓)
-  ("TAB" uniline-toggle-hydra-hints)
-  ("q"   () :exit t)
-  ("RET" () :exit t))
+   ("e"       (kmacro-end-and-call-macro 1))
+   ("<right>" uniline-call-macro-in-direction-ri→)
+   ("<left>"  uniline-call-macro-in-direction-lf←)
+   ("<up>"    uniline-call-macro-in-direction-up↑)
+   ("<down>"  uniline-call-macro-in-direction-dw↓)
+   ("TAB" uniline-toggle-hydra-hints)
+   ("q"   () :exit t)
+   ("RET" () :exit t))
+
+ (defun uniline-macro-exec ()
+   (interactive)
+   (uniline-hydra-macro-exec/body))
+
+ )
 
 ;;;╭───────────────────╮
 ;;;│Smaller hydra hints│
@@ -3417,77 +3548,324 @@ t: large and detailed messages
 Those values are loosely in sync with those defined by the
 `:verbosity' Hydra property.")
 
-(eval-when-compile ; not needed at runtime
+(eval-when-compile                     ; not needed at runtime
   (defun uniline--color-hint (hint)
     "Return a colored message mimicking the Hydra way.
 HINT is the message string. It  contains pairs of ^xxx^
 carets which are to be removed from the message, while the
 text within will be colored."
     (interactive)
-    (replace-regexp-in-string
-     "\\^.*?\\^"
-     (lambda (x)
-       (setq x (substring x 1 (1- (length x))))
-       (add-face-text-property
-        0 (length x)
-        'hydra-face-red
-        nil x)
-       x)
-     hint
-     t)))
+    (let ((face
+           (cond
+            ((facep 'hydra-face-red     ) 'hydra-face-red     )
+            ((facep 'transient-key-stack) 'transient-key-stack)
+            (t                            'error              ))))
+      (replace-regexp-in-string
+       "\\^.*?\\^"
+       (lambda (x)
+         (setq x (substring x 1 (1- (length x))))
+         (add-face-text-property 0 (length x) face nil x)
+         x)
+       hint
+       t))))
 
-;; Pack 2 hints in the usual uniline-hydra-*/hint variables
-;; one is the standard hint created by `defhydra'
-;; the other is a one-liner
-(setq
- uniline-hydra-arrows/hint
- `(if (eq uniline-hint-style t)
-      ,uniline-hydra-arrows/hint
-    ,(eval-when-compile
-       (uniline--color-hint
-        "glyph:^aAsSoOxX-+=#^ arr&tweak:^S-→←↑↓^ text-dir:^C-→←↑↓^ ^c^-ontour f-^i^-ll ^f^-onts ^TAB^")))
- uniline-hydra-fonts/hint
- `(if (eq uniline-hint-style t)
-      ,uniline-hydra-fonts/hint
-    ,(eval-when-compile
-       (uniline--color-hint
-        "choose font: ^dhcjbfsiua^  config font: ^*^  hint: ^TAB^")))
- uniline-hydra-moverect/hint
- `(if (eq uniline-hint-style t)
-      ,uniline-hydra-moverect/hint
-    ,(eval-when-compile
-       (uniline--color-hint
-        "move: ^→←↑↓^ trace: ^rR C-rR^ copy-paste: ^cky^ f-^i^-ll brush: ^-+=# DEL^ ^s^tyle ^f^-onts ^TAB^")))
- uniline-hydra-macro-exec/hint
- `(if (eq uniline-hint-style t)
-      ,uniline-hydra-macro-exec/hint
-    ,(eval-when-compile
-       (uniline--color-hint
-        "macro exec usual: ^e^  directional: ^→←↑↓^  hint: ^TAB^")))
- uniline-hydra-alt-styles/hint
- `(if (eq uniline-hint-style t)
-      ,uniline-hydra-alt-styles/hint
-    ,(eval-when-compile
-       (uniline--color-hint
-        "alt styles, brush: ^-+=^, dashed: ^34^ corners: ^h^ standard: ^0^ ^a^a2u"))))
+(uniline--when-hydra
+ ;; Pack 2 hints in the usual uniline-hydra-*/hint variables
+ ;; one is the standard hint created by `defhydra'
+ ;; the other is a one-liner
+ (setq
+  uniline-hydra-arrows/hint
+  `(if (eq uniline-hint-style t)
+       ,uniline-hydra-arrows/hint
+     ,(eval-when-compile
+        (uniline--color-hint
+         "glyph:^aAsSoOxX-+=#^ arr&tweak:^S-→←↑↓^ text-dir:^C-→←↑↓^ ^c^-ontour f-^i^-ll ^f^-onts ^TAB^")))
+  uniline-hydra-fonts/hint
+  `(if (eq uniline-hint-style t)
+       ,uniline-hydra-fonts/hint
+     ,(eval-when-compile
+        (uniline--color-hint
+         "choose font: ^dhcjbfsiua^  config font: ^*^  hint: ^TAB^")))
+  uniline-hydra-moverect/hint
+  `(if (eq uniline-hint-style t)
+       ,uniline-hydra-moverect/hint
+     ,(eval-when-compile
+        (uniline--color-hint
+         "move: ^→←↑↓^ trace: ^rR C-rR^ copy-paste: ^cky^ f-^i^-ll brush: ^-+=# DEL^ ^s^tyle ^f^-onts ^TAB^")))
+  uniline-hydra-macro-exec/hint
+  `(if (eq uniline-hint-style t)
+       ,uniline-hydra-macro-exec/hint
+     ,(eval-when-compile
+        (uniline--color-hint
+         "macro exec usual: ^e^  directional: ^→←↑↓^  hint: ^TAB^")))
+  uniline-hydra-alt-styles/hint
+  `(if (eq uniline-hint-style t)
+       ,uniline-hydra-alt-styles/hint
+     ,(eval-when-compile
+        (uniline--color-hint
+         "alt styles, brush: ^-+=^, dashed: ^34^ corners: ^h^ standard: ^0^ ^a^a2u"))))
+ )
 
-(defun uniline-toggle-hydra-hints (&optional notoggle)
-  "Toggle between styles of hydra hints.
+(uniline--when-hydra
+ (defun uniline-toggle-hydra-hints (&optional notoggle)
+   "Toggle between styles of hydra hints.
 When NOTOGGLE is t, do not toggle `uniline-hint-style',
 just put everything in sync."
-  (interactive)
-  (unless notoggle
-    (setq uniline-hint-style
-          (if (eq uniline-hint-style t) 1 t)))
-  (cl-loop
-   for hydra in
-   '(uniline-hydra-arrows
-     uniline-hydra-fonts
-     uniline-hydra-moverect
-     uniline-hydra-macro-exec)
-   do
-   (hydra-set-property
-    hydra :verbosity uniline-hint-style)))
+   (interactive)
+   (unless notoggle
+     (setq uniline-hint-style
+           (if (eq uniline-hint-style t) 1 t)))
+   (cl-loop
+    for hydra in
+    '(uniline-hydra-arrows
+      uniline-hydra-fonts
+      uniline-hydra-moverect
+      uniline-hydra-macro-exec)
+    do
+    (hydra-set-property
+     hydra :verbosity uniline-hint-style)))
+ )
+
+(uniline--when-transient
+ (defun uniline-toggle-hydra-hints (&optional notoggle)
+   "Do nothing in transient interface."
+   (interactive)
+   notoggle) ;; to avoid warning
+)
+
+;;;╭───────────────────╮
+;;;│Transient interface│
+;;;╰───────────────────╯
+
+(uniline--when-transient
+
+ (require 'transient)
+
+  (defun uniline--self-insert-command (N)
+    "To fool transient into thinking this is NOT self-insert-command."
+    (interactive)
+    (self-insert-command N))
+
+  ;; Define common command classes to control state transitions
+
+  (transient-define-suffix uniline--persistent-command (&rest args)
+    "Base class for commands that should keep the transient state active."
+    :transient t
+    (interactive)
+    args) ;; to avoid warnings
+
+  (transient-define-suffix uniline--exit-command ()
+    "Base class for commands that should exit the transient state."
+    :transient nil)
+
+  (transient-define-prefix uniline-transient-fonts ()
+    "Font selection menu."
+    :info-manual "(uniline) Fonts"
+    :transient-non-suffix 'transient-quit-one
+    [:class
+     transient-columns
+     ["Try a font"
+      ("d" (lambda () (uniline--font-name-ticked ?d)) uniline--set-font-d :transient t)
+      ("h" (lambda () (uniline--font-name-ticked ?h)) uniline--set-font-h :transient t)
+      ("c" (lambda () (uniline--font-name-ticked ?c)) uniline--set-font-c :transient t)
+      ("j" (lambda () (uniline--font-name-ticked ?j)) uniline--set-font-j :transient t)]
+     [""
+      ("b" (lambda () (uniline--font-name-ticked ?b)) uniline--set-font-b :transient t)
+      ("f" (lambda () (uniline--font-name-ticked ?f)) uniline--set-font-f :transient t)
+      ("s" (lambda () (uniline--font-name-ticked ?s)) uniline--set-font-s :transient t)]
+     [""
+      ("i" (lambda () (uniline--font-name-ticked ?i)) uniline--set-font-i :transient t)
+      ("u" (lambda () (uniline--font-name-ticked ?u)) uniline--set-font-u :transient t)
+      ("a" (lambda () (uniline--font-name-ticked ?a)) uniline--set-font-a :transient t)]
+     ["Actions"
+      ("*" "Configure" uniline-customize-face)
+      ("q" "Quit" transient-quit-one)]]
+    (interactive)
+    (transient-setup 'uniline-transient-fonts))
+
+  (transient-define-prefix uniline-transient-arrows ()
+    "Arrows and shapes interface."
+    :info-manual "(uniline) Arrows"
+    :transient-suffix 'transient--do-leave
+    :transient-non-suffix 'transient--do-leave
+    [:class
+     transient-columns
+     ["Insert char"
+      ("a" "▷▶→▹▸↔" uniline-insert-fw-arrow  :transient t)
+      ("s" "□■◇◆◊"  uniline-insert-fw-square :transient t)
+      ("o" "·●◦Øø"  uniline-insert-fw-oshape :transient t)
+      ("x" "╳÷×±¤"  uniline-insert-fw-cross  :transient t)]
+     [""
+      ("A" "↔▸▹→▶▷" uniline-insert-bw-arrow  :transient t)
+      ("S" "◊◆◇■□"  uniline-insert-bw-square :transient t)
+      ("O" "øØ◦●·"  uniline-insert-bw-oshape :transient t)
+      ("X" "¤±×÷╳"  uniline-insert-bw-cross  :transient t)]
+     [""
+      ("-" " -" uniline--self-insert-- :transient t)
+      ("+" " +" uniline--self-insert-+ :transient t)
+      ("=" " =" self-insert-command    :transient t)
+      ("#" " #" self-insert-command    :transient t)]
+     ["Rotate & tweak"
+      ("S-<up>" "   ↑" uniline-rotate-up↑ :transient t)
+      ("S-<right>" "→" uniline-rotate-ri→ :transient t)
+      ("S-<down>" " ↓" uniline-rotate-dw↓ :transient t)
+      ("S-<left>" " ←" uniline-rotate-lf← :transient t)]
+     ["Text dir"
+      ("C-<up>" "   ↑" uniline-text-direction-up↑ :transient nil)
+      ("C-<right>" "→" uniline-text-direction-ri→ :transient nil)
+      ("C-<down>" " ↓" uniline-text-direction-dw↓ :transient nil)
+      ("C-<left>" " ←" uniline-text-direction-lf← :transient nil)]
+     ["Contour, Fill"
+      ("c" "Draw  contour" uniline-contour)
+      ("C" "Ovwrt contour" (lambda () (interactive) (uniline-contour t)))
+      ("i" "Fill area"     (lambda () (interactive) (uniline-fill (uniline--choose-fill-char))))]
+     ["Navigation"
+      ("f" "Choose font" uniline-transient-fonts)
+      ("RET" "Quit" transient-quit-one)]]
+    (interactive)
+    ;; the purpose of this keymap handling is to regai the basic behavior
+    ;; of <up> & <down>
+    ;; those keys were captured by Transient to navigate in the transient menu
+    ;; the desired behavior is to exit this Transient menu and trace lines
+    (let ((transient-popup-navigation-map
+           (define-keymap
+             "<down-mouse-1>" #'transient-noop
+             "C-r"    #'transient-isearch-backward
+             "C-s"    #'transient-isearch-forward
+             "M-RET"  #'transient-push-button)))
+      (transient-setup 'uniline-transient-arrows)))
+
+  (transient-define-prefix uniline-transient-alt-styles ()
+    "Change lines style interface."
+    :info-manual "(uniline) Dashed lines and other styles"
+    :transient-non-suffix 'transient-quit-one
+    [:class
+     transient-columns
+     ["Dashes"
+      ("3"    "3x2 dots" uniline-change-style-dot-3-2      :transient t)
+      ("4"    "4x4 dots" uniline-change-style-dot-4-4      :transient t)
+      ("h" "hard corner" uniline-change-style-hard-corners :transient t)]
+     ["Thickness"
+      ("-" "thin"   uniline-change-style-thin   :transient t)
+      ("+" "thick"  uniline-change-style-thick  :transient t)
+      ("=" "double" uniline-change-style-double :transient t)]
+     ["Base style"
+      ("0" "standard" uniline-change-style-standard :transient t)
+      ("a"     "aa2u" uniline--aa2u-rectangle       :transient t)]
+     ["Move rectangle"
+      ("<right>" "→" uniline-move-rect-ri→ :transient t)
+      ("<left>"  "←" uniline-move-rect-lf← :transient t)
+      ("<up>"    "↑" uniline-move-rect-up↑ :transient t)
+      ("<down>"  "↓" uniline-move-rect-dw↓ :transient t)]
+     ["Contour&fill"
+      ("r"     "inner"      uniline-draw-inner-rectangle      :transient t)
+      ("R"     "outer"      uniline-draw-outer-rectangle      :transient t)
+      ("C-r"   "inner ovwr" uniline-overwrite-inner-rectangle :transient t)
+      ("C-S-R" "outer ovwr" uniline-overwrite-outer-rectangle :transient t)
+      ("i"     "fill"       uniline-fill-rectangle            :transient t)]
+     ["Misc"
+      ("f"       "fonts" uniline-transient-fonts)
+      ("s"       "exit" uniline-transient-moverect)
+      ("C-x C-x" "exch point-mark" rectangle-exchange-point-and-mark :transient t)
+      ("C-_"     "undo" uniline--rect-undo :transient t)
+      ("RET"     "exit" uniline--rect-quit)]]
+    (interactive)
+    (rectangle-mark-mode 1)
+    (transient-setup 'uniline-transient-alt-styles))
+
+  (transient-define-prefix uniline-transient-moverect ()
+    "Rectangle manipulation interface."
+    :info-manual "(uniline) Rectangle"
+    :transient-non-suffix 'transient-quit-one
+    [:class
+     transient-columns
+     ["Move"
+      ("<left>" " ←" uniline-move-rect-lf← :transient t)
+      ("<right>" "→" uniline-move-rect-ri→ :transient t)
+      ("<up>" "   ↑" uniline-move-rect-up↑ :transient t)
+      ("<down>" " ↓" uniline-move-rect-dw↓ :transient t)]
+     ["Draw"
+      ("r" "    Trace inner" uniline-draw-inner-rectangle      :transient t)
+      ("R" "    Trace outer" uniline-draw-outer-rectangle      :transient t)
+      ("C-r" "  Ovwrt inner" uniline-overwrite-inner-rectangle :transient t)
+      ("C-S-R" "Ovwrt outer" uniline-overwrite-outer-rectangle :transient t)
+      ("i" "    Fill"        uniline-fill-rectangle            :transient t)]
+     ["Copy-paste"
+      ("c" "Copy" uniline-copy-rectangle :transient t)
+      ("k" "Kill" uniline-kill-rectangle :transient t)
+      ("y" "Yank" uniline-yank-rectangle :transient t)]
+     ["Brush"
+      ("-" "  ╭─╯" uniline-set-brush-1     :transient t)
+      ("+" "  ┏━┛" uniline-set-brush-2     :transient t)
+      ("=" "  ╔═╝" uniline-set-brush-3     :transient t)
+      ("#" "  ▄▄▟" uniline-set-brush-block :transient t)
+      ("DEL" "DEL" uniline-set-brush-0     :transient t)]
+     ["Misc"
+      ("s" "  Line styles" uniline-transient-alt-styles)
+      ("f" "  Choose font" uniline-transient-fonts)
+      ;;("C-x C-x" "Exchg point-mark" rectangle-exchange-point-and-mark :transient t)
+      ("C-_" "Undo"        uniline--rect-undo)
+      ("C-/" "Undo"        uniline--rect-undo)
+      ("RET" "Exit"        uniline--rect-quit)]
+     ]
+    (interactive)
+    (rectangle-mark-mode 1)
+    (transient-setup 'uniline-transient-moverect))
+
+  ;; those low-value helper-functions are needed because for an unknown reason
+  ;; calling a macro exits a transient menu, so we have to re-enter it
+  (defun uniline--transient-call-macro-in-direction-up↑ ()
+    (interactive)
+    (uniline-call-macro-in-direction-up↑)
+    (uniline-transient-macro-exec))
+  (defun uniline--transient-call-macro-in-direction-ri→ ()
+    (interactive)
+    (uniline-call-macro-in-direction-ri→)
+    (uniline-transient-macro-exec))
+  (defun uniline--transient-call-macro-in-direction-dw↓ ()
+    (interactive)
+    (uniline-call-macro-in-direction-dw↓)
+    (uniline-transient-macro-exec))
+  (defun uniline--transient-call-macro-in-direction-lf← ()
+    (interactive)
+    (uniline-call-macro-in-direction-lf←)
+    (uniline-transient-macro-exec))
+  (defun uniline--transient-call-macro ()
+    (interactive)
+    (kmacro-end-and-call-macro 1)
+    (uniline-transient-macro-exec))
+
+  (transient-define-prefix uniline-transient-macro-exec ()
+    "Macro execution interface."
+    :info-manual "(uniline) Macro"
+    :transient-non-suffix 'transient-quit-one
+    [:class
+     transient-columns
+     ["Call macro in direction"
+      ("<right>"   "→" uniline--transient-call-macro-in-direction-ri→)
+      ("<up>"   "   ↑" uniline--transient-call-macro-in-direction-up↑)
+      ("<down>"   " ↓" uniline--transient-call-macro-in-direction-dw↓)
+      ("<left>"   " ←" uniline--transient-call-macro-in-direction-lf←)]
+     [""
+      ("e" "  Normal call" uniline--transient-call-macro)
+      ("RET" "Quit" transient-quit-one)
+      ("q" "  Quit" transient-quit-one)]
+     ]
+    (interactive)
+    (transient-setup 'uniline-transient-macro-exec))
+
+  (defun uniline-launch-interface ()
+    "Choose between rectangle and arrows interface based on selection."
+    (interactive)
+    (if (region-active-p)
+        (uniline-transient-moverect)
+      (uniline-transient-arrows)))
+
+  (defun uniline-macro-exec ()
+    (interactive)
+    (uniline-transient-macro-exec))
+
+  )
 
 ;;;╭──────────────────╮
 ;;;│Uniline minor mode│
@@ -3629,98 +4007,102 @@ And backup previous settings."
 │ \\[uniline-set-brush-0]	to erase lines
 │ \\[uniline-set-brush-nil]	to move cursor without drawing
 ╰────────────────────────────╴
-╭─Glyphs (region inactive)───╴\\<uniline-mode-map>
-│ \\[uniline-hydra-choose-body] when there is NO region highlighted,
+╭─Glyphs (region inactive)───╴
+│ \\[uniline-launch-interface] when there is NO region highlighted,
 │ enter a sub-mode to draw a single character glyph,
 │ and change its orientation.
-├─Intersection glyphs────────╴\\<uniline-hydra-arrows/keymap>
-│ \\[uniline-hydra-arrows/uniline-insert-fw-arrow]	arrows ▷ ▶ → ▹ ▸ ↔
-│ \\[uniline-hydra-arrows/uniline-insert-fw-square]	squares  □ ■ ◇ ◆ ◊
-│ \\[uniline-hydra-arrows/uniline-insert-fw-oshape]	circles  · ● ◦ Ø ø
-│ \\[uniline-hydra-arrows/uniline-insert-fw-cross]	crosses  ╳ ÷ × ± ¤
+├─Intersection glyphs────────╴
+│ \\`a' or \\`A' arrows ▷ ▶ → ▹ ▸ ↔
+│ \\`s' or \\`S' squares  □ ■ ◇ ◆ ◊
+│ \\`o' or \\`O' circles  · ● ◦ Ø ø
+│ \\`x' or \\`X' crosses  ╳ ÷ × ± ¤
 │ Shifting the key cycles backward
 ├─Arrow direction────────────╴
-│ \\[uniline-hydra-arrows/uniline-rotate-lf←]	point arrow ← left
-│ \\[uniline-hydra-arrows/uniline-rotate-ri→]	point arrow → right
-│ \\[uniline-hydra-arrows/uniline-rotate-up↑]	point arrow ↑ up
-│ \\[uniline-hydra-arrows/uniline-rotate-dw↓]	point arrow ↓ down
+│ \\`S-<right>' point arrow → right
+│ \\`S-<left>'  point arrow ← left
+│ \\`S-<up>'    point arrow ↑ up
+│ \\`S-<down>'  point arrow ↓ down
 ├─Tweak 1/4 line─────────────╴
-│ \\[uniline-hydra-arrows/uniline-rotate-ri→]	change ¼ line → right
-│ \\[uniline-hydra-arrows/uniline-rotate-lf←]	change ¼ line ← left
-│ \\[uniline-hydra-arrows/uniline-rotate-up↑]	change ¼ line ↑ up
-│ \\[uniline-hydra-arrows/uniline-rotate-dw↓]	change ¼ line ↓ down
+│ \\`S-<right>' change ¼ line → right
+│ \\`S-<left>'  change ¼ line ← left
+│ \\`S-<up>'    change ¼ line ↑ up
+│ \\`S-<down>'  change ¼ line ↓ down
 ├─Text direction─────────────╴
 │ Usually when typing text, cursor moves to the right.
-│ \\[uniline-hydra-arrows/uniline-text-direction-ri→-and-exit]	text goes right→
-│ \\[uniline-hydra-arrows/uniline-text-direction-lf←-and-exit]	text goes left ←
-│ \\[uniline-hydra-arrows/uniline-text-direction-up↑-and-exit]	text goes up   ↑
-│ \\[uniline-hydra-arrows/uniline-text-direction-dw↓-and-exit]	text goes down ↓
+│ \\`C-<right>' text goes right→
+│ \\`C-<left>'  text goes left ←
+│ \\`C-<up>'    text goes up   ↑
+│ \\`C-<down>'  text goes down ↓
 ├─Insert characters──────────╴
-│ In this sub-mode, the keys `- + = #' recover their
+│ In this sub-mode, the keys \\`-' \\`+' \\`=' \\`#' recover their
 │ basic meaning, which is to insert this character.
 ├─Other──────────────────────╴
-│ \\[uniline-hydra-arrows/uniline-hydra-fonts/body-and-exit] enter the fonts sub-menu
-│ \\[uniline-hydra-arrows/nil] (or q) exits the sub-mode
+│ \\`f' enter the fonts sub-menu
+│ \\`RET' or \\`q' exits the sub-mode
 │ Any other key exits the sub-mode and do whatever they
 │ are intended for.
 ╰────────────────────────────╴
-╭─Rectangles (region active)─╴\\<uniline-mode-map>
-│ \\[uniline-hydra-choose-body] when region IS highlighted,
+╭─Rectangles (region active)─╴
+│ \\[uniline-launch-interface] when region IS highlighted,
 │ enter a sub-mode to handle rectangles,
 │ marked by the highlighted region.
-├─Move rectangle─────────────╴\\<uniline-hydra-moverect/keymap>
-│ \\[uniline-hydra-moverect/uniline-move-rect-lf←]	move the rectangle ←
-│ \\[uniline-hydra-moverect/uniline-move-rect-ri→]	move the rectangle →
-│ \\[uniline-hydra-moverect/uniline-move-rect-up↑]		move the rectangle ↑
-│ \\[uniline-hydra-moverect/uniline-move-rect-dw↓]	move the rectangle ↓
+├─Move rectangle─────────────╴
+│ \\`S-<right>' move rectangle → right
+│ \\`S-<left>'  move rectangle ← left 
+│ \\`S-<up>'    move rectangle ↑ up   
+│ \\`S-<down>'  move rectangle ↓ down 
 ├─Draw rectangle─────────────╴
-│ \\[uniline-hydra-moverect/uniline-draw-inner-rectangle]	draw      an inner rectangle
-│ \\[uniline-hydra-moverect/uniline-draw-outer-rectangle]	draw      an outer rectangle
-│ \\[uniline-hydra-moverect/uniline-overwrite-inner-rectangle]	overwrite an inner rectangle
-│ \\[uniline-hydra-moverect/uniline-overwrite-outer-rectangle]	overwrite an outer rectangle
+│ \\`r'     draw      an inner rectangle
+│ \\`R'     draw      an outer rectangle
+│ \\`C-r'   overwrite an inner rectangle
+│ \\`C-S-R' overwrite an outer rectangle
 ├─Fill───────────────────────╴
-│ \\[uniline-hydra-moverect/uniline-fill-rectangle]	fill region with a character
+│ \\`i'	fill region with a character
 ├─Other──────────────────────╴
-│ \\[uniline-hydra-moverect/uniline--hydra-rect-undo-and-exit] undo works outside selection
-│ \\[uniline-hydra-moverect/uniline--hydra-rect-quit-and-exit] exit the rectangle sub-mode
+│ \\`C-_', \\`C-/', \\`C-x u' undo works outside selection
+│ \\`RET', \\`q' exit the rectangle sub-mode
 │ Any other key exits the sub-mode and do whatever they
 │ are intended for.
 ╰────────────────────────────╴
-╭╴Macros─────────────────────╴\\<uniline-mode-map>
+╭╴Macros─────────────────────╴
 │ Usual Emacs macros recording works as usual
 │ Last keybord macro can be twisted in any of the 4 directions
-│ \\[uniline-hydra-macro-exec/body] then → ← ↑ ↓ : directional call of last keyboard macro
+│ \\[uniline-macro-exec] then \\`→' \\`←' \\`↑' \\`↓': directional call of last keyboard macro
 ╰────────────────────────────╴
 ╭╴Alternate styles───────────╴
-│ highlight a region (a rectangle) then \\<uniline-mode-map>\\[uniline-hydra-choose-body] \\<uniline-hydra-moverect/keymap>\\[uniline-hydra-moverect/uniline-hydra-alt-styles/body-and-exit]\\<uniline-hydra-alt-styles/keymap>
+│ Highlight a region (a rectangle) then \\[uniline-launch-interface] \\`s'
 │ This enters a menu where alternative styles are applied
 │ to the rectangular selection
-│ \\[uniline-hydra-alt-styles/uniline-change-style-dot-3-2] make 3 dots vertical, 2 dots horizontal lines
-│ \\[uniline-hydra-alt-styles/uniline-change-style-dot-4-4] make 4 dots vertical and horizontal lines
-│ \\[uniline-hydra-alt-styles/uniline-change-style-hard-corners] convert round corners to hard ones
-│ \\[uniline-hydra-alt-styles/uniline-change-style-thin] make thin lines
-│ \\[uniline-hydra-alt-styles/uniline-change-style-thick] make thick lines
-│ \\[uniline-hydra-alt-styles/uniline-change-style-double] make double lines
-│ \\[uniline-hydra-alt-styles/uniline-change-style-standard] come back to standard base line style, including from ASCII art
-│ \\[uniline-hydra-alt-styles/uniline--aa2u-rectangle] apply external package aa2u conversion from ASCII art to UNICODE
+│ \\`3' make 3 dots vertical, 2 dots horizontal lines
+│ \\`4' make 4 dots vertical and horizontal lines
+│ \\`h' convert round corners to hard ones
+│ \\`-' make thin lines
+│ \\`+' make thick lines
+│ \\`=' make double lines
+│ \\`0' come back to standard base line style, including from ASCII art
+│ \\`a' apply external package aa2u conversion from ASCII art to UNICODE
 ╰────────────────────────────╴
 ╭─Fonts──────────────────────╴
 │ Try out some mono-spaced fonts with support for the
 │ required UNICODE characters.
-│ \\<uniline-mode-map>\\[uniline-hydra-choose-body] \\<uniline-hydra-arrows/keymap>\\[uniline-hydra-arrows/uniline-hydra-fonts/body-and-exit] enters a sub-menu to change the font
+│ \\[uniline-launch-interface] \\`f' enters a sub-menu to change the font
 │ type the first letter of the font name.
-│ This setting is just for the current Emacs session.\\<uniline-hydra-fonts/keymap>
-│ \\[uniline-hydra-fonts/uniline-customize-face-and-exit] customize default font for future sessions.
+│ This setting is just for the current Emacs session.
+│ \\`*' customize default font for future sessions.
 ╰────────────────────────────╴
 ╭─Toggle hint sizes──────────╴
-│ \\<uniline-mode-map>\\[uniline-toggle-hydra-hints-welcome] in base uniline mode
-│ \\<uniline-hydra-arrows/keymap>\\[uniline-hydra-arrows/uniline-toggle-hydra-hints] in a INS-activated menu
+│ This is for changing the height of Hydra menus,
+│ between multiline to single-line and back,
+│ \\[uniline-toggle-hydra-hints-welcome] in base Uniline mode
+│ \\`TAB' in a \\[uniline-launch-interface]-activated menu
 ╰────────────────────────────╴
 ╭─Quit───────────────────────╴\\<uniline-mode-map>
-│ \\[uniline-mode] quit the uniline minor mode.
-│ the state of the buffer (ex: `overwrite-mode') will return to
-│ what it was prior to entering `uniline-mode'
-╰────────────────────────────╴"
+│ \\[uniline-mode] quit the Uniline minor mode.
+│ The state of the buffer (ex: `overwrite-mode' and cursor shape)
+│ will return to what it was prior to entering `uniline-mode'
+╰────────────────────────────╴
+
+ Documentation here: (info \"uniline\")"
   :init-value nil
   :lighter (:eval (uniline--mode-line))
   :keymap
@@ -3733,8 +4115,8 @@ And backup previous settings."
     ([C-left ] . uniline-overwrite-lf←)
     ([C-up   ] . uniline-overwrite-up↑)
     ([C-down ] . uniline-overwrite-dw↓)
-    ([insert]      . uniline-hydra-choose-body)
-    ([insertchar]  . uniline-hydra-choose-body)
+    ([insert]      . uniline-launch-interface)
+    ([insertchar]  . uniline-launch-interface)
     ([?\r]           . uniline-set-brush-nil)
     ([delete]        . uniline-set-brush-0)
     ([deletechar]    . uniline-set-brush-0)
@@ -3744,7 +4126,7 @@ And backup previous settings."
     ([kp-add]        . uniline-set-brush-2)
     ("="             . uniline-set-brush-3)
     ("#"             . uniline-set-brush-block)
-    ([?\C-x ?e]      . uniline-hydra-macro-exec/body)
+    ([?\C-x ?e]      . uniline-macro-exec)
     ([?\C-h ?\t]     . uniline-toggle-hydra-hints-welcome)
     ([?\C-c ?\C-c]   . uniline-mode))
   :after-hook (if uniline-mode (uniline--mode-pre) (uniline--mode-post)))
