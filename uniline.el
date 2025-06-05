@@ -837,7 +837,7 @@ which in turn is converted to ┕."))
 The UNICODE character is supposed to represent
 a combination of half lines in 4 directions
 and in 4 brush styles.
-The retrieved value is a4halfs description is (UP RI DW LF)
+The retrieved value is a 4halfs description is (UP RI DW LF)
 packed into a single integer.
 If the UNICODE character is not a box-drawing one, nil
 is returned.
@@ -860,7 +860,7 @@ without the fall-back characters."))
   ;; in the UNICODE standard, a penalty system was applied to look
   ;; for the closest possible alternate glyph.
 
-  ;; For example, ├ and ╠ exist, but a mixture of both do no exit,
+  ;; For example, ├ and ╠ exist, but a mixture of both do no exist,
   ;; hence a line like this one
   ;;   ((3 3 1 0)  (3 3 3 0)) ;; ╠
   ;; which says that, when this ├ is needed, with the upward and
@@ -1443,7 +1443,9 @@ virtue of the infinite buffer."
   (defmacro uniline--neighbour-point (dir)
     "Return the (point) one char away from current (point) in DIR direction.
 Return nil if no such point exists because it would fall outside the buffer.
-The buffer is not modified."
+The buffer is not modified.
+This macro seems large, but actually it is a bag of 4 small algorithms.
+Just one out of those 4 algorithms is retrieved on a call."
     (setq dir (eval dir))
     (uniline--switch-with-table dir
       (uniline-direction-ri→
@@ -1486,10 +1488,15 @@ Blank include:
 (defsubst uniline--blank-neighbour4 (dir)
   "Return non-nil if the quarter point cursor can move in DIR
 while staying on the same (point)."
+  ;; Try typing (disassemble 'uniline--blank-neighbour4)
+  ;; You will see a short 9 byte-codes function which references
+  ;; a constant vector. This is the fastest it can be.
   (eq
    (logand
     uniline--which-quadrant
     (uniline--switch-with-table dir
+      ;; This lambda computes the values in the resulting lookup table
+      ;; for each entry. It is run at compile-time, never at run-time.
       (lambda (dir)
         (uniline--4quadb-pushed
          dir

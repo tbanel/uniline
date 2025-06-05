@@ -352,7 +352,7 @@ Set the current brush with:
 
 - ~<return>~ move without drawing anything
 
-The current bush and the current text direction (see below) are
+The current brush and the current text direction (see below) are
 reflected in the mode-line (at the bottom of the Emacs screen). It
 looks like this:
 
