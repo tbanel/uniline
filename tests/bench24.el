@@ -38,15 +38,9 @@
  <insert>
  <right> <right>
  s <kp-add>
- <down> <down>
- s <kp-3>
- <right>
- s <kp-3>
- <down>
- C-_ C-_ C-_ C-_ C-_ C-_ C-_ C-_ C-_
- i SPC
- C-_
- <return>"
+ <kp-3>
+ C-_ C-_ C-_ C-_ C-_
+ <return> <return>"
 "\
  
  

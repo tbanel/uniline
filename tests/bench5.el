@@ -20,7 +20,19 @@
 ;; along with this program.  If not, see <http://www.gnu.org/licenses/>.
 
 (uniline-bench
-"<return> <down> <down> <right> <right> <right> <right> <right> a a a a <right> a a a a <right> <right> <right> a a a <right> <right> <right> a a a a a a a a C-SPC <left> <left> <left> <left> <left> <left> <left> <left> <left> <left> <left> <left> <left> <left> <left> <left> <left> <left> <left> <left> <left> <left> <left> <left> <left> <left> <insert> c <down> <right> <right> y c <down> <right> <right> y <down> <up> c <down> <right> <right> y c <return> <up> <up> <up> <right> C-SPC <down> <down> <down> <right> <right> <right> <right> <right> <right> <right> <right> <right> <kp-subtract> <insert> C-r <return> <right> <right> <right> <right> <right> <right> <right> <down> C-SPC <down> <down> <down> <right> <right> <right> <right> <right> <right> <kp-add> <insert> C-r = R RET"
+ "<return> <down> <down> <right> <right> <right> <right> <right> a a a a
+ <right> a a a a
+ <right> <right> <right> a a a
+ <right> <right> <right> a a a a a a a a
+ C-SPC M-26 <left> <insert> c
+ <down> <right> <right> C-SPC <insert> y c
+ <down> <right> <right> C-SPC <insert> y
+ <down> <up> c <down> <right> <right> C-SPC <insert> y c
+ <return> <up> <up> <up> <right>
+ C-SPC <down> <down> <down> M-9 <right> <kp-subtract> <insert>
+ C-r <return> M-7 <right> <down>
+ C-SPC <down> <down> <down> M-6 <right> <kp-add>
+ <insert> C-r = R RET"
 "\
  
  

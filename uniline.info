@@ -13,8 +13,7 @@ File: uniline.info,  Node: Top,  Next: Getting started in 10 seconds,  Up: (dir)
 Uniline
 *******
 
-*New*: ‘Transient’ interface (as an alternative to ‘Hydra’).  Still
-experimental.
+*New*: ‘Transient’ replaces ‘Hydra’ as the default user interface.
 
 * Menu:
 
@@ -350,7 +349,7 @@ Set the current brush with:
 
    • ‘<return>’ move without drawing anything
 
-   The current bush and the current text direction (see below) are
+   The current brush and the current text direction (see below) are
 reflected in the mode-line (at the bottom of the Emacs screen).  It
 looks like this:
 
@@ -1022,7 +1021,7 @@ which are now part of Emacs (thanks!).
 users may prefer one or the other.
 
    ‘Uniline’ was developed from day one with ‘Hydra’.  ‘Transient’ is a
-late addition.  It is still experimental.
+late addition.
 
    A switch controls which interface to use:
 
@@ -1032,6 +1031,10 @@ late addition.  It is still experimental.
    The switch is relevant only when installing ‘Uniline’.  Later on,
 changing the switch has no effect.  To switch to the other interface,
 reinstall ‘Uniline’.
+
+   After discussions with the community, it appears that ‘Transient’ is
+the way to go.  Therefore the switch now have ‘:transient’ as its
+default value.
 
 * Menu:
 
@@ -1047,6 +1050,13 @@ File: uniline.info,  Node: The Hydra interface,  Next: The Transient interface, 
 Set the switch to Hydra before installing ‘Uniline’:
 
      (setq uniline-interface-type :hydra)
+
+   Beware that the ‘Melpa’ package no longer declares ‘Hydra’ as a
+dependency as it used to.  Therfore, the ‘Hydra’ package must be
+installed separately prior to installing ‘Uniline’.  This is for
+avoiding the automatic and useless installation of ‘Hydra’ when
+‘Transient’ is choosen.  (There is no way to make the dependencies
+conditional).
 
    The multi-lines Hydra’s menus are quite useful for casual users.  For
 seasoned users, those huge textual menus may distract them from their
@@ -1094,21 +1104,11 @@ Set the switch to ‘Transient’ before installing ‘Uniline’:
 
      (setq uniline-interface-type :transient)
 
-   ‘Transient’ interface was added recently to ‘Uniline’.  It is still
-experimental.
+   Actually, ‘Uniline’ ships with ‘:transient’ as the default value.
+Therefore, there in nothing to do to benefit from the ‘Transient’
+interface.
 
-   Beware that in its current state, ‘Uniline’ as packaged into ‘Melpa’
-declares ‘Hydra’ as a dependency.  There is no way to make the
-dependencies conditional.
-
-   ‘Transient’ is not declared as a dependency.  Therefore, when
-choosing ‘Transient’, the ‘Transient’ package should be installed
-manually (or automatically as a dependency on an unrelated package, like
-‘Magit’).  It should be installed before installing ‘Uniline’.
-
-   The alternative to an installation-time switch would be to release
-two packages: ‘Uniline-hydra’ and ‘Uniline-transient’.  This would be
-quite disturbing.
+   ‘Transient’ interface was added recently to ‘Uniline’.
 
 
 File: uniline.info,  Node: Line spacing,  Next: How Uniline behaves with its environment?,  Prev: Hydra or Tansient?,  Up: Top
@@ -1691,9 +1691,13 @@ File: uniline.info,  Node: Author contributors,  Next: License,  Prev: Related p
    • DogLooksGood <https://github.com/DogLooksGood> gave feedback on
      inserting usual characters not moving the cursor
 
+   • LuciusChen & lhindir on GitHub, arthurno1 & karthink on Reddit,
+     pushed toward ‘Transient’ as the default interface instead of
+     ‘Hydra’.
+
    Utilities:
 
-   • Oleh Krehel alias abo-abo for his package ‘hydra’
+   • Oleh Krehel alias abo-abo for his package ‘Hydra’
 
    • Thien-Thi Nguyen (RIP) for his package ‘ascii-art-to-unicode’
 
@@ -1722,45 +1726,45 @@ along with this program.  If not, see <http://www.gnu.org/licenses/>.
 
 Tag Table:
 Node: Top75
-Node: Getting started in 10 seconds1449
-Node: Pure UNICODE text diagrams in Emacs1779
-Node: Minor mode13076
-Node: Drawing lines13624
-Node: Brush style14300
-Node: The <insert> key15392
-Node: Arrows glyphs ▷ ▶ → ▹ ▸ ↔16226
-Node: Intersection glyphs ■ ◆ ●17783
-Node: Drawing rectangles20431
-Node: Moving rectangles22405
-Node: Copying killing yanking rectangles23649
-Node: Tracing a contour24701
-Node: Flood-fill26485
-Node: Text direction28212
-Node: Macros28753
-Node: Fine tweaking32114
-Node: Dashed lines and other styles33926
-Node: ASCII to UNICODE37989
-Node: Which fonts?41663
-Node: Hydra or Tansient?43521
-Node: The Hydra interface44695
-Node: The Transient interface46385
-Node: Line spacing47389
-Node: How Uniline behaves with its environment?48817
-Node: Compatibility with Picture-mode49365
-Node: Compatibility with Artist-mode50283
-Node: Compatibility with Whitespace-mode50802
-Node: Compatibility with Org Mode51702
-Node: Org Mode and LaTex52488
-Node: What about \t tabs?54389
-Node: What about ^L page separation?55037
-Node: Emacs on the Linux console55660
-Node: Emacs on a graphical terminal emulator56614
-Node: Emacs on Windows57537
-Node: Lisp API58184
-Node: Installation63346
-Node: Related packages64344
-Node: Author contributors67397
-Node: License68181
+Node: Getting started in 10 seconds1434
+Node: Pure UNICODE text diagrams in Emacs1764
+Node: Minor mode13061
+Node: Drawing lines13609
+Node: Brush style14285
+Node: The <insert> key15378
+Node: Arrows glyphs ▷ ▶ → ▹ ▸ ↔16212
+Node: Intersection glyphs ■ ◆ ●17769
+Node: Drawing rectangles20417
+Node: Moving rectangles22391
+Node: Copying killing yanking rectangles23635
+Node: Tracing a contour24687
+Node: Flood-fill26471
+Node: Text direction28198
+Node: Macros28739
+Node: Fine tweaking32100
+Node: Dashed lines and other styles33912
+Node: ASCII to UNICODE37975
+Node: Which fonts?41649
+Node: Hydra or Tansient?43507
+Node: The Hydra interface44816
+Node: The Transient interface46873
+Node: Line spacing47380
+Node: How Uniline behaves with its environment?48808
+Node: Compatibility with Picture-mode49356
+Node: Compatibility with Artist-mode50274
+Node: Compatibility with Whitespace-mode50793
+Node: Compatibility with Org Mode51693
+Node: Org Mode and LaTex52479
+Node: What about \t tabs?54380
+Node: What about ^L page separation?55028
+Node: Emacs on the Linux console55651
+Node: Emacs on a graphical terminal emulator56605
+Node: Emacs on Windows57528
+Node: Lisp API58175
+Node: Installation63337
+Node: Related packages64335
+Node: Author contributors67388
+Node: License68333
 
 End Tag Table
 

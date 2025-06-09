@@ -4,7 +4,7 @@
 
 ;; Author: Thierry Banel tbanelwebmin at free dot fr
 ;; Version: 1.0
-;; Package-Requires: ((emacs "29.1") (hydra "0.15.0"))
+;; Package-Requires: ((emacs "29.1"))
 ;; Keywords: convenience, text
 ;; URL: https://github.com/tbanel/uniline
 
@@ -34,38 +34,50 @@
 ;;      ▌quadrant-blocks▐─◁─╯
 ;;      ▙▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▟
 ;;
-;; UNICODE characters are available to draw nice boxes
-;; and lines.
-;; They come in 4 flavours: thin, thick, double, and quadrant-blocks.
-;; Uniline makes it easy to draw and combine all 4 flavours.
-;; Use the arrows on the keyboard to move around leaving a line behind.
-;;
-;; Uniline is a minor mode.  Enter it with:
-;;   M-x uniline-mode
-;; Leave it with:
-;;   C-c C-c
-;;
-;; A font able to displays the needed UNICODE characters have to
-;; be used.  It works well with the following families:
-;; - DejaVu Sans Mono
-;; - Unifont
-;; - Hack
-;; - JetBrains Mono
-;; - Cascadia Mono
-;; - Agave
-;; - JuliaMono
-;; - FreeMono
-;; - Iosevka Comfy Fixed
-;; - Source Code Pro
-;;
-;; Also, the encoding of the file must support UNICODE.
-;; One way to do that, is to add a line like this one
-;; at the top of your file:
-;;   -*- coding:utf-8; -*-
+;;╭─Pure text────────────────□
+;;│ UNICODE characters are available to draw nice boxes and lines.
+;;│ They come in 4 flavours: thin, thick, double, and quadrant-blocks.
+;;│ Uniline makes it easy to draw and combine all 4 flavours.
+;;│ Use the arrows on the keyboard to move around leaving a line behind.
+;;╰──────────────────────────╮
+;;╭─Minor mode───────────────╯
+;;│ Uniline is a minor mode.  Enter it with:
+;;│   M-x uniline-mode
+;;│ Leave it with:
+;;│   C-c C-c
+;;╰──────────────────────────╮
+;;╭─Fonts────────────────────╯
+;;│ A font able to displays the needed UNICODE characters have to
+;;│ be used.  It works well with the following families:
+;;│ - DejaVu Sans Mono
+;;│ - Unifont
+;;│ - Hack
+;;│ - JetBrains Mono
+;;│ - Cascadia Mono
+;;│ - Agave
+;;│ - JuliaMono
+;;│ - FreeMono
+;;│ - Iosevka Comfy Fixed
+;;│ - Source Code Pro
+;;╰──────────────────────────╮
+;;╭─UTF-8────────────────────╯
+;;│ Also, the encoding of the file must support UNICODE.
+;;│ One way to do that, is to add a line like this one
+;;│ at the top of your file:
+;;│   -*- coding:utf-8; -*-
+;;╰──────────────────────────╮
+;;╭─Hydra or Transient───────╯
+;;│ Uniline comes with two flavours of user interfaces:
+;;│ Hydra and Transient.
+;;│ Specify which one you prefer with:
+;;│   (setq uniline-interface-type :hydra)
+;;│   (setq uniline-interface-type :transient)
+;;│ prior to installing the package.
+;;│ By default, :transient is chosen.
+;;╰──────────────────────────□
 
 ;;; Requires:
 (require 'cl-lib)
-(require 'hydra)
 (require 'rect)
 (cl-proclaim '(optimize (speed 3) (safety 1)))
 
@@ -2169,16 +2181,9 @@ Overwrite whatever is there."
 (defun uniline-copy-rectangle ()
   "Copy the selected rectangle in the kill storage."
   (interactive)
-  ;; kiel ni havis tion por Transient? xxxxxxxxxxxxxxxx
   (rectangle-mark-mode -1)
-  (let ((beg (region-beginning))
-        (end (region-end))
-        (deactivate-mark))
-    (copy-rectangle-as-kill beg end)
-    (set-mark beg)
-    (goto-char beg))
-  (rectangle-mark-mode 1))
-  ;;(copy-rectangle-as-kill (region-beginning) (region-end)))
+  (copy-rectangle-as-kill (region-beginning) (region-end))
+  (deactivate-mark))
 
 (defun uniline-kill-rectangle ()
   "Kill the selected rectangle.
@@ -2187,7 +2192,8 @@ in that it leaves a rectangle of space characters."
   (interactive)
   (uniline--record-undo-rectangle-selection)
   (copy-rectangle-as-kill (region-beginning) (region-end))
-  (clear-rectangle        (region-beginning) (region-end)))
+  (clear-rectangle        (region-beginning) (region-end))
+  (deactivate-mark))
 
 (defun uniline-yank-rectangle ()
   "Insert a previously cut rectangle.
@@ -3166,26 +3172,42 @@ Or use the '0 standard' style transformer instead.")))
 (eval-when-compile ;; check interface type only at compile-time
 
   (defvar uniline-interface-type
-    :hydra
-    ;;:transient
+    ;;:hydra
+    :transient
     "Which interface to activate?
 May be :hydra or :transient.
 This is a compile-time setting, without any effect at run-time.")
 
-  (cond
-   ((or (not (boundp 'uniline-interface-type))
-        (memq uniline-interface-type '(nil :hydra)))
-    (setq uniline-interface-type :hydra)
-    (unless (or (featurep 'hydra-autoloads) (featurep 'hydra))
-      (message "The Hydra interface is requested through the `uniline-interface-type' variable,
+  (if (or (not (boundp 'uniline-interface-type))
+          (memq uniline-interface-type '(nil :transient)))
+      (setq uniline-interface-type :transient))
+
+  (when
+      (and (eq uniline-interface-type :hydra)
+           (not (featurep 'hydra-autoloads))
+           (not (featurep 'hydra)))
+    (message "The Hydra interface is requested through
+the `uniline-interface-type' variable,
 but it seems the Hydra package is not installed.
-Try installing it prior to installing Uniline.")))
-   ((eq uniline-interface-type :transient)
-    (unless (or (featurep 'transient-autoloads) (featurep 'transient))
-      (message "The Transient interface is requested through the `uniline-interface-type' variable,
+Try installing it prior to installing Uniline.
+In the meantime, `uniline-interface-type' is set to `:transient'")
+    (setq uniline-interface-type :transient))
+
+  (when
+      (and (eq uniline-interface-type :transient)
+           (not (featurep 'transient-autoloads))
+           (not (featurep 'transient)))
+    (message "The Transient interface is requested through
+the `uniline-interface-type' variable,
 but it seems the Transient package is not installed.
-Try installing it prior to installing Uniline.")))
-   (t (message "Neither Hydra nor Transient through the `uniline-interface-type' variable?"))))
+Try installing it prior to installing Uniline.")
+    (setq uniline-interface-type nil))
+
+  (unless (memq uniline-interface-type '(:transient :hydra))
+    (user-error
+     "No Hydra nor Transient packages found, aborting Uniline installation"))
+
+  )
 
 (eval-when-compile ;; unused at runtime
   ;; Those two strange macros are an alternative to the more
@@ -3343,6 +3365,8 @@ and highlighted."
 ;;;╰────────────────╯
 
 (uniline--when-hydra
+ (require 'hydra)
+
  (defhydra uniline-hydra-fonts
    (:hint nil :exit nil)
    ;; Docstring MUST begin with an empty line to benefit from substitutions
@@ -3481,8 +3505,8 @@ and highlighted."
    ("C-S-R" uniline-overwrite-outer-rectangle)
    ("i"     uniline-fill-rectangle)
 
-   ("c"   uniline-copy-rectangle)
-   ("k"   uniline-kill-rectangle)
+   ("c"   uniline-copy-rectangle :exit t)
+   ("k"   uniline-kill-rectangle :exit t)
    ("y"   uniline-yank-rectangle)
 
    ("<delete>"       uniline-set-brush-0)
@@ -3637,8 +3661,10 @@ just put everything in sync."
  (defun uniline-toggle-hydra-hints (&optional notoggle)
    "Do nothing in transient interface."
    (interactive)
-   notoggle) ;; to avoid warning
-)
+   (unless notoggle
+     (setq uniline-hint-style
+           (if (eq uniline-hint-style t) 1 t))))
+ )
 
 ;;;╭───────────────────╮
 ;;;│Transient interface│
@@ -3697,7 +3723,7 @@ just put everything in sync."
     :transient-non-suffix 'transient--do-leave
     [:class
      transient-columns
-     ["Insert char"
+     ["Insert"
       ("a" "▷▶→▹▸↔" uniline-insert-fw-arrow  :transient t)
       ("s" "□■◇◆◊"  uniline-insert-fw-square :transient t)
       ("o" "·●◦Øø"  uniline-insert-fw-oshape :transient t)
@@ -3759,23 +3785,17 @@ just put everything in sync."
      ["Base style"
       ("0" "standard" uniline-change-style-standard :transient t)
       ("a"     "aa2u" uniline--aa2u-rectangle       :transient t)]
-     ["Move rectangle"
-      ("<right>" "→" uniline-move-rect-ri→ :transient t)
-      ("<left>"  "←" uniline-move-rect-lf← :transient t)
-      ("<up>"    "↑" uniline-move-rect-up↑ :transient t)
-      ("<down>"  "↓" uniline-move-rect-dw↓ :transient t)]
-     ["Contour&fill"
-      ("r"     "inner"      uniline-draw-inner-rectangle      :transient t)
-      ("R"     "outer"      uniline-draw-outer-rectangle      :transient t)
-      ("C-r"   "inner ovwr" uniline-overwrite-inner-rectangle :transient t)
-      ("C-S-R" "outer ovwr" uniline-overwrite-outer-rectangle :transient t)
-      ("i"     "fill"       uniline-fill-rectangle            :transient t)]
+     ;;["Move rectangle"
+     ;; ("<right>" "→" uniline-move-rect-ri→ :transient t)
+     ;; ("<left>"  "←" uniline-move-rect-lf← :transient t)
+     ;; ("<up>"    "↑" uniline-move-rect-up↑ :transient t)
+     ;; ("<down>"  "↓" uniline-move-rect-dw↓ :transient t)]
      ["Misc"
       ("f"       "fonts" uniline-transient-fonts)
       ("s"       "exit" uniline-transient-moverect)
-      ("C-x C-x" "exch point-mark" rectangle-exchange-point-and-mark :transient t)
       ("C-_"     "undo" uniline--rect-undo :transient t)
-      ("RET"     "exit" uniline--rect-quit)]]
+      ("RET"     "exit" uniline--rect-quit)]
+     ]
     (interactive)
     (rectangle-mark-mode 1)
     (transient-setup 'uniline-transient-alt-styles))
@@ -3798,8 +3818,8 @@ just put everything in sync."
       ("C-S-R" "Ovwrt outer" uniline-overwrite-outer-rectangle :transient t)
       ("i" "    Fill"        uniline-fill-rectangle            :transient t)]
      ["Copy-paste"
-      ("c" "Copy" uniline-copy-rectangle :transient t)
-      ("k" "Kill" uniline-kill-rectangle :transient t)
+      ("c" "Copy" uniline-copy-rectangle :transient nil)
+      ("k" "Kill" uniline-kill-rectangle :transient nil)
       ("y" "Yank" uniline-yank-rectangle :transient t)]
      ["Brush"
       ("-" "  ╭─╯" uniline-set-brush-1     :transient t)
@@ -4055,9 +4075,9 @@ And backup previous settings."
 │ marked by the highlighted region.
 ├─Move rectangle─────────────╴
 │ \\`S-<right>' move rectangle → right
-│ \\`S-<left>'  move rectangle ← left 
-│ \\`S-<up>'    move rectangle ↑ up   
-│ \\`S-<down>'  move rectangle ↓ down 
+│ \\`S-<left>'  move rectangle ← left
+│ \\`S-<up>'    move rectangle ↑ up
+│ \\`S-<down>'  move rectangle ↓ down
 ├─Draw rectangle─────────────╴
 │ \\`r'     draw      an inner rectangle
 │ \\`R'     draw      an outer rectangle

@@ -20,13 +20,17 @@
 ;; along with this program.  If not, see <http://www.gnu.org/licenses/>.
 
 (uniline-bench
- "<return> <down> <right> <right> a a a a a <down> <left> a a a a a <down> <left> <left> <left> <left> <left> <left> <left> t t t t t <up> <up> <right> <right> <right> <right> <right>
-S-<down> S-<down> S-<right> S-<right> S-<right> S-<right> S-<right> S-<right> S-<right> <insert> <kp-subtract> r <return> <return>
+ "<return> <down> <right> <right> a a a a a
+ <down> <left> a a a a a
+ <down> M-7 <left> t t t t t
+ <up> <up> M-5 <right>
+ S-<down> S-<down> M-7 S-<right> <insert> <kp-subtract> r
+ <return> <return>
  <down> <right> <right> <right> <right> <insert> o o o
- <up> <left> <left> <left> <left> <left> <right>
- C-SPC <down> <down> <right> <right> <right> <right> <right> <right> <right> <insert> c <return>
- <right> <right> <down> C-x SPC <insert> y <return> <return>
- <left> <left> <left> <left> <left> <left> <left> <left> <left> <left> <left> <left> <up> <left> <up> C-SPC <insert> y <return>
+ <up> M-4 <left> 
+ C-SPC <down> <down> M-7 <right> <insert> c <return>
+ M-5 <left> <up> C-x SPC <insert> y <return> <return>
+ M-12 <left> <up> <left> <up> C-SPC <insert> y <return>
  <down> <down> <down> <right> <right> <right> <up> C-SPC <insert> y <return>"
 "\
    ╭─────╮

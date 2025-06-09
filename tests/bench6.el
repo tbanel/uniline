@@ -42,7 +42,7 @@
  i <up> <up> <left> <left> <left> <left>
  C-SPC <down> <down> <down> <down> <down> <down> <right> <right> <right> <right> <right> <right> <right> <right> <right>
  <insert> c <return>
- <right> <right> <right> <right> <right> <right> <right> <right> <right> <right> <right> <right> <down>
+ M-3 <right> M-5 <up>
  C-SPC <insert> y <return>
  <left> <left> <left> <left> <left> <left>
  <insert> <return>
@@ -55,7 +55,7 @@
 "\
  
     ╭───╮
-    │mùq╰╮     
+    │mùq╰╮
  ╭──┴─┬╮v╰─╮    jmùq   
  │2iii│╰╮hu│    j░░░v  
  │1╶┬─╯ ╰╮u│  2iii░░░hu

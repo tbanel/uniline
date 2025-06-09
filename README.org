@@ -3,8 +3,7 @@
 #+OPTIONS: ^:{} authors:Thierry Banel, toc:nil
 #+LATEX_HEADER: \usepackage{pmboxdraw}
 
-*New*: =Transient= interface (as an alternative to =Hydra=). Still
-experimental.
+*New*: =Transient= replaces =Hydra= as the default user interface.
 
 * Getting started in 10 seconds
 :PROPERTIES:
@@ -1029,7 +1028,7 @@ The =Hydra= and =Transient= libraries offer similar features. Some users
 may prefer one or the other.
 
 =Uniline= was developed from day one with =Hydra=. =Transient= is a late
-addition. It is still experimental.
+addition.
 
 A switch controls which interface to use:
 
@@ -1042,6 +1041,10 @@ The switch is relevant only when installing =Uniline=. Later on,
 changing the switch has no effect. To switch to the other interface,
 reinstall =Uniline=.
 
+After discussions with the community, it appears that =Transient= is the
+way to go. Therefore the switch now have =:transient= as its default
+value.
+
 ** The Hydra interface
 :PROPERTIES:
 :CUSTOM_ID: the-hydra-interface
@@ -1052,6 +1055,12 @@ Set the switch to Hydra before installing =Uniline=:
 #+begin_src elisp
 (setq uniline-interface-type :hydra)
 #+end_src
+
+Beware that the =Melpa= package no longer declares =Hydra= as a dependency
+as it used to. Therfore, the =Hydra= package must be installed
+separately prior to installing =Uniline=. This is for avoiding the
+automatic and useless installation of =Hydra= when =Transient= is
+choosen. (There is no way to make the dependencies conditional).
 
 The multi-lines Hydra's menus are quite useful for casual users. For
 seasoned users, those huge textual menus may distract them from
@@ -1102,21 +1111,11 @@ Set the switch to =Transient= before installing =Uniline=:
 (setq uniline-interface-type :transient)
 #+end_src
 
-=Transient= interface was added recently to =Uniline=. It is still
-experimental.
+Actually, =Uniline= ships with =:transient= as the default
+value. Therefore, there in nothing to do to benefit from the =Transient=
+interface.
 
-Beware that in its current state, =Uniline= as packaged into =Melpa=
-declares =Hydra= as a dependency. There is no way to make the
-dependencies conditional.
-
-=Transient= is not declared as a dependency. Therefore, when choosing
-=Transient=, the =Transient= package should be installed manually (or
-automatically as a dependency on an unrelated package, like =Magit=). It
-should be installed before installing =Uniline=.
-
-The alternative to an installation-time switch would be to release two
-packages: =Uniline-hydra= and =Uniline-transient=. This would be quite
-disturbing.
+=Transient= interface was added recently to =Uniline=.
 
 * Line spacing
 :PROPERTIES:
@@ -1677,9 +1676,12 @@ Feedback:
 - DogLooksGood https://github.com/DogLooksGood gave feedback on
   inserting usual characters not moving the cursor
 
+- LuciusChen & lhindir on GitHub, arthurno1 & karthink on Reddit,
+  pushed toward =Transient= as the default interface instead of =Hydra=.
+
 Utilities:
 
-- Oleh Krehel alias abo-abo for his package =hydra=
+- Oleh Krehel alias abo-abo for his package =Hydra=
 
 - Thien-Thi Nguyen (RIP) for his package =ascii-art-to-unicode=
 

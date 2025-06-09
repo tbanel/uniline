@@ -23,23 +23,23 @@
  "<return> <down> <right> <right> <right> <right> <down> <down> <right> <right> <right> <right> <down> <left>
  M
  <left>
- = <up> <up> <up> <right> <right> <right> <right> <right> <right> <down> <down> <down> <left> <left>
+ = <up> <up> <up> M-6 <right> <down> <down> <down> <left> <left>
  <insert> a
- <left> <left> <left> <left> <left> <left> <left>
+ M-7 <left>
  <insert> a a a
- <left> <down> <down> <down> <right> <right> <right> <right> <up> <up> <up>
+ <left> <down> <down> <down> M-4 <right> <up> <up> <up>
  <return> <up> <up> <right> <right>
  <insert> s
  <down> <right> <right>
  <insert> s s
- <down> <down> <down> <left> <left> <left> <left> <left> <left>
+ <down> <down> <down> M-6 <left>
  <insert> x
  <up>
  <insert> o o o o o
- <up> <up> <up> <up> <right> <right> <right> <right> <right> <right> <right> <right> <right>
- C-SPC <down> <down> <down> <down> <down> <down> <left> <left> <left> <left> <left> <left> <left> <left> <left> <left> <left> <left>
+ <up> <up> <up> <up> M-9 <right>
+ C-SPC M-6 <down> M-12 <left>
  <insert> c
- <right> <return> <right>
+ <right> <return> M-13 <right> M-6 <up>
  C-SPC <insert> y <return>"
 "\
  

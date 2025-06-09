@@ -35,47 +35,59 @@
  <return> <up>
  C-x SPC M-5 <down> M-16 <right>
  <insert> c <return>
- M-7 <down> M-0 <left>
- C-SPC <insert> y s 3 <return>
- <return> <down> <up> M-20 <right>
- C-SPC <insert> y s 4 <return>
- <up> <up> <up> <up> <up> <up> <up>
+ M-5 <up> M-4 <right>
  C-SPC <insert> y s h <return>
- M-15 <down> M-20 <left>
+ A A A M-3 <left>
+
+ <return> M-20 <right>
+ C-SPC <insert> y s 4 <return>
+ B B B M-3 <left>
+
+ C-SPC <insert> y s + 4 <return>
+C C C M-3 <left>
+
+ M-15 <down> M-40 <left>
  C-x SPC <insert> y s + <return>
- M-21 <right> <left>
+ D D D M-3 <left>
+
+ M-0 <right> M-8 <up>
  C-x SPC y <backspace>
  C-x SPC <insert> y s 3 <return>
- C-SPC M-5 <down> M-16 <right>
- <insert> s 3 + <return>
- M-15 <up> M-20 <right>
- C-SPC <insert> y s 4 + <return>
- <down> <down> <down> <return> M-5 <down> <up> <up> <down> <left> <right> <left>
+ E E E M-3 <left>
+
+ M-20 <right>
+ C-x SPC <insert> y s 4 <return>
+ F F F M-3 <left>
+
+ M-19 <right>
+ C-SPC <insert> y s + <return>
+ G G G M-3 <left>
+
+ M-3 <down> <return> M-5 <down> <left>
  <return>
- C-x SPC M-16 <right> M-5 <down> M-5 <up>
- <return>
- M-15 <left>
- C-x SPC <insert> y s + <return>
- C-x SPC M-5 <down> M-16 <right>
- <insert> s 3 + 0 <return>"
+
+ M-18 <left>
+ C-x SPC <insert> y s + 3 <return>
+ H H H M-3 <left>
+"
 "\
  
-       ╭──────────╮        ┌──────────┐        ┏┉┉┉┉┉┉┉┉┉┉┓
+       ╭──────────╮    AAA ┌──────────┐    CCC ┏┉┉┉┉┉┉┉┉┉┉┓
    ╭───┼────╮     │    ┌───┼────┐     │    ┏┉┉┉╋┉┉┉┉┓     ┋
    ╰─╮ │    │     ▽    └─┐ │    │     ▽    ┗┉┓ ┋    ┋     ▼
      │ │    │  ╭──╯      │ │    │  ┌──┘      ┋ ┋    ┋  ┏┉┉┛
      ▴ ╰────╯  ▼         ▴ └────┘  ▼         ▴ ┗┉┉┉┉┛  ▼   
      ╰───◃──←──╯         └───◃──←──┘         ┗┉┉┉◂┉┉←┉┉┛   
                                             
-       ╭╌╌╌╌╌╌╌╌╌╌╮        ╭┈┈┈┈┈┈┈┈┈┈╮       ┏━━━━━━━━━━┓
+   EEE ╭╌╌╌╌╌╌╌╌╌╌╮    FFF ╭┈┈┈┈┈┈┈┈┈┈╮   GGG ┏━━━━━━━━━━┓
    ╭╌╌╌┼╌╌╌╌╮     ┆    ╭┈┈┈┼┈┈┈┈╮     ┊   ┏━━━╋━━━━┓     ┃
    ╰╌╮ ┆    ┆     ▽    ╰┈╮ ┊    ┊     ▽   ┗━┓ ┃    ┃     ▼
      ┆ ┆    ┆  ╭╌╌╯      ┊ ┊    ┊  ╭┈┈╯     ┃ ┃    ┃  ┏━━┛
      ▴ ╰╌╌╌╌╯  ▼         ▴ ╰┈┈┈┈╯  ▼        ▴ ┗━━━━┛  ▼   
      ╰╌╌╌◃╌╌←╌╌╯         ╰┈┈┈◃┈┈←┈┈╯        ┗━━━◂━━←━━┛   
-                                          
-                        
-       ┏━━━━━━━━━━┓        ┏╍╍╍╍╍╍╍╍╍╍┓
+                                            
+                                            
+   DDD ┏━━━━━━━━━━┓    HHH ┏╍╍╍╍╍╍╍╍╍╍┓     
    ┏━━━╋━━━━┓     ┃    ┏╍╍╍╋╍╍╍╍┓     ┇
    ┗━┓ ┃    ┃     ▼    ┗╍┓ ┇    ┇     ▼
      ┃ ┃    ┃  ┏━━┛      ┇ ┇    ┇  ┏╍╍┛

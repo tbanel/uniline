@@ -55,6 +55,7 @@ Its format is the one used to store keyboard macros.
 RESULT is a string representing the expected result."
   (ignore-errors (kill-buffer "*uniline-interactive*"))
   (switch-to-buffer "*uniline-interactive*")
+  (set-default 'uniline-hint-style 1)
   (uniline-mode 1)
   (if (fboundp 'hydra-keyboard-quit)
       (hydra-keyboard-quit)) ;; clear any left-over from previous bench
