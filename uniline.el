@@ -3193,16 +3193,6 @@ Try installing it prior to installing Uniline.
 In the meantime, `uniline-interface-type' is set to `:transient'")
     (setq uniline-interface-type :transient))
 
-  (when
-      (and (eq uniline-interface-type :transient)
-           (not (featurep 'transient-autoloads))
-           (not (featurep 'transient)))
-    (message "The Transient interface is requested through
-the `uniline-interface-type' variable,
-but it seems the Transient package is not installed.
-Try installing it prior to installing Uniline.")
-    (setq uniline-interface-type nil))
-
   (unless (memq uniline-interface-type '(:transient :hydra))
     (user-error
      "No Hydra nor Transient packages found, aborting Uniline installation"))
