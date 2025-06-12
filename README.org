@@ -3,7 +3,8 @@
 #+OPTIONS: ^:{} authors:Thierry Banel, toc:nil
 #+LATEX_HEADER: \usepackage{pmboxdraw}
 
-*New*: =Transient= replaces =Hydra= as the default user interface.
+*New*: =Transient= replaces =Hydra= as the default user interface.  =Aporetic=
+font added.
 
 * Getting started in 10 seconds
 :PROPERTIES:
@@ -40,7 +41,7 @@
 - [[#dashed-lines-and-other-styles][Dashed lines and other styles]]
 - [[#ascii-to-unicode][ASCII to UNICODE]]
 - [[#which-fonts][Which fonts?]]
-- [[#hydra-or-tansient][Hydra or Tansient?]]
+- [[#hydra-or-transient][Hydra or Transient?]]
   - [[#the-hydra-interface][The Hydra interface]]
   - [[#the-transient-interface][The Transient interface]]
 - [[#line-spacing][Line spacing]]
@@ -433,7 +434,7 @@ To change the direction of the arrow, use shift-arrow, for example:
 There are a few other UNICODE characters which are mono-space and
 symmetric in the 4 directions. They are great at line intersections:
 
-To insert a square =□ ■ ▫ ▪ ◇ ◆ ◊= type:
+To insert a square =□ ■ ▫ ▪ ◆ ◊= type:
 =<insert> s s s...= (=s= cycles, =S= cycles backward).
 
 To insert a circular shape =· ∙ • ● ◦ Ø ø= type:
@@ -455,9 +456,9 @@ prefix them with =<insert>=. Example: =<insert> -= inserts a =-= and
 <insert>
     │
     ▼
-   ╭┴╮   ╭───────╮  ╭─────────────────────╮
-   │s├─▶─┤squares├──┤ □  ■  ▫  ▪  ◇  ◆  ◊ │
-   ╰┬╯   ╰───────╯  ╰─────────────────────╯
+   ╭┴╮   ╭───────╮  ╭──────────────────╮
+   │s├─▶─┤squares├──┤ □  ■  ▫  ▪  ◆  ◊ │
+   ╰┬╯   ╰───────╯  ╰──────────────────╯
    ╭┴╮   ╭───────╮  ╭─────────────────────╮
    │o├─▶─┼circles┼──┤ ·  ∙  •  ●  ◦  Ø  ø │
    ╰┬╯   ╰───────╯  ╰─────────────────────╯
@@ -849,7 +850,7 @@ You will be offered a choice of styles:
 - =-=: thick lines corners and intersections become thin, filled glyphs
   are emptied.
 - ===: thick and thin lines become double lines.
-- =0=: come back to standard base-line Uniline style: plain not-dashed
+- =0=: come back to standard base-line =Uniline= style: plain not-dashed
   lines, thin corner rounded, ASCII art is converted to UNICODE.
 - =a=: apply the =aa2u-rectangle= function from the unrelated
   =ascii-art-to-unicode= package, to convert ASCII art to UNICODE (this
@@ -887,13 +888,13 @@ nice looking sketches.
 :CUSTOM_ID: ascii-to-unicode
 :END:
 
-The standard base-line Uniline (=INS s 0=) or =aa2u-rectangle= (=INS s a=)
+The standard base-line =Uniline= (=INS s 0=) or =aa2u-rectangle= (=INS s a=)
 conversions may be used to convert ASCII art to UNICODE. The original
 ASCII art may be drawn for instance by the =artist-mode= or the
 =picture-mode= packages.
 
 To use =aa2u-rectangle=, install the =ascii-art-to-unicode= package by
-Thien-Thi Nguyen (RIP), available on ELPA. Uniline does not requires a
+Thien-Thi Nguyen (RIP), available on ELPA. =Uniline= does not requires a
 dependency on this package, by lazy evaluating any call to
 =aa2u-rectangle=.
 See https://elpa.gnu.org/packages/ascii-art-to-unicode.html
@@ -968,23 +969,26 @@ A mono-space character font must be used. It must also support UNICODE.
 
 Not all fonts are born equal.
 
-- =(set-frame-font "DejaVu Sans Mono"   )=
-- =(set-frame-font "Unifont"            )=
-- =(set-frame-font "Hack"               )=
-- =(set-frame-font "JetBrains Mono"     )=
-- =(set-frame-font "Cascadia Mono"      )=
-- =(set-frame-font "Agave"              )=
-- =(set-frame-font "JuliaMono"          )=
-- =(set-frame-font "FreeMono"           )=
-- =(set-frame-font "Iosevka Comfy Fixed")=
-- =(set-frame-font "Source Code Pro"    )=
+- =(set-frame-font "DejaVu Sans Mono"        )=
+- =(set-frame-font "Unifont"                 )=
+- =(set-frame-font "Hack"                    )=
+- =(set-frame-font "JetBrains Mono"          )=
+- =(set-frame-font "Cascadia Mono"           )=
+- =(set-frame-font "Agave"                   )=
+- =(set-frame-font "JuliaMono"               )=
+- =(set-frame-font "FreeMono"                )=
+- =(set-frame-font "Iosevka Comfy Fixed"     )=
+- =(set-frame-font "Iosevka Comfy Wide Fixed")=
+- =(set-frame-font "Aporetic Sans Mono"      )=
+- =(set-frame-font "Aporetic Serif Mono"     )=
+- =(set-frame-font "Source Code Pro"         )=
 
 Those fonts are known to support the required UNICODE characters, AND
 display them as mono-space. There are fonts advertised as mono-space
 which give arbitrary widths to non-ASCII characters. That is bad for
 the kind of drawings done by =Uniline=.
 
-You may want to try any of the 10 suggested fonts. Just hit the
+You may want to try any of the suggested fonts. Just hit the
 corresponding entry in the =Uniline= menu, or type =<insert> f=. You may
 also execute the above Lisp commands like that:
 
@@ -1011,9 +1015,9 @@ To know which font Emacs has chosen for a given character, type:
 Note that none of those commands downloads a font from the Web.
 The font should already be available.
 
-* Hydra or Tansient?
+* Hydra or Transient?
 :PROPERTIES:
-:CUSTOM_ID: hydra-or-tansient
+:CUSTOM_ID: hydra-or-transient
 :END:
 Casual usage of =Uniline= should be easy: just move the point, and lines
 are traced.
@@ -1275,8 +1279,7 @@ this works:
 #+end_example
 
 Note that corners of thin lines should be sharp. There is no support
-for rounded corners. =Uniline= does not (yet) draw sharp thin
-corners. But it can recognize them.
+for rounded corners.
 
 To export this Org Mode example to PDF through LaTex, type:
 
@@ -1355,7 +1358,7 @@ On Windows the only native mono-spaced fonts are =Lucida Console= and
 
 Often, the =Consolas= font is present on Windows. It supports quite well
 the required Unicodes to draw lines. A few glyphs produce unaligned
-result though. They should be avoided under =Consolas=: =△▶▹◇◆=
+result though. They should be avoided under =Consolas=: =△▶▹◆=
 
 Of course, other fonts may be installed. It is quite easy.
 
@@ -1363,7 +1366,7 @@ Of course, other fonts may be installed. It is quite easy.
 :PROPERTIES:
 :CUSTOM_ID: lisp-api
 :END:
-Could Uniline be programmed (versus used interactively)?
+Could =Uniline= be programmed (versus used interactively)?
 Yes!
 
 The API is usable programatically:
@@ -1455,7 +1458,7 @@ parameter:
 The =(interactive "Nsize? ")= form prompt user for the size of the shape
 if not given as a parameter.
 
-This API works in any mode, not only in Uniline minor mode. They take
+This API works in any mode, not only in =Uniline= minor mode. They take
 care of the infiniteness of the buffer in the right and down
 directions.
 
@@ -1590,9 +1593,9 @@ In this example, =C-<insert>= was chosen. You can use whatever keys combination 
   directions.
 
 - =ascii-art-to-unicode= ASCII art to UNICODE in Emacs. This is a
-  standard ELPA package by Thien-Thi Nguyen (rest in peace). Uniline
+  standard ELPA package by Thien-Thi Nguyen (rest in peace). =Uniline=
   may call it to convert ASCII art drawings to equivalent
-  UNICODE. Uniline arranges to not require a dependency on
+  UNICODE. =Uniline= arranges to not require a dependency on
   =ascii-art-to-unicode= by lazy evaluating a call to =aa2u=.
 
 - =org-pretty-table=: Org Mode tables /appear/ to be drawn in UNICODE
@@ -1667,7 +1670,7 @@ Feedback:
 - Chris Rayner (@riscy), gave recommendations prior to insertion in
   MELPA
 
-- Adam Porter (@alphapapa), suggested submitting Uniline to ELPA;
+- Adam Porter (@alphapapa), suggested submitting =Uniline= to =ELPA=;
   should I?
 
 - Joost Kremers https://github.com/joostkremers found a bug in the
@@ -1677,11 +1680,20 @@ Feedback:
   inserting usual characters not moving the cursor
 
 - LuciusChen & lhindir on GitHub, arthurno1 & karthink on Reddit,
-  pushed toward =Transient= as the default interface instead of =Hydra=.
+  pushed toward =Transient= as the default interface instead of =Hydra=
+
+- karthink noted that =Transient= was now built into Emacs, loosening
+  the dependencies conundrum, arthurno1 participated in the =Hydra= -
+  =Transient= discussion
+
+- karthink pointed to the new =Aporetic= font family, which was added
+  to the =Uniline= supported fonts
 
 Utilities:
 
 - Oleh Krehel alias abo-abo for his package =Hydra=
+
+- The =Magit= team for the =Transient= library
 
 - Thien-Thi Nguyen (RIP) for his package =ascii-art-to-unicode=
 

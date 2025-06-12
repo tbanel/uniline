@@ -57,7 +57,8 @@
 ;;│ - Agave
 ;;│ - JuliaMono
 ;;│ - FreeMono
-;;│ - Iosevka Comfy Fixed
+;;│ - Iosevka Comfy Fixed, Iosevka Comfy Wide Fixed
+;;│ - Aporetic Sans Mono, Aporetic Serif Mono
 ;;│ - Source Code Pro
 ;;╰──────────────────────────╮
 ;;╭─UTF-8────────────────────╯
@@ -967,7 +968,7 @@ without the fall-back characters."))
       (s   ?■)      ;; black square
       (s   ?▫)      ;; white small square
       (s   ?▪)      ;; black small square
-      (s   ?◇)      ;; white diamond
+      ;;(s   ?◇)      ;; white diamond ;; glitch with Source Code Pro
       (s   ?◆)      ;; black diamond
       (s   ?◊)      ;; lozenge
 
@@ -3059,7 +3060,6 @@ thick-line or double-line rounded corners."
        (?◂ . ?◃)
        (?■ . ?□)
        (?▪ . ?▫)
-       (?◆ . ?◇)
        (?• . ?◦))))
   256 'eq
   "Convert black or heavy characters to white or light ones")
@@ -3100,7 +3100,6 @@ as well as glyphs (e.g. ■ to □ or ▼ to ▽)."
        (?◃ . ?◂)
        (?□ . ?■)
        (?▫ . ?▪)
-       (?◇ . ?◆)
        (?◦ . ?•))))
   128 'equal ; `equal' instead of `eq' to achieve a small collision-less table
   "Convert white or light characters to black or heavy ones")
@@ -3228,16 +3227,19 @@ In the meantime, `uniline-interface-type' is set to `:transient'")
   "Check if current font is the one presented by LETTER."
   (let ((name
          (uniline--switch-with-table letter
-          (?d "DejaVu"     )
-          (?u "Unifont"    )
-          (?h "Hack"       )
-          (?b "JetBrain"   )
-          (?c "Cascadia"   )
-          (?a "Agave"      )
-          (?j "Julia"      )
-          (?f "FreeMono"   )
-          (?i "Iosevka"    )
-          (?s "Source Code"))))
+          (?d "DejaVu"                  )
+          (?u "Unifont"                 )
+          (?h "Hack"                    )
+          (?b "JetBrain"                )
+          (?c "Cascadia"                )
+          (?a "Agave"                   )
+          (?j "Julia"                   )
+          (?f "FreeMono"                )
+          (?i "Iosevka Comfy Fixed"     )
+          (?I "Iosevka Comfy Wide Fixed")
+          (?p "Aporetic Sans Mono"      )
+          (?P "Aporetic Serif Mono"     )
+          (?s "Source Code"             ))))
     (and name (string-match name (frame-parameter nil 'font)))))
 
 (defun uniline--is-font-str (letter)
@@ -3257,6 +3259,9 @@ In the meantime, `uniline-interface-type' is set to `:transient'")
              (?j '(" Julia"           . "▶Julia"          ))
              (?f '(" FreeMono"        . "▶FreeMono"       ))
              (?i '(" Iosevka"         . "▶Iosevka"        ))
+             (?I '(" Iosevka Wide"    . "▶Iosevka Wide"   ))
+             (?p '(" Aporetic Sans"   . "▶Aporetic Sans"  ))
+             (?P '(" Aporetic Serif"  . "▶Aporetic Serif" ))
              (?s '(" Source Code Pro" . "▶Source Code Pro")))))
 
 (when nil
@@ -3266,22 +3271,25 @@ In the meantime, `uniline-interface-type' is set to `:transient'")
   (insert "\n;; BEGIN -- Automatically generated\n")
   (cl-loop
    for f in
-   '((?d "DejaVu"          . "DejaVu Sans Mono"   )
-     (?u "Unifont"         . "Unifont"            )
-     (?h "Hack"            . "Hack"               )
-     (?b "JetBrains"       . "JetBrains Mono"     )
-     (?c "Cascadia"        . "Cascadia Mono"      )
-     (?a "Agave"           . "Agave"              )
-     (?j "Julia"           . "JuliaMono"          )
-     (?f "FreeMono"        . "FreeMono"           )
-     (?i "Iosevka"         . "Iosevka Comfy Fixed")
-     (?s "Source Code Pro" . "Source Code Pro"    ))
+   '((?d . "DejaVu Sans Mono"        )
+     (?u . "Unifont"                 )
+     (?h . "Hack"                    )
+     (?b . "JetBrains Mono"          )
+     (?c . "Cascadia Mono"           )
+     (?a . "Agave"                   )
+     (?j . "JuliaMono"               )
+     (?f . "FreeMono"                )
+     (?i . "Iosevka Comfy Fixed"     )
+     (?I . "Iosevka Comfy Wide Fixed")
+     (?p . "Aporetic Sans Mono"      )
+     (?P . "Aporetic Serif Mono"     )
+     (?s . "Source Code Pro"         ))
    do
    (insert
     (format "(defun uniline--set-font-%c ()\n" (car f)))
    (insert "  (interactive)\n")
    (insert
-    (format "  (set-frame-font \"%s\"))\n" (cddr f))))
+    (format "  (set-frame-font \"%s\"))\n" (cdr f))))
   (insert "\n;; END -- Automatically generated\n"))
 
 ;; BEGIN -- Automatically generated
@@ -3312,6 +3320,15 @@ In the meantime, `uniline-interface-type' is set to `:transient'")
 (defun uniline--set-font-i ()
   (interactive)
   (set-frame-font "Iosevka Comfy Fixed"))
+(defun uniline--set-font-I ()
+  (interactive)
+  (set-frame-font "Iosevka Comfy Wide Fixed"))
+(defun uniline--set-font-p ()
+  (interactive)
+  (set-frame-font "Aporetic Sans Mono"))
+(defun uniline--set-font-P ()
+  (interactive)
+  (set-frame-font "Aporetic Serif Mono"))
 (defun uniline--set-font-s ()
   (interactive)
   (set-frame-font "Source Code Pro"))
@@ -3362,15 +3379,16 @@ and highlighted."
    ;; Docstring MUST begin with an empty line to benefit from substitutions
    (concat
     (replace-regexp-in-string
-     "_\\([dhcjbfsiua]\\)_ "
+     "_\\([dhcjbfsiIuapP]\\)_ "
      "_\\1_%s(uniline--is-font-str ?\\1)"
      "\
-╭^─Try a font^─╮^ ^           ╭^─^──────────────╮╭^─^───^─^──────╮
-│_d_ DejaVu    ╰^─^───────────╯_i_ Iosevka Comfy││_*_ ^^configure│
-│_h_ Hack       _b_ JetBrains  _u_ Unifont      ││_TAB_^^ sh hint│
-│_c_ Cascadia   _f_ FreeMono   _a_ Agave        ││_RET_ _q_ exit │
-│_j_ JuliaMono  _s_ Source Code Pro^^╭──────────╯╰^─^───^─^──────╯
-╰^─^────────────^─^────────────^─^───╯"))
+╭^─Try a font^──^─^───────────^─^───────────────────╮╭^─^───^─^──────╮
+│_d_ DejaVu     _b_ JetBrains _i_ Iosevka Comfy     ││_*_ ^^configure│
+│_h_ Hack       _f_ FreeMono  _I_ Iosevka Comfy Wide││_TAB_^^ sh hint│
+│_c_ Cascadia   _a_ Agave     _p_ Aporetic Sans     ││_RET_ _q_  exit│
+│_j_ JuliaMono  _u_ Unifont   _P_ Aporetic Serif    │╰^─^───^─^──────╯
+│_s_ Source Code Pro^^╭───────^─^───────────────────╯
+╰^─^────────────^─^───╯"))
    ("d" uniline--set-font-d)
    ("u" uniline--set-font-u)
    ("h" uniline--set-font-h)
@@ -3380,6 +3398,9 @@ and highlighted."
    ("j" uniline--set-font-j)
    ("f" uniline--set-font-f)
    ("i" uniline--set-font-i)
+   ("I" uniline--set-font-I)
+   ("p" uniline--set-font-p)
+   ("P" uniline--set-font-P)
    ("s" uniline--set-font-s)
    ("*" uniline-customize-face :exit t)
    ("TAB" uniline-toggle-hydra-hints)
@@ -3396,7 +3417,7 @@ and highlighted."
      "\
 ╭^─^─^Insert glyph^─────╮╭^Rotate arrow^╮╭^Text dir────^╮╭^─Contour─^╮╭^─^─^─^─^─^─^─^────────────╮
 │_a_,_A_rrow ▷ ▶ → ▹ ▸ ↔││_S-<left>_  ← ││_C-<left>_  ← ││_c_ contour││_-_ _+_ _=_ _#_ self-insert│
-│_s_,_S_quare  □ ■ ◇ ◆ ◊││_S-<right>_ → ││_C-<right>_ → ││_C_ ovwrt  ││_f_ ^^^^^^      choose font│
+│_s_,_S_quare  □ ■ ◆ ◊  ││_S-<right>_ → ││_C-<right>_ → ││_C_ ovwrt  ││_f_ ^^^^^^      choose font│
 │_o_,_O_-shape · ● ◦ Ø ø││_S-<up>_    ↑ ││_C-<up>_    ↑ │╭^─────────^╮│_TAB_   ^^^^^^  short hint │
 │_x_,_X_-cross ╳ ÷ × ± ¤││_S-<down>_  ↓ ││_C-<down>_  ↓ ││_i_ fill   ││_q_ _RET_ ^^^^  exit       │
 ╰^─^─^─^────────────────╯╰^Tweak glyph─^╯╰^─^───────────╯╰^─Fill────^╯╰^─^─^─^─^─^─^─^────────────╯"))
@@ -3691,15 +3712,18 @@ just put everything in sync."
       ("d" (lambda () (uniline--font-name-ticked ?d)) uniline--set-font-d :transient t)
       ("h" (lambda () (uniline--font-name-ticked ?h)) uniline--set-font-h :transient t)
       ("c" (lambda () (uniline--font-name-ticked ?c)) uniline--set-font-c :transient t)
-      ("j" (lambda () (uniline--font-name-ticked ?j)) uniline--set-font-j :transient t)]
+      ("j" (lambda () (uniline--font-name-ticked ?j)) uniline--set-font-j :transient t)
+      ("s" (lambda () (uniline--font-name-ticked ?s)) uniline--set-font-s :transient t)]
      [""
       ("b" (lambda () (uniline--font-name-ticked ?b)) uniline--set-font-b :transient t)
       ("f" (lambda () (uniline--font-name-ticked ?f)) uniline--set-font-f :transient t)
-      ("s" (lambda () (uniline--font-name-ticked ?s)) uniline--set-font-s :transient t)]
+      ("a" (lambda () (uniline--font-name-ticked ?a)) uniline--set-font-a :transient t)
+      ("u" (lambda () (uniline--font-name-ticked ?u)) uniline--set-font-u :transient t)]
      [""
       ("i" (lambda () (uniline--font-name-ticked ?i)) uniline--set-font-i :transient t)
-      ("u" (lambda () (uniline--font-name-ticked ?u)) uniline--set-font-u :transient t)
-      ("a" (lambda () (uniline--font-name-ticked ?a)) uniline--set-font-a :transient t)]
+      ("I" (lambda () (uniline--font-name-ticked ?I)) uniline--set-font-I :transient t)
+      ("p" (lambda () (uniline--font-name-ticked ?p)) uniline--set-font-p :transient t)
+      ("P" (lambda () (uniline--font-name-ticked ?P)) uniline--set-font-P :transient t)]
      ["Actions"
       ("*" "Configure" uniline-customize-face)
       ("q" "Quit" transient-quit-one)]]
@@ -3715,12 +3739,12 @@ just put everything in sync."
      transient-columns
      ["Insert"
       ("a" "▷▶→▹▸↔" uniline-insert-fw-arrow  :transient t)
-      ("s" "□■◇◆◊"  uniline-insert-fw-square :transient t)
+      ("s" "□■◆◊"  uniline-insert-fw-square :transient t)
       ("o" "·●◦Øø"  uniline-insert-fw-oshape :transient t)
       ("x" "╳÷×±¤"  uniline-insert-fw-cross  :transient t)]
      [""
       ("A" "↔▸▹→▶▷" uniline-insert-bw-arrow  :transient t)
-      ("S" "◊◆◇■□"  uniline-insert-bw-square :transient t)
+      ("S" "◊◆■□"  uniline-insert-bw-square :transient t)
       ("O" "øØ◦●·"  uniline-insert-bw-oshape :transient t)
       ("X" "¤±×÷╳"  uniline-insert-bw-cross  :transient t)]
      [""
@@ -4030,7 +4054,7 @@ And backup previous settings."
 │ and change its orientation.
 ├─Intersection glyphs────────╴
 │ \\`a' or \\`A' arrows ▷ ▶ → ▹ ▸ ↔
-│ \\`s' or \\`S' squares  □ ■ ◇ ◆ ◊
+│ \\`s' or \\`S' squares  □ ■ ◆ ◊
 │ \\`o' or \\`O' circles  · ● ◦ Ø ø
 │ \\`x' or \\`X' crosses  ╳ ÷ × ± ¤
 │ Shifting the key cycles backward
@@ -4174,7 +4198,7 @@ And backup previous settings."
     "----"
     ("Insert glyph"
      ["insert arrow ▷ ▶ → ▹ ▸ ↔" uniline-insert-fw-arrow  :keys "INS a"]
-     ["insert square □ ■ ◇ ◆ ◊"  uniline-insert-fw-square :keys "INS s"]
+     ["insert square □ ■ ◆ ◊"    uniline-insert-fw-square :keys "INS s"]
      ["insert oshape · ● ◦ Ø ø"  uniline-insert-fw-oshape :keys "INS o"]
      ["insert cross ╳ ÷ × ± ¤"   uniline-insert-fw-cross  :keys "INS x"])
     ("Rotate arrow, tweak ¼ line"
@@ -4218,16 +4242,19 @@ And backup previous settings."
     "----"
     ["large hints sizes" uniline-toggle-hydra-hints :keys "TAB or C-h TAB" :style toggle :selected (eq uniline-hint-style t)]
     ("Font"
-     ["DejaVu Sans Mono"    (set-frame-font "DejaVu Sans Mono"   ) :keys "INS f d" :style radio :selected (uniline--is-font ?d)]
-     ["Hack"                (set-frame-font "Hack"               ) :keys "INS f h" :style radio :selected (uniline--is-font ?h)]
-     ["Cascadia Mono"       (set-frame-font "Cascadia Mono"      ) :keys "INS f c" :style radio :selected (uniline--is-font ?c)]
-     ["JuliaMono"           (set-frame-font "JuliaMono"          ) :keys "INS f j" :style radio :selected (uniline--is-font ?j)]
-     ["JetBrains Mono"      (set-frame-font "JetBrains Mono"     ) :keys "INS f b" :style radio :selected (uniline--is-font ?b)]
-     ["FreeMono"            (set-frame-font "FreeMono"           ) :keys "INS f f" :style radio :selected (uniline--is-font ?f)]
-     ["Source Code Pro"     (set-frame-font "Source Code Pro"    ) :keys "INS f s" :style radio :selected (uniline--is-font ?s)]
-     ["Iosevka Comfy Fixed" (set-frame-font "Iosevka Comfy Fixed") :keys "INS f i" :style radio :selected (uniline--is-font ?i)]
-     ["Unifont"             (set-frame-font "Unifont"            ) :keys "INS f u" :style radio :selected (uniline--is-font ?u)]
-     ["Agave"               (set-frame-font "Agave"              ) :keys "INS f a" :style radio :selected (uniline--is-font ?a)]
+     ["DejaVu Sans Mono"             (set-frame-font "DejaVu Sans Mono"           ) :keys "INS f d" :style radio :selected (uniline--is-font ?d)]
+     ["Hack"                         (set-frame-font "Hack"                       ) :keys "INS f h" :style radio :selected (uniline--is-font ?h)]
+     ["Cascadia Mono"                (set-frame-font "Cascadia Mono"              ) :keys "INS f c" :style radio :selected (uniline--is-font ?c)]
+     ["JuliaMono"                    (set-frame-font "JuliaMono"                  ) :keys "INS f j" :style radio :selected (uniline--is-font ?j)]
+     ["JetBrains Mono"               (set-frame-font "JetBrains Mono"             ) :keys "INS f b" :style radio :selected (uniline--is-font ?b)]
+     ["FreeMono"                     (set-frame-font "FreeMono"                   ) :keys "INS f f" :style radio :selected (uniline--is-font ?f)]
+     ["Source Code Pro"              (set-frame-font "Source Code Pro"            ) :keys "INS f s" :style radio :selected (uniline--is-font ?s)]
+     ["Iosevka Comfy Fixed"          (set-frame-font "Iosevka Comfy Fixed"        ) :keys "INS f i" :style radio :selected (uniline--is-font ?i)]
+     ["Iosevka Comfy Wide Fixed"     (set-frame-font "Iosevka Comfy Wide Fixed"   ) :keys "INS f I" :style radio :selected (uniline--is-font ?I)]
+     ["Aporetic Sans Mono"           (set-frame-font "Aporetic Sans Mono"         ) :keys "INS f p" :style radio :selected (uniline--is-font ?p)]
+     ["Aporetic Serif Mono"          (set-frame-font "Aporetic Serif Mono"        ) :keys "INS f P" :style radio :selected (uniline--is-font ?P)]
+     ["Unifont"                      (set-frame-font "Unifont"                    ) :keys "INS f u" :style radio :selected (uniline--is-font ?u)]
+     ["Agave"                        (set-frame-font "Agave"                      ) :keys "INS f a" :style radio :selected (uniline--is-font ?a)]
      ["permanently configure" uniline-customize-face               :keys "INS f *"])
     ["info" (info "uniline") :keys "M-: (info \"uniline\")"]
     ["quit Uniline Mode" uniline-mode t] ))

@@ -14,6 +14,7 @@ Uniline
 *******
 
 *New*: ‘Transient’ replaces ‘Hydra’ as the default user interface.
+‘Aporetic’ font added.
 
 * Menu:
 
@@ -36,7 +37,7 @@ Uniline
 * Dashed lines and other styles::
 * ASCII to UNICODE::
 * Which fonts?::
-* Hydra or Tansient?::
+* Hydra or Transient?::
 * Line spacing::
 * How Uniline behaves with its environment?::
 * Lisp API::
@@ -47,7 +48,7 @@ Uniline
 
 — The Detailed Node Listing —
 
-Hydra or Tansient?
+Hydra or Transient?
 
 * The Hydra interface::
 * The Transient interface::
@@ -433,7 +434,7 @@ File: uniline.info,  Node: Intersection glyphs ■ ◆ ●,  Next: Drawing recta
 There are a few other UNICODE characters which are mono-space and
 symmetric in the 4 directions.  They are great at line intersections:
 
-   To insert a square ‘□ ■ ▫ ▪ ◇ ◆ ◊’ type: ‘<insert> s s s...’ (‘s’
+   To insert a square ‘□ ■ ▫ ▪ ◆ ◊’ type: ‘<insert> s s s...’ (‘s’
 cycles, ‘S’ cycles backward).
 
    To insert a circular shape ‘· ∙ • ● ◦ Ø ø’ type: ‘<insert> o o o...’
@@ -454,9 +455,9 @@ prefix them with ‘<insert>’.  Example: ‘<insert> -’ inserts a ‘-’ an
      <insert>
          │
          ▼
-        ╭┴╮   ╭───────╮  ╭─────────────────────╮
-        │s├─▶─┤squares├──┤ □  ■  ▫  ▪  ◇  ◆  ◊ │
-        ╰┬╯   ╰───────╯  ╰─────────────────────╯
+        ╭┴╮   ╭───────╮  ╭──────────────────╮
+        │s├─▶─┤squares├──┤ □  ■  ▫  ▪  ◆  ◊ │
+        ╰┬╯   ╰───────╯  ╰──────────────────╯
         ╭┴╮   ╭───────╮  ╭─────────────────────╮
         │o├─▶─┼circles┼──┤ ·  ∙  •  ●  ◦  Ø  ø │
         ╰┬╯   ╰───────╯  ╰─────────────────────╯
@@ -842,7 +843,7 @@ be made either thin or thick.
    • ‘-’: thick lines corners and intersections become thin, filled
      glyphs are emptied.
    • ‘=’: thick and thin lines become double lines.
-   • ‘0’: come back to standard base-line Uniline style: plain
+   • ‘0’: come back to standard base-line ‘Uniline’ style: plain
      not-dashed lines, thin corner rounded, ASCII art is converted to
      UNICODE.
    • ‘a’: apply the ‘aa2u-rectangle’ function from the unrelated
@@ -880,14 +881,14 @@ File: uniline.info,  Node: ASCII to UNICODE,  Next: Which fonts?,  Prev: Dashed 
 18 ASCII to UNICODE
 *******************
 
-The standard base-line Uniline (‘INS s 0’) or ‘aa2u-rectangle’ (‘INS s
+The standard base-line ‘Uniline’ (‘INS s 0’) or ‘aa2u-rectangle’ (‘INS s
 a’) conversions may be used to convert ASCII art to UNICODE.  The
 original ASCII art may be drawn for instance by the ‘artist-mode’ or the
 ‘picture-mode’ packages.
 
    To use ‘aa2u-rectangle’, install the ‘ascii-art-to-unicode’ package
-by Thien-Thi Nguyen (RIP), available on ELPA.  Uniline does not requires
-a dependency on this package, by lazy evaluating any call to
+by Thien-Thi Nguyen (RIP), available on ELPA.  ‘Uniline’ does not
+requires a dependency on this package, by lazy evaluating any call to
 ‘aa2u-rectangle’.  See
 <https://elpa.gnu.org/packages/ascii-art-to-unicode.html>
 
@@ -950,7 +951,7 @@ conversion by ‘INS s 0’:
 
 
 
-File: uniline.info,  Node: Which fonts?,  Next: Hydra or Tansient?,  Prev: ASCII to UNICODE,  Up: Top
+File: uniline.info,  Node: Which fonts?,  Next: Hydra or Transient?,  Prev: ASCII to UNICODE,  Up: Top
 
 19 Which fonts?
 ***************
@@ -967,7 +968,10 @@ A mono-space character font must be used.  It must also support UNICODE.
    • ‘(set-frame-font "Agave" )’
    • ‘(set-frame-font "JuliaMono" )’
    • ‘(set-frame-font "FreeMono" )’
-   • ‘(set-frame-font "Iosevka Comfy Fixed")’
+   • ‘(set-frame-font "Iosevka Comfy Fixed" )’
+   • ‘(set-frame-font "Iosevka Comfy Wide Fixed")’
+   • ‘(set-frame-font "Aporetic Sans Mono" )’
+   • ‘(set-frame-font "Aporetic Serif Mono" )’
    • ‘(set-frame-font "Source Code Pro" )’
 
    Those fonts are known to support the required UNICODE characters, AND
@@ -975,7 +979,7 @@ display them as mono-space.  There are fonts advertised as mono-space
 which give arbitrary widths to non-ASCII characters.  That is bad for
 the kind of drawings done by ‘Uniline’.
 
-   You may want to try any of the 10 suggested fonts.  Just hit the
+   You may want to try any of the suggested fonts.  Just hit the
 corresponding entry in the ‘Uniline’ menu, or type ‘<insert> f’.  You
 may also execute the above Lisp commands like that:
 
@@ -1003,10 +1007,10 @@ are displayed on another text editor or on the Web.
 font should already be available.
 
 
-File: uniline.info,  Node: Hydra or Tansient?,  Next: Line spacing,  Prev: Which fonts?,  Up: Top
+File: uniline.info,  Node: Hydra or Transient?,  Next: Line spacing,  Prev: Which fonts?,  Up: Top
 
-20 Hydra or Tansient?
-*********************
+20 Hydra or Transient?
+**********************
 
 Casual usage of ‘Uniline’ should be easy: just move the point, and lines
 are traced.
@@ -1042,7 +1046,7 @@ default value.
 * The Transient interface::
 
 
-File: uniline.info,  Node: The Hydra interface,  Next: The Transient interface,  Up: Hydra or Tansient?
+File: uniline.info,  Node: The Hydra interface,  Next: The Transient interface,  Up: Hydra or Transient?
 
 20.1 The Hydra interface
 ========================
@@ -1095,7 +1099,7 @@ buffer per buffer basis with the ‘TAB’ key.  Note the use of
 the ‘~/.emacs’ buffer.
 
 
-File: uniline.info,  Node: The Transient interface,  Prev: The Hydra interface,  Up: Hydra or Tansient?
+File: uniline.info,  Node: The Transient interface,  Prev: The Hydra interface,  Up: Hydra or Transient?
 
 20.2 The Transient interface
 ============================
@@ -1111,7 +1115,7 @@ interface.
    ‘Transient’ interface was added recently to ‘Uniline’.
 
 
-File: uniline.info,  Node: Line spacing,  Next: How Uniline behaves with its environment?,  Prev: Hydra or Tansient?,  Up: Top
+File: uniline.info,  Node: Line spacing,  Next: How Uniline behaves with its environment?,  Prev: Hydra or Transient?,  Up: Top
 
 21 Line spacing
 ***************
@@ -1287,8 +1291,7 @@ drawing" characters in LaTex documents.
 
 
    Note that corners of thin lines should be sharp.  There is no support
-for rounded corners.  ‘Uniline’ does not (yet) draw sharp thin corners.
-But it can recognize them.
+for rounded corners.
 
    To export this Org Mode example to PDF through LaTex, type:
 
@@ -1378,7 +1381,7 @@ On Windows the only native mono-spaced fonts are ‘Lucida Console’ and
    Often, the ‘Consolas’ font is present on Windows.  It supports quite
 well the required Unicodes to draw lines.  A few glyphs produce
 unaligned result though.  They should be avoided under ‘Consolas’:
-‘△▶▹◇◆’
+‘△▶▹◆’
 
    Of course, other fonts may be installed.  It is quite easy.
 
@@ -1388,7 +1391,7 @@ File: uniline.info,  Node: Lisp API,  Next: Installation,  Prev: How Uniline beh
 23 Lisp API
 ***********
 
-Could Uniline be programmed (versus used interactively)?  Yes!
+Could ‘Uniline’ be programmed (versus used interactively)?  Yes!
 
    The API is usable programatically:
 
@@ -1473,7 +1476,7 @@ parameter:
    The ‘(interactive "Nsize? ")’ form prompt user for the size of the
 shape if not given as a parameter.
 
-   This API works in any mode, not only in Uniline minor mode.  They
+   This API works in any mode, not only in ‘Uniline’ minor mode.  They
 take care of the infiniteness of the buffer in the right and down
 directions.
 
@@ -1601,9 +1604,9 @@ File: uniline.info,  Node: Related packages,  Next: Author contributors,  Prev: 
      south directions.
 
    • ‘ascii-art-to-unicode’ ASCII art to UNICODE in Emacs.  This is a
-     standard ELPA package by Thien-Thi Nguyen (rest in peace).  Uniline
-     may call it to convert ASCII art drawings to equivalent UNICODE.
-     Uniline arranges to not require a dependency on
+     standard ELPA package by Thien-Thi Nguyen (rest in peace).
+     ‘Uniline’ may call it to convert ASCII art drawings to equivalent
+     UNICODE.  ‘Uniline’ arranges to not require a dependency on
      ‘ascii-art-to-unicode’ by lazy evaluating a call to ‘aa2u’.
 
    • ‘org-pretty-table’: Org Mode tables _appear_ to be drawn in UNICODE
@@ -1682,7 +1685,7 @@ File: uniline.info,  Node: Author contributors,  Next: License,  Prev: Related p
    • Chris Rayner (@riscy), gave recommendations prior to insertion in
      MELPA
 
-   • Adam Porter (@alphapapa), suggested submitting Uniline to ELPA;
+   • Adam Porter (@alphapapa), suggested submitting ‘Uniline’ to ‘ELPA’;
      should I?
 
    • Joost Kremers <https://github.com/joostkremers> found a bug in the
@@ -1693,11 +1696,20 @@ File: uniline.info,  Node: Author contributors,  Next: License,  Prev: Related p
 
    • LuciusChen & lhindir on GitHub, arthurno1 & karthink on Reddit,
      pushed toward ‘Transient’ as the default interface instead of
-     ‘Hydra’.
+     ‘Hydra’
+
+   • karthink noted that ‘Transient’ was now built into Emacs, loosening
+     the dependencies conundrum, arthurno1 participated in the ‘Hydra’ -
+     ‘Transient’ discussion
+
+   • karthink pointed to the new ‘Aporetic’ font family, which was added
+     to the ‘Uniline’ supported fonts
 
    Utilities:
 
    • Oleh Krehel alias abo-abo for his package ‘Hydra’
+
+   • The ‘Magit’ team for the ‘Transient’ library
 
    • Thien-Thi Nguyen (RIP) for his package ‘ascii-art-to-unicode’
 
@@ -1726,45 +1738,45 @@ along with this program.  If not, see <http://www.gnu.org/licenses/>.
 
 Tag Table:
 Node: Top75
-Node: Getting started in 10 seconds1434
-Node: Pure UNICODE text diagrams in Emacs1764
-Node: Minor mode13061
-Node: Drawing lines13609
-Node: Brush style14285
-Node: The <insert> key15378
-Node: Arrows glyphs ▷ ▶ → ▹ ▸ ↔16212
-Node: Intersection glyphs ■ ◆ ●17769
-Node: Drawing rectangles20417
-Node: Moving rectangles22391
-Node: Copying killing yanking rectangles23635
-Node: Tracing a contour24687
-Node: Flood-fill26471
-Node: Text direction28198
-Node: Macros28739
-Node: Fine tweaking32100
-Node: Dashed lines and other styles33912
-Node: ASCII to UNICODE37975
-Node: Which fonts?41649
-Node: Hydra or Tansient?43507
-Node: The Hydra interface44816
-Node: The Transient interface46873
-Node: Line spacing47380
-Node: How Uniline behaves with its environment?48808
-Node: Compatibility with Picture-mode49356
-Node: Compatibility with Artist-mode50274
-Node: Compatibility with Whitespace-mode50793
-Node: Compatibility with Org Mode51693
-Node: Org Mode and LaTex52479
-Node: What about \t tabs?54380
-Node: What about ^L page separation?55028
-Node: Emacs on the Linux console55651
-Node: Emacs on a graphical terminal emulator56605
-Node: Emacs on Windows57528
-Node: Lisp API58175
-Node: Installation63337
-Node: Related packages64335
-Node: Author contributors67388
-Node: License68333
+Node: Getting started in 10 seconds1463
+Node: Pure UNICODE text diagrams in Emacs1793
+Node: Minor mode13090
+Node: Drawing lines13638
+Node: Brush style14314
+Node: The <insert> key15407
+Node: Arrows glyphs ▷ ▶ → ▹ ▸ ↔16241
+Node: Intersection glyphs ■ ◆ ●17798
+Node: Drawing rectangles20419
+Node: Moving rectangles22393
+Node: Copying killing yanking rectangles23637
+Node: Tracing a contour24689
+Node: Flood-fill26473
+Node: Text direction28200
+Node: Macros28741
+Node: Fine tweaking32102
+Node: Dashed lines and other styles33914
+Node: ASCII to UNICODE37983
+Node: Which fonts?41669
+Node: Hydra or Transient?43688
+Node: The Hydra interface45000
+Node: The Transient interface47058
+Node: Line spacing47566
+Node: How Uniline behaves with its environment?48995
+Node: Compatibility with Picture-mode49543
+Node: Compatibility with Artist-mode50461
+Node: Compatibility with Whitespace-mode50980
+Node: Compatibility with Org Mode51880
+Node: Org Mode and LaTex52666
+Node: What about \t tabs?54485
+Node: What about ^L page separation?55133
+Node: Emacs on the Linux console55756
+Node: Emacs on a graphical terminal emulator56710
+Node: Emacs on Windows57633
+Node: Lisp API58277
+Node: Installation63451
+Node: Related packages64449
+Node: Author contributors67514
+Node: License68842
 
 End Tag Table
 
