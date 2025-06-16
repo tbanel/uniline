@@ -2707,6 +2707,15 @@ then change the 4half segment pointing lf←."
 ;;;│Contour│
 ;;;╰───────╯
 
+(defcustom uniline-contour-max-steps 10000
+  "Maximum number of steps before stopping the contour algorithm.
+This is the number of characters drawn with lines╶─┬─══╦══━━┳━╸,
+or twice the number of characters drawn with block-characters ▝▙.
+This limit may be reached if the text is huge. Of course, the
+algorithm may be started again for an additional 10000 steps."
+  :type 'natnum
+  :group 'uniline)
+
 (defun uniline-contour (&optional force)
   "Draw a contour arround a block of characters.
 A block of characters is a contiguous set of non-blank characters.
@@ -2801,7 +2810,7 @@ When FORCE is not nil, overwrite whatever is in the buffer.
             (and (eq (point) (marker-position start))
                  (or (not (eq uniline-brush :block))
                      (eq uniline--which-quadrant q))))
-           (< n 10000))))
+           (< n uniline-contour-max-steps))))
     (set-marker start nil)
     (message "drew a %s steps contour" n)))
 
@@ -3170,12 +3179,15 @@ Or use the '0 standard' style transformer instead.")))
 
 (eval-when-compile ;; check interface type only at compile-time
 
-  (defvar uniline-interface-type
-    ;;:hydra
-    :transient
+  (defcustom uniline-interface-type :transient
     "Which interface to activate?
 May be :hydra or :transient.
-This is a compile-time setting, without any effect at run-time.")
+This is a compile-time setting, without any effect at run-time.
+Set it for the next installation and compilation of Uniline."
+    :type '(choice
+            (const :tag "Hydra menus"     :hydra)
+            (const :tag "Transient menus" :transient))
+    :group 'uniline)
 
   (if (or (not (boundp 'uniline-interface-type))
           (memq uniline-interface-type '(nil :transient)))
@@ -3582,13 +3594,19 @@ Otherwise, the arrows & shapes hydra is invoked."
 ;;;╰───────────────────╯
 ;; toggle between normal hydra hints, and one-liners
 
-(defvar-local uniline-hint-style t
-  "Which kind of hint message should the Hydras display?
-t: large and detailed messages
-1: one-line non-disturbing messages in the echo area
-0: no message
+(defcustom uniline-hint-style t
+  "Which kind of hint message should the Hydras menus display?
+t: large and detailed menus
+1: one-line non-disturbing menus in the echo area
+0: no menus
 Those values are loosely in sync with those defined by the
-`:verbosity' Hydra property.")
+`:verbosity' Hydra property."
+  :type '(choice
+          (const :tag "full fledged hints" t)
+          (const :tag "one liner hints"    1)
+          (const :tag "no hint"            0))
+  :local t
+  :group 'uniline)
 
 (eval-when-compile                     ; not needed at runtime
   (defun uniline--color-hint (hint)
@@ -3912,6 +3930,33 @@ just put everything in sync."
 ;;;│Uniline minor mode│
 ;;;╰──────────────────╯
 
+(defgroup uniline nil
+  "Draw Unicode lines"
+  :group 'text
+  :link '(url-link :tag "GitHub" "https://github.com/tbanel/uniline"))
+
+(defcustom uniline-cursor-type 'hollow
+  "The suggested cursor in Uniline is a the hollow one,
+because it has no prefered direction (up, down, right, left),
+and the character under the cursor remains visible.
+Yet, the cursor style is a matter of preference,
+so any possible choice is available."
+  :type '(choice
+          (const :tag "Frame default" t)
+          (const :tag "Filled box" box)
+          (cons  :tag "Box with specified size"
+                 (const box) integer)
+          (const :tag "Hollow cursor" hollow)
+          (const :tag "Vertical bar" bar)
+          (cons  :tag "Vertical bar with specified height"
+                 (const bar) integer)
+          (const :tag "Horizontal bar" hbar)
+          (cons  :tag "Horizontal bar with specified width"
+                 (const hbar) integer)
+          (const :tag "None "nil))
+  :local t
+  :group 'uniline)
+
 (defvar-local uniline--remember-settings
     nil
   "Remember settings before entering uniline minor-mode.
@@ -3966,7 +4011,7 @@ And backup previous settings."
   (overwrite-mode 1)
   (indent-tabs-mode 0)
   (setq truncate-lines t)
-  (setq cursor-type 'hollow)
+  (setq cursor-type uniline-cursor-type)
   (add-hook
    'post-self-insert-hook
    #'uniline--post-self-insert
@@ -4146,9 +4191,8 @@ And backup previous settings."
  Documentation here: (info \"uniline\")"
   :init-value nil
   :lighter (:eval (uniline--mode-line))
-  :keymap
-  `(
-    ([right]   . uniline-write-ri→)
+  :keymap  ;; defines uniline-mode-map
+  '(([right]   . uniline-write-ri→)
     ([left ]   . uniline-write-lf←)
     ([up   ]   . uniline-write-up↑)
     ([down ]   . uniline-write-dw↓)
@@ -4171,6 +4215,42 @@ And backup previous settings."
     ([?\C-h ?\t]     . uniline-toggle-hydra-hints-welcome)
     ([?\C-c ?\C-c]   . uniline-mode))
   :after-hook (if uniline-mode (uniline--mode-pre) (uniline--mode-post)))
+
+(defun uniline--keymap-remove-launch-interface (keymap)
+  "Remove key-bindings in KEYMAP whose action is `uniline-launch-interface'.
+Do that recursively in child keymaps too."
+  (cl-loop
+   for on on keymap
+   for bind = (car on)
+   if (consp bind)
+   do
+   (cond ((eq (cdr bind) 'uniline-launch-interface)
+          (setcar on nil))
+         ((and (consp (cdr bind))
+               (eq (cadr bind) 'keymap))
+          (uniline--keymap-remove-launch-interface (cdr bind)))))
+  (delq nil keymap))
+
+(defun uniline--set-insert-key (symbol keys)
+  "Replace all key-bindings pointing to `uniline-launch-interface'
+with custom bindings to each key in KEYS.
+_SYMBOL is not used."
+  (uniline--keymap-remove-launch-interface uniline-mode-map)
+  (cl-loop
+   for key in keys
+   do (keymap-set uniline-mode-map key 'uniline-launch-interface))
+  (set-default-toplevel-value symbol keys))
+
+(defcustom uniline-key-insert
+  '("<insert>" "<insertchar>")
+  "Prefix key (or keys) to invoke all Uniline minor mode functions.
+<insert> and <insertchar> by default.
+Use C-h k, then type a key (or key combination) to see the exact syntax.
+Do not confuse this key (which is active inside Uniline-mode)
+with the one used to invoke Uniline-mode."
+  :type '(repeat (key))
+  :set 'uniline--set-insert-key
+  :group 'uniline)
 
 (easy-menu-define
   uniline-menu
