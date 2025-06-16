@@ -3193,16 +3193,20 @@ Set it for the next installation and compilation of Uniline."
           (memq uniline-interface-type '(nil :transient)))
       (setq uniline-interface-type :transient))
 
-  (when
-      (and (eq uniline-interface-type :hydra)
-           (not (featurep 'hydra-autoloads))
-           (not (featurep 'hydra)))
-    (message "The Hydra interface is requested through
-the `uniline-interface-type' variable,
-but it seems the Hydra package is not installed.
-Try installing it prior to installing Uniline.
-In the meantime, `uniline-interface-type' is set to `:transient'")
-    (setq uniline-interface-type :transient))
+  ;; The following test prevents native-compiling a Hydra version
+  ;; for an unkwown reason.
+  ;; Removing it for the time being
+  ;;
+;;  (when
+;;      (and (eq uniline-interface-type :hydra)
+;;           (not (featurep 'hydra-autoloads))
+;;           (not (featurep 'hydra)))
+;;    (message "The Hydra interface is requested through
+;;the `uniline-interface-type' variable,
+;;but it seems the Hydra package is not installed.
+;;Try installing it prior to installing Uniline.
+;;In the meantime, `uniline-interface-type' is set to `:transient'")
+;;    (setq uniline-interface-type :transient))
 
   (unless (memq uniline-interface-type '(:transient :hydra))
     (user-error
