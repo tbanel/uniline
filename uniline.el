@@ -1,4 +1,4 @@
-;;; uniline.el --- Add ╭─╴UNICODE╶─╮ based ╭─╴diagrams╶─╮ to ╭▶╴text files╶●╮ -*- coding:utf-8; lexical-binding: t; -*-
+;;; uniline.el --- Add ╭─╴UNICODE╶─╮ based ╭─╴diagrams╶─╮ to ╭▶╴text files╶●╮ -*- coding:utf-8; lexical-binding: t; no-native-compile: t -*-
 
 ;; Copyright (C) 2024-2025  Thierry Banel
 
@@ -75,6 +75,15 @@
 ;;│   (setq uniline-interface-type :transient)
 ;;│ prior to installing the package.
 ;;│ By default, :transient is chosen.
+;;│ This is best done through the usual Emacs customization:
+;;│ M-x customize-variable uniline-interface-type
+;;│ Note: native compilation has been disable for this file
+;;│ because the native compiler runs in a separate process
+;;│ which cannot see the value given to this variable
+;;│ This is not a big issue, because in most cases
+;;│ Uniline does not need speed.
+;;│ Native compilation will be re-enabled when this issue
+;;│ will be solved.
 ;;╰──────────────────────────□
 
 ;;; Requires:
