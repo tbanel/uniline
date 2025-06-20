@@ -3,7 +3,29 @@
 #+OPTIONS: ^:{} authors:Thierry Banel, toc:nil
 #+LATEX_HEADER: \usepackage{pmboxdraw}
 
-*New*: Customization across sessions
+*New*: Compatibility break.
+
+To choose between =Hydra= or =Transient= user interface, there was a
+pre-installation setting: =uniline-interface-type=.
+
+Now =Uniline= has 3 sub packages: =hydra=, =transient=, =core=.  Choosing the
+interface is a matter of loading one or the other sub-package.
+
+Example of a possible configuration in your =./emacs=:
+
+#+begin_src elisp
+(use-package uniline-hydra
+  :bind ("C-<insert>" . uniline-mode))
+#+end_src
+
+or:
+
+#+begin_src elisp
+(use-package uniline-transient
+  :bind ("C-<insert>" . uniline-mode))
+#+end_src
+
+See the "Installation" chapter for details.
 
 * Getting started in 10 seconds
 :PROPERTIES:
@@ -1034,43 +1056,49 @@ may prefer one or the other.
 =Uniline= was developed from day one with =Hydra=. =Transient= is a late
 addition.
 
-A switch controls which interface to use:
+Two files are compiled when installing =Uniline=
+- =uniline-hydra.el=
+- =uniline-transient.el=
+
+One of them should be loaded (but not both). There are several
+ways. The cleanest is =use-package=. Add those lines to your =~/.emacs=
+file:
 
 #+begin_src elisp
-(setq uniline-interface-type :hydra)
-(setq uniline-interface-type :transient)
+(use-package uniline-hydra
+  :bind ("C-<insert>" . uniline-mode))
 #+end_src
 
-The easiest way to manage this switch is through the Emacs standard customization infrastructure. Type:
+or:
 
-=M-x customize-variable uniline-interface-type=
+#+begin_src elisp
+(use-package uniline-transient
+  :bind ("C-<insert>" . uniline-mode))
+#+end_src
 
-and permanently save your choice for future sessions.
+Note: there used to be a customizable setting to switch between the
+two interfaces. This had many issues. One of them is that the
+native-compiler is blind to all user-customized settings.
 
-The switch is relevant only when installing =Uniline=. Later on,
-changing the switch has no effect. To switch to the other interface,
-reinstall =Uniline=.
-
-After discussions with the community, it appears that =Transient= is the
-way to go. Therefore the switch now have =:transient= as its default
-value.
+Therefore, now =Uniline= ships with 3 Lisp source files (hydra,
+transient, core). Loading =uniline-hydra.el= or =uniline-transient.el=
+automatically loads =uniline-core.el=.
 
 ** The Hydra interface
 :PROPERTIES:
 :CUSTOM_ID: the-hydra-interface
 :END:
 
-Set the switch to Hydra before installing =Uniline=:
-
 #+begin_src elisp
-(setq uniline-interface-type :hydra)
+(use-package uniline-hydra
+  :bind ("C-<insert>" . uniline-mode))
 #+end_src
 
 Beware that the =Melpa= package no longer declares =Hydra= as a dependency
-as it used to. Therfore, the =Hydra= package must be installed
+as it used to. Therefore, the =Hydra= package must be installed
 separately prior to installing =Uniline=. This is for avoiding the
 automatic and useless installation of =Hydra= when =Transient= is
-choosen. (There is no way to make the dependencies conditional).
+chosen. (There is no way to make the dependencies conditional).
 
 The multi-lines Hydra's menus are quite useful for casual users. For
 seasoned users, those huge textual menus may distract them from
@@ -1108,17 +1136,15 @@ key.
 :CUSTOM_ID: the-transient-interface
 :END:
 
-Set the switch to =Transient= before installing =Uniline=:
-
 #+begin_src elisp
-(setq uniline-interface-type :transient)
+(use-package uniline-transient
+  :bind ("C-<insert>" . uniline-mode))
 #+end_src
 
-Actually, =Uniline= ships with =:transient= as the default
-value. Therefore, there in nothing to do to benefit from the =Transient=
-interface.
-
-=Transient= interface was added recently to =Uniline=.
+=Transient= interface was added recently to =Uniline=. This leaded to the
+splitting of the single =uniline.el= file into 4 source
+files. Hopefully, the added complexity remains hidden by the =Elpa=-=Melpa=
+packaging system.
 
 * Line spacing
 :PROPERTIES:
@@ -1601,27 +1627,70 @@ Then download the package:
 (package-install "uniline")
 #+end_src
 
-Alternately, you can download the Lisp file, and load it.
+Alternately, you can download the Lisp files, and load them.
 
 #+begin_src elisp
-(load-file "uniline.el")   ;; interpreted form
-(load-file "uniline.elc")  ;; byte-compiled form
+(load-file "uniline-hydra.el")   ;; interpreted form
+(load-file "uniline-hydra.elc")  ;; byte-compiled form
+(load-file "uniline-hydra.eln")  ;; native-compiled form
+;; this automatically
+;; loads "uniline-core.el"
+;; or    "uniline-core.elc"
+;; or    "uniline-core.eln"
 #+end_src
 
-You should prefer the byte-compiled form over the interpreted form,
-because there are a lot of optimizations performed at compile time.
+or if you prefer the Transient interface over the Hydra one:
+#+begin_src elisp
+(load-file "uniline-transient.el")   ;; interpreted form
+(load-file "uniline-transient.elc")  ;; byte-compiled form
+(load-file "uniline-transient.eln")  ;; native-compiled form
+;; this automatically
+;; loads "uniline-core.el"
+;; or    "uniline-core.elc"
+;; or    "uniline-core.eln"
+#+end_src
+
+You should prefer the byte-compiled or native-compiles forms over the
+interpreted form, because there are a lot of optimizations performed
+at compile time.
 
 You may want to give =uniline-mode= a key-binding. =use-package=
 in your =$HOME/.emacs= file is great for that:
 
 #+begin_src elisp
+(use-package uniline-hydra
+  :bind ("C-<insert>" . uniline-mode))
+#+end_src
+
+or:
+
+#+begin_src elisp
+(use-package uniline-transient
+  :bind ("C-<insert>" . uniline-mode))
+#+end_src
+
+or as an alias to =uniline-hydra=:
+
+#+begin_src elisp
 (use-package uniline
-  :defer t
   :bind ("C-<insert>" . uniline-mode))
 #+end_src
 
 In this example, =C-<insert>= was chosen. You can use whatever keys combination you want.
 =<insert>= happens to also be the key used inside =Uniline=.
+
+If you do not have =use-package=, you can add those lines in your =~/.emacs= file:
+
+#+begin_src elisp
+(require 'uniline-hydra)
+(bind-keys :package uniline-hydra ("C-<insert>" . uniline-mode))
+#+end_src
+
+The downside is that =Uniline= will be loaded as soon as =Emacs= is
+launched, rather than deferred until invoked.
+
+If the =Hydra= package is not installed, =Uniline= installation completes
+nonetheless. Then =uniline-hydra= will lack most of its features.
 
 * Related packages
 :PROPERTIES:

@@ -13,7 +13,26 @@ File: uniline.info,  Node: Top,  Next: Getting started in 10 seconds,  Up: (dir)
 Uniline
 *******
 
-*New*: Customization across sessions
+*New*: Compatibility break.
+
+   To choose between ‘Hydra’ or ‘Transient’ user interface, there was a
+pre-installation setting: ‘uniline-interface-type’.
+
+   Now ‘Uniline’ has 3 sub packages: ‘hydra’, ‘transient’, ‘core’.
+Choosing the interface is a matter of loading one or the other
+sub-package.
+
+   Example of a possible configuration in your ‘./emacs’:
+
+     (use-package uniline-hydra
+       :bind ("C-<insert>" . uniline-mode))
+
+   or:
+
+     (use-package uniline-transient
+       :bind ("C-<insert>" . uniline-mode))
+
+   See the "Installation" chapter for details.
 
 * Menu:
 
@@ -1027,25 +1046,28 @@ users may prefer one or the other.
    ‘Uniline’ was developed from day one with ‘Hydra’.  ‘Transient’ is a
 late addition.
 
-   A switch controls which interface to use:
+   Two files are compiled when installing ‘Uniline’
+   • ‘uniline-hydra.el’
+   • ‘uniline-transient.el’
 
-     (setq uniline-interface-type :hydra)
-     (setq uniline-interface-type :transient)
+   One of them should be loaded (but not both).  There are several ways.
+The cleanest is ‘use-package’.  Add those lines to your ‘~/.emacs’ file:
 
-   The easiest way to manage this switch is through the Emacs standard
-customization infrastructure.  Type:
+     (use-package uniline-hydra
+       :bind ("C-<insert>" . uniline-mode))
 
-   ‘M-x customize-variable uniline-interface-type’
+   or:
 
-   and permanently save your choice for future sessions.
+     (use-package uniline-transient
+       :bind ("C-<insert>" . uniline-mode))
 
-   The switch is relevant only when installing ‘Uniline’.  Later on,
-changing the switch has no effect.  To switch to the other interface,
-reinstall ‘Uniline’.
+   Note: there used to be a customizable setting to switch between the
+two interfaces.  This had many issues.  One of them is that the
+native-compiler is blind to all user-customized settings.
 
-   After discussions with the community, it appears that ‘Transient’ is
-the way to go.  Therefore the switch now have ‘:transient’ as its
-default value.
+   Therefore, now ‘Uniline’ ships with 3 Lisp source files (hydra,
+transient, core).  Loading ‘uniline-hydra.el’ or ‘uniline-transient.el’
+automatically loads ‘uniline-core.el’.
 
 * Menu:
 
@@ -1058,15 +1080,14 @@ File: uniline.info,  Node: The Hydra interface,  Next: The Transient interface, 
 20.1 The Hydra interface
 ========================
 
-Set the switch to Hydra before installing ‘Uniline’:
-
-     (setq uniline-interface-type :hydra)
+     (use-package uniline-hydra
+       :bind ("C-<insert>" . uniline-mode))
 
    Beware that the ‘Melpa’ package no longer declares ‘Hydra’ as a
-dependency as it used to.  Therfore, the ‘Hydra’ package must be
+dependency as it used to.  Therefore, the ‘Hydra’ package must be
 installed separately prior to installing ‘Uniline’.  This is for
 avoiding the automatic and useless installation of ‘Hydra’ when
-‘Transient’ is choosen.  (There is no way to make the dependencies
+‘Transient’ is chosen.  (There is no way to make the dependencies
 conditional).
 
    The multi-lines Hydra’s menus are quite useful for casual users.  For
@@ -1106,15 +1127,13 @@ File: uniline.info,  Node: The Transient interface,  Prev: The Hydra interface, 
 20.2 The Transient interface
 ============================
 
-Set the switch to ‘Transient’ before installing ‘Uniline’:
+     (use-package uniline-transient
+       :bind ("C-<insert>" . uniline-mode))
 
-     (setq uniline-interface-type :transient)
-
-   Actually, ‘Uniline’ ships with ‘:transient’ as the default value.
-Therefore, there in nothing to do to benefit from the ‘Transient’
-interface.
-
-   ‘Transient’ interface was added recently to ‘Uniline’.
+   ‘Transient’ interface was added recently to ‘Uniline’.  This leaded
+to the splitting of the single ‘uniline.el’ file into 4 source files.
+Hopefully, the added complexity remains hidden by the ‘Elpa’-‘Melpa’
+packaging system.
 
 
 File: uniline.info,  Node: Line spacing,  Next: Customization,  Prev: Hydra or Transient?,  Up: Top
@@ -1620,24 +1639,61 @@ already done:
 
      (package-install "uniline")
 
-   Alternately, you can download the Lisp file, and load it.
+   Alternately, you can download the Lisp files, and load them.
 
-     (load-file "uniline.el")   ;; interpreted form
-     (load-file "uniline.elc")  ;; byte-compiled form
+     (load-file "uniline-hydra.el")   ;; interpreted form
+     (load-file "uniline-hydra.elc")  ;; byte-compiled form
+     (load-file "uniline-hydra.eln")  ;; native-compiled form
+     ;; this automatically
+     ;; loads "uniline-core.el"
+     ;; or    "uniline-core.elc"
+     ;; or    "uniline-core.eln"
 
-   You should prefer the byte-compiled form over the interpreted form,
-because there are a lot of optimizations performed at compile time.
+   or if you prefer the Transient interface over the Hydra one:
+     (load-file "uniline-transient.el")   ;; interpreted form
+     (load-file "uniline-transient.elc")  ;; byte-compiled form
+     (load-file "uniline-transient.eln")  ;; native-compiled form
+     ;; this automatically
+     ;; loads "uniline-core.el"
+     ;; or    "uniline-core.elc"
+     ;; or    "uniline-core.eln"
+
+   You should prefer the byte-compiled or native-compiles forms over the
+interpreted form, because there are a lot of optimizations performed at
+compile time.
 
    You may want to give ‘uniline-mode’ a key-binding.  ‘use-package’ in
 your ‘$HOME/.emacs’ file is great for that:
 
+     (use-package uniline-hydra
+       :bind ("C-<insert>" . uniline-mode))
+
+   or:
+
+     (use-package uniline-transient
+       :bind ("C-<insert>" . uniline-mode))
+
+   or as an alias to ‘uniline-hydra’:
+
      (use-package uniline
-       :defer t
        :bind ("C-<insert>" . uniline-mode))
 
    In this example, ‘C-<insert>’ was chosen.  You can use whatever keys
 combination you want.  ‘<insert>’ happens to also be the key used inside
 ‘Uniline’.
+
+   If you do not have ‘use-package’, you can add those lines in your
+‘~/.emacs’ file:
+
+     (require 'uniline-hydra)
+     (bind-keys :package uniline-hydra ("C-<insert>" . uniline-mode))
+
+   The downside is that ‘Uniline’ will be loaded as soon as ‘Emacs’ is
+launched, rather than deferred until invoked.
+
+   If the ‘Hydra’ package is not installed, ‘Uniline’ installation
+completes nonetheless.  Then ‘uniline-hydra’ will lack most of its
+features.
 
 
 File: uniline.info,  Node: Related packages,  Next: Author contributors,  Prev: Installation,  Up: Top
@@ -1788,46 +1844,46 @@ along with this program.  If not, see <http://www.gnu.org/licenses/>.
 
 Tag Table:
 Node: Top75
-Node: Getting started in 10 seconds1416
-Node: Pure UNICODE text diagrams in Emacs1746
-Node: Minor mode13043
-Node: Drawing lines13591
-Node: Brush style14267
-Node: The <insert> key15360
-Node: Arrows glyphs ▷ ▶ → ▹ ▸ ↔16194
-Node: Intersection glyphs ■ ◆ ●17751
-Node: Drawing rectangles20372
-Node: Moving rectangles22346
-Node: Copying killing yanking rectangles23590
-Node: Tracing a contour24642
-Node: Flood-fill26426
-Node: Text direction28153
-Node: Macros28694
-Node: Fine tweaking32055
-Node: Dashed lines and other styles33867
-Node: ASCII to UNICODE37936
-Node: Which fonts?41622
-Node: Hydra or Transient?43641
-Node: The Hydra interface45176
-Node: The Transient interface46908
-Node: Line spacing47416
-Node: Customization48817
-Node: How Uniline behaves with its environment?50425
-Node: Compatibility with Picture-mode50974
-Node: Compatibility with Artist-mode51892
-Node: Compatibility with Whitespace-mode52411
-Node: Compatibility with Org Mode53311
-Node: Org Mode and LaTex54097
-Node: What about \t tabs?55916
-Node: What about ^L page separation?56564
-Node: Emacs on the Linux console57187
-Node: Emacs on a graphical terminal emulator58141
-Node: Emacs on Windows59064
-Node: Lisp API59708
-Node: Installation64882
-Node: Related packages66096
-Node: Author contributors69161
-Node: License70489
+Node: Getting started in 10 seconds1981
+Node: Pure UNICODE text diagrams in Emacs2311
+Node: Minor mode13608
+Node: Drawing lines14156
+Node: Brush style14832
+Node: The <insert> key15925
+Node: Arrows glyphs ▷ ▶ → ▹ ▸ ↔16759
+Node: Intersection glyphs ■ ◆ ●18316
+Node: Drawing rectangles20937
+Node: Moving rectangles22911
+Node: Copying killing yanking rectangles24155
+Node: Tracing a contour25207
+Node: Flood-fill26991
+Node: Text direction28718
+Node: Macros29259
+Node: Fine tweaking32620
+Node: Dashed lines and other styles34432
+Node: ASCII to UNICODE38501
+Node: Which fonts?42187
+Node: Hydra or Transient?44206
+Node: The Hydra interface45883
+Node: The Transient interface47591
+Node: Line spacing48088
+Node: Customization49489
+Node: How Uniline behaves with its environment?51097
+Node: Compatibility with Picture-mode51646
+Node: Compatibility with Artist-mode52564
+Node: Compatibility with Whitespace-mode53083
+Node: Compatibility with Org Mode53983
+Node: Org Mode and LaTex54769
+Node: What about \t tabs?56588
+Node: What about ^L page separation?57236
+Node: Emacs on the Linux console57859
+Node: Emacs on a graphical terminal emulator58813
+Node: Emacs on Windows59736
+Node: Lisp API60380
+Node: Installation65554
+Node: Related packages68044
+Node: Author contributors71109
+Node: License72437
 
 End Tag Table
 
