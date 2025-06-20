@@ -1183,13 +1183,9 @@ unrelated to ‘Uniline’).
 
    *Interface type.*
 
-   This can be either ‘:hydra’ or ‘:transient’.  See the chapter "Hydra
-or Transient?".  This setting has no immediate effect.  It will be taken
-into account only after upgrading the ‘Uniline’ package (or
-re-installing the same version).
-
-   It can also be taken into account after re-loading the ‘uniline.el’
-file.  Or after recompiling it and re-loading ‘uniline.elc’.
+   This switch is obsolete.  Choosing between ‘Hydra’ or ‘Transient’
+interface is done by loading one or the other sub-package.  See
+"Installation" for details.
 
    *Insert key.*
 
@@ -1868,22 +1864,22 @@ Node: The Hydra interface45883
 Node: The Transient interface47591
 Node: Line spacing48088
 Node: Customization49489
-Node: How Uniline behaves with its environment?51097
-Node: Compatibility with Picture-mode51646
-Node: Compatibility with Artist-mode52564
-Node: Compatibility with Whitespace-mode53083
-Node: Compatibility with Org Mode53983
-Node: Org Mode and LaTex54769
-Node: What about \t tabs?56588
-Node: What about ^L page separation?57236
-Node: Emacs on the Linux console57859
-Node: Emacs on a graphical terminal emulator58813
-Node: Emacs on Windows59736
-Node: Lisp API60380
-Node: Installation65554
-Node: Related packages68044
-Node: Author contributors71109
-Node: License72437
+Node: How Uniline behaves with its environment?50875
+Node: Compatibility with Picture-mode51424
+Node: Compatibility with Artist-mode52342
+Node: Compatibility with Whitespace-mode52861
+Node: Compatibility with Org Mode53761
+Node: Org Mode and LaTex54547
+Node: What about \t tabs?56366
+Node: What about ^L page separation?57014
+Node: Emacs on the Linux console57637
+Node: Emacs on a graphical terminal emulator58591
+Node: Emacs on Windows59514
+Node: Lisp API60158
+Node: Installation65332
+Node: Related packages67822
+Node: Author contributors70887
+Node: License72215
 
 End Tag Table
 

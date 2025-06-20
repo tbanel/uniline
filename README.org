@@ -1191,13 +1191,9 @@ Two settings are special.
 
 *Interface type.*
 
-This can be either =:hydra= or =:transient=. See the
-chapter "Hydra or Transient?". This setting has no immediate
-effect. It will be taken into account only after upgrading the =Uniline=
-package (or re-installing the same version).
-
-It can also be taken into account after re-loading the =uniline.el=
-file. Or after recompiling it and re-loading =uniline.elc=.
+This switch is obsolete. Choosing between =Hydra= or =Transient= interface
+is done by loading one or the other sub-package. See "Installation"
+for details.
 
 *Insert key.*
 
