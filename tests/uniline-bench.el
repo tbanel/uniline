@@ -4,7 +4,7 @@
 
 ;; Author: Thierry Banel tbanelwebmin at free dot fr
 ;; Version: 1.0
-;; Package-Requires: ((emacs "29.1"))
+;; Package-Requires: ((emacs "29.1") (hydra "0.15.0"))
 ;; URL: https://github.com/tbanel/uniline
 
 ;; Uniline is free software: you can redistribute it and/or modify
@@ -55,7 +55,7 @@ Its format is the one used to store keyboard macros.
 RESULT is a string representing the expected result."
   (ignore-errors (kill-buffer "*uniline-interactive*"))
   (switch-to-buffer "*uniline-interactive*")
-  (set-default 'uniline-hint-style 1)
+;  (set-default 'uniline-hint-style 1)
   (uniline-mode 1)
   (if (fboundp 'hydra-keyboard-quit)
       (hydra-keyboard-quit)) ;; clear any left-over from previous bench
@@ -140,8 +140,9 @@ If there are no errors, a summary buffer is presented."
     (switch-to-buffer buf)
     (message "%s PASSED / %s FAILED %s" nbpassed nbfailed failed)))
 
-(if t
+(if nil
     (uniline-bench-run)
+  (garbage-collect)
   (profiler-start 'cpu+mem)
   (uniline-bench-run)
   (profiler-stop)

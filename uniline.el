@@ -4,7 +4,7 @@
 
 ;; Author: Thierry Banel tbanelwebmin at free dot fr
 ;; Version: 1.0
-;; Package-Requires: ((emacs "29.1"))
+;; Package-Requires: ((emacs "29.1") (hydra "0.15.0"))
 ;; Keywords: convenience, text
 ;; URL: https://github.com/tbanel/uniline
 
