@@ -2271,19 +2271,23 @@ This hook fixes the cursor movement according to `uniline-text-direction'"
 (defun uniline-text-direction-up↑ ()
   "Set text insertion direction up↑."
   (interactive)
-  (setq uniline-text-direction (uniline-direction-up↑)))
+  (setq uniline-text-direction (uniline-direction-up↑))
+  (uniline--update-mode-line))
 (defun uniline-text-direction-ri→ ()
   "Set text insertion direction right→."
   (interactive)
-  (setq uniline-text-direction (uniline-direction-ri→)))
+  (setq uniline-text-direction (uniline-direction-ri→))
+  (uniline--update-mode-line))
 (defun uniline-text-direction-dw↓ ()
   "Set text insertion direction down↓."
   (interactive)
-  (setq uniline-text-direction (uniline-direction-dw↓)))
+  (setq uniline-text-direction (uniline-direction-dw↓))
+  (uniline--update-mode-line))
 (defun uniline-text-direction-lf← ()
   "Set text insertion direction left←."
   (interactive)
-  (setq uniline-text-direction (uniline-direction-lf←)))
+  (setq uniline-text-direction (uniline-direction-lf←))
+  (uniline--update-mode-line))
 
 ;;;╭───────────────────────────╮
 ;;;│Macro calls in 4 directions│
@@ -2415,7 +2419,7 @@ it is already present in the `uniline--directional-macros' cache"
 It means that cursor movements do not trace anything."
   (interactive)
   (setq uniline-brush nil)
-  (force-mode-line-update))
+  (uniline--update-mode-line))
 
 (defun uniline-set-brush-0 ()
   "Change the current style of line to the eraser.
@@ -2424,31 +2428,31 @@ lines, and moving vertically erase vertical lines.  Characters
 other than lines or arrows are not touched."
   (interactive)
   (setq uniline-brush 0)
-  (force-mode-line-update))
+  (uniline--update-mode-line))
 
 (defun uniline-set-brush-1 ()
   "Change the current style of line to a single thin line╶─╴."
   (interactive)
   (setq uniline-brush 1)
-  (force-mode-line-update))
+  (uniline--update-mode-line))
 
 (defun uniline-set-brush-2 ()
   "Change the current style of line to a single thick line╺━╸."
   (interactive)
   (setq uniline-brush 2)
-  (force-mode-line-update))
+  (uniline--update-mode-line))
 
 (defun uniline-set-brush-3 ()
   "Change the current style of line to a double line╺═╸."
   (interactive)
   (setq uniline-brush 3)
-  (force-mode-line-update))
+  (uniline--update-mode-line))
 
 (defun uniline-set-brush-block ()
   "Change the current style of line to blocks ▙▄▟▀."
   (interactive)
   (setq uniline-brush :block)
-  (force-mode-line-update))
+  (uniline--update-mode-line))
 
 ;;;╭─────────────────────────────────────╮
 ;;;│High level arrows & glyphs management│
@@ -3360,6 +3364,9 @@ so any possible choice is available."
   :local t
   :group 'uniline)
 
+(defvar-local uniline--mode-line-brush nil)
+(defvar-local uniline--mode-line-dir nil)
+
 (defvar-local uniline--remember-settings
     nil
   "Remember settings before entering uniline minor-mode.
@@ -3458,6 +3465,7 @@ And backup previous settings."
    #'uniline--post-self-insert
    nil 'local)
   (uniline-toggle-hydra-hints t)
+  (uniline--update-mode-line)
   (uniline--welcome-message))
 
 (defun uniline--mode-post ()
@@ -3469,23 +3477,26 @@ And backup previous settings."
    cursor-type           (nth 3 uniline--remember-settings)
    post-self-insert-hook (nth 4 uniline--remember-settings)))
 
-(defun uniline--mode-line ()
+(defun uniline--update-mode-line ()
   "Computes the string which appears in the mode-line."
-  (format
-   " %cUniline%c"
-   (uniline--switch-with-table uniline-text-direction
-     (nil                    ? )
-     (uniline-direction-up↑ ?↑)
-     (uniline-direction-ri→ ?→)
-     (uniline-direction-dw↓ ?↓)
-     (uniline-direction-lf← ?←))
-   (uniline--switch-with-table uniline-brush
-     (nil    ? )
-     (0      ?/)
-     (1      ?┼)
-     (2      ?╋)
-     (3      ?╬)
-     (:block ?▞))))
+  (setq uniline--mode-line-dir
+	(char-to-string
+	 (uniline--switch-with-table uniline-text-direction
+	   (nil                    ? )
+	   (uniline-direction-up↑ ?↑)
+	   (uniline-direction-ri→ ?→)
+	   (uniline-direction-dw↓ ?↓)
+	   (uniline-direction-lf← ?←)))
+	uniline--mode-line-brush
+	(char-to-string
+	 (uniline--switch-with-table uniline-brush
+	   (nil    ? )
+	   (0      ?/)
+	   (1      ?┼)
+	   (2      ?╋)
+	   (3      ?╬)
+	   (:block ?▞))))
+  (force-mode-line-update))
 
 ;; This `unintern' instruction is useful during development
 ;; to ensure that M-x eval-buffer reloads 100% of the Lisp code
@@ -3630,7 +3641,7 @@ And backup previous settings."
 
  Documentation here: (info \"uniline\")"
   :init-value nil
-  :lighter (:eval (uniline--mode-line))
+  :lighter (" " uniline--mode-line-dir "Uniline" uniline--mode-line-brush)
   :keymap  ;; defines uniline-mode-map
   '(([right]   . uniline-write-ri→)
     ([left ]   . uniline-write-lf←)
