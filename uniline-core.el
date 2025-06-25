@@ -2238,6 +2238,33 @@ in this direction.
 It can also be nil, which means that uniline makes no tweaking of
 the natural cursor movement upon insertion.")
 
+(defvar-local uniline--mode-line-brush nil
+  "The current brush suitable for display in the `:lighter'.")
+
+(defvar-local uniline--mode-line-dir nil
+  "The current text direction suitable for ddisplay in the `:lighter'.")
+
+(defun uniline--update-mode-line ()
+  "Computes the string which appears in the mode-line."
+  (setq uniline--mode-line-dir
+	(char-to-string
+	 (uniline--switch-with-table uniline-text-direction
+	   (nil                   ? )
+	   (uniline-direction-up↑ ?↑)
+	   (uniline-direction-ri→ ?→)
+	   (uniline-direction-dw↓ ?↓)
+	   (uniline-direction-lf← ?←)))
+	uniline--mode-line-brush
+	(char-to-string
+	 (uniline--switch-with-table uniline-brush
+	   (nil    ? )
+	   (0      ?/)
+	   (1      ?┼)
+	   (2      ?╋)
+	   (3      ?╬)
+	   (:block ?▞))))
+  (force-mode-line-update))
+
 (defun uniline--post-self-insert ()
   "Change the cursor movement after `self-insert-command'.
 Usually the cursor moves to the right.
@@ -3364,9 +3391,6 @@ so any possible choice is available."
   :local t
   :group 'uniline)
 
-(defvar-local uniline--mode-line-brush nil)
-(defvar-local uniline--mode-line-dir nil)
-
 (defvar-local uniline--remember-settings
     nil
   "Remember settings before entering uniline minor-mode.
@@ -3476,27 +3500,6 @@ And backup previous settings."
    truncate-lines        (nth 2 uniline--remember-settings)
    cursor-type           (nth 3 uniline--remember-settings)
    post-self-insert-hook (nth 4 uniline--remember-settings)))
-
-(defun uniline--update-mode-line ()
-  "Computes the string which appears in the mode-line."
-  (setq uniline--mode-line-dir
-	(char-to-string
-	 (uniline--switch-with-table uniline-text-direction
-	   (nil                    ? )
-	   (uniline-direction-up↑ ?↑)
-	   (uniline-direction-ri→ ?→)
-	   (uniline-direction-dw↓ ?↓)
-	   (uniline-direction-lf← ?←)))
-	uniline--mode-line-brush
-	(char-to-string
-	 (uniline--switch-with-table uniline-brush
-	   (nil    ? )
-	   (0      ?/)
-	   (1      ?┼)
-	   (2      ?╋)
-	   (3      ?╬)
-	   (:block ?▞))))
-  (force-mode-line-update))
 
 ;; This `unintern' instruction is useful during development
 ;; to ensure that M-x eval-buffer reloads 100% of the Lisp code

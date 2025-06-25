@@ -1807,6 +1807,12 @@ File: uniline.info,  Node: Author contributors,  Next: License,  Prev: Related p
    • karthink pointed to the new ‘Aporetic’ font family, which was added
      to the ‘Uniline’ supported fonts
 
+   Contributors:
+
+   • JD Smith (jdtsmith on GitHub) rewrote the ‘:lighter’ for added
+     flexibility (the information in the mode-line about the state of
+     Uniline)
+
    Utilities:
 
    • Oleh Krehel alias abo-abo for his package ‘Hydra’
@@ -1879,7 +1885,7 @@ Node: Lisp API60158
 Node: Installation65332
 Node: Related packages67822
 Node: Author contributors70887
-Node: License72215
+Node: License72392
 
 End Tag Table
 

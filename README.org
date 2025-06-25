@@ -1798,6 +1798,12 @@ Feedback:
 - karthink pointed to the new =Aporetic= font family, which was added
   to the =Uniline= supported fonts
 
+Contributors:
+
+ - JD Smith (jdtsmith on GitHub) rewrote the =:lighter= for added
+   flexibility (the information in the mode-line about the state of
+   Uniline)
+
 Utilities:
 
 - Oleh Krehel alias abo-abo for his package =Hydra=
