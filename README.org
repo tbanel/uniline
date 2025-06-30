@@ -3,7 +3,24 @@
 #+OPTIONS: ^:{} authors:Thierry Banel, toc:nil
 #+LATEX_HEADER: \usepackage{pmboxdraw}
 
-*New*: Compatibility break.
+* Getting started in 10 seconds
+:PROPERTIES:
+:CUSTOM_ID: getting-started-in-10-seconds
+:END:
+
+- Type =M-x uniline-mode=
+- Move cursor with the arrow-keys on the keyboard =→ ← ↑ ↓=
+- Quit =C-c C-c=
+
+* New
+
+The =uniline-hint-style= customizable setting now works on Transient
+menus (it used to be Hydra-only). To achieve that, it modifies
+=transient-show-popup=. It does so only in the Uniline buffers.
+
+Old news:
+
+Compatibility break.
 
 To choose between =Hydra= or =Transient= user interface, there was a
 pre-installation setting: =uniline-interface-type=.
@@ -26,15 +43,6 @@ or:
 #+end_src
 
 See the "Installation" chapter for details.
-
-* Getting started in 10 seconds
-:PROPERTIES:
-:CUSTOM_ID: getting-started-in-10-seconds
-:END:
-
-- Type =M-x uniline-mode=
-- Move cursor with the arrow-keys on the keyboard =→ ← ↑ ↓=
-- Quit =C-c C-c=
 
 * Table of Contents
 :PROPERTIES:

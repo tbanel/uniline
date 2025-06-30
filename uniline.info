@@ -13,30 +13,10 @@ File: uniline.info,  Node: Top,  Next: Getting started in 10 seconds,  Up: (dir)
 Uniline
 *******
 
-*New*: Compatibility break.
-
-   To choose between ‘Hydra’ or ‘Transient’ user interface, there was a
-pre-installation setting: ‘uniline-interface-type’.
-
-   Now ‘Uniline’ has 3 sub packages: ‘hydra’, ‘transient’, ‘core’.
-Choosing the interface is a matter of loading one or the other
-sub-package.
-
-   Example of a possible configuration in your ‘./emacs’:
-
-     (use-package uniline-hydra
-       :bind ("C-<insert>" . uniline-mode))
-
-   or:
-
-     (use-package uniline-transient
-       :bind ("C-<insert>" . uniline-mode))
-
-   See the "Installation" chapter for details.
-
 * Menu:
 
 * Getting started in 10 seconds::
+* News::
 * Pure UNICODE text diagrams in Emacs::
 * Minor mode::
 * Drawing lines::
@@ -87,7 +67,7 @@ How ‘Uniline’ behaves with its environment?
 
 
 
-File: uniline.info,  Node: Getting started in 10 seconds,  Next: Pure UNICODE text diagrams in Emacs,  Prev: Top,  Up: Top
+File: uniline.info,  Node: Getting started in 10 seconds,  Next: News,  Prev: Top,  Up: Top
 
 1 Getting started in 10 seconds
 *******************************
@@ -97,9 +77,42 @@ File: uniline.info,  Node: Getting started in 10 seconds,  Next: Pure UNICODE te
    • Quit ‘C-c C-c’
 
 
-File: uniline.info,  Node: Pure UNICODE text diagrams in Emacs,  Next: Minor mode,  Prev: Getting started in 10 seconds,  Up: Top
+File: uniline.info,  Node: News,  Next: Pure UNICODE text diagrams in Emacs,  Prev: Getting started in 10 seconds,  Up: Top
 
-2 Pure UNICODE text diagrams in Emacs
+2 News
+******
+
+The ‘uniline-hint-style’ customizable setting now works on Transient
+menus (it used to be Hydra-only).  To achieve that, it modifies
+‘transient-show-popup’.  It does so only in the Uniline buffers.
+
+   Old news:
+
+   Compatibility break.
+
+   To choose between ‘Hydra’ or ‘Transient’ user interface, there was a
+pre-installation setting: ‘uniline-interface-type’.
+
+   Now ‘Uniline’ has 3 sub packages: ‘hydra’, ‘transient’, ‘core’.
+Choosing the interface is a matter of loading one or the other
+sub-package.
+
+   Example of a possible configuration in your ‘./emacs’:
+
+     (use-package uniline-hydra
+       :bind ("C-<insert>" . uniline-mode))
+
+   or:
+
+     (use-package uniline-transient
+       :bind ("C-<insert>" . uniline-mode))
+
+   See the "Installation" chapter for details.
+
+
+File: uniline.info,  Node: Pure UNICODE text diagrams in Emacs,  Next: Minor mode,  Prev: News,  Up: Top
+
+3 Pure UNICODE text diagrams in Emacs
 *************************************
 
 Draw diagrams like those:
@@ -313,7 +326,7 @@ paragraph "Which fonts?".
 
 File: uniline.info,  Node: Minor mode,  Next: Drawing lines,  Prev: Pure UNICODE text diagrams in Emacs,  Up: Top
 
-3 Minor mode
+4 Minor mode
 ************
 
 ‘Uniline’ is a minor mode.  Activate it temporarily:
@@ -333,7 +346,7 @@ reset to their previous state when exiting ‘uniline-mode’.
 
 File: uniline.info,  Node: Drawing lines,  Next: Brush style,  Prev: Minor mode,  Up: Top
 
-4 Drawing lines
+5 Drawing lines
 ***************
 
 Use keyboard arrows to draw lines.
@@ -352,7 +365,7 @@ are automatically added.
 
 File: uniline.info,  Node: Brush style,  Next: The <insert> key,  Prev: Drawing lines,  Up: Top
 
-5 Brush style
+6 Brush style
 *************
 
 Set the current brush with:
@@ -387,7 +400,7 @@ looks like this:
 
 File: uniline.info,  Node: The <insert> key,  Next: Arrows glyphs ▷ ▶ → ▹ ▸ ↔,  Prev: Brush style,  Up: Top
 
-6 The ‘<insert>’ key
+7 The ‘<insert>’ key
 ********************
 
 The ‘<insert>’ key is a prefix for other keys:
@@ -408,7 +421,7 @@ The ‘<insert>’ key is a prefix for other keys:
 
 File: uniline.info,  Node: Arrows glyphs ▷ ▶ → ▹ ▸ ↔,  Next: Intersection glyphs ■ ◆ ●,  Prev: The <insert> key,  Up: Top
 
-7 Arrows glyphs ‘▷ ▶ → ▹ ▸ ↔’
+8 Arrows glyphs ‘▷ ▶ → ▹ ▸ ↔’
 *****************************
 
 At any time, an arrow may be drawn.  The arrow points in the direction
@@ -447,7 +460,7 @@ the last movement of the cursor.
 
 File: uniline.info,  Node: Intersection glyphs ■ ◆ ●,  Next: Drawing rectangles,  Prev: Arrows glyphs ▷ ▶ → ▹ ▸ ↔,  Up: Top
 
-8 Intersection glyphs ‘■ ◆ ●’
+9 Intersection glyphs ‘■ ◆ ●’
 *****************************
 
 There are a few other UNICODE characters which are mono-space and
@@ -500,8 +513,8 @@ prefix them with ‘<insert>’.  Example: ‘<insert> -’ inserts a ‘-’ an
 
 File: uniline.info,  Node: Drawing rectangles,  Next: Moving rectangles,  Prev: Intersection glyphs ■ ◆ ●,  Up: Top
 
-9 Drawing rectangles
-********************
+10 Drawing rectangles
+*********************
 
 To draw a rectangle in one shot, select a rectangular region with
 ‘C-SPC’ or ‘C-x SPC’ and move the cursor.
@@ -542,7 +555,7 @@ region still active visually.
 
 File: uniline.info,  Node: Moving rectangles,  Next: Copying killing yanking rectangles,  Prev: Drawing rectangles,  Up: Top
 
-10 Moving rectangles
+11 Moving rectangles
 ********************
 
 Select a region, then press ‘<insert>’.  The selection becomes
@@ -577,7 +590,7 @@ though the selection is still active.
 
 File: uniline.info,  Node: Copying killing yanking rectangles,  Next: Tracing a contour,  Prev: Moving rectangles,  Up: Top
 
-11 Copying, killing, yanking rectangles
+12 Copying, killing, yanking rectangles
 ***************************************
 
 A rectangle can be copied or killed, then yanked somewhere else.  Press:
@@ -604,7 +617,7 @@ be killed one way, and yanked another way.
 
 File: uniline.info,  Node: Tracing a contour,  Next: Flood-fill,  Prev: Copying killing yanking rectangles,  Up: Top
 
-12 Tracing a contour
+13 Tracing a contour
 ********************
 
 
@@ -646,7 +659,7 @@ again, at the point where the previous run ended.
 
 File: uniline.info,  Node: Flood-fill,  Next: Text direction,  Prev: Tracing a contour,  Up: Top
 
-13 Flood-fill
+14 Flood-fill
 *************
 
 
@@ -692,7 +705,7 @@ operation may flood the entire buffer (but no more).
 
 File: uniline.info,  Node: Text direction,  Next: Macros,  Prev: Flood-fill,  Up: Top
 
-14 Text direction
+15 Text direction
 *****************
 
 Usually, inserting text in a buffer moves the cursor to the right.  (And
@@ -710,7 +723,7 @@ word ‘"uniline"’.
 
 File: uniline.info,  Node: Macros,  Next: Fine tweaking,  Prev: Text direction,  Up: Top
 
-15 Macros
+16 Macros
 *********
 
 ‘Uniline’ adds directional macros to the Emacs standard macros.
@@ -775,7 +788,7 @@ call a macro in 4 directions, closing a square:
 
 File: uniline.info,  Node: Fine tweaking,  Next: Dashed lines and other styles,  Prev: Macros,  Up: Top
 
-16 Fine tweaking
+17 Fine tweaking
 ****************
 
 
@@ -819,7 +832,7 @@ S-<down> S-<left>’
 
 File: uniline.info,  Node: Dashed lines and other styles,  Next: ASCII to UNICODE,  Prev: Fine tweaking,  Up: Top
 
-17 Dashed lines and other styles
+18 Dashed lines and other styles
 ********************************
 
 
@@ -897,7 +910,7 @@ nice looking sketches.
 
 File: uniline.info,  Node: ASCII to UNICODE,  Next: Which fonts?,  Prev: Dashed lines and other styles,  Up: Top
 
-18 ASCII to UNICODE
+19 ASCII to UNICODE
 *******************
 
 The standard base-line ‘Uniline’ (‘INS s 0’) or ‘aa2u-rectangle’ (‘INS s
@@ -972,7 +985,7 @@ conversion by ‘INS s 0’:
 
 File: uniline.info,  Node: Which fonts?,  Next: Hydra or Transient?,  Prev: ASCII to UNICODE,  Up: Top
 
-19 Which fonts?
+20 Which fonts?
 ***************
 
 A mono-space character font must be used.  It must also support UNICODE.
@@ -1028,7 +1041,7 @@ font should already be available.
 
 File: uniline.info,  Node: Hydra or Transient?,  Next: Line spacing,  Prev: Which fonts?,  Up: Top
 
-20 Hydra or Transient?
+21 Hydra or Transient?
 **********************
 
 Casual usage of ‘Uniline’ should be easy: just move the point, and lines
@@ -1077,7 +1090,7 @@ automatically loads ‘uniline-core.el’.
 
 File: uniline.info,  Node: The Hydra interface,  Next: The Transient interface,  Up: Hydra or Transient?
 
-20.1 The Hydra interface
+21.1 The Hydra interface
 ========================
 
      (use-package uniline-hydra
@@ -1124,7 +1137,7 @@ key.
 
 File: uniline.info,  Node: The Transient interface,  Prev: The Hydra interface,  Up: Hydra or Transient?
 
-20.2 The Transient interface
+21.2 The Transient interface
 ============================
 
      (use-package uniline-transient
@@ -1138,7 +1151,7 @@ packaging system.
 
 File: uniline.info,  Node: Line spacing,  Next: Customization,  Prev: Hydra or Transient?,  Up: Top
 
-21 Line spacing
+22 Line spacing
 ***************
 
 The ‘line-spacing’ setting in Emacs can change the display of a sketch.
@@ -1166,7 +1179,7 @@ of choice for everyone.
 
 File: uniline.info,  Node: Customization,  Next: How Uniline behaves with its environment?,  Prev: Line spacing,  Up: Top
 
-22 Customization
+23 Customization
 ****************
 
 Type: ‘M-x customize-group uniline’.
@@ -1206,7 +1219,7 @@ both events as the ‘INS’ key.
 
 File: uniline.info,  Node: How Uniline behaves with its environment?,  Next: Lisp API,  Prev: Customization,  Up: Top
 
-23 How ‘Uniline’ behaves with its environment?
+24 How ‘Uniline’ behaves with its environment?
 **********************************************
 
 * Menu:
@@ -1225,7 +1238,7 @@ File: uniline.info,  Node: How Uniline behaves with its environment?,  Next: Lis
 
 File: uniline.info,  Node: Compatibility with Picture-mode,  Next: Compatibility with Artist-mode,  Up: How Uniline behaves with its environment?
 
-23.1 Compatibility with Picture-mode
+24.1 Compatibility with Picture-mode
 ====================================
 
 ‘Picture-mode’ and ‘uniline-mode’ are compatible.  Their features
@@ -1245,7 +1258,7 @@ overlap somehow:
 
 File: uniline.info,  Node: Compatibility with Artist-mode,  Next: Compatibility with Whitespace-mode,  Prev: Compatibility with Picture-mode,  Up: How Uniline behaves with its environment?
 
-23.2 Compatibility with Artist-mode
+24.2 Compatibility with Artist-mode
 ===================================
 
 ‘Artist-mode’ and ‘uniline-mode’ are mostly incompatible.  This is
@@ -1257,7 +1270,7 @@ large part of ‘uniline-mode’ features.
 
 File: uniline.info,  Node: Compatibility with Whitespace-mode,  Next: Compatibility with Org Mode,  Prev: Compatibility with Artist-mode,  Up: How Uniline behaves with its environment?
 
-23.3 Compatibility with Whitespace-mode
+24.3 Compatibility with Whitespace-mode
 =======================================
 
 ‘Whitespace-mode’ and ‘uniline-mode’ are mostly compatible.
@@ -1279,7 +1292,7 @@ attached to newlines.  And ‘uniline-mode’ makes heavy use of
 
 File: uniline.info,  Node: Compatibility with Org Mode,  Next: Org Mode and LaTex,  Prev: Compatibility with Whitespace-mode,  Up: How Uniline behaves with its environment?
 
-23.4 Compatibility with Org Mode
+24.4 Compatibility with Org Mode
 ================================
 
 You may want to customize the shift extension mode in ‘Org Mode’.  This
@@ -1299,7 +1312,7 @@ the buffer.
 
 File: uniline.info,  Node: Org Mode and LaTex,  Next: What about \t tabs?,  Prev: Compatibility with Org Mode,  Up: How Uniline behaves with its environment?
 
-23.5 Org Mode and LaTex
+24.5 Org Mode and LaTex
 =======================
 
 Use the ‘pmboxdraw’ LaTex module.  This gives limited support for "box
@@ -1361,7 +1374,7 @@ for rounded corners.
 
 File: uniline.info,  Node: What about \t tabs?,  Next: What about ^L page separation?,  Prev: Org Mode and LaTex,  Up: How Uniline behaves with its environment?
 
-23.6 What about ‘\t’ tabs?
+24.6 What about ‘\t’ tabs?
 ==========================
 
 Some files may contain tabs (the character ‘\t’).  Those include
@@ -1377,7 +1390,7 @@ invisible.  So be cautious if tabs have a special meaning in the file.
 
 File: uniline.info,  Node: What about ^L page separation?,  Next: Emacs on the Linux console,  Prev: What about \t tabs?,  Up: How Uniline behaves with its environment?
 
-23.7 What about ‘^L’ page separation?
+24.7 What about ‘^L’ page separation?
 =====================================
 
 ‘Uniline’ does not work well with ‘^L’ (page separation) character.
@@ -1391,7 +1404,7 @@ characters occupy twice the width of a normal character.
 
 File: uniline.info,  Node: Emacs on the Linux console,  Next: Emacs on a graphical terminal emulator,  Prev: What about ^L page separation?,  Up: How Uniline behaves with its environment?
 
-23.8 Emacs on the Linux console
+24.8 Emacs on the Linux console
 ===============================
 
 Linux consoles are the 7 non-graphic screens which can be accessed
@@ -1411,7 +1424,7 @@ can be found here: <https://www.emacswiki.org/emacs/MissingKeys>
 
 File: uniline.info,  Node: Emacs on a graphical terminal emulator,  Next: Emacs on Windows,  Prev: Emacs on the Linux console,  Up: How Uniline behaves with its environment?
 
-23.9 Emacs on a graphical terminal emulator
+24.9 Emacs on a graphical terminal emulator
 ===========================================
 
 This is the Emacs launched from a terminal typing ‘emacs -nw’.  In this
@@ -1432,7 +1445,7 @@ file:
 
 File: uniline.info,  Node: Emacs on Windows,  Prev: Emacs on a graphical terminal emulator,  Up: How Uniline behaves with its environment?
 
-23.10 Emacs on Windows
+24.10 Emacs on Windows
 ======================
 
 On Windows the only native mono-spaced fonts are ‘Lucida Console’ and
@@ -1449,7 +1462,7 @@ unaligned result though.  They should be avoided under ‘Consolas’:
 
 File: uniline.info,  Node: Lisp API,  Next: Installation,  Prev: How Uniline behaves with its environment?,  Up: Top
 
-24 Lisp API
+25 Lisp API
 ***********
 
 Could ‘Uniline’ be programmed (versus used interactively)?  Yes!
@@ -1616,7 +1629,7 @@ directions:
 
 File: uniline.info,  Node: Installation,  Next: Related packages,  Prev: Lisp API,  Up: Top
 
-25 Installation
+26 Installation
 ***************
 
 Add the following lines to your ‘.emacs’ file, and reload it, if not
@@ -1694,7 +1707,7 @@ features.
 
 File: uniline.info,  Node: Related packages,  Next: Author contributors,  Prev: Installation,  Up: Top
 
-26 Related packages
+27 Related packages
 *******************
 
    • ‘artist-mode’: the ASCII art mode built into Emacs.
@@ -1777,7 +1790,7 @@ File: uniline.info,  Node: Related packages,  Next: Author contributors,  Prev: 
 
 File: uniline.info,  Node: Author contributors,  Next: License,  Prev: Related packages,  Up: Top
 
-27 Author, contributors
+28 Author, contributors
 ***********************
 
    • Thierry Banel, author
@@ -1824,7 +1837,7 @@ File: uniline.info,  Node: Author contributors,  Next: License,  Prev: Related p
 
 File: uniline.info,  Node: License,  Prev: Author contributors,  Up: Top
 
-28 License
+29 License
 **********
 
 Copyright (C) 2024-2025 Thierry Banel
@@ -1846,46 +1859,47 @@ along with this program.  If not, see <http://www.gnu.org/licenses/>.
 
 Tag Table:
 Node: Top75
-Node: Getting started in 10 seconds1981
-Node: Pure UNICODE text diagrams in Emacs2311
-Node: Minor mode13608
-Node: Drawing lines14156
-Node: Brush style14832
-Node: The <insert> key15925
-Node: Arrows glyphs ▷ ▶ → ▹ ▸ ↔16759
-Node: Intersection glyphs ■ ◆ ●18316
-Node: Drawing rectangles20937
-Node: Moving rectangles22911
-Node: Copying killing yanking rectangles24155
-Node: Tracing a contour25207
-Node: Flood-fill26991
-Node: Text direction28718
-Node: Macros29259
-Node: Fine tweaking32620
-Node: Dashed lines and other styles34432
-Node: ASCII to UNICODE38501
-Node: Which fonts?42187
-Node: Hydra or Transient?44206
-Node: The Hydra interface45883
-Node: The Transient interface47591
-Node: Line spacing48088
-Node: Customization49489
-Node: How Uniline behaves with its environment?50875
-Node: Compatibility with Picture-mode51424
-Node: Compatibility with Artist-mode52342
-Node: Compatibility with Whitespace-mode52861
-Node: Compatibility with Org Mode53761
-Node: Org Mode and LaTex54547
-Node: What about \t tabs?56366
-Node: What about ^L page separation?57014
-Node: Emacs on the Linux console57637
-Node: Emacs on a graphical terminal emulator58591
-Node: Emacs on Windows59514
-Node: Lisp API60158
-Node: Installation65332
-Node: Related packages67822
-Node: Author contributors70887
-Node: License72392
+Node: Getting started in 10 seconds1387
+Node: News1686
+Node: Pure UNICODE text diagrams in Emacs2648
+Node: Minor mode13920
+Node: Drawing lines14468
+Node: Brush style15144
+Node: The <insert> key16237
+Node: Arrows glyphs ▷ ▶ → ▹ ▸ ↔17071
+Node: Intersection glyphs ■ ◆ ●18628
+Node: Drawing rectangles21249
+Node: Moving rectangles23225
+Node: Copying killing yanking rectangles24469
+Node: Tracing a contour25521
+Node: Flood-fill27305
+Node: Text direction29032
+Node: Macros29573
+Node: Fine tweaking32934
+Node: Dashed lines and other styles34746
+Node: ASCII to UNICODE38815
+Node: Which fonts?42501
+Node: Hydra or Transient?44520
+Node: The Hydra interface46197
+Node: The Transient interface47905
+Node: Line spacing48402
+Node: Customization49803
+Node: How Uniline behaves with its environment?51189
+Node: Compatibility with Picture-mode51738
+Node: Compatibility with Artist-mode52656
+Node: Compatibility with Whitespace-mode53175
+Node: Compatibility with Org Mode54075
+Node: Org Mode and LaTex54861
+Node: What about \t tabs?56680
+Node: What about ^L page separation?57328
+Node: Emacs on the Linux console57951
+Node: Emacs on a graphical terminal emulator58905
+Node: Emacs on Windows59828
+Node: Lisp API60472
+Node: Installation65646
+Node: Related packages68136
+Node: Author contributors71201
+Node: License72706
 
 End Tag Table
 

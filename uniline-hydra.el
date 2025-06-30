@@ -373,7 +373,8 @@ just put everything in sync."
        '(uniline-hydra-arrows
          uniline-hydra-fonts
          uniline-hydra-moverect
-         uniline-hydra-macro-exec)
+         uniline-hydra-macro-exec
+         uniline-hydra-alt-styles)
        do
        (hydra-set-property
         hydra :verbosity uniline-hint-style)))

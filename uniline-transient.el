@@ -95,14 +95,24 @@
 ;;;│Transient interface│
 ;;;╰───────────────────╯
 
+(require 'transient)
+
+;; make this transient setting buffer local, so that Uniline can
+;; tweak it without touching other usages like Magit for instance
+(make-variable-buffer-local 'transient-show-popup)
+
 (defun uniline-toggle-hydra-hints (&optional notoggle)
   "Do nothing in transient interface."
   (interactive)
   (unless notoggle
     (setq uniline-hint-style
-          (if (eq uniline-hint-style t) 1 t))))
+          (if (eq uniline-hint-style t) 1 t)))
+  (setq transient-show-popup
+        (cond
+         ((eq uniline-hint-style   t)   t)
+         ((eq uniline-hint-style nil) nil)
+         ((eq uniline-hint-style   1)  20))))
 
-(require 'transient)
 
 (defun uniline--self-insert-command (N)
   "To fool transient into thinking this is NOT self-insert-command."
