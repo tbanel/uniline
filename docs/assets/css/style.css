@@ -2,13 +2,13 @@
 
 .markdown-body pre {
   line-height: 1.0;
-  background-color: aliceblue;
+  background-color: #ebefea
   color: black;
 }
 
 code {
-    font-size: 120%;
-    background-color: aliceblue;
+    font-size: 100%;
+    background-color: #ebefea;
     margin: 0;
     white-space: break-spaces;
     border-radius: 6px;
@@ -16,6 +16,7 @@ code {
 
 p {
     font-family: DejaVu Sans;
+    font-size: 80%;
 }
 
 h1 {
@@ -28,4 +29,5 @@ h2 {
 
 ul {
     font-family: DejaVu Sans;
+    font-size: 80%;
 }
