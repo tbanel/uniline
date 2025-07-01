@@ -1,0 +1,4 @@
+/* Custom style for README Markdown code/pre sections */
+.markdown-body pre {
+  line-height: 1.0;
+}
