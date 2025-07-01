@@ -3,7 +3,7 @@ body {
     zoom: 2;
 }
 
-.markdown-body pre {
+pre {
   line-height: 1.0;
   background-color: #ebefea;
   color: black;
@@ -11,13 +11,14 @@ body {
 
 pre code {
     font-size: 100%;
+    background-color: #0000;
     margin: 0;
     white-space: break-spaces;
     border-radius: 6px;
 }
 
 code {
-    font-size: 100%;
+    font-size: 120%;
     background-color: #ebefea;
     margin: 0;
     white-space: break-spaces;
