@@ -1,4 +1,21 @@
 /* Custom style for README Markdown code/pre sections */
+
 .markdown-body pre {
   line-height: 1.0;
+  background-color: aliceblue;
+  color: black;
 }
+
+code {
+    font-size: 14px;
+    background-color: aliceblue;
+}
+
+p {
+    font-family: DejaVu Sans;
+}
+
+h1 {
+    font-family: DejaVu Sans;
+}
+
