@@ -1,9 +1,19 @@
 /* Custom style for README Markdown code/pre sections */
+body {
+    zoom: 2;
+}
 
 .markdown-body pre {
   line-height: 1.0;
   background-color: #ebefea;
   color: black;
+}
+
+pre code {
+    font-size: 100%;
+    margin: 0;
+    white-space: break-spaces;
+    border-radius: 6px;
 }
 
 code {
