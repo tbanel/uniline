@@ -4,13 +4,11 @@
   line-height: 1.0;
   background-color: aliceblue;
   color: black;
-  border-radius: 10px;
 }
 
 code {
-    font-size: 100%;
+    font-size: 120%;
     background-color: aliceblue;
-    padding: .2em .4em;
     margin: 0;
     white-space: break-spaces;
     border-radius: 6px;
@@ -25,5 +23,9 @@ h1 {
 }
 
 h2 {
+    font-family: DejaVu Sans;
+}
+
+ul {
     font-family: DejaVu Sans;
 }
