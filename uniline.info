@@ -16,7 +16,7 @@ Uniline
 * Menu:
 
 * Getting started in 10 seconds::
-* News::
+* New::
 * Pure UNICODE text diagrams in Emacs::
 * Minor mode::
 * Drawing lines::
@@ -67,7 +67,7 @@ How ‘Uniline’ behaves with its environment?
 
 
 
-File: uniline.info,  Node: Getting started in 10 seconds,  Next: News,  Prev: Top,  Up: Top
+File: uniline.info,  Node: Getting started in 10 seconds,  Next: New,  Prev: Top,  Up: Top
 
 1 Getting started in 10 seconds
 *******************************
@@ -77,10 +77,10 @@ File: uniline.info,  Node: Getting started in 10 seconds,  Next: News,  Prev: To
    • Quit ‘C-c C-c’
 
 
-File: uniline.info,  Node: News,  Next: Pure UNICODE text diagrams in Emacs,  Prev: Getting started in 10 seconds,  Up: Top
+File: uniline.info,  Node: New,  Next: Pure UNICODE text diagrams in Emacs,  Prev: Getting started in 10 seconds,  Up: Top
 
-2 News
-******
+2 New
+*****
 
 The ‘uniline-hint-style’ customizable setting now works on Transient
 menus (it used to be Hydra-only).  To achieve that, it modifies
@@ -110,7 +110,7 @@ sub-package.
    See the "Installation" chapter for details.
 
 
-File: uniline.info,  Node: Pure UNICODE text diagrams in Emacs,  Next: Minor mode,  Prev: News,  Up: Top
+File: uniline.info,  Node: Pure UNICODE text diagrams in Emacs,  Next: Minor mode,  Prev: New,  Up: Top
 
 3 Pure UNICODE text diagrams in Emacs
 *************************************
@@ -744,7 +744,7 @@ macro.  So instead of the usual ‘C-x e’, type ‘C-x e e’.  And of course,
 the usual repetition typing repeatedly ‘e’ is available.
 
    Why are directional macros useful?  To create fancy lines.  For
-instance, if we want a doted line instead of the continuous one, we
+instance, if we want a doted╴line instead of the continuous one, we
 record a macro for one step:
 
      C-x (             ;; begin recording
@@ -1309,6 +1309,21 @@ the buffer.
 
    Other than that, ‘Uniline’ is compatible with ‘Org Mode’
 
+   Thanks to jdtsmith (GitHub) for sharing a funny fact he discovered.
+If a source block is created with the ‘Uniline’ language (‘Uniline’ is
+*not* a language like ‘C++,’ ‘Python’, or ‘Bash’), then it can be edited
+(‘M-x org-edit-special’) with ‘uniline-mode’ automatically activated.
+
+     #+begin_src uniline
+     ╭───╮   ╭───╮
+     │ ╷ ╰───╯ ╷ │
+     │ ╰─    ╶─╯ │
+     ╰╮ ●     ● ╭╯
+      │      ╷  │
+      ╰╮ ────╯ ╭╯
+       ╰───────╯
+     #+end_src
+
 
 File: uniline.info,  Node: Org Mode and LaTex,  Next: What about \t tabs?,  Prev: Compatibility with Org Mode,  Up: How Uniline behaves with its environment?
 
@@ -1859,47 +1874,47 @@ along with this program.  If not, see <http://www.gnu.org/licenses/>.
 
 Tag Table:
 Node: Top75
-Node: Getting started in 10 seconds1387
-Node: News1686
-Node: Pure UNICODE text diagrams in Emacs2648
-Node: Minor mode13920
-Node: Drawing lines14468
-Node: Brush style15144
-Node: The <insert> key16237
-Node: Arrows glyphs ▷ ▶ → ▹ ▸ ↔17071
-Node: Intersection glyphs ■ ◆ ●18628
-Node: Drawing rectangles21249
-Node: Moving rectangles23225
-Node: Copying killing yanking rectangles24469
-Node: Tracing a contour25521
-Node: Flood-fill27305
-Node: Text direction29032
-Node: Macros29573
-Node: Fine tweaking32934
-Node: Dashed lines and other styles34746
-Node: ASCII to UNICODE38815
-Node: Which fonts?42501
-Node: Hydra or Transient?44520
-Node: The Hydra interface46197
-Node: The Transient interface47905
-Node: Line spacing48402
-Node: Customization49803
-Node: How Uniline behaves with its environment?51189
-Node: Compatibility with Picture-mode51738
-Node: Compatibility with Artist-mode52656
-Node: Compatibility with Whitespace-mode53175
-Node: Compatibility with Org Mode54075
-Node: Org Mode and LaTex54861
-Node: What about \t tabs?56680
-Node: What about ^L page separation?57328
-Node: Emacs on the Linux console57951
-Node: Emacs on a graphical terminal emulator58905
-Node: Emacs on Windows59828
-Node: Lisp API60472
-Node: Installation65646
-Node: Related packages68136
-Node: Author contributors71201
-Node: License72706
+Node: Getting started in 10 seconds1386
+Node: New1684
+Node: Pure UNICODE text diagrams in Emacs2643
+Node: Minor mode13914
+Node: Drawing lines14462
+Node: Brush style15138
+Node: The <insert> key16231
+Node: Arrows glyphs ▷ ▶ → ▹ ▸ ↔17065
+Node: Intersection glyphs ■ ◆ ●18622
+Node: Drawing rectangles21243
+Node: Moving rectangles23219
+Node: Copying killing yanking rectangles24463
+Node: Tracing a contour25515
+Node: Flood-fill27299
+Node: Text direction29026
+Node: Macros29567
+Node: Fine tweaking32930
+Node: Dashed lines and other styles34742
+Node: ASCII to UNICODE38811
+Node: Which fonts?42497
+Node: Hydra or Transient?44516
+Node: The Hydra interface46193
+Node: The Transient interface47901
+Node: Line spacing48398
+Node: Customization49799
+Node: How Uniline behaves with its environment?51185
+Node: Compatibility with Picture-mode51734
+Node: Compatibility with Artist-mode52652
+Node: Compatibility with Whitespace-mode53171
+Node: Compatibility with Org Mode54071
+Node: Org Mode and LaTex55447
+Node: What about \t tabs?57266
+Node: What about ^L page separation?57914
+Node: Emacs on the Linux console58537
+Node: Emacs on a graphical terminal emulator59491
+Node: Emacs on Windows60414
+Node: Lisp API61058
+Node: Installation66232
+Node: Related packages68722
+Node: Author contributors71787
+Node: License73292
 
 End Tag Table
 

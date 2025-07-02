@@ -743,7 +743,7 @@ macro. So instead of the usual =C-x e=, type =C-x e e=. And of course,
 the usual repetition typing repeatedly =e= is available.
 
 Why are directional macros useful? To create fancy lines. For
-instance, if we want a doted line instead of the continuous one, we
+instance, if we want a doted╴line instead of the continuous one, we
 record a macro for one step:
 
 #+begin_example
@@ -1292,6 +1292,24 @@ difference is that the =Uniline='s one handles the infinite-ness of the
 buffer.
 
 Other than that, =Uniline= is compatible with =Org Mode=
+
+Thanks to jdtsmith (GitHub) for sharing a funny fact he discovered. If
+a source block is created with the =Uniline= language (=Uniline= is
+*not* a language like =C++,= =Python=, or =Bash=), then it can be
+edited (=M-x org-edit-special=) with =uniline-mode= automatically
+activated.
+
+#+begin_example
+#+begin_src uniline
+╭───╮   ╭───╮
+│ ╷ ╰───╯ ╷ │
+│ ╰─    ╶─╯ │
+╰╮ ●     ● ╭╯
+ │      ╷  │
+ ╰╮ ────╯ ╭╯
+  ╰───────╯
+#+end_src
+#+end_example
 
 ** Org Mode and LaTex
 :PROPERTIES:

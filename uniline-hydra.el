@@ -340,7 +340,7 @@ Otherwise, the arrows & shapes hydra is invoked."
           ,uniline-hydra-fonts/hint
         ,(eval-when-compile
            (uniline--color-hint
-            "choose font: ^dhcjbfsiua^  config font: ^*^  hint: ^TAB^")))
+            "choose font: ^dhcjbfsiIpPua^  config font: ^*^  hint: ^TAB^")))
      uniline-hydra-moverect/hint
      `(if (eq uniline-hint-style t)
           ,uniline-hydra-moverect/hint

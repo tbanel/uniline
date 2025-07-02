@@ -961,7 +961,7 @@ without the fall-back characters."))
       (a   ?△ ?▷ ?▽ ?◁)      ;; white *-pointing triangle
       (a   ?▲ ?▶ ?▼ ?◀)      ;; black *-pointing triangle
       (a   ?↑ ?→ ?↓ ?←)      ;; *wards arrow
-      (a   ?▵ ?▹ ?▿ ?◃)      ;; white *-pointing small triangle"
+      (a   ?▵ ?▹ ?▿ ?◃)      ;; white *-pointing small triangle
       (a   ?▴ ?▸ ?▾ ?◂)      ;; black *-pointing small triangle
       (a   ?↕ ?↔ ?↕ ?↔)      ;; up down arrow, left right arrow
 
@@ -1435,9 +1435,9 @@ Clear the half of this character pointing in DIR direction."
                (uniline--char-to-4quadb ?█) ; this is constant 15 = 0b1111
                )))))))
 
-;;;╭────────────────────────────╮
-;;;│Test blanks in the neighbour│
-;;;╰────────────────────────────╯
+;;;╭────────────────────────────────╮
+;;;│Test blanks in the neighbourhood│
+;;;╰────────────────────────────────╯
 
 (defun uniline--blank-after (p)
   "Return non-nil if P points to a 4halfs or 4quadb character.
