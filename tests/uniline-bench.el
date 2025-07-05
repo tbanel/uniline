@@ -63,7 +63,8 @@ RESULT is a string representing the expected result."
       (transient-quit-all))  ;; clear any left-over from previous bench
   (setq uniline--which-quadrant (uniline--char-to-4quadb ?▘))
   (setq uniline-brush 1)
-  (execute-kbd-macro (kbd commands))
+  (let ((uniline-show-welcome-message nil))
+    (execute-kbd-macro (kbd commands)))
   
   (setq uniline-bench-result
         (string-equal
@@ -140,7 +141,7 @@ If there are no errors, a summary buffer is presented."
     (switch-to-buffer buf)
     (message "%s PASSED / %s FAILED %s" nbpassed nbfailed failed)))
 
-(if nil
+(if t
     (uniline-bench-run)
   (garbage-collect)
   (profiler-start 'cpu+mem)

@@ -3436,6 +3436,15 @@ text within will be colored."
        hint
        t))))
 
+(defcustom uniline-show-welcome-message t
+  "Whether to show the welcome message upon activating uniline-mode."
+  :type 'boolean
+  :group 'uniline)
+
+(defun uniline-dismiss-welcome-message ()
+  (interactive)
+  (customize-variable 'uniline-show-welcome-message))
+
 (defun uniline--welcome-message ()
   "Display a message giving the main key-bindings of the minor mode."
   (interactive)
@@ -3453,7 +3462,7 @@ text within will be colored."
  │^INS^ without selection  insert glyphs, change font        │
  │^INS^ with    selection  handle rectangles                 │
  │^C-h TAB^                switch small/large hints          │
- │^M-: (info \"uniline\")^   info documentation page           │
+ │^C-h DEL^                dismiss this message in the future│
  │^C-c C-c^                quit uniline                      │
  ╰─^^────────────────────────────────────────────────────────╯")))
       ((eq uniline-hint-style 1)
@@ -3490,7 +3499,8 @@ And backup previous settings."
    nil 'local)
   (uniline-toggle-hydra-hints t)
   (uniline--update-mode-line)
-  (uniline--welcome-message))
+  (if uniline-show-welcome-message
+      (uniline--welcome-message)))
 
 (defun uniline--mode-post ()
   "Restore settings when exiting uniline mode."
@@ -3666,7 +3676,9 @@ And backup previous settings."
     ("="             . uniline-set-brush-3)
     ("#"             . uniline-set-brush-block)
     ([?\C-x ?e]      . uniline-macro-exec)
-    ([?\C-h ?\t]     . uniline-toggle-hydra-hints-welcome)
+    ([?\C-h ?\t]        . uniline-toggle-hydra-hints-welcome)
+    ([?\C-h delete]     . uniline-dismiss-welcome-message)
+    ([?\C-h deletechar] . uniline-dismiss-welcome-message)
     ([?\C-c ?\C-c]   . uniline-mode))
   :after-hook (if uniline-mode (uniline--mode-pre) (uniline--mode-post)))
 
@@ -3791,6 +3803,7 @@ with the one used to invoke Uniline-mode."
      ["Agave"                        (set-frame-font "Agave"                      ) :keys "INS f a" :style radio :selected (uniline--is-font ?a)]
      ["permanently configure" uniline-customize-face               :keys "INS f *"])
     ["info" (info "uniline") :keys "M-: (info \"uniline\")"]
+    ["Customize" (customize-group 'uniline)]
     ["quit Uniline Mode" uniline-mode t] ))
 
 (provide 'uniline-core)
