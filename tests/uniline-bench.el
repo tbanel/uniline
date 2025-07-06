@@ -55,16 +55,16 @@ Its format is the one used to store keyboard macros.
 RESULT is a string representing the expected result."
   (ignore-errors (kill-buffer "*uniline-interactive*"))
   (switch-to-buffer "*uniline-interactive*")
-;  (set-default 'uniline-hint-style 1)
-  (uniline-mode 1)
+  ;; (set-default 'uniline-hint-style 1)
+  (let ((uniline-show-welcome-message nil))
+    (uniline-mode 1))
   (if (fboundp 'hydra-keyboard-quit)
       (hydra-keyboard-quit)) ;; clear any left-over from previous bench
   (if (fboundp 'transient-quit-all)
       (transient-quit-all))  ;; clear any left-over from previous bench
   (setq uniline--which-quadrant (uniline--char-to-4quadb ?▘))
   (setq uniline-brush 1)
-  (let ((uniline-show-welcome-message nil))
-    (execute-kbd-macro (kbd commands)))
+  (execute-kbd-macro (kbd commands))
   
   (setq uniline-bench-result
         (string-equal

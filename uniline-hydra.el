@@ -1,4 +1,4 @@
-;;; uniline-hydra.el --- Add ╭─╴UNICODE╶─╮ based ╭─╴diagrams╶─╮ to ╭▶╴text files╶●╮ -*- coding:utf-8; lexical-binding: t -*-
+;;; uniline-hydra.el --- Add▶ ╭╴UNICODE based diagrams╶╮ to→ ╭╴text files╶╮ -*- coding:utf-8; lexical-binding: t -*-
 
 ;; Copyright (C) 2024-2025  Thierry Banel
 
@@ -218,7 +218,7 @@
               ("+"             uniline-change-style-thick)
               ("<kp-add>"      uniline-change-style-thick)
               ("="             uniline-change-style-double)
-              ("a"             uniline--aa2u-rectangle)
+              ("a"             uniline-aa2u-rectangle)
               ;; copy here the bindings for handling rectangles
               ("<right>" uniline-move-rect-ri→)
               ("<left>"  uniline-move-rect-lf←)

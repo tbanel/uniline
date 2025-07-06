@@ -1,4 +1,4 @@
-;;; uniline-core.el --- Add ╭─╴UNICODE╶─╮ based ╭─╴diagrams╶─╮ to ╭▶╴text files╶●╮ -*- coding:utf-8; lexical-binding: t; -*-
+;;; uniline-core.el --- Add▶ ╭╴UNICODE based diagrams╶╮ to→ ╭╴text files╶╮ -*- coding:utf-8; lexical-binding: t; -*-
 
 ;; Copyright (C) 2024-2025  Thierry Banel
 
@@ -3191,7 +3191,7 @@ This includes plain and dashed lines (e.g. ┻ to ╩, or ┄ to ═)."
   (uniline--record-undo-rectangle-selection)
   (uniline--change-style-hash uniline--char-to-double-line))
 
-(defun uniline--aa2u-rectangle ()
+(defun uniline-aa2u-rectangle ()
   "Wrapper arround `aa2u-rectangle'."
   (interactive)
   (uniline--record-undo-rectangle-selection)
@@ -3775,7 +3775,7 @@ with the one used to invoke Uniline-mode."
      ["4 dots vert & horiz" uniline-change-style-dot-4-4  :keys "INS s 4"]
      ["hard corners"    uniline-change-style-hard-corners :keys "INS s h"]
      ["back to standard"    uniline-change-style-standard :keys "INS s 0"]
-     ["aa2u (ext. package)" uniline--aa2u-rectangle       :keys "INS s a"])
+     ["aa2u (ext. package)" uniline-aa2u-rectangle        :keys "INS s a"])
     ("Fill & contour"
      ["contour"         uniline-contour                 :keys "INS c"]
      ["contour overw"  (uniline-contour t)              :keys "INS C"]

@@ -1,4 +1,4 @@
-;;; uniline-transient.el --- Add ╭─╴UNICODE╶─╮ based ╭─╴diagrams╶─╮ to ╭▶╴text files╶●╮ -*- coding:utf-8; lexical-binding: t -*-
+;;; uniline-transient.el --- Add▶ ╭╴UNICODE based diagrams╶╮ to→ ╭╴text files╶╮ -*- coding:utf-8; lexical-binding: t -*-
 
 ;; Copyright (C) 2024-2025  Thierry Banel
 
@@ -227,7 +227,7 @@
     ("=" "double" uniline-change-style-double :transient t)]
    ["Base style"
     ("0" "standard" uniline-change-style-standard :transient t)
-    ("a"     "aa2u" uniline--aa2u-rectangle       :transient t)]
+    ("a"     "aa2u" uniline-aa2u-rectangle        :transient t)]
    ;;["Move rectangle"
    ;; ("<right>" "→" uniline-move-rect-ri→ :transient t)
    ;; ("<left>"  "←" uniline-move-rect-lf← :transient t)

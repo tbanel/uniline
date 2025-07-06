@@ -1496,12 +1496,12 @@ overwrite the buffer
 
    Set the current brush by calling any of the following:
 
-   • ‘uniline--set-brush-nil ;; write nothing’
-   • ‘uniline--set-brush-0 ;; eraser’
-   • ‘uniline--set-brush-1 ;; single thin line╶─╴’
-   • ‘uniline--set-brush-2 ;; single thick line╺━╸’
-   • ‘uniline--set-brush-3 ;; double line╺═╸’
-   • ‘uniline--set-brush-block ;; blocks ▙▄▟▀’
+   • ‘uniline--set-brush-nil’ ;; write nothing
+   • ‘uniline--set-brush-0’ ;; eraser
+   • ‘uniline--set-brush-1’ ;; single thin line╶─╴
+   • ‘uniline--set-brush-2’ ;; single thick line╺━╸
+   • ‘uniline--set-brush-3’ ;; double line╺═╸
+   • ‘uniline--set-brush-block’ ;; blocks ▙▄▟▀
 
    Those functions are equivalent to:
 
@@ -1586,12 +1586,14 @@ directions.
    • ‘uniline-move-rect-dw↓’
    • ‘uniline-move-rect-lf←’
 
+   The above functions require a region to be marked.
+
    Constants for the 4 directions:
 
-   • ‘uniline-direction-up↑ ;; constant 0’
-   • ‘uniline-direction-ri→ ;; constant 1’
-   • ‘uniline-direction-dw↓ ;; constant 2’
-   • ‘uniline-direction-lf← ;; constant 3’
+   • ‘uniline-direction-up↑’ ;; constant 0
+   • ‘uniline-direction-ri→’ ;; constant 1
+   • ‘uniline-direction-dw↓’ ;; constant 2
+   • ‘uniline-direction-lf←’ ;; constant 3
 
    Changing text direction:
 
@@ -1632,14 +1634,28 @@ directions.
    • ‘uniline-rotate-dw↓’
    • ‘uniline-rotate-lf←’
 
-   Move point, possibly extending the buffer in right and bottom
-directions:
+   Here are the lowest level functions.  Move point, possibly extending
+the buffer in right and bottom directions:
 
    • ‘uniline-move-to-column’
    • ‘uniline-move-to-line’
    • ‘uniline-move-to-lin-col’
    • ‘uniline-move-to-delta-column’
    • ‘uniline-move-to-delta-line’
+
+   A drawing in a rectangular selection may have its style changed:
+
+   • ‘uniline-change-style-dot-3-2’ ;; 3 dashes vert.  ┆, 2 horiz.  ╌
+   • ‘uniline-change-style-dot-4-4’ ;; 4 dashes vert.  ┊ & horiz.  ┈
+   • ‘uniline-change-style-standard’ ;; back to Uniline base style
+   • ‘uniline-change-style-hard-corners’ ;; rounded corners╭╴become
+     hard┌
+   • ‘uniline-change-style-thin’ ;; convert to ╭╴ thin lines
+   • ‘uniline-change-style-thick’ ;; convert to ┏╸ thick lines
+   • ‘uniline-change-style-double’ ;; convert to ╔═ thick lines
+   • ‘uniline-aa2u-rectangle’ ;; call aa2u to convert ASCII to Unicode
+
+   The above functions require a region to be marked.
 
 
 File: uniline.info,  Node: Installation,  Next: Related packages,  Prev: Lisp API,  Up: Top
@@ -1911,10 +1927,10 @@ Node: Emacs on the Linux console58537
 Node: Emacs on a graphical terminal emulator59491
 Node: Emacs on Windows60414
 Node: Lisp API61058
-Node: Installation66232
-Node: Related packages68722
-Node: Author contributors71787
-Node: License73292
+Node: Installation67068
+Node: Related packages69558
+Node: Author contributors72623
+Node: License74128
 
 End Tag Table
 

@@ -1471,12 +1471,12 @@ overwrite the buffer
 
 Set the current brush by calling any of the following:
 
-- =uniline--set-brush-nil   ;; write nothing=
-- =uniline--set-brush-0     ;; eraser=
-- =uniline--set-brush-1     ;; single thin line╶─╴=
-- =uniline--set-brush-2     ;; single thick line╺━╸=
-- =uniline--set-brush-3     ;; double line╺═╸=
-- =uniline--set-brush-block ;; blocks ▙▄▟▀=
+- =uniline--set-brush-nil=   ;; write nothing
+- =uniline--set-brush-0=     ;; eraser
+- =uniline--set-brush-1=     ;; single thin line╶─╴
+- =uniline--set-brush-2=     ;; single thick line╺━╸
+- =uniline--set-brush-3=     ;; double line╺═╸
+- =uniline--set-brush-block= ;; blocks ▙▄▟▀
 
 Those functions are equivalent to:
 
@@ -1567,12 +1567,14 @@ Drawing and moving many characters at once:
 - =uniline-move-rect-dw↓=
 - =uniline-move-rect-lf←=
 
+The above functions require a region to be marked.
+
 Constants for the 4 directions:
 
-- =uniline-direction-up↑ ;; constant 0=
-- =uniline-direction-ri→ ;; constant 1=
-- =uniline-direction-dw↓ ;; constant 2=
-- =uniline-direction-lf← ;; constant 3=
+- =uniline-direction-up↑= ;; constant 0
+- =uniline-direction-ri→= ;; constant 1
+- =uniline-direction-dw↓= ;; constant 2
+- =uniline-direction-lf←= ;; constant 3
 
 Changing text direction:
 
@@ -1613,14 +1615,27 @@ Rotate arrow or tweak 4-half-lines or 4-block characters:
 - =uniline-rotate-dw↓=
 - =uniline-rotate-lf←=
 
-Move point, possibly extending the buffer in right and bottom
-directions:
+Here are the lowest level functions. Move point, possibly extending
+the buffer in right and bottom directions:
 
 - =uniline-move-to-column=
 - =uniline-move-to-line=
 - =uniline-move-to-lin-col=
 - =uniline-move-to-delta-column=
 - =uniline-move-to-delta-line=
+
+A drawing in a rectangular selection may have its style changed:
+
+- =uniline-change-style-dot-3-2=      ;; 3 dashes vert. ┆, 2 horiz. ╌
+- =uniline-change-style-dot-4-4=      ;; 4 dashes vert. ┊ & horiz. ┈
+- =uniline-change-style-standard=     ;; back to Uniline base style
+- =uniline-change-style-hard-corners= ;; rounded corners╭╴become hard┌
+- =uniline-change-style-thin=         ;; convert to ╭╴ thin lines
+- =uniline-change-style-thick=        ;; convert to ┏╸ thick lines
+- =uniline-change-style-double=       ;; convert to ╔═ thick lines
+- =uniline-aa2u-rectangle=            ;; call aa2u to convert ASCII to Unicode
+
+The above functions require a region to be marked.
 
 * Installation
 :PROPERTIES:
