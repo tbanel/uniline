@@ -40,6 +40,7 @@ Uniline
 * Customization::
 * How Uniline behaves with its environment?::
 * Lisp API::
+* Mouse support::
 * Installation::
 * Related packages::
 * Author, contributors: Author contributors.
@@ -82,32 +83,8 @@ File: uniline.info,  Node: New,  Next: Pure UNICODE text diagrams in Emacs,  Pre
 2 New
 *****
 
-The ‘uniline-hint-style’ customizable setting now works on Transient
-menus (it used to be Hydra-only).  To achieve that, it modifies
-‘transient-show-popup’.  It does so only in the Uniline buffers.
-
-   Old news:
-
-   Compatibility break.
-
-   To choose between ‘Hydra’ or ‘Transient’ user interface, there was a
-pre-installation setting: ‘uniline-interface-type’.
-
-   Now ‘Uniline’ has 3 sub packages: ‘hydra’, ‘transient’, ‘core’.
-Choosing the interface is a matter of loading one or the other
-sub-package.
-
-   Example of a possible configuration in your ‘./emacs’:
-
-     (use-package uniline-hydra
-       :bind ("C-<insert>" . uniline-mode))
-
-   or:
-
-     (use-package uniline-transient
-       :bind ("C-<insert>" . uniline-mode))
-
-   See the "Installation" chapter for details.
+Mouse supports the infiniteness of the buffer in the right and bottom
+directions.
 
 
 File: uniline.info,  Node: Pure UNICODE text diagrams in Emacs,  Next: Minor mode,  Prev: New,  Up: Top
@@ -1443,7 +1420,7 @@ File: uniline.info,  Node: Emacs on a graphical terminal emulator,  Next: Emacs 
 ===========================================
 
 This is the Emacs launched from a terminal typing ‘emacs -nw’.  In this
-environment, ‘<insert>’ does not exists.  It is replaced by
+environment, ‘<insert>’ does not exist.  It is replaced by
 ‘<insertchar>’.  This has already been taken into account by ‘Uniline’
 by duplicating the key-bindings for the two flavors of this key.
 
@@ -1475,7 +1452,7 @@ unaligned result though.  They should be avoided under ‘Consolas’:
    Of course, other fonts may be installed.  It is quite easy.
 
 
-File: uniline.info,  Node: Lisp API,  Next: Installation,  Prev: How Uniline behaves with its environment?,  Up: Top
+File: uniline.info,  Node: Lisp API,  Next: Mouse support,  Prev: How Uniline behaves with its environment?,  Up: Top
 
 25 Lisp API
 ***********
@@ -1658,9 +1635,30 @@ the buffer in right and bottom directions:
    The above functions require a region to be marked.
 
 
-File: uniline.info,  Node: Installation,  Next: Related packages,  Prev: Lisp API,  Up: Top
+File: uniline.info,  Node: Mouse support,  Next: Installation,  Prev: Lisp API,  Up: Top
 
-26 Installation
+26 Mouse support
+****************
+
+The out-of-the-box mouse support of Emacs works perfectly.  Except when
+the mouse clicks on a position outside the buffer.  This happens when
+clicking past the end of a too short line, or past the end of the
+buffer.
+
+   To handle those cases, a few standard Emacs functions have been
+extended to add blank characters or blank lines.  Doing so, the
+mouse-click now falls on a valid part of the buffer.  Of course, those
+extensions are only active on ‘uniline-mode’ activated buffers.
+
+   Beware that when the window is at the same time zoomed with ‘C-x C-+
+C--’ AND horizontally scrolled with ‘C-x <’, the cursor positioning is
+not accurate.  This is due to Emacs limitations and bugs.  Just click
+twice to fix the inaccuracy.
+
+
+File: uniline.info,  Node: Installation,  Next: Related packages,  Prev: Mouse support,  Up: Top
+
+27 Installation
 ***************
 
 Add the following lines to your ‘.emacs’ file, and reload it, if not
@@ -1698,8 +1696,8 @@ already done:
      ;; or    "uniline-core.elc"
      ;; or    "uniline-core.eln"
 
-   You should prefer the byte-compiled or native-compiles forms over the
-interpreted form, because there are a lot of optimizations performed at
+   You should prefer the byte-compiled or native-compiled forms over the
+interpreted forms, because there are a lot of optimizations performed at
 compile time.
 
    You may want to give ‘uniline-mode’ a key-binding.  ‘use-package’ in
@@ -1718,9 +1716,9 @@ your ‘$HOME/.emacs’ file is great for that:
      (use-package uniline
        :bind ("C-<insert>" . uniline-mode))
 
-   In this example, ‘C-<insert>’ was chosen.  You can use whatever keys
-combination you want.  ‘<insert>’ happens to also be the key used inside
-‘Uniline’.
+   In this example, ‘C-<insert>’ was chosen.  You can use whatever key
+combinations you want.  ‘<insert>’ happens to also be the key used
+inside ‘Uniline’.
 
    If you do not have ‘use-package’, you can add those lines in your
 ‘~/.emacs’ file:
@@ -1731,14 +1729,10 @@ combination you want.  ‘<insert>’ happens to also be the key used inside
    The downside is that ‘Uniline’ will be loaded as soon as ‘Emacs’ is
 launched, rather than deferred until invoked.
 
-   If the ‘Hydra’ package is not installed, ‘Uniline’ installation
-completes nonetheless.  Then ‘uniline-hydra’ will lack most of its
-features.
-
 
 File: uniline.info,  Node: Related packages,  Next: Author contributors,  Prev: Installation,  Up: Top
 
-27 Related packages
+28 Related packages
 *******************
 
    • ‘artist-mode’: the ASCII art mode built into Emacs.
@@ -1821,7 +1815,7 @@ File: uniline.info,  Node: Related packages,  Next: Author contributors,  Prev: 
 
 File: uniline.info,  Node: Author contributors,  Next: License,  Prev: Related packages,  Up: Top
 
-28 Author, contributors
+29 Author, contributors
 ***********************
 
    • Thierry Banel, author
@@ -1868,7 +1862,7 @@ File: uniline.info,  Node: Author contributors,  Next: License,  Prev: Related p
 
 File: uniline.info,  Node: License,  Prev: Author contributors,  Up: Top
 
-29 License
+30 License
 **********
 
 Copyright (C) 2024-2025 Thierry Banel
@@ -1890,47 +1884,48 @@ along with this program.  If not, see <http://www.gnu.org/licenses/>.
 
 Tag Table:
 Node: Top75
-Node: Getting started in 10 seconds1386
-Node: New1684
-Node: Pure UNICODE text diagrams in Emacs2643
-Node: Minor mode13914
-Node: Drawing lines14462
-Node: Brush style15138
-Node: The <insert> key16231
-Node: Arrows glyphs ▷ ▶ → ▹ ▸ ↔17065
-Node: Intersection glyphs ■ ◆ ●18622
-Node: Drawing rectangles21243
-Node: Moving rectangles23219
-Node: Copying killing yanking rectangles24463
-Node: Tracing a contour25515
-Node: Flood-fill27299
-Node: Text direction29026
-Node: Macros29567
-Node: Fine tweaking32930
-Node: Dashed lines and other styles34742
-Node: ASCII to UNICODE38811
-Node: Which fonts?42497
-Node: Hydra or Transient?44516
-Node: The Hydra interface46193
-Node: The Transient interface47901
-Node: Line spacing48398
-Node: Customization49799
-Node: How Uniline behaves with its environment?51185
-Node: Compatibility with Picture-mode51734
-Node: Compatibility with Artist-mode52652
-Node: Compatibility with Whitespace-mode53171
-Node: Compatibility with Org Mode54071
-Node: Org Mode and LaTex55447
-Node: What about \t tabs?57266
-Node: What about ^L page separation?57914
-Node: Emacs on the Linux console58537
-Node: Emacs on a graphical terminal emulator59491
-Node: Emacs on Windows60414
-Node: Lisp API61058
-Node: Installation67068
-Node: Related packages69558
-Node: Author contributors72623
-Node: License74128
+Node: Getting started in 10 seconds1404
+Node: New1702
+Node: Pure UNICODE text diagrams in Emacs1924
+Node: Minor mode13195
+Node: Drawing lines13743
+Node: Brush style14419
+Node: The <insert> key15512
+Node: Arrows glyphs ▷ ▶ → ▹ ▸ ↔16346
+Node: Intersection glyphs ■ ◆ ●17903
+Node: Drawing rectangles20524
+Node: Moving rectangles22500
+Node: Copying killing yanking rectangles23744
+Node: Tracing a contour24796
+Node: Flood-fill26580
+Node: Text direction28307
+Node: Macros28848
+Node: Fine tweaking32211
+Node: Dashed lines and other styles34023
+Node: ASCII to UNICODE38092
+Node: Which fonts?41778
+Node: Hydra or Transient?43797
+Node: The Hydra interface45474
+Node: The Transient interface47182
+Node: Line spacing47679
+Node: Customization49080
+Node: How Uniline behaves with its environment?50466
+Node: Compatibility with Picture-mode51015
+Node: Compatibility with Artist-mode51933
+Node: Compatibility with Whitespace-mode52452
+Node: Compatibility with Org Mode53352
+Node: Org Mode and LaTex54728
+Node: What about \t tabs?56547
+Node: What about ^L page separation?57195
+Node: Emacs on the Linux console57818
+Node: Emacs on a graphical terminal emulator58772
+Node: Emacs on Windows59694
+Node: Lisp API60338
+Node: Mouse support66349
+Node: Installation67215
+Node: Related packages69554
+Node: Author contributors72619
+Node: License74124
 
 End Tag Table
 

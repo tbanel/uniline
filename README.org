@@ -14,35 +14,8 @@
 
 * New
 
-The =uniline-hint-style= customizable setting now works on Transient
-menus (it used to be Hydra-only). To achieve that, it modifies
-=transient-show-popup=. It does so only in the Uniline buffers.
-
-Old news:
-
-Compatibility break.
-
-To choose between =Hydra= or =Transient= user interface, there was a
-pre-installation setting: =uniline-interface-type=.
-
-Now =Uniline= has 3 sub packages: =hydra=, =transient=, =core=.  Choosing the
-interface is a matter of loading one or the other sub-package.
-
-Example of a possible configuration in your =./emacs=:
-
-#+begin_src elisp
-(use-package uniline-hydra
-  :bind ("C-<insert>" . uniline-mode))
-#+end_src
-
-or:
-
-#+begin_src elisp
-(use-package uniline-transient
-  :bind ("C-<insert>" . uniline-mode))
-#+end_src
-
-See the "Installation" chapter for details.
+Mouse supports the infiniteness of the buffer in the right and bottom
+directions.
 
 * Table of Contents
 :PROPERTIES:
@@ -1420,7 +1393,7 @@ found here: https://www.emacswiki.org/emacs/MissingKeys
 :CUSTOM_ID: emacs-on-a-graphical-terminal-emulator
 :END:
 This is the Emacs launched from a terminal typing =emacs -nw=. In this
-environment, =<insert>= does not exists. It is replaced by
+environment, =<insert>= does not exist. It is replaced by
 =<insertchar>=. This has already been taken into account by =Uniline=
 by duplicating the key-bindings for the two flavors of this key.
 
@@ -1637,6 +1610,21 @@ A drawing in a rectangular selection may have its style changed:
 
 The above functions require a region to be marked.
 
+* Mouse support
+The out-of-the-box mouse support of Emacs works perfectly. Except when
+the mouse clicks on a position outside the buffer. This happens when
+clicking past the end of a too short line, or past the end of the buffer.
+
+To handle those cases, a few standard Emacs functions have been
+extended to add blank characters or blank lines. Doing so, the
+mouse-click now falls on a valid part of the buffer. Of course, those
+extensions are only active on =uniline-mode= activated buffers.
+
+Beware that when the window is at the same time zoomed with =C-x C-+
+C--= AND horizontally scrolled with =C-x <=, the cursor positioning is
+not accurate. This is due to Emacs limitations and bugs. Just click
+twice to fix the inaccuracy.
+
 * Installation
 :PROPERTIES:
 :CUSTOM_ID: installation
@@ -1687,8 +1675,8 @@ or if you prefer the Transient interface over the Hydra one:
 ;; or    "uniline-core.eln"
 #+end_src
 
-You should prefer the byte-compiled or native-compiles forms over the
-interpreted form, because there are a lot of optimizations performed
+You should prefer the byte-compiled or native-compiled forms over the
+interpreted forms, because there are a lot of optimizations performed
 at compile time.
 
 You may want to give =uniline-mode= a key-binding. =use-package=
@@ -1713,7 +1701,7 @@ or as an alias to =uniline-hydra=:
   :bind ("C-<insert>" . uniline-mode))
 #+end_src
 
-In this example, =C-<insert>= was chosen. You can use whatever keys combination you want.
+In this example, =C-<insert>= was chosen. You can use whatever key combinations you want.
 =<insert>= happens to also be the key used inside =Uniline=.
 
 If you do not have =use-package=, you can add those lines in your =~/.emacs= file:
@@ -1725,9 +1713,6 @@ If you do not have =use-package=, you can add those lines in your =~/.emacs= fil
 
 The downside is that =Uniline= will be loaded as soon as =Emacs= is
 launched, rather than deferred until invoked.
-
-If the =Hydra= package is not installed, =Uniline= installation completes
-nonetheless. Then =uniline-hydra= will lack most of its features.
 
 * Related packages
 :PROPERTIES:

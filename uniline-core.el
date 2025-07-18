@@ -3360,6 +3360,176 @@ and highlighted."
   (interactive)
   (deactivate-mark))
 
+;;;╭─────────────╮
+;;;│Mouse support│
+;;;╰─────────────╯
+
+;; How it works?
+;; The 3 mouse-button-1 handling functions of Emacs are
+;; fairly complex. They are named:
+;;   mouse-set-point, mouse-drag-region, mouse-set-region.
+;;
+;; Here we just let them do whatever they want to. But first
+;; we intercept them, so that Uniline can add blank
+;; characters or lines if the mouse event falls outside the
+;; buffer.
+;;
+;; The mouse events provide a (point) position, which is
+;; wrong when outside the buffer. But they also provide a
+;; position in pixels along with the width and height in
+;; pixels of a typical character. This allows to reconstruct
+;; a hopefully accurate (point) position, which we re-inject
+;; in the mouse event in place of the wrong (point) position.
+;;
+;; Of course, things are tricky because the pixel-position is
+;; relative to the upper-left corner of the displayed window,
+;; while we need the buffer-position. We use the (window-start)
+;; function to get the line number under the upper-left corner.
+;; And the (scroll-left 0) function to get the column number
+;; of this corner.
+;;
+;; But thinks get even trickier when the window is zoomed with
+;; C-x C-+ C-- and it is scrolled with C-x <. In this case,
+;; the result of (scroll-left 0) is wrong. It does not
+;; account for the zoom. So we have to reconstruct the actual
+;; value using the text-scale-mode-amount variable, which
+;; contains the number of x1.2 zooms (1.2 is stored in the
+;; text-scale-mode-step variable).
+;;
+;; But reconstruction trying to reverse a computation which
+;; mixes floating point numbers along with rounding to
+;; integers is impossible to do accurately. Therefore, the
+;; mouse placement when the window is zoomed AND scrolled
+;; horizontally is not perfect.
+;;
+;; Moreover, each click generates 1, 2, or 3 events. The
+;; first one is used by Uniline to add blank characters if
+;; needed, and adjust the point. The following events also
+;; need their point being adjusted as well. But the following
+;; events do not have the information that blanks have been
+;; added. We do not want to adjust the point if the buffer
+;; have not received additional blanks, because in this case
+;; the point store in the event is right and accurate. We do
+;; not want to ruin it with an unreliable approximation.
+;; Therefore we put in place a variable used by the 1st event
+;; to communicate information the the 2nd and 3th events.
+;;
+;; The Uniline intercepting functions are attached to the
+;; uniline-mode keymap. Therefore they are active only in
+;; uniline-mode.
+;;
+;; Nothing happens in a non-graphical environment, although
+;; the interceptions and keymap-bindings are still present.
+;;
+;; Picture-mode & Artist-mode also handle the mouse. The
+;; picture-mode way, unfortunately, breaks down when the
+;; buffer is zoomed (C-x C-+).
+;;
+;; The artist-mode way smoothly handles zooming. But it is
+;; completely off when window is zoomed and horizontally
+;; scrolled. Artist-mode re-implements parts of the standard
+;; Emacs event handling. This is because it needs to draw
+;; while moving the mouse in many different styles. The
+;; uniline-mode does not need this complexity.
+
+(require 'face-remap)
+
+(defun uniline--scroll-horiz ()
+  "Compute the actual horizontal scroll.
+There is a bug in Emacs that this function tries to fix.
+The scroll is returned by Emacs as a number of character,
+which is fine. But Emacs assumes that the window is not
+zoomed. When it is, the result is wrong. Here the scroll
+is zommed back. Unfortunately, this is not reliable no matter
+what is attempted. Zoom is a floating point as powers of 1.2.
+Scroll is an integer number of charecters."
+  (let ((scroll (scroll-left 0)))
+    (cond
+     ((> text-scale-mode-amount 0)
+      (cl-loop
+       repeat text-scale-mode-amount
+       do
+       (setq scroll (ceiling (/ scroll text-scale-mode-step)))))
+     ((< text-scale-mode-amount 0)
+      (cl-loop
+       repeat (- text-scale-mode-amount)
+       do
+       (setq scroll (ceiling (* scroll text-scale-mode-step))))))
+    scroll))
+
+(defvar-local uniline--event-memory nil
+  "A message sent by one event to the followings.
+It has the form (newpoint . oldpoint), where oldpoint
+is the buffer position encoded into the mouse event.
+And newpoint is the correct cursor location computed
+by the event which added blanks into the buffer, for
+subsequent events to fix their event information.")
+
+(defun uniline--intercept-mouse-1 (position)
+  "Add blanks characters if mouse click falls outside buffer.
+Also adjust the buffer position coded in POSITION, so that
+it will be located right under the mouse event."
+  ;; make the clicked window the selected one
+  (set-frame-selected-window nil (posn-window position) t)
+
+  (if (and
+       uniline--event-memory
+       (eq (cdr uniline--event-memory) (posn-point position)))
+
+      ;; this is the case the 2nd or 3th event in a row get a message
+      ;; from the 1st event
+      (let ((p (car uniline--event-memory)))
+        (setf (nth 1 position) p)
+        (setf (nth 5 position) p))
+
+    ;; no message from the first row, or message outdated
+    (let* ((firstcol (uniline--scroll-horiz))
+           (firstlin (1- (line-number-at-pos (window-start))))
+           (last (point-max))
+           (pxy (posn-x-y position))
+           (wxy (posn-object-width-height position))
+           (x (+ (/ (car pxy) (car wxy)) firstcol))
+           (y (+ (/ (cdr pxy) (cdr wxy)) firstlin))
+           (oldpoint (posn-point position)))
+
+      ;; possibly add blank characters
+      (uniline-move-to-lin-col y x)
+      (if (<= (point-max) last)
+          ;; case where no blank characters where added
+          ;; the point in the event can be trusted
+          () ;; nothing to change
+
+        ;; blanks were added (so we are in the 1st event)
+        (when (eobp) (insert "\n") (forward-char -1))
+        (setf (nth 1 position) (point))
+        (setf (nth 5 position) (point))
+
+        ;; the 1st event send a message to the 2nd and 3th events
+        (setq uniline--event-memory
+              (cons (point) oldpoint))))))
+
+(defun uniline-mouse-set-point (event &optional promote-to-region)
+  "Drop-in replacement for the base mouse-set-point.
+It adds blank characters if necessary."
+  (interactive "e\np")
+  (uniline--intercept-mouse-1 (event-end event))
+  (mouse-set-point event promote-to-region))
+
+(defun uniline-mouse-drag-region (start-event)
+  "Drop-in replacement for the base mouse-drag-region.
+It adds blank characters if necessary."
+  (interactive "e")
+  (uniline--intercept-mouse-1 (event-end start-event))
+  (uniline--intercept-mouse-1 (event-start start-event))
+  (mouse-drag-region start-event))
+
+(defun uniline-mouse-set-region (click)
+  "Drop-in replacement for the base mouse-set-region.
+It adds blank characters if necessary."
+  (interactive "e")
+  (uniline--intercept-mouse-1 (event-start click))
+  (mouse-set-region click))
+
 ;;;╭──────────────────╮
 ;;;│Uniline minor mode│
 ;;;╰──────────────────╯
@@ -3679,6 +3849,9 @@ And backup previous settings."
     ([?\C-h ?\t]        . uniline-toggle-hydra-hints-welcome)
     ([?\C-h delete]     . uniline-dismiss-welcome-message)
     ([?\C-h deletechar] . uniline-dismiss-welcome-message)
+    ([drag-mouse-1]  . uniline-mouse-set-region ) ;; yes, drag launches set-region
+    ([down-mouse-1]  . uniline-mouse-drag-region) ;; yes, down launches drag-region
+    ([     mouse-1]  . uniline-mouse-set-point  )
     ([?\C-c ?\C-c]   . uniline-mode))
   :after-hook (if uniline-mode (uniline--mode-pre) (uniline--mode-post)))
 
