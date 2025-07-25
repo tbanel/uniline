@@ -2333,14 +2333,11 @@ Each entry has 2 slots:
 
 (eval-when-compile ; not used at runtime
   (defconst uniline--directional-keystrokes-table
-    `(;;   ╭─keystroke as used in keyboard macros
-      ;;   │      ╭─direction of the keystroke
-      ;;   │      │   ╭╴shift-control modifiers
-      ;;   │      │   │  ╭╴arbitrary constants
-      ;;   │      │   │  ├╴greater than 3
-      ;;   │      │   │  ╰─────────────────╮
-      ;;   │      │   ╰─────────────────╮  │
-      ;;   ▽      ▽                     ▽  ▽
+    `(;; ╭───keystroke as used in keyboard macros
+      ;; │           ╭─direction of the keystroke
+      ;; │           │   ╭─shift-control modifiers
+      ;; │           │   ╰─────────────────╮
+      ;; ▽           ▽                     ▽
       (  up    . ,(+ uniline-direction-up↑ 0))
       (  right . ,(+ uniline-direction-ri→ 0))
       (  down  . ,(+ uniline-direction-dw↓ 0))
@@ -2360,15 +2357,20 @@ Each entry has 2 slots:
   "Hashtable to convert a directional keystroke into Uniline constants.")
 ;; it is impossible to guaranty that the table will stay collision-less
 ;; because keys are symbols, whose hash-values may change from
-;; one session to another
+;; one Emacs session to another
 
 (defconst uniline--dir-shift-to-keystroke
   (eval-when-compile ;; not needed at runtime
-    (let ((vec
-           (make-vector (length uniline--directional-keystrokes-table) 0)))
-      (cl-loop for r in uniline--directional-keystrokes-table
-               do (aset vec (cdr r) (car r)))
-      vec))
+    (cl-loop
+     with vec = (make-vector
+                 (1+
+                  (cl-loop
+                   for x in uniline--directional-keystrokes-table
+                   maximize (cdr x)))
+                 nil)
+     for r in uniline--directional-keystrokes-table
+     do (aset vec (cdr r) (car r))
+     finally return vec))
   "Convert Uniline directional constants back into keystrokes.")
 
 (defun uniline-call-macro-in-direction (dir)
@@ -2385,19 +2387,20 @@ it is already present in the `uniline--directional-macros' cache"
             (progn
               (aset uniline--directional-macros dir2 last-kbd-macro)
               (aset uniline--directional-macros (1+ dir2)
-                    (vconcat
-                     (mapcar
-                      (lambda (x)
-                        (let ((y (gethash x uniline--keystroke-to-dir-shift)))
-                          (if y
-                              (aref
-                               uniline--dir-shift-to-keystroke
-                               (logior
-                                (logand (+ y dir 3) 3)
-                                (logand y (eval-when-compile (lognot 3)))))
-                            x)))
-                      last-kbd-macro)))))))
-      (execute-kbd-macro last-kbd-macro 1)))
+                    (cl-loop
+                     with result = (vconcat last-kbd-macro)
+                     for r across-ref result
+                     for y = (gethash r uniline--keystroke-to-dir-shift)
+                     if y
+                     do (setf
+                         r
+                         (aref
+                          uniline--dir-shift-to-keystroke
+                          (logior
+                           (logand (+ y dir 3) 3)
+                           (logand y (eval-when-compile (lognot 3))))))
+                     finally return result))))))
+    (execute-kbd-macro last-kbd-macro 1)))
 
 ;; Run the following cl-loop to automatically write a bunch
 ;; of 4 interactive functions
