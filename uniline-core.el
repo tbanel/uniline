@@ -2974,19 +2974,19 @@ a connecting line or glyph."
                (uniline--shift-4half
                 (logand 3 (uniline--shift-4half b ,odir))
                 ,dir))
-              ((memq neighbour '(?+ ?\\ ?/))
+              ((memq neighbour '(?+ ?\\ ?/ ?' ?`))
                ,shift1)
               ((eq neighbour ?#)
                ,shift3)
               ,@(when isvert
                   `(((memq neighbour
-                           '(?^ ?v ?| ?△ ?▽ ?▲ ?▼ ?↑ ?↓ ?▵ ?▿ ?▴ ?▾ ?↕))
+                           '(?^ ?v ?V ?| ?△ ?▽ ?▲ ?▼ ?↑ ?↓ ?▵ ?▿ ?▴ ?▾ ?↕))
                      ,shift1)
                     ((eq neighbour ?\")
                      ,shift3)))
               ,@(when ishorz
                   `(((memq neighbour
-                           '(?> ?< ?- ?▷ ?◁ ?▶ ?◀ ?→ ?← ?▹ ?◃ ?▸ ?◂ ?↔))
+                           '(?> ?< ?- ?_ ?▷ ?◁ ?▶ ?◀ ?→ ?← ?▹ ?◃ ?▸ ?◂ ?↔))
                      ,shift1)
                     ((eq neighbour ?=)
                      ,shift3)))
@@ -3027,7 +3027,9 @@ Also ASCII-art is converted to UNICODE-art."
        do
        (uniline-move-to-column x)
        (let ((char (uniline--char-after)))
-         (if (memq char '(?^ ?v ?| ?\" ?- ?> ?< ?= ?+ ?/ ?\\ ?# ?o ?O ?.))
+         (if (memq char
+                   '(?^ ?v ?V ?| ?\" ?- ?_ ?> ?< ?=
+                        ?+ ?/ ?\\ ?' ?` ?# ?o ?O ?* ?.))
            (let*
                ((4halfvert
                  (logior
@@ -3044,11 +3046,13 @@ Also ASCII-art is converted to UNICODE-art."
                     (uniline--switch-with-table char
                       (?^ ?△)
                       (?v ?▽)
+                      (?V ?▽)
                       (?| ?│)
                       (?\" ?║)))
                   (unless (eq 4halfhorz 0)
                     (uniline--switch-with-table char
                       (?- ?─)
+                      (?_ ?─)
                       (?> ?▷)
                       (?< ?◁)
                       (?= ?═)))
@@ -3056,11 +3060,12 @@ Also ASCII-art is converted to UNICODE-art."
                     (uniline--switch-with-table char
                       (?O ?●)
                       (?o ?◦)
+                      (?* ?●)
                       (?. ?∙))))))
              (if newchar
                  (uniline--insert-char newchar)
                (unless (eq 4half 0)
-                 (if (memq char '(?+ ?# ?/ ?\\))
+                 (if (memq char '(?+ ?# ?/ ?\\ ?' ?`))
                      (uniline--insert-4halfs 4half)))))))))
      (undo-amalgamate-change-group handle)
      (accept-change-group handle))))
