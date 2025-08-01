@@ -1900,12 +1900,12 @@ Those chars are filled with leakage from their two neighbours,
 in DIR direction, and its opposite.
 For instance consider a situation like this:
    ╶┬╴
-    E
+     <<< empty space
     ┗╸
-where E is the char leaved empty after translation.
+A space is leaved empty after translation.
 Then the leakage of the two glyphs fills in E:
    ╶┬╴
-    ╽
+    ╽<<< filled with leakage
     ┗╸"
     (setq dir (eval dir))
     (let ((odir (uniline--reverse-direction dir)))
@@ -1941,12 +1941,12 @@ Those chars are filled with leakage from their two neighbours,
 in DIR direction, and its opposite.
 For instance consider a situation like this:
     ▌
-    E
+     <<< empty space
     ▙
-where E is the char leaved empty after translation.
+A space is leaved empty after translation.
 Then the leakage of the two glyphs fills in E:
     ▌
-    ▌
+    ▌<<< filled with leakage
     ▙"
     (setq dir (eval dir))
     (let ((odir (uniline--reverse-direction dir)))
@@ -1962,28 +1962,42 @@ Then the leakage of the two glyphs fills in E:
          (aref uniline--4quadb-to-char (logior here prev))))))
 
 (eval-when-compile ; not needed at runtime
-  (defmacro uniline--translate-1xsize-slice (dir size)
-    "Translate a rectangle 1 x SIZE rectangle one char.
-This is a helper function called several times to move
-a rectangle one slice at a time.
-DIR is the direction to move.
-The cursor (point) is one end of the slice.
-When moved, the 1 x SIZE rectangle leaves a blank char.
-This char is filled with leakage from its two neighbours."
-    (setq dir (eval dir))
-    ;; initialize `hand' with the computed leakage from neighbours
-    ;; then iterate to move one char at a time, keeping it in `hand'
-    `(let ((hand (uniline--compute-leakage-4halfs ,dir)))
-       (if (eq hand ? )
-           (setq hand (uniline--compute-leakage-quadb ,dir)))
-       (cl-loop
-        repeat ,size
-        do
-        (setq hand
-              (prog1 (uniline--char-after)
-                (uniline--insert-char hand)))
-        (uniline--move-in-direction ,dir))
-       (uniline--insert-char hand))))
+  (defmacro uniline--compute-leakage (dir)
+    "Compute lines leakage from two directions: DIR and its opposite."
+    `(let ((c (uniline--compute-leakage-4halfs ,dir)))
+       (if (eq c ? )
+           (uniline--compute-leakage-quadb ,dir)
+         c))))
+
+(eval-when-compile ; not needed at runtime
+  (defmacro uniline--compute-leakage-on-region (dir y begx endx)
+    "Compute the leakage of all characters in a region.
+Region is BEGX..ENDX x Y..Y, it is one char high.
+The region just below is considered when DIR is ↑,
+the region just above is considered when DIR is ↓.
+Return a string which will be inserted back in the buffer."
+    `(cl-loop
+      with s = (make-string (- ,endx ,begx) ? )
+      for x from ,begx below ,endx
+      for i from 0
+      do
+      (uniline-move-to-lin-col ,y x)
+      (aset s i (uniline--compute-leakage ,dir))
+      finally return s)))
+
+(defun uniline--exchange-region-string (y begx endx hand)
+  "Replace the region BEGX..ENDX x Y..Y with HAND.
+Region is 1 character high.
+HAND is a string of the same length as the region.
+Return the replaced region as a string."
+  (uniline-move-to-line y)
+  (let* ((end (progn (uniline-move-to-column endx) (point)))
+         (beg (progn (uniline-move-to-column begx) (point)))
+         (line (buffer-substring beg end)))
+    (delete-region beg end)
+    (goto-char beg)
+    (insert hand)
+    line))
 
 (defun uniline-move-rect-up↑ (repeat)
   "Move the rectangle marked by selection one line upper.
@@ -2005,12 +2019,35 @@ defaulting to 1.
      begy (max (1- begy) 0)
      endy (max (1- endy) 0))
     (cl-loop
-     for x from begx below endx
-     do
-     (uniline-move-to-lin-col endy x)
-     (uniline--translate-1xsize-slice
-      uniline-direction-up↑
-      (- endy begy))))))
+     with hand = (uniline--compute-leakage-on-region
+                  uniline-direction-up↑ endy begx endx)
+     for y from endy downto begy
+     do (setq hand (uniline--exchange-region-string y begx endx hand))))))
+
+(defun uniline-move-rect-dw↓ (repeat)
+  "Move the rectangle marked by selection one line down.
+The buffer is infinite at the bottom.
+REPEAT tells how many characters the rectangle should move,
+defaulting to 1.
+    ░░░░░░░
+    ░░░░░░░
+    ░░░░░░░
+    ↓ ↓ ↓ ↓
+"
+  (interactive "P")
+  (uniline--record-undo-rectangle-selection)
+  (cl-loop
+   repeat (or repeat 1)
+   do
+   (uniline--operate-on-rectangle
+    (cl-loop
+     with hand = (uniline--compute-leakage-on-region
+                  uniline-direction-dw↓ begy begx endx)
+     for y from begy to endy
+     do (setq hand (uniline--exchange-region-string y begx endx hand)))
+    (setq
+     begy (1+ begy)
+     endy (1+ endy)))))
 
 (defun uniline-move-rect-ri→ (repeat)
   "Move the rectangle marked by selection one char to the left.
@@ -2031,39 +2068,13 @@ defaulting to 1.
      for y from begy below endy
      do
      (uniline-move-to-lin-col y begx)
-     (uniline--translate-1xsize-slice
-      uniline-direction-ri→
-      (- endx begx)))
+     (insert
+      (uniline--compute-leakage uniline-direction-ri→))
+     (uniline-move-to-column (1+ endx))
+     (or (eolp) (delete-char 1)))
     (setq
      begx (1+ begx)
      endx (1+ endx)))))
-
-(defun uniline-move-rect-dw↓ (repeat)
-  "Move the rectangle marked by selection one line down.
-The buffer is infinite at the bottom.
-REPEAT tells how many characters the rectangle should move,
-defaulting to 1.
-    ░░░░░░░
-    ░░░░░░░
-    ░░░░░░░
-    ↓ ↓ ↓ ↓
-"
-  (interactive "P")
-  (uniline--record-undo-rectangle-selection)
-  (cl-loop
-   repeat (or repeat 1)
-   do
-   (uniline--operate-on-rectangle
-    (cl-loop
-     for x from begx below endx
-     do
-     (uniline-move-to-lin-col begy x)
-     (uniline--translate-1xsize-slice
-      uniline-direction-dw↓
-      (- endy begy)))
-    (setq
-     begy (1+ begy)
-     endy (1+ endy)))))
 
 (defun uniline-move-rect-lf← (repeat)
   "Move the rectangle marked by selection one char to the left.
@@ -2084,12 +2095,15 @@ defaulting to 1.
      begx (max (1- begx) 0)
      endx (max (1- endx) 0))
     (cl-loop
-     for y from begy below endy
+     for y from (1- endy) downto begy
      do
      (uniline-move-to-lin-col y endx)
-     (uniline--translate-1xsize-slice
-      uniline-direction-lf←
-      (- endx begx))))))
+     (insert
+      (prog1
+          (uniline--compute-leakage uniline-direction-lf←)
+        (uniline-move-to-delta-column 1)))
+     (uniline-move-to-column begx)
+     (delete-char 1)))))
 
 (defun uniline-fill-rectangle ()
   "Fill the rectangle marked by selection.
