@@ -989,6 +989,8 @@ without the fall-back characters."))
 
       ;; crosses
       (x   ?╳)      ;; box drawings light diagonal cross
+      (x   ?╱)      ;; box drawings light diagonal upper right to lower left
+      (x   ?╲)      ;; box drawings light diagonal upper left to lower right
       (x   ?÷)      ;; division sign
       (x   ?×)      ;; multiplication sign
       (x   ?±)      ;; plus-minus sign

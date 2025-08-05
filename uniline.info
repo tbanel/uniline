@@ -449,8 +449,8 @@ cycles, ‘S’ cycles backward).
    To insert a circular shape ‘· ∙ • ● ◦ Ø ø’ type: ‘<insert> o o o...’
 (‘o’ cycles, ‘O’ cycles backward).
 
-   To insert a cross shape ‘╳ ÷ × ± ¤’ type: ‘<insert> x x x...’ (‘x’
-cycles, ‘X’ cycles backward).
+   To insert a cross shape ‘╳ ╱ ╲ ÷ × ± ¤’ type: ‘<insert> x x x...’
+(‘x’ cycles, ‘X’ cycles backward).
 
    To insert a usual ASCII letter or symbol, just type it.
 
@@ -470,9 +470,9 @@ prefix them with ‘<insert>’.  Example: ‘<insert> -’ inserts a ‘-’ an
         ╭┴╮   ╭───────╮  ╭─────────────────────╮
         │o├─▶─┼circles┼──┤ ·  ∙  •  ●  ◦  Ø  ø │
         ╰┬╯   ╰───────╯  ╰─────────────────────╯
-        ╭┴╮   ╭───────╮  ╭───────────────╮
-        │x├─▶─┼crosses┼──┤ ╳  ÷  ×  ±  ¤ │
-        ╰┬╯   ╰───────╯  ╰───────────────╯
+        ╭┴╮   ╭───────╮  ╭───────────────────╮
+        │x├─▶─┼crosses┼──┤ ╳  ╱ ╲ ÷  ×  ±  ¤ │
+        ╰┬╯   ╰───────╯  ╰───────────────────╯
         ╭┴╮              ╭───╮
         │+├─▶────────────┤ + │
         ╰┬╯              ╰───╯
@@ -1893,39 +1893,39 @@ Node: Brush style14419
 Node: The <insert> key15512
 Node: Arrows glyphs ▷ ▶ → ▹ ▸ ↔16346
 Node: Intersection glyphs ■ ◆ ●17903
-Node: Drawing rectangles20524
-Node: Moving rectangles22500
-Node: Copying killing yanking rectangles23744
-Node: Tracing a contour24796
-Node: Flood-fill26580
-Node: Text direction28307
-Node: Macros28848
-Node: Fine tweaking32211
-Node: Dashed lines and other styles34023
-Node: ASCII to UNICODE38092
-Node: Which fonts?41778
-Node: Hydra or Transient?43797
-Node: The Hydra interface45474
-Node: The Transient interface47182
-Node: Line spacing47679
-Node: Customization49080
-Node: How Uniline behaves with its environment?50466
-Node: Compatibility with Picture-mode51015
-Node: Compatibility with Artist-mode51933
-Node: Compatibility with Whitespace-mode52452
-Node: Compatibility with Org Mode53352
-Node: Org Mode and LaTex54728
-Node: What about \t tabs?56547
-Node: What about ^L page separation?57195
-Node: Emacs on the Linux console57818
-Node: Emacs on a graphical terminal emulator58772
-Node: Emacs on Windows59694
-Node: Lisp API60338
-Node: Mouse support66349
-Node: Installation67215
-Node: Related packages69554
-Node: Author contributors72619
-Node: License74124
+Node: Drawing rectangles20564
+Node: Moving rectangles22540
+Node: Copying killing yanking rectangles23784
+Node: Tracing a contour24836
+Node: Flood-fill26620
+Node: Text direction28347
+Node: Macros28888
+Node: Fine tweaking32251
+Node: Dashed lines and other styles34063
+Node: ASCII to UNICODE38132
+Node: Which fonts?41818
+Node: Hydra or Transient?43837
+Node: The Hydra interface45514
+Node: The Transient interface47222
+Node: Line spacing47719
+Node: Customization49120
+Node: How Uniline behaves with its environment?50506
+Node: Compatibility with Picture-mode51055
+Node: Compatibility with Artist-mode51973
+Node: Compatibility with Whitespace-mode52492
+Node: Compatibility with Org Mode53392
+Node: Org Mode and LaTex54768
+Node: What about \t tabs?56587
+Node: What about ^L page separation?57235
+Node: Emacs on the Linux console57858
+Node: Emacs on a graphical terminal emulator58812
+Node: Emacs on Windows59734
+Node: Lisp API60378
+Node: Mouse support66389
+Node: Installation67255
+Node: Related packages69594
+Node: Author contributors72659
+Node: License74164
 
 End Tag Table
 
