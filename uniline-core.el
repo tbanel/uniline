@@ -418,10 +418,18 @@ TEST is the comparison function between 2 keys, like `eq' or `equal'"
       (switch-to-buffer "*hash-tables metrics*")
       (erase-buffer)
       (local-set-key "g" 'uniline--hash-tables-metrics)
-      (insert "try to make the last column a single element list (colision-less)\n")
-      (insert "by adjusting table size (3th parameter of `uniline--defconst-hash-table')\n")
-      (insert "type g to refresh\n\n")
-      (insert "table entries buckets index resize threshold histogram\n")
+      (insert "\
+try to make a single element list in the last column (collision-less)
+by adjusting table size                       ╰───┬╯
+(3th parameter of `uniline--defconst-hash-table') ╰───────────╮
+type g to refresh                                             │
+                                                          ╭───┴───╮
+               table                buckets  resize       histogram
+               ╰─┬─╯                ╰──┬──╯  ╰─┬──╯       ╰───┬───╯
+                 │             entries │ index │ threshold    │
+                 │             ╰───┬─╯ │ ╰─┬─╯ │ ╰───┬───╯    │
+╭────────────────┴───────────────╮╭┴─╮╭┴─╮╭┴─╮╭┴─╮╭──┴──╮╭────┴──────────▷
+")
       (cl-loop
        for table in
        '(uniline--char-to-4halfs
@@ -440,7 +448,7 @@ TEST is the comparison function between 2 keys, like `eq' or `equal'"
        (let ((hash (eval table)))
          (insert
           (format
-           "%-33s %3d %3d %3d %5g %5g %s\n"
+           "│%-33s│%3d│%3d│%3d│%3g│%5g│%s\n"
            table
            (hash-table-count hash)
            (hash-table-size hash)
