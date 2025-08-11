@@ -114,12 +114,12 @@ Do not call it directly."
 
 (defun uniline-bench-run (&rest files)
   "Run all benches, or a specified list.
-When FILES is nil, th benches are all files with *.el suffix.
+When FILES is nil, the benches are all files with *.el suffix.
 Stops on the first error, presenting two buffers,
 - one with the actual drawing,
 - the other with the expected drawing,
 with points on the first difference.
-If there are no errors, a summary buffer is presented."
+If there are no errors, a summary is presented."
   (interactive)
   (unless files
     (setq files
@@ -141,13 +141,21 @@ If there are no errors, a summary buffer is presented."
     (switch-to-buffer buf)
     (message "%s PASSED / %s FAILED %s" nbpassed nbfailed failed)))
 
-(if t
-    (uniline-bench-run)
-  (garbage-collect)
-  (profiler-start 'cpu+mem)
-  (uniline-bench-run)
-  (profiler-stop)
-  (profiler-report))
+(pcase 0
+  (0
+   (uniline-bench-run))
+  (1
+   (garbage-collect)
+   (profiler-start 'cpu+mem)
+   (uniline-bench-run)
+   (profiler-stop)
+   (profiler-report))
+  (2
+   (garbage-collect)
+   (elp-instrument-package "uniline")
+   (uniline-bench-run)
+   (elp-results)
+   (elp-restore-all)))
 
 (if nil
     (uniline-bench-run "bench15.el" "bench16.el"))
