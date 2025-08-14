@@ -183,7 +183,7 @@ Outline the General Relativity equation:
 
   #+end_example
 
-Outline the Schrödinger equation:
+Outline the Schrodinger's equation:
 
 [[file:images/schrodinger-equation.png]]
 
@@ -194,7 +194,7 @@ Outline the Schrödinger equation:
          │     │          │     (the square of its absolute value
         ╭▽─╮ ╭─▽──╮     ╭─▽──╮   is the probability density)
   ┏━━━━━┷━━┷━┷━━━━┷━━━━━┷━━━━┷━┓
-  ┃ i ħ d/dt |Ψ(t)> = Ĥ |Ψ(t)> ┃◁─╴Schrödinger equation
+  ┃ i ħ d/dt |Ψ(t)> = Ĥ |Ψ(t)> ┃◁─╴Schrodinger's equation
   ┗━△━△━━━━△━━━━△━━━━━△━━━━△━━━┛
     │ │    ╰────╰─────┤────╰───╴Time
     │ │               ╰────────╴Hamiltonian
@@ -285,8 +285,10 @@ Draw sketched objects:
 #+end_example
 
 Those diagrams are pure text. There is nothing graphic. They are
-achieved using UNICODE characters. Most often, the text file will be
-encoded as UTF-8.
+achieved using UNICODE characters.
+
+Most often, the text file will be encoded as UTF-8. This is becoming
+the de-facto standard for text files, including source code files.
 
 Creating such diagrams by hand is painfully slow. Use =Uniline= to
 draw lines while you move the cursor with keyboard arrows.
@@ -391,6 +393,14 @@ Why =<insert>=? Because:
 
 So preempting =<insert>= does not sacrifices anything.
 
+*Customization*
+
+Another key may be defined instead of =<insert>=. Type:
+
+#+begin_example
+M-x customize-variable uniline-key-insert
+#+end_example
+
 * Arrows glyphs =▷ ▶ → ▹ ▸ ↔=
 :PROPERTIES:
 :CUSTOM_ID: arrows-glyphs------
@@ -448,7 +458,7 @@ To insert a cross shape =╳ ╱ ╲ ÷ × ± ¤= type:
 
 To insert a usual ASCII letter or symbol, just type it.
 
-As the keys =- + = #= are preempted by =Uniline= mode, to type them,
+As the keys =- + = #= are preempted by =uniline-mode=, to type them,
 prefix them with =<insert>=. Example: =<insert> -= inserts a =-= and
 =<insert> += inserts a =+=.
 
@@ -534,10 +544,12 @@ Select a region, then press =<insert>=. The selection becomes rectangular if it
 was not.
 
 Use arrow keys to move the rectangle around. A numeric prefix may be
-used to move the rectangle that many characters. Be sure to specify
-the numeric prefix with just digits, without the =Alt= key. Typing
-=15 <left>= moves the rectangle 15 characters to the left. =M-15 <left>=
-does not work.
+used to move the rectangle that many characters.
+- Under =Hydra=, be sure to specify the numeric prefix with just digits,
+  without the =Alt= key. Typing =15 <left>= moves the rectangle 15
+  characters to the left. =M-15 <left>= does not work.
+- Under =Transient=, use the =Alt= key, like anywhere else in Emacs. Type
+  =M-15 <left>= to move the selected rectangle 15 characters to the left.
 
 Press =q=, =<return>=, or =C-g= to stop moving the rectangle.
 
@@ -584,8 +596,8 @@ rectangle are considered transparent. The result is that only
 non-blank parts of the yanked rectangle are over-printed.
 
 =Uniline= and Emacs standard rectangle share the same storage for copied
-and killed rectangles, =killed-rectangle=. So, a rectangle can be killed
-one way, and yanked another way.
+and killed rectangles, namely the =killed-rectangle= Lisp variable. So,
+a rectangle can be killed one way, and yanked another way.
 
 * Tracing a contour
 :PROPERTIES:
@@ -614,7 +626,7 @@ type:
 A contour line is traced (or erased if brush style is =<delete>=)
 around the contiguous shape close to the cursor.
 
-When hitting capital letter: =<insert> C= the contour is
+When hitting capital letter: =<insert> S-C= the contour is
 overwritten. This means that if there was already a different style of
 line on the contour path, it is overwritten.
 
@@ -623,12 +635,18 @@ ocean. For the shake of the contour function, blank characters are
 those containing lines as drawn by =Uniline= (including true blank
 characters). Locations outside the buffer are also considered blank.
 
-The algorithm has an upper limit of 10000 steps. This avoids an
+The algorithm has an upper limit of =10000= steps. This avoids an
 infinite loop in which the algorithm may end up in some rare
 cases. One of those cases is when the contour crosses a new-page
-character, displayed by Emacs as =^L=. 10000 steps require a fraction of
+character, displayed by Emacs as =^L=. =10000= steps require a fraction of
 a second to run. For shapes really huge, you may launch the contour
 command once again, at the point where the previous run ended.
+
+This =10000= steps limit is customizable. Type:
+
+#+begin_example
+M-x customize-variable uniline-contour-max-steps
+#+end_example
 
 * Flood-fill
 :PROPERTIES:
@@ -665,8 +683,8 @@ UNICODE standard: =" ░▒▓█"=.  Those grey characters are well supported
 by the suggested fonts.
 
 =C-y= is also an option. The first character in the top of the kill
-ring will be chosen as the filling character. The kill ring is filled
-by functions like =C-k= or =M-w=.
+ring will be chosen as the filling character. (The kill ring is filled
+by functions like =C-k= or =M-w=, unrelated to =Uniline=).
 
 Typing =<return>= or =C-g= aborts the filling operation.
 
@@ -716,7 +734,7 @@ macro. So instead of the usual =C-x e=, type =C-x e e=. And of course,
 the usual repetition typing repeatedly =e= is available.
 
 Why are directional macros useful? To create fancy lines. For
-instance, if we want a doted╴line instead of the continuous one, we
+instance, if we want a doted-line instead of the continuous one, we
 record a macro for one step:
 
 #+begin_example
@@ -848,16 +866,16 @@ You will be offered a choice of styles:
   horizontal ones will get 2 dashes per character.
 - =4=: vertical and horizontal lines will get 4 dashes per character.
 - =h=: thin lines corners, which are usually rounded, become hard angles.
-- =+=: thin lines corners and intersections become thick, empty glyphs
-  get filled.
-- =-=: thick lines corners and intersections become thin, filled glyphs
-  are emptied.
-- ===: thick and thin lines become double lines.
+- =+=: thin lines and intersections become thick, empty glyphs get
+  filled.
+- =-=: thick lines and intersections become thin, filled glyphs are
+  emptied.
+- ~=~: thick and thin lines become double lines.
 - =0=: come back to standard base-line =Uniline= style: plain not-dashed
   lines, thin corner rounded, ASCII art is converted to UNICODE.
 - =a=: apply the =aa2u-rectangle= function from the unrelated
   =ascii-art-to-unicode= package, to convert ASCII art to UNICODE (this
-  only works if =ascii-art-to-unicode= is already installed)
+  only works if =ascii-art-to-unicode= is already installed).
 
 Converting parts of a drawing from one style to another can produce
 nice looking sketches.
@@ -1009,7 +1027,9 @@ or
 Beware that Emacs tries to compensate for missing UNICODE support by
 the current font. Emacs substitutes one font for another, character
 per character. The user may not notice until the drawings done under
-Emacs are displayed on another text editor or on the Web.
+Emacs are displayed on another text editor or on the Web. Of course,
+using the suggested fonts and the UNICODEs drawn by =Uniline= keeps you
+away from those glitches.
 
 To know which font Emacs has chosen for a given character, type:
 
@@ -1062,8 +1082,8 @@ two interfaces. This had many issues. One of them is that the
 native-compiler is blind to all user-customized settings.
 
 Therefore, now =Uniline= ships with 3 Lisp source files (hydra,
-transient, core). Loading =uniline-hydra.el= or =uniline-transient.el=
-automatically loads =uniline-core.el=.
+transient, core). Loading =uniline-hydra.elc= or =uniline-transient.elc=
+automatically loads =uniline-core.elc=.
 
 ** The Hydra interface
 :PROPERTIES:
@@ -1124,8 +1144,16 @@ installed when installing =Uniline= through =Melpa=.
 
 =Transient= interface was added recently to =Uniline=. This leaded to the
 splitting of the single =uniline.el= file into 4 source
-files. Hopefully, the added complexity remains hidden by the =Elpa=-=Melpa=
-packaging system.
+files. Hopefully, the added complexity remains hidden by the =Elpa= -
+=Melpa= packaging system.
+
+Reducing =Transient= hints to single lines like under the =Hydra=
+interface is currently not supported. It is on the todo-list. However,
+this can be globally customized through this =Transient= customization:
+
+#+begin_example
+M-x customize-variable transient-show-popup
+#+end_example
 
 * Line spacing
 :PROPERTIES:
@@ -1178,12 +1206,12 @@ for details.
 
 *Insert key.*
 
-By default, the =<insert>= or =INS= key is the prefix for most
-of the =Uniline= actions. Some computers do not have an =INS= key
-(Apple?), or it is bound to some other command.
+By default, the =<insert>= or =INS= key is the prefix for most of the
+=Uniline= actions. Some computers do not have an =INS= key, or it is bound
+to some other command (Apple?).
 
 This can be changed temporarily or permanently. The customization
-allows to set several keys.
+allows to set several keys at the same time.
 
 Depending on whether Emacs is run in a graphical environment or a
 text-only terminal, either the =<insert>= or the =<insertchar>= events are
@@ -1191,7 +1219,7 @@ generated by the =INS= key. Therefore, by default =Uniline= defines both
 events as the =INS= key.
 
 The other settings are self-explanatory:
-- Maximum steps when drawing a contour. Defaults to 10000.
+- Maximum steps when drawing a contour. Defaults to =10000=.
 - Cursor type. Hollow by default.
 - Hint style. Currently only applicable to the =Hydra=
   interface. Default to "full fledged".
@@ -1370,7 +1398,7 @@ One way to see what is going on, is to activate the =whitespace-mode=.
 :CUSTOM_ID: what-about-l-page-separation
 :END:
 =Uniline= does not work well with =^L= (page separation)
-character. Nore with similar characters, like =^T=. When trying to
+character. Nor with similar characters, like =^T=. When trying to
 draw a line over such a character, the cursor may get stuck. This is
 because those characters occupy twice the width of a normal character.
 
@@ -1436,7 +1464,7 @@ Of course, other fonts may be installed. It is quite easy.
 Could =Uniline= be programmed (versus used interactively)?
 Yes!
 
-The API is usable programatically:
+The API is usable programmatically:
 
 Move cursor while drawing lines by calling any of the 4 directions
 functions:
@@ -1522,19 +1550,22 @@ parameter:
   (uniline-write-up↑ size))
 #+end_src
 
-The =(interactive "Nsize? ")= form prompt user for the size of the shape
-if not given as a parameter.
+The =(interactive "Nsize? ")= form prompts user for the size of the
+shape if not given as a parameter.
 
-This API works in any mode, not only in =Uniline= minor mode. They take
+This API works in any mode, not only in =Uniline= minor mode. It takes
 care of the infiniteness of the buffer in the right and down
 directions.
 
-Other useful functions are:
-
-Drawing and moving many characters at once:
+There are other useful functions operating on many characters at
+once. Contour tracing and flood-filling are among them:
 
 - =uniline-contour=
 - =uniline-fill=
+
+The following functions operate on a rectangular region, which must be
+active prior to calling them:
+
 - =uniline-draw-inner-rectangle=
 - =uniline-draw-outer-rectangle=
 - =uniline-copy-rectangle=
@@ -1545,8 +1576,6 @@ Drawing and moving many characters at once:
 - =uniline-move-rect-ri→=
 - =uniline-move-rect-dw↓=
 - =uniline-move-rect-lf←=
-
-The above functions require a region to be marked.
 
 Constants for the 4 directions:
 
@@ -1827,8 +1856,8 @@ Feedback:
   the dependencies conundrum, arthurno1 participated in the =Hydra= -
   =Transient= discussion
 
-- karthink pointed to the new =Aporetic= font family, which was added
-  to the =Uniline= supported fonts
+- karthink pointed to the new =Aporetic= font family, which was then
+  added to the =Uniline= supported fonts
 
 Contributors:
 
