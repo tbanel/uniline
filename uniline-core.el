@@ -2271,22 +2271,20 @@ the natural cursor movement upon insertion.")
 (defun uniline--update-mode-line ()
   "Computes the string which appears in the mode-line."
   (setq uniline--mode-line-dir
-	(char-to-string
-	 (uniline--switch-with-table uniline-text-direction
-	   (nil                   ? )
-	   (uniline-direction-up↑ ?↑)
-	   (uniline-direction-ri→ ?→)
-	   (uniline-direction-dw↓ ?↓)
-	   (uniline-direction-lf← ?←)))
-	uniline--mode-line-brush
-	(char-to-string
-	 (uniline--switch-with-table uniline-brush
-	   (nil    ? )
-	   (0      ?/)
-	   (1      ?┼)
-	   (2      ?╋)
-	   (3      ?╬)
-	   (:block ?▞))))
+	(uniline--switch-with-table uniline-text-direction
+	  (nil                   " ")
+	  (uniline-direction-up↑ "↑")
+	  (uniline-direction-ri→ "→")
+	  (uniline-direction-dw↓ "↓")
+	  (uniline-direction-lf← "←"))
+        uniline--mode-line-brush
+	(uniline--switch-with-table uniline-brush
+	  (nil    " ")
+	  (0      "/")
+	  (1      "┼")
+	  (2      "╋")
+	  (3      "╬")
+	  (:block "▞")))
   (force-mode-line-update))
 
 (defun uniline--post-self-insert ()
@@ -3856,7 +3854,9 @@ And backup previous settings."
 
  Documentation here: (info \"uniline\")"
   :init-value nil
-  :lighter (" " uniline--mode-line-dir "Uniline" uniline--mode-line-brush)
+  ;;         ╭───╴without that, mouse-1 on mode-line does not display the menu
+  ;;         ▽
+  :lighter (:eval (format " %sUniline%s" uniline--mode-line-dir uniline--mode-line-brush))
   :keymap  ;; defines uniline-mode-map
   '(([right]   . uniline-write-ri→)
     ([left ]   . uniline-write-lf←)
@@ -3926,7 +3926,10 @@ with the one used to invoke Uniline-mode."
 (easy-menu-define
   uniline-menu
   uniline-mode-map
-  "Uniline mode menu."
+  ;; ╭─that makes this menu appear upon clicking on the mode-line
+  ;; ╰────────────────────────╮
+  ;;                          ▽
+  "Uniline mode menu. \\{uniline-mode-map}"
   '("Uniline"
     :visible t
     :active t
