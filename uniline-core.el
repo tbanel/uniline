@@ -3671,12 +3671,12 @@ text within will be colored."
           "trace: ^←→↑↓^  ovwr: ^C-←→↑↓^  selec: ^C-←→↑↓^  brush: ^-+=# DEL RET^  menu: (sel)^INS^  hint: ^C-h TAB^")))
       (t nil)))))
 
-(declare-function uniline-toggle-hydra-hints "" (&optional notoggle))
+(declare-function uniline-toggle-hints "" (&optional notoggle))
 
-(defun uniline-toggle-hydra-hints-welcome ()
+(defun uniline-toggle-hints-welcome ()
   "Toggle between styles of hydra hints, and display welcome message."
   (interactive)
-  (uniline-toggle-hydra-hints)
+  (uniline-toggle-hints)
   (uniline--welcome-message))
 
 (defun uniline--mode-pre ()
@@ -3697,7 +3697,7 @@ And backup previous settings."
    'post-self-insert-hook
    #'uniline--post-self-insert
    nil 'local)
-  (uniline-toggle-hydra-hints t)
+  (uniline-toggle-hints t)
   (uniline--update-mode-line)
   (if uniline-show-welcome-message
       (uniline--welcome-message)))
@@ -3843,7 +3843,7 @@ And backup previous settings."
 ╭─Toggle hint sizes──────────╴
 │ This is for changing the height of Hydra menus,
 │ between multiline to single-line and back,
-│ \\[uniline-toggle-hydra-hints-welcome] in base Uniline mode
+│ \\[uniline-toggle-hints-welcome] in base Uniline mode
 │ \\`TAB' in a \\[uniline-launch-interface]-activated menu
 ╰────────────────────────────╴
 ╭─Quit───────────────────────╴\\<uniline-mode-map>
@@ -3878,7 +3878,7 @@ And backup previous settings."
     ("="             . uniline-set-brush-3)
     ("#"             . uniline-set-brush-block)
     ([?\C-x ?e]      . uniline-macro-exec)
-    ([?\C-h ?\t]        . uniline-toggle-hydra-hints-welcome)
+    ([?\C-h ?\t]        . uniline-toggle-hints-welcome)
     ([?\C-h delete]     . uniline-dismiss-welcome-message)
     ([?\C-h deletechar] . uniline-dismiss-welcome-message)
     ([drag-mouse-1]  . uniline-mouse-set-region ) ;; yes, drag launches set-region
@@ -3994,7 +3994,7 @@ with the one used to invoke Uniline-mode."
      ["↑ up"    uniline-text-direction-up↑ :keys "INS C-<up>   " :style radio :selected (eq uniline-text-direction (uniline-direction-up↑))]
      ["↓ down"  uniline-text-direction-dw↓ :keys "INS C-<down> " :style radio :selected (eq uniline-text-direction (uniline-direction-dw↓))])
     "----"
-    ["large hints sizes" uniline-toggle-hydra-hints :keys "TAB or C-h TAB" :style toggle :selected (eq uniline-hint-style t)]
+    ["large hints sizes" uniline-toggle-hints :keys "TAB or C-h TAB" :style toggle :selected (eq uniline-hint-style t)]
     ("Font"
      ["DejaVu Sans Mono"             (set-frame-font "DejaVu Sans Mono"           ) :keys "INS f d" :style radio :selected (uniline--is-font ?d)]
      ["Hack"                         (set-frame-font "Hack"                       ) :keys "INS f h" :style radio :selected (uniline--is-font ?h)]

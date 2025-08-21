@@ -97,27 +97,45 @@
 
 (require 'transient)
 
-;; make this transient setting buffer local, so that Uniline can
-;; tweak it without touching other usages like Magit for instance
-(make-variable-buffer-local 'transient-show-popup)
-
-(defun uniline-toggle-hydra-hints (&optional notoggle)
-  "Do nothing in transient interface."
-  (interactive)
-  (unless notoggle
-    (setq uniline-hint-style
-          (if (eq uniline-hint-style t) 1 t)))
-  (setq transient-show-popup
-        (cond
-         ((eq uniline-hint-style   t)   t)
-         ((eq uniline-hint-style nil) nil)
-         ((eq uniline-hint-style   1)  20))))
-
-
 (defun uniline--self-insert-command (N)
   "To fool transient into thinking this is NOT self-insert-command."
   (interactive)
   (self-insert-command N))
+
+;; make this transient setting buffer local, so that Uniline can
+;; tweak it without touching other usages like Magit for instance
+(make-variable-buffer-local 'transient-show-popup)
+
+(defun uniline-toggle-hints (&optional notoggle)
+  "Toggle between styles of transient hints.
+When NOTOGGLE is t, do not toggle `uniline-hint-style',
+just put everything in sync."
+  (interactive)
+  (unless notoggle
+    (setq transient-show-popup
+          (cond
+           ((eq transient-show-popup   t) nil)
+           ((eq transient-show-popup nil)   t)
+           ((numberp transient-show-popup)  t))))
+  (setq uniline-hint-style
+        (cond
+         ((eq transient-show-popup   t)   t)
+         ((eq transient-show-popup nil)   1)
+         ((numberp transient-show-popup)  1))))
+
+(transient-define-suffix uniline-toggle-transient-hints-suffix ()
+  "Toggle between full and one-liner menus.
+Associated with C-t, which does half the work natively in Transient:
+one-liner → full menu.
+Additionally, modify transient-show-popup so that the choice is remembered
+for later menu invocation in the same Uniline session."
+  :transient 'transient--do-exit
+  (interactive)
+  (uniline-toggle-hints)
+  (setq transient--showp nil)
+  (eval-when-compile ;; suppress compilation warning "slot :command unknown"
+    (put :command 'slot-name t))
+  (transient-setup (eieio-oref (transient-prefix-object) :command)))
 
 ;; Define common command classes to control state transitions
 
@@ -155,7 +173,9 @@
     ("P" (lambda () (uniline--font-name-ticked ?P)) uniline--set-font-P :transient t)]
    ["Actions"
     ("*" "Configure" uniline-customize-face)
-    ("q" "Quit" transient-quit-one)]]
+    ("C-t" "Togg hints" uniline-toggle-transient-hints-suffix)
+    ("q" "  Quit" transient-quit-one)
+    ("RET" "Quit" (lambda () (interactive)) :transient nil)]]
   (interactive)
   (transient-setup 'uniline-transient-fonts))
 
@@ -197,7 +217,8 @@
     ("i" "Fill area"     (lambda () (interactive) (uniline-fill (uniline--choose-fill-char))))]
    ["Navigation"
     ("f" "Choose font" uniline-transient-fonts)
-    ("RET" "Quit" transient-quit-one)]]
+    ("C-t" "Togg hints" uniline-toggle-transient-hints-suffix)
+    ("RET" "Quit" (lambda () (interactive)) :transient nil)]]
   (interactive)
   ;; the purpose of this keymap handling is to regain the basic behavior
   ;; of <up> & <down>
@@ -235,8 +256,9 @@
    ;; ("<down>"  "↓" uniline-move-rect-dw↓ :transient t)]
    ["Misc"
     ("f"       "fonts" uniline-transient-fonts)
-    ("s"       "exit" uniline-transient-moverect)
     ("C-_"     "undo" uniline--rect-undo :transient t)
+    ("C-t" "Togg hints" uniline-toggle-transient-hints-suffix)
+    ("s"       "back" uniline-transient-moverect)
     ("RET"     "exit" uniline--rect-quit)]
    ]
   (interactive)
@@ -275,31 +297,12 @@
     ("f" "  Choose font" uniline-transient-fonts)
     ;;("C-x C-x" "Exchg point-mark" rectangle-exchange-point-and-mark :transient t)
     ("C-_" "Undo"        uniline--rect-undo)
-    ("C-/" "Undo"        uniline--rect-undo)
+    ("C-t" "Togg hints"  uniline-toggle-transient-hints-suffix)
     ("RET" "Exit"        uniline--rect-quit)]
    ]
   (interactive)
   (rectangle-mark-mode 1)
   (transient-setup 'uniline-transient-moverect))
-
-(transient-define-prefix uniline-transient-macro-exec ()
-  "Macro execution interface."
-  :info-manual "(uniline) Macro"
-  :transient-non-suffix 'transient-quit-one
-  [:class
-   transient-columns
-   ["Call macro in direction"
-    ("<right>"   "→" uniline--transient-call-macro-in-direction-ri→)
-    ("<up>"   "   ↑" uniline--transient-call-macro-in-direction-up↑)
-    ("<down>"   " ↓" uniline--transient-call-macro-in-direction-dw↓)
-    ("<left>"   " ←" uniline--transient-call-macro-in-direction-lf←)]
-   [""
-    ("e" "  Normal call" uniline--transient-call-macro)
-    ("RET" "Quit" transient-quit-one)
-    ("q" "  Quit" transient-quit-one)]
-   ]
-  (interactive)
-  (transient-setup 'uniline-transient-macro-exec))
 
 ;; those low-value helper-functions are needed because for an unknown reason
 ;; calling a macro exits a transient menu, so we have to re-enter it
@@ -324,16 +327,44 @@
   (kmacro-end-and-call-macro 1)
   (transient-setup 'uniline-transient-macro-exec))
 
+(defun uniline-macro-exec ()
+  (interactive)
+  (transient-setup 'uniline-transient-macro-exec))
+
+(transient-define-prefix uniline-transient-macro-exec ()
+  "Macro execution interface."
+  :info-manual "(uniline) Macro"
+  :transient-non-suffix 'transient-quit-one
+  [:class
+   transient-columns
+   ["Call macro in direction"
+    ("<right>"   "→" uniline--transient-call-macro-in-direction-ri→)
+    ("<up>"   "   ↑" uniline--transient-call-macro-in-direction-up↑)
+    ("<down>"   " ↓" uniline--transient-call-macro-in-direction-dw↓)
+    ("<left>"   " ←" uniline--transient-call-macro-in-direction-lf←)]
+   [""
+    ("e" "  Normal call" uniline--transient-call-macro)
+    ("C-t" "Togg hints" uniline-toggle-transient-hints-suffix)
+    ("RET" "Quit" transient-quit-one)
+    ("q" "  Quit" transient-quit-one)]
+   ]
+  (interactive)
+  (transient-setup 'uniline-transient-macro-exec))
+
+(eval-when-compile
+  ;; this ugly patch removes dumb compilation warnings.
+  ;; they appear when loading this file, then byte-compiling it.
+  (dolist
+      (s '(uniline-transient-moverect
+           uniline-transient-arrows))
+    (plist-put (symbol-plist s) 'interactive-only nil)))
+
 (defun uniline-launch-interface ()
   "Choose between rectangle and arrows interface based on selection."
   (interactive)
   (if (region-active-p)
       (uniline-transient-moverect)
     (uniline-transient-arrows)))
-
-(defun uniline-macro-exec ()
-  (interactive)
-  (transient-setup 'uniline-transient-macro-exec))
 
 (provide 'uniline-transient)
 ;;; uniline-transient.el ends here

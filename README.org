@@ -14,8 +14,9 @@
 
 * New
 
-Mouse supports the infiniteness of the buffer in the right and bottom
-directions.
+Use =C-t= to toggle one-liner vs. full fledged menus, both in Hydra &
+Transient. In Hydra, it used to be =TAB=. Transient naively offers =C-t=,
+but just in one direction; Uniline extends it to both directions.
 
 * Table of Contents
 :PROPERTIES:
@@ -1042,8 +1043,8 @@ The font should already be available.
 :PROPERTIES:
 :CUSTOM_ID: hydra-or-transient
 :END:
-Casual usage of =Uniline= should be easy: just move the point, and lines
-are traced.
+The basic usage of =Uniline= should be easy: just move the point, and lines
+are traced. Change brush to draw thicker lines.
 
 More complex actions are summoned by the =<insert>= key, with or without
 selection. This is a single key to remember. Then a textual menu is
@@ -1056,6 +1057,8 @@ may prefer one or the other.
 
 =Uniline= was developed from day one with =Hydra=. =Transient= is a late
 addition.
+
+** Selecting Hydra or Transient
 
 Two files are compiled when installing =Uniline=
 - =uniline-hydra.el=
@@ -1081,29 +1084,19 @@ Note: there used to be a customizable setting to switch between the
 two interfaces. This had many issues. One of them is that the
 native-compiler is blind to all user-customized settings.
 
-Therefore, now =Uniline= ships with 3 Lisp source files (hydra,
-transient, core). Loading =uniline-hydra.elc= or =uniline-transient.elc=
-automatically loads =uniline-core.elc=.
+There is a third file, =uniline-code.elc=. Loading =uniline-hydra.elc= or
+=uniline-transient.elc= automatically loads =uniline-core.elc=.
 
-** The Hydra interface
-:PROPERTIES:
-:CUSTOM_ID: the-hydra-interface
-:END:
-
-#+begin_src elisp
-(use-package uniline-hydra
-  :bind ("C-<insert>" . uniline-mode))
-#+end_src
-
-The multi-lines Hydra's menus are quite useful for casual users. For
-seasoned users, those huge textual menus may distract them from
-their workflow.
+** One-liner menus
+The multi-lines menus in Hydra and Transient are quite useful for
+casual users. For seasoned users, those huge textual menus may
+distract them from their workflow.
 
 It is now possible to switch to less distracting textual menus. They
 are displayed in the echo-area on a single line.
 
 To do so, type:
-- =TAB= within a sub-mode (glyph insertion mode, rectangle handling,
+- =C-t= within a sub-mode (glyph insertion mode, rectangle handling,
   etc.)
 - =C-h TAB= at the top-level.
 
@@ -1119,12 +1112,34 @@ The current size is controlled by the =uniline-hint-style= variable:
 The variable is "buffer-local", which means that it can take distinct
 values on distinct buffers.
 
-Its default value can be customized and save for future sessions:
+Its default value can be customized and saved for future sessions:
 
 =M-x customize-variable uniline-hint-style=
 
-It can be changed later, on a buffer per buffer basis, with the =TAB=
-key.
+After customization it can be changed later, on a buffer per buffer
+basis, with the =C-t= or =C-h TAB= keys.
+
+Transient natively offers a similar setting:
+=transient-show-popup=. (There is no such variable in Hydra). It can be
+customized with =t=, =nil=, =0= (zero), or a number. This is similar but not
+exactly the same as the Hygra behavior and the =uniline-hint-style=.
+the Transient setting stays in effect until the =C-t= or =C-h TAB= keys
+are not used, . As soon as one of those keys is invoked,
+=transient-show-popup= is toggled (which does not happens in Transient
+alone). The change is kept in effect throughout the Uniline session,
+but no longer.
+
+** The Hydra interface
+:PROPERTIES:
+:CUSTOM_ID: the-hydra-interface
+:END:
+
+Put that in your =~/.emacs= file:
+
+#+begin_src elisp
+(use-package uniline-hydra
+  :bind ("C-<insert>" . uniline-mode))
+#+end_src
 
 It has been asked by =Transient=-only users to avoid installing the
 =Hydra= package. Currently, it is not possible to make dependencies
@@ -1137,6 +1152,8 @@ installed when installing =Uniline= through =Melpa=.
 :CUSTOM_ID: the-transient-interface
 :END:
 
+Put that in your =~/.emacs= file:
+
 #+begin_src elisp
 (use-package uniline-transient
   :bind ("C-<insert>" . uniline-mode))
@@ -1146,14 +1163,6 @@ installed when installing =Uniline= through =Melpa=.
 splitting of the single =uniline.el= file into 4 source
 files. Hopefully, the added complexity remains hidden by the =Elpa= -
 =Melpa= packaging system.
-
-Reducing =Transient= hints to single lines like under the =Hydra=
-interface is currently not supported. It is on the todo-list. However,
-this can be globally customized through this =Transient= customization:
-
-#+begin_example
-M-x customize-variable transient-show-popup
-#+end_example
 
 * Line spacing
 :PROPERTIES:
