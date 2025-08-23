@@ -13,9 +13,12 @@
 - Quit =C-c C-c=
 
 * New
+:PROPERTIES:
+:CUSTOM_ID: new
+:END:
 
 Use =C-t= to toggle one-liner vs. full fledged menus, both in Hydra &
-Transient. In Hydra, it used to be =TAB=. Transient naively offers =C-t=,
+Transient. In Hydra, it used to be =TAB=. Transient natively offers =C-t=,
 but just in one direction; Uniline extends it to both directions.
 
 * Table of Contents
@@ -26,29 +29,43 @@ but just in one direction; Uniline extends it to both directions.
 
 :CONTENTS:
 - [[#getting-started-in-10-seconds][Getting started in 10 seconds]]
+- [[#new][New]]
 - [[#pure-unicode-text-diagrams-in-emacs][Pure UNICODE text diagrams in Emacs]]
 - [[#minor-mode][Minor mode]]
 - [[#drawing-lines][Drawing lines]]
-- [[#brush-style][Brush style]]
+  - [[#draw-lines-by-moving-the-cursor][Draw lines by moving the cursor]]
+  - [[#brush-style][Brush style]]
+  - [[#text-direction][Text direction]]
 - [[#the-insert-key][The <insert> key]]
-- [[#arrows-glyphs------][Arrows glyphs ▷ ▶ → ▹ ▸ ↔]]
-- [[#intersection-glyphs---][Intersection glyphs ■ ◆ ●]]
-- [[#drawing-rectangles][Drawing rectangles]]
-- [[#moving-rectangles][Moving rectangles]]
-- [[#copying-killing-yanking-rectangles][Copying, killing, yanking rectangles]]
+- [[#glyphs-------insertion--modification][Glyphs ▷ ▶ → □ ◆ ╮─ insertion & modification]]
+  - [[#arrows-glyphs------][Arrows glyphs ▷ ▶ → ▹ ▸ ↔]]
+  - [[#intersection-glyphs---][Intersection glyphs ■ ◆ ●]]
+  - [[#fine-tweaking-of-lines][Fine tweaking of lines]]
+- [[#rectangular-actions][Rectangular actions]]
+  - [[#drawing-a-rectangle][Drawing a rectangle]]
+  - [[#filling-a-rectangle][Filling a rectangle]]
+  - [[#moving-a-rectangle][Moving a rectangle]]
+  - [[#copying-killing-yanking-a-rectangle][Copying, killing, yanking a rectangle]]
+  - [[#dashed-lines-and-other-styles][Dashed lines and other styles]]
+  - [[#ascii-to-unicode][ASCII to UNICODE]]
 - [[#tracing-a-contour][Tracing a contour]]
 - [[#flood-fill][Flood-fill]]
-- [[#text-direction][Text direction]]
 - [[#macros][Macros]]
-- [[#fine-tweaking][Fine tweaking]]
-- [[#dashed-lines-and-other-styles][Dashed lines and other styles]]
-- [[#ascii-to-unicode][ASCII to UNICODE]]
 - [[#which-fonts][Which fonts?]]
 - [[#hydra-or-transient][Hydra or Transient?]]
+  - [[#selecting-hydra-or-transient][Selecting Hydra or Transient]]
+  - [[#one-liner-menus][One-liner menus]]
   - [[#the-hydra-interface][The Hydra interface]]
   - [[#the-transient-interface][The Transient interface]]
-- [[#line-spacing][Line spacing]]
 - [[#customization][Customization]]
+  - [[#interface-type-obsolete][Interface type (obsolete)]]
+  - [[#insert-key][Insert key]]
+  - [[#maximum-steps-when-drawing-a-contour][Maximum steps when drawing a contour]]
+  - [[#cursor-type][Cursor type]]
+  - [[#hint-style][Hint style]]
+  - [[#welcome-message-visibility][Welcome message visibility]]
+  - [[#line-spacing][Line spacing]]
+  - [[#font][Font]]
 - [[#how-uniline-behaves-with-its-environment][How Uniline behaves with its environment?]]
   - [[#compatibility-with-picture-mode][Compatibility with Picture-mode]]
   - [[#compatibility-with-artist-mode][Compatibility with Artist-mode]]
@@ -61,6 +78,7 @@ but just in one direction; Uniline extends it to both directions.
   - [[#emacs-on-a-graphical-terminal-emulator][Emacs on a graphical terminal emulator]]
   - [[#emacs-on-windows][Emacs on Windows]]
 - [[#lisp-api][Lisp API]]
+- [[#mouse-support][Mouse support]]
 - [[#installation][Installation]]
 - [[#related-packages][Related packages]]
 - [[#author-contributors][Author, contributors]]
@@ -322,7 +340,14 @@ settings are reset to their previous state when exiting =uniline-mode=.
 :PROPERTIES:
 :CUSTOM_ID: drawing-lines
 :END:
-Use keyboard arrows to draw lines.
+
+Use keyboard arrows to draw lines. Change the brush to any of the 6
+styles.
+
+** Draw lines by moving the cursor
+:PROPERTIES:
+:CUSTOM_ID: draw-lines-by-moving-the-cursor
+:END:
 
 By default, drawing lines only happens over empty space or over other
 lines. If there is already text, it will not be erased. However, by
@@ -336,7 +361,7 @@ characters are automatically added.
 The usual numeric prefix is available. For instance, to draw a line 12
 characters wide downward, type: =M-12 <down>=
 
-* Brush style
+** Brush style
 :PROPERTIES:
 :CUSTOM_ID: brush-style
 :END:
@@ -375,6 +400,22 @@ looks like this:
 
 #+end_example
 
+** Text direction
+:PROPERTIES:
+:CUSTOM_ID: text-direction
+:END:
+Usually, inserting text in a buffer moves the cursor to the right. (And
+sometimes to the left for some locales). Any of the 4 directions can be
+selected under =Uniline=. Just type any of:
+
+  - =<insert> C-<up>=
+  - =<insert> C-<right>=
+  - =<insert> C-<down>=
+  - =<insert> C-<left>=
+
+The current direction is reflected in the mode-line, just before the
+word ="uniline"=.
+
 * The =<insert>= key
 :PROPERTIES:
 :CUSTOM_ID: the-insert-key
@@ -402,12 +443,25 @@ Another key may be defined instead of =<insert>=. Type:
 M-x customize-variable uniline-key-insert
 #+end_example
 
-* Arrows glyphs =▷ ▶ → ▹ ▸ ↔=
+* Glyphs =▷ ▶ → □ ◆ ╮─= insertion & modification
+:PROPERTIES:
+:CUSTOM_ID: glyphs-------insertion--modification
+:END:
+
+Individual character glyphs may be inserted and changed.
+- Put the cursor where a glyphs should be edited or inserted.
+- Then press =<insert>= (this key may be customized, see the
+  "Customization" chapter).
+
+Arrows, squares, circles, crosses may be handled. Also lines may be
+fine tweaked a single character at a time.
+
+** Arrows glyphs =▷ ▶ → ▹ ▸ ↔=
 :PROPERTIES:
 :CUSTOM_ID: arrows-glyphs------
 :END:
-At any time, an arrow may be drawn. The arrow points in the direction
-that the line drawing follows.
+When inserting an arrow, it points in the direction that the line
+drawing follows.
 
 =Uniline= supports 6 arrows types: =▷ ▶ → ▹ ▸ ↔=
 
@@ -441,12 +495,12 @@ the cursor.
 To change the direction of the arrow, use shift-arrow, for example:
 =S-<up>= will change from =→= to =↑=.
 
-* Intersection glyphs =■ ◆ ●=
+** Intersection glyphs =■ ◆ ●=
 :PROPERTIES:
 :CUSTOM_ID: intersection-glyphs---
 :END:
-There are a few other UNICODE characters which are mono-space and
-symmetric in the 4 directions. They are great at line intersections:
+There are a few UNICODE characters which are mono-space and symmetric
+in the 4 directions. They are great at line intersections:
 
 To insert a square =□ ■ ▫ ▪ ◆ ◊= type:
 =<insert> s s s...= (=s= cycles, =S= cycles backward).
@@ -494,26 +548,92 @@ prefix them with =<insert>=. Example: =<insert> -= inserts a =-= and
 
 #+end_example
 
-* Drawing rectangles
+** Fine tweaking of lines
 :PROPERTIES:
-:CUSTOM_ID: drawing-rectangles
+:CUSTOM_ID: fine-tweaking-of-lines
 :END:
-To draw a rectangle in one shot, select a rectangular region with
-=C-SPC= or =C-x SPC= and move the cursor.
+
+[[file:images/fine-tweaking.png]]
+
+#+begin_example
+
+    convert this  ═══▶   into that
+   ╭───────────╮        ╭───────────╮
+   │╶───┬────▷ │        │╶───╮────▷ │
+   │    │      │        │    │      │
+   │           │        │           │
+   │    ▀▀▀    │        │    ▀▟▀    │
+   ╰───────────╯        ╰───────────╯
+
+#+end_example
+
+At the crossing of lines, it may be appealing to do small
+adjustments. In the above example, we removed a segment of line which
+occupies 1/4 of a character. This cannot be achieve with line tracing
+alone. We also modified a quarter-block line in a non-obvious way.
+
+- Put the point (the cursor) on the character where lines cross each other.
+- type =INS S-<right> S-<right>=
+
+=<right>= here refers to the right part of the character under the
+point. The 1/4 line segment will cycle through all displayable
+forms. On the second stroke, no segment will be displayed, which is
+what we want.
+
+Caveat! The UNICODE standard does not define all possible combinations
+including double line segments. (It does for all combinations of thin
+and tick lines). So sometimes, when working with double lines, the
+process may be frustrating.
+
+This works also for lines made of quarter-blocks. There are 4
+quarter-blocks in a character, either on or off. Each of the 4 shifted
+keyboard arrows flips a quarter-block on-and-off.
+
+In the above example, the effect was achieved with:
+=INS S-<up> S-<down> S-<left>=
+
+* Rectangular actions
+:PROPERTIES:
+:CUSTOM_ID: rectangular-actions
+:END:
+
+- Drawing,
+- filling,
+- moving,
+- copying & yanking,
+- change line & glyph styles,
+
+those actions may be performed on a rectangular selection.
+
+Select a rectangular region with =C-SPC= or =C-x SPC= and move the cursor.
 
 You may also use =S-<arrow>= (=<arrow>= being any of the 4
 directions) to extend the selection. The buffer grows as needed with
 white spaces to accommodate the selection. Selection extension mode is
 active when =shift-select-mode= is non-nil.
 
-If needed, change the brush with any of
- =- + = # <delete>=
+Or you may use the mouse to highlight the desired region.
 
-then hit
+All those region-highlighting are standard in Emacs, and unrelated to
+Uniline.
+
+Once you have a region highlighted, press =<insert>= (this key can be
+customized, see the "Customization" chapter). The selection becomes
+rectangular if it was not. You are offered a menu of possible actions.
+
+** Drawing a rectangle
+:PROPERTIES:
+:CUSTOM_ID: drawing-a-rectangle
+:END:
+
+To draw a rectangle in one shot, select a region, press =<insert>=, then
+hit:
 - =r= to draw a rectangle inside the selection
 - =S-R= to draw a rectangle outside the selection
 - =C-r= to overwrite a rectangle inside the selection
 - =C-S-R= to overwrite a rectangle outside the selection
+
+If needed, change the brush with any of =- + = # <delete>=
 
 [[file:images/draw-rectangle.png]]
 
@@ -534,15 +654,32 @@ then hit
                           ╰─────────╯
 #+end_example
 
-The usual =C-_= or =C-/= keys may be hit to undo, even with the region still
-active visually.
+The usual =C-_= or =C-/= keys may be hit to undo, even with the region
+still active visually.
 
-* Moving rectangles
+** Filling a rectangle
 :PROPERTIES:
-:CUSTOM_ID: moving-rectangles
+:CUSTOM_ID: filling-a-rectangle
 :END:
-Select a region, then press =<insert>=. The selection becomes rectangular if it
-was not.
+
+While the rectangular mode is active, press =i= to fill the
+rectangle. You will be asked to choose a character. You have those
+options:
+
+- for a regular character like =t=, just type it.
+- =SPC= or =DEL= for a shade of grey =" ░▒▓█"= among the 5 available in
+  UNICODE. =SPC= to make it darker and darker. =DEL= to make the rectangle
+  lighter and lighter.
+- =C-y= to chose the first character in the top of the kill ring.
+
+The above selection is the same as for the flood-fill action (see the
+"Flood-fill" chapter).
+
+** Moving a rectangle
+:PROPERTIES:
+:CUSTOM_ID: moving-a-rectangle
+:END:
+Select a region, then press =<insert>=.
 
 Use arrow keys to move the rectangle around. A numeric prefix may be
 used to move the rectangle that many characters.
@@ -574,12 +711,14 @@ though the selection is still active.
                  ▼
 #+end_example
 
-* Copying, killing, yanking rectangles
+** Copying, killing, yanking a rectangle
 :PROPERTIES:
-:CUSTOM_ID: copying-killing-yanking-rectangles
+:CUSTOM_ID: copying-killing-yanking-a-rectangle
 :END:
 
-A rectangle can be copied or killed, then yanked somewhere else. Press:
+A rectangle can be copied or killed, then yanked somewhere else.
+
+Select a region, press =<insert>=, then:
 - =c= to copy
 - =k= to kill
 - =y= to yank (aka paste)
@@ -589,16 +728,173 @@ This is similar to the Emacs standard rectangle handling:
 - =C-x r k= kill rectangle
 - =C-x r y= yank killed rectangle
 
-The first difference is that =Uniline= rectangles when killed and
+The first difference is that =Uniline= rectangles, when killed and
 yanked, do not move surrounding characters.
 
 The second difference is that the white characters of the yanked
-rectangle are considered transparent. The result is that only
-non-blank parts of the yanked rectangle are over-printed.
+rectangle are considered transparent. As a result, only non-blank
+parts of the yanked rectangle are over-printed.
 
 =Uniline= and Emacs standard rectangle share the same storage for copied
 and killed rectangles, namely the =killed-rectangle= Lisp variable. So,
 a rectangle can be killed one way, and yanked another way.
+
+** Dashed lines and other styles
+:PROPERTIES:
+:CUSTOM_ID: dashed-lines-and-other-styles
+:END:
+
+[[file:images/four-styles.png]]
+
+#+begin_example
+
+   ╭────▷───╮   ┏━━━━▶━━━┓   ╔════▶═══╗
+   │ ╭─□──╮ │   ┃ ┏━■━━┓ ┃   ║ ╔═■══╗ ║
+   △ │    │ ▽   ▲ ┃    ┃ ▼   ▲ ║    ║ ▼
+   │ ╰───◦╯ │   ┃ ┗━━━•┛ ┃   ║ ╚═══•╝ ║
+   ╰───◁────╯   ┗━━━◀━━━━┛   ╚═══◀════╝
+
+   ╭╌╌╌╌▷╌╌╌╮   ┏╍╍╍╍▶╍╍╍┓
+   ┆ ╭╌□╌╌╮ ┆   ┇ ┏╍■╍╍┓ ┇
+   △ ┆    ┆ ▽   ▲ ┇    ┇ ▼
+   ┆ ╰╌╌╌◦╯ ┆   ┇ ┗╍╍╍•┛ ┇
+   ╰╌╌╌◁╌╌╌╌╯   ┗╍╍╍◀╍╍╍╍┛
+
+   ╭┈┈┈┈▷┈┈┈╮   ┏┉┉┉┉▶┉┉┉┓
+   ┊ ╭┈□┈┈╮ ┊   ┋ ┏┉■┉┉┓ ┋
+   △ ┊    ┊ ▽   ▲ ┋    ┋ ▼
+   ┊ ╰┈┈┈◦╯ ┊   ┋ ┗┉┉┉•┛ ┋
+   ╰┈┈┈◁┈┈┈┈╯   ┗┉┉┉◀┉┉┉┉┛
+
+#+end_example
+
+A base drawing can be converted to dashed lines. Moreover, lines can
+be made either thin or thick.
+
+- Select the rectangular area you want to operate on (with mouse drag
+  or =S-<left>=, =S-<down>= and so on as described earlier).
+- Type =INS=, then =s= (as "style").
+
+You will be offered a choice of styles:
+- =3=: vertical lines will become 3 dashes per character, while
+  horizontal ones will get 2 dashes per character.
+- =4=: vertical and horizontal lines will get 4 dashes per character.
+- =h=: thin lines corners, which are usually rounded, become hard angles.
+- =+=: thin lines and intersections become thick, empty glyphs get
+  filled.
+- =-=: thick lines and intersections become thin, filled glyphs are
+  emptied.
+- ~=~: thick and thin lines become double lines.
+- =0=: come back to standard base-line =Uniline= style: plain, not-dashed
+  lines, thin corner rounded, ASCII art is converted to UNICODE.
+- =a=: apply the =aa2u-rectangle= function from the unrelated
+  =ascii-art-to-unicode= package, to convert ASCII art to UNICODE (this
+  only works if =ascii-art-to-unicode= is already installed).
+
+Converting parts of a drawing from one style to another can produce
+nice looking sketches.
+
+[[file:images/same-sketch-several-styles.png]]
+
+#+begin_example
+
+   ╭───╮   ╭───╮   ╭───╮
+   │░░░│   │░░░│   │░░░┝━▶┓ ╭╌╌╌╌╌╮
+   │░░░╰───╯░░░╰───╯░░░│  ┃ ┆░░░░░╰╌╌╌╌╌╮
+   □░░░░░░░░░░░░░░░░░░░│  ┗━┥░░░░░░░░░░░┆
+   │░░░╭───╮░░░╭───╮░░░│    ┆░░░░░╭╌╌╌╌╌╯
+   ╰───╯   ╰─┰─╯   ╰─┰─╯    ╰╌╌┰╌╌╯
+             ▲       ┃         ▼
+             ┗━━━━━━━┻━━━━━━━━━┛
+
+   ┏━━━┓   ┏━━━┓   ┏━━━┓
+   ┃░░░┃   ┃░░░┃   ┃░░░┠─▷╮ ┏╍╍╍╍╍┓
+   ┃░░░┗━━━┛░░░┗━━━┛░░░┃  │ ┇░░░░░┗╍╍╍╍╍┓
+   ■░░░░░░░░░░░░░░░░░░░┃  ╰─┨░░░░░░░░░░░┇
+   ┃░░░┏━━━┓░░░┏━━━┓░░░┃    ┇░░░░░┏╍╍╍╍╍┛
+   ┗━━━┛   ┗━┯━┛   ┗━┯━┛    ┗╍╍┯╍╍┛
+             △       │         ▽
+             ╰───────┴─────────╯
+
+#+end_example
+
+** ASCII to UNICODE
+:PROPERTIES:
+:CUSTOM_ID: ascii-to-unicode
+:END:
+
+The standard base-line =Uniline= (=INS s 0=) or =aa2u-rectangle= (=INS s a=)
+conversions may be used to convert ASCII art to UNICODE. The original
+ASCII art may be drawn for instance by the =artist-mode= or the
+=picture-mode= packages.
+
+To use =aa2u-rectangle=, install the =ascii-art-to-unicode= package by
+Thien-Thi Nguyen (RIP), available on ELPA. =Uniline= does not requires a
+dependency on this package, by lazy evaluating any call to
+=aa2u-rectangle=.
+See https://elpa.gnu.org/packages/ascii-art-to-unicode.html
+
+[[file:images/ascii-2-unicode.png]]
+
+#+begin_example
+
+  +-------------+    +--+
+  |             +-->-|  +-----+   ASCII art
+  | 1  +--------+--+ | 3      |   made by
+  +----+--------+  | +----+---+   Artist-mode
+       | 2         +-<----+
+       +-----------+
+
+  ╭─────────────╮    ╭──╮
+  │             ├──▷─│  ╰─────╮   Converted to
+  │ 1  ╭────────┼──╮ │ 3      │   Uniline base style
+  ╰────┼────────╯  │ ╰────┬───╯   INS s 0
+       │ 2         ├─◁────╯
+       ╰───────────╯
+
+  ┌─────────────┐    ┌──┐
+  │             ├──>─│  └─────┐   Converted by
+  │ 1  ┌────────┼──┐ │ 3      │   aa2u-rectangle
+  └────┼────────┘  │ └────┬───┘   INS s a
+       │ 2         ├─<────┘
+       └───────────┘
+#+end_example
+
+=INS s 0= with selection active calls the =uniline-change-style-standard=
+function. It converts what looks ASCII-art to UNICODE-art. Of course,
+there are ambiguities regarding whether a character is part of a
+sketch or not.
+
+The heuristic is to consider that a character is part of a sketch if
+it is surrounded by at least one other character which is part of a
+sketch. So, an isolated =-= minus character will be left alone, while
+two such characters =--= will be converted to UNICODE. Conversion will
+happens also for =<-= for instance.
+
+Here is a fairly convoluted ASCII-art example, along with its
+conversion by =INS s 0=:
+
+[[file:images/ascii-2-unicode-b.png]]
+
+#+begin_example
+
+       ╭─↔--<-◁-◀--━+           +--->------==+
+  /----/ Rectangle1 |-----+-----+ Rectangle2 v    v
+  |    | <uni^code> ^     "     | "quote"    +-\  ▼
+  ^^   \------------/   /-+-\   +------------+ "  v
+  |    \--+------+--/   |   |   +----\----/--+ "  >▷▶>
+  \>--\   |      |      \---/        |    |    "
+      v   \==<===/   a=b 1=2 a-to-b  +----+ ◁==/  >->
+
+       ╭─↔──◁─◁─◀──━┑           ╭───▷──────══╕
+  ╭────┤ Rectangle1 │─────╥─────┤ Rectangle2 ▽    ▽
+  │    │ <uni^code> △     ║     │ "quote"    ├─╖  ▼
+  △^   ├────────────┤   ╭─╨─╮   ├────────────┤ ║  ▽
+  │    ╰──┬──────┬──╯   │   │   ╰────┬────┬──╯ ║  ▷▷▶▷
+  ╰▷──╮   │      │      ╰───╯        │    │    ║
+      ▽   ╘══◁═══╛   a=b 1=2 a-to-b  ╰────╯ ◁══╝  ▷─▷
+
+#+end_example
 
 * Tracing a contour
 :PROPERTIES:
@@ -697,22 +993,6 @@ A rectangular shape may also be filled.
 There is no limit on the area to fill. Therefore, the filling
 operation may flood the entire buffer (but no more).
 
-* Text direction
-:PROPERTIES:
-:CUSTOM_ID: text-direction
-:END:
-Usually, inserting text in a buffer moves the cursor to the right. (And
-sometimes to the left for some locales). Any of the 4 directions can be
-selected under =Uniline=. Just type any of:
-
-  - =<insert> C-<up>=
-  - =<insert> C-<right>=
-  - =<insert> C-<down>=
-  - =<insert> C-<left>=
-
-The current direction is reflected in the mode-line, just before the
-word ="uniline"=.
-
 * Macros
 :PROPERTIES:
 :CUSTOM_ID: macros
@@ -779,207 +1059,6 @@ call a macro in 4 directions, closing a square:
  ╰╮           ╰╮  ◁╮           ╰▷   │               ∙│  ╰┬┼─╮ ╭─╮ ╭─╮ ╭─┼┬╯
   │╭╮╭╮╭╮╭╮╭╮╭─╯   ╵╭╴╭╴╭╴╭╴╭╴╭╴    │∙╭─╮∙╭─╮∙╭─╮∙╭──╯   △┤□├◁┤□├◁┤□├◁┤□├◁
   ╰╯╰╯╰╯╰╯╰╯╰╯      ▽ ▽ ▽ ▽ ▽ ▽     ╰─╯ ╰─╯ ╰─╯ ╰─╯       ╰─╯ ╰─╯ ╰─╯ ╰─╯
-
-#+end_example
-
-* Fine tweaking
-:PROPERTIES:
-:CUSTOM_ID: fine-tweaking
-:END:
-
-[[file:images/fine-tweaking.png]]
-
-#+begin_example
-
-    convert this  ═══▶   into that
-   ╭───────────╮        ╭───────────╮
-   │╶───┬────▷ │        │╶───╮────▷ │
-   │    │      │        │    │      │
-   │           │        │           │
-   │    ▀▀▀    │        │    ▀▟▀    │
-   ╰───────────╯        ╰───────────╯
-
-#+end_example
-
-At the crossing of lines, it may be appealing to do small
-adjustments. In the above example, we removed a segment of line which
-occupies 1/4 of a character. This cannot be achieve with line tracing
-alone. We also modified a quarter-block line in a non-obvious way.
-
-- Put the point (the cursor) on the character where lines cross each other.
-- type =INS S-<right> S-<right>=
-
-=<right>= here refers to the right part of the character under the
-point. The 1/4 line segment will cycle through all displayable
-forms. On the second stroke, no segment will be displayed, which is
-what we want.
-
-Caveat! The UNICODE standard does not define all possible combinations
-including double line segments. (It does for all combinations of thin
-and tick lines). So sometimes, when working with double lines, the
-process may be frustrating.
-
-This works also for lines made of quarter-blocks. There are 4
-quarter-blocks in a character, either on or off. Each of the 4 shifted
-keyboard arrows flips a quarter-block on-and-off.
-
-In the above example, the effect was achieved with:
-=INS S-<up> S-<down> S-<left>=
-
-* Dashed lines and other styles
-:PROPERTIES:
-:CUSTOM_ID: dashed-lines-and-other-styles
-:END:
-
-[[file:images/four-styles.png]]
-
-#+begin_example
-
-   ╭────▷───╮   ┏━━━━▶━━━┓   ╔════▶═══╗
-   │ ╭─□──╮ │   ┃ ┏━■━━┓ ┃   ║ ╔═■══╗ ║
-   △ │    │ ▽   ▲ ┃    ┃ ▼   ▲ ║    ║ ▼
-   │ ╰───◦╯ │   ┃ ┗━━━•┛ ┃   ║ ╚═══•╝ ║
-   ╰───◁────╯   ┗━━━◀━━━━┛   ╚═══◀════╝
-
-   ╭╌╌╌╌▷╌╌╌╮   ┏╍╍╍╍▶╍╍╍┓
-   ┆ ╭╌□╌╌╮ ┆   ┇ ┏╍■╍╍┓ ┇
-   △ ┆    ┆ ▽   ▲ ┇    ┇ ▼
-   ┆ ╰╌╌╌◦╯ ┆   ┇ ┗╍╍╍•┛ ┇
-   ╰╌╌╌◁╌╌╌╌╯   ┗╍╍╍◀╍╍╍╍┛
-
-   ╭┈┈┈┈▷┈┈┈╮   ┏┉┉┉┉▶┉┉┉┓
-   ┊ ╭┈□┈┈╮ ┊   ┋ ┏┉■┉┉┓ ┋
-   △ ┊    ┊ ▽   ▲ ┋    ┋ ▼
-   ┊ ╰┈┈┈◦╯ ┊   ┋ ┗┉┉┉•┛ ┋
-   ╰┈┈┈◁┈┈┈┈╯   ┗┉┉┉◀┉┉┉┉┛
-
-#+end_example
-
-A base drawing can be converted to dashed lines. Moreover, lines can
-be made either thin or thick.
-
-- Select the rectangular area you want to operate on (with mouse drag
-  or =S-<left>=, =S-<down>= and so on).
-- Type =INS=, then =s= (as "style").
-
-You will be offered a choice of styles:
-- =3=: vertical lines will become 3 dashes per character, while
-  horizontal ones will get 2 dashes per character.
-- =4=: vertical and horizontal lines will get 4 dashes per character.
-- =h=: thin lines corners, which are usually rounded, become hard angles.
-- =+=: thin lines and intersections become thick, empty glyphs get
-  filled.
-- =-=: thick lines and intersections become thin, filled glyphs are
-  emptied.
-- ~=~: thick and thin lines become double lines.
-- =0=: come back to standard base-line =Uniline= style: plain not-dashed
-  lines, thin corner rounded, ASCII art is converted to UNICODE.
-- =a=: apply the =aa2u-rectangle= function from the unrelated
-  =ascii-art-to-unicode= package, to convert ASCII art to UNICODE (this
-  only works if =ascii-art-to-unicode= is already installed).
-
-Converting parts of a drawing from one style to another can produce
-nice looking sketches.
-
-[[file:images/same-sketch-several-styles.png]]
-
-#+begin_example
-
-   ╭───╮   ╭───╮   ╭───╮
-   │░░░│   │░░░│   │░░░┝━▶┓ ╭╌╌╌╌╌╮
-   │░░░╰───╯░░░╰───╯░░░│  ┃ ┆░░░░░╰╌╌╌╌╌╮
-   □░░░░░░░░░░░░░░░░░░░│  ┗━┥░░░░░░░░░░░┆
-   │░░░╭───╮░░░╭───╮░░░│    ┆░░░░░╭╌╌╌╌╌╯
-   ╰───╯   ╰─┰─╯   ╰─┰─╯    ╰╌╌┰╌╌╯
-             ▲       ┃         ▼
-             ┗━━━━━━━┻━━━━━━━━━┛
-
-   ┏━━━┓   ┏━━━┓   ┏━━━┓
-   ┃░░░┃   ┃░░░┃   ┃░░░┠─▷╮ ┏╍╍╍╍╍┓
-   ┃░░░┗━━━┛░░░┗━━━┛░░░┃  │ ┇░░░░░┗╍╍╍╍╍┓
-   ■░░░░░░░░░░░░░░░░░░░┃  ╰─┨░░░░░░░░░░░┇
-   ┃░░░┏━━━┓░░░┏━━━┓░░░┃    ┇░░░░░┏╍╍╍╍╍┛
-   ┗━━━┛   ┗━┯━┛   ┗━┯━┛    ┗╍╍┯╍╍┛
-             △       │         ▽
-             ╰───────┴─────────╯
-
-#+end_example
-
-* ASCII to UNICODE
-:PROPERTIES:
-:CUSTOM_ID: ascii-to-unicode
-:END:
-
-The standard base-line =Uniline= (=INS s 0=) or =aa2u-rectangle= (=INS s a=)
-conversions may be used to convert ASCII art to UNICODE. The original
-ASCII art may be drawn for instance by the =artist-mode= or the
-=picture-mode= packages.
-
-To use =aa2u-rectangle=, install the =ascii-art-to-unicode= package by
-Thien-Thi Nguyen (RIP), available on ELPA. =Uniline= does not requires a
-dependency on this package, by lazy evaluating any call to
-=aa2u-rectangle=.
-See https://elpa.gnu.org/packages/ascii-art-to-unicode.html
-
-[[file:images/ascii-2-unicode.png]]
-
-#+begin_example
-
-  +-------------+    +--+
-  |             +-->-|  +-----+   ASCII art
-  | 1  +--------+--+ | 3      |   made by
-  +----+--------+  | +----+---+   Artist-mode
-       | 2         +-<----+
-       +-----------+
-
-  ╭─────────────╮    ╭──╮
-  │             ├──▷─│  ╰─────╮   Converted to
-  │ 1  ╭────────┼──╮ │ 3      │   Uniline base style
-  ╰────┼────────╯  │ ╰────┬───╯   INS s 0
-       │ 2         ├─◁────╯
-       ╰───────────╯
-
-  ┌─────────────┐    ┌──┐
-  │             ├──>─│  └─────┐   Converted by
-  │ 1  ┌────────┼──┐ │ 3      │   aa2u-rectangle
-  └────┼────────┘  │ └────┬───┘   INS s a
-       │ 2         ├─<────┘
-       └───────────┘
-#+end_example
-
-=INS s 0= with selection active calls the =uniline-change-style-standard=
-function. It converts what looks ASCII-art to UNICODE-art. Of course,
-there are ambiguities regarding whether a character is part of a
-sketch or not.
-
-The heuristic is to consider that a character is part of a sketch if
-it is surrounded by at least one other character which is part of a
-sketch. So, an isolated =-= minus character will be left alone, while
-two such characters =--= will be converted to UNICODE. Conversion will
-happens also for =<-= for instance.
-
-Here is a fairly convoluted ASCII-art example, along with its
-conversion by =INS s 0=:
-
-[[file:images/ascii-2-unicode-b.png]]
-
-#+begin_example
-
-       ╭─↔--<-◁-◀--━+           +--->------==+
-  /----/ Rectangle1 |-----+-----+ Rectangle2 v    v
-  |    | <uni^code> ^     "     | "quote"    +-\  ▼
-  ^^   \------------/   /-+-\   +------------+ "  v
-  |    \--+------+--/   |   |   +----\----/--+ "  >▷▶>
-  \>--\   |      |      \---/        |    |    "
-      v   \==<===/   a=b 1=2 a-to-b  +----+ ◁==/  >->
-
-       ╭─↔──◁─◁─◀──━┑           ╭───▷──────══╕
-  ╭────┤ Rectangle1 │─────╥─────┤ Rectangle2 ▽    ▽
-  │    │ <uni^code> △     ║     │ "quote"    ├─╖  ▼
-  △^   ├────────────┤   ╭─╨─╮   ├────────────┤ ║  ▽
-  │    ╰──┬──────┬──╯   │   │   ╰────┬────┬──╯ ║  ▷▷▶▷
-  ╰▷──╮   │      │      ╰───╯        │    │    ║
-      ▽   ╘══◁═══╛   a=b 1=2 a-to-b  ╰────╯ ◁══╝  ▷─▷
 
 #+end_example
 
@@ -1059,6 +1138,9 @@ may prefer one or the other.
 addition.
 
 ** Selecting Hydra or Transient
+:PROPERTIES:
+:CUSTOM_ID: selecting-hydra-or-transient
+:END:
 
 Two files are compiled when installing =Uniline=
 - =uniline-hydra.el=
@@ -1088,6 +1170,9 @@ There is a third file, =uniline-code.elc=. Loading =uniline-hydra.elc= or
 =uniline-transient.elc= automatically loads =uniline-core.elc=.
 
 ** One-liner menus
+:PROPERTIES:
+:CUSTOM_ID: one-liner-menus
+:END:
 The multi-lines menus in Hydra and Transient are quite useful for
 casual users. For seasoned users, those huge textual menus may
 distract them from their workflow.
@@ -1122,7 +1207,7 @@ basis, with the =C-t= or =C-h TAB= keys.
 Transient natively offers a similar setting:
 =transient-show-popup=. (There is no such variable in Hydra). It can be
 customized with =t=, =nil=, =0= (zero), or a number. This is similar but not
-exactly the same as the Hygra behavior and the =uniline-hint-style=.
+exactly the same as the Hydra behavior and the =uniline-hint-style=.
 the Transient setting stays in effect until the =C-t= or =C-h TAB= keys
 are not used, . As soon as one of those keys is invoked,
 =transient-show-popup= is toggled (which does not happens in Transient
@@ -1164,11 +1249,98 @@ splitting of the single =uniline.el= file into 4 source
 files. Hopefully, the added complexity remains hidden by the =Elpa= -
 =Melpa= packaging system.
 
-* Line spacing
+* Customization
+:PROPERTIES:
+:CUSTOM_ID: customization
+:END:
+Type: =M-x customize-group uniline=.
+
+Or =Menu bar ⟶ Options ⟶ Customize Emacs ⟶ Specific Group… ⟶ "uniline"=.
+
+This invokes the standard Emacs customization system. Your settings
+will be saved in the file pointed to by the =custom-file= variable if
+set, or your =~/.emacs= file. (Along with all your other settings
+unrelated to =Uniline=).
+
+Two settings are special: interface type (obsolete) & the insert
+key. The other settings are self-explanatory
+
+** Interface type (obsolete)
+:PROPERTIES:
+:CUSTOM_ID: interface-type-obsolete
+:END:
+
+This switch is *obsolete*. Choosing between =Hydra= or =Transient= interface
+is done by loading one or the other sub-package. See "Installation"
+for details.
+
+** Insert key
+:PROPERTIES:
+:CUSTOM_ID: insert-key
+:END:
+
+By default, the =<insert>= or =INS= key is the prefix for most of the
+=Uniline= actions. Some computers do not have an =INS= key, or it is bound
+to some other command (Apple?).
+
+This can be changed temporarily or permanently. The customization
+allows to set several keys at the same time.
+
+Depending on whether Emacs is run in a graphical environment or a
+text-only terminal, either the =<insert>= or the =<insertchar>= events are
+generated by the =INS= key. Therefore, by default =Uniline= defines both
+events as the =INS= key.
+
+Variable =uniline-key-insert=.
+
+** Maximum steps when drawing a contour
+:PROPERTIES:
+:CUSTOM_ID: maximum-steps-when-drawing-a-contour
+:END:
+Defaults to =10000=.
+To avoid an infinite loop in some rare cases.
+
+Variable =uniline-contour-max-steps=.
+
+** Cursor type
+:PROPERTIES:
+:CUSTOM_ID: cursor-type
+:END:
+Hollow by default, so that what is under the cursor remains visible.
+
+There is the option to leave the cursor as it is.
+
+Variable =uniline-cursor-type.=
+
+** Hint style
+:PROPERTIES:
+:CUSTOM_ID: hint-style
+:END:
+Currently only applicable to the =Hydra=.
+It defaults to "full fledged menus".
+
+Variable =uniline-hint-style=.
+
+=Transient= offers a similar setting: =transient-show-popup=.
+
+** Welcome message visibility
+:PROPERTIES:
+:CUSTOM_ID: welcome-message-visibility
+:END:
+Default is "on". Turn it "off" for less distraction.
+
+Even when turned of, the welcome message can still be displayed by
+pressing =C-h TAB=.
+
+Variable =uniline-show-welcome-message=.
+
+** Line spacing
 :PROPERTIES:
 :CUSTOM_ID: line-spacing
 :END:
-The =line-spacing= setting in Emacs can change the display of a sketch.
+
+The =line-spacing= setting in Emacs can change the display of a
+sketch. (This setting is unrelated to =Uniline=).
 
 The best looking effect is given by:
 : (setq line-spacing nil)
@@ -1192,48 +1364,18 @@ choice for everyone.
 
 #+end_example
 
-* Customization
+** Font
 :PROPERTIES:
-:CUSTOM_ID: customization
+:CUSTOM_ID: font
 :END:
-Type: =M-x customize-group uniline=.
 
-Or =Menu bar ⟶ Options ⟶ Customize Emacs ⟶ Specific Group… ⟶ "uniline"=.
+Face customization is unrelated to =Uniline=. However, =Uniline= can
+assist in choosing a good font and customizing the =default= face. See
+the "Which fonts?" chapter.
 
-This invokes the standard Emacs customization system. Your settings
-will be saved in the file pointed to by the =custom-file= variable if
-set, or your =~/.emacs= file. (Along with all your other settings
-unrelated to =Uniline=).
-
-Two settings are special.
-
-*Interface type.*
-
-This switch is *obsolete*. Choosing between =Hydra= or =Transient= interface
-is done by loading one or the other sub-package. See "Installation"
-for details.
-
-*Insert key.*
-
-By default, the =<insert>= or =INS= key is the prefix for most of the
-=Uniline= actions. Some computers do not have an =INS= key, or it is bound
-to some other command (Apple?).
-
-This can be changed temporarily or permanently. The customization
-allows to set several keys at the same time.
-
-Depending on whether Emacs is run in a graphical environment or a
-text-only terminal, either the =<insert>= or the =<insertchar>= events are
-generated by the =INS= key. Therefore, by default =Uniline= defines both
-events as the =INS= key.
-
-The other settings are self-explanatory:
-- Maximum steps when drawing a contour. Defaults to =10000=.
-- Cursor type. Hollow by default.
-- Hint style. Currently only applicable to the =Hydra=
-  interface. Default to "full fledged".
-- Show welcome message. Default is "on". Turn it "off" for less
-  distraction.
+Type =<insert> f= to select a font just for the current =Uniline=
+session. Type =*= to enter the Emacs customization of the =default= face
+and retain your choice for future sessions.
 
 * How =Uniline= behaves with its environment?
 :PROPERTIES:
@@ -1655,6 +1797,9 @@ A drawing in a rectangular selection may have its style changed:
 The above functions require a region to be marked.
 
 * Mouse support
+:PROPERTIES:
+:CUSTOM_ID: mouse-support
+:END:
 The out-of-the-box mouse support of Emacs works perfectly. Except when
 the mouse clicks on a position outside the buffer. This happens when
 clicking past the end of a too short line, or past the end of the buffer.
@@ -1836,7 +1981,7 @@ launched, rather than deferred until invoked.
 
 - =make-box.el=: box around part of a buffer
 
-- =vim drawit ascii diagrams=: in Vin, in ASCII
+- =vim drawit ascii diagrams=: in Vim, in ASCII
 
 * Author, contributors
 :PROPERTIES:
