@@ -2124,9 +2124,12 @@ See `uniline--choose-fill-char'.
     ░░░░░░░
 "
   (interactive)
-  (let ((char (uniline--choose-fill-char)))
-    (uniline--record-undo-rectangle-selection)
-    (uniline--operate-on-rectangle
+  (uniline--record-undo-rectangle-selection)
+  (uniline--operate-on-rectangle
+   (set-mark end)  ;; ensure we are inside the region before
+   (goto-char beg) ;; asking for the filling character
+   (rectangle-mark-mode 1)
+   (let ((char (uniline--choose-fill-char)))
      (cl-loop
       for y from begy below endy
       do
