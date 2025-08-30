@@ -1,12 +1,15 @@
 /* Custom style for README Markdown code/pre sections */
 body {
-    zoom: 2;
+    zoom: 1;
+    font-family: DejaVu Sans, Cascadia, Julia, JetBrains, Iosevka Comfy, Aporetic Sans, Aporetic Serif;
+    font-size: 1.2em;
 }
 
 pre {
   line-height: 1.0;
   background-color: #ebefea;
   color: black;
+  font-family: DejaVu Sans Mono, Cascadia Mono, JuliaMono, JetBrains Mono, Agave, Source Code Pro, Iosevka Comfy Fixed, Iosevka Comfy Wide Fixed, Aporetic Sans Mono, Aporetic Serif Mono, FreeMono, Unifont, Hack;
 }
 
 pre code {
@@ -26,19 +29,13 @@ code {
 }
 
 p {
-    font-family: DejaVu Sans;
-    font-size: 80%;
 }
 
 h1 {
-    font-family: DejaVu Sans;
 }
 
 h2 {
-    font-family: DejaVu Sans;
 }
 
 ul {
-    font-family: DejaVu Sans;
-    font-size: 80%;
 }

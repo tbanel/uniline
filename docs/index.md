@@ -1,92 +1,3 @@
----
-title: Unicode Sketches Demo
----
-
-<link rel="stylesheet" href="/assets/css/style.css">
-
-# Unicode Sketches
-
-This page demonstrates custom line-height for code/pre sections.
-
-## Example
-
-```text
-  ╭───╮
-  │███│
-  ╰───╯
-```
-
-> The Unicode box drawing above should appear more compact if the stylesheet is active.
-
----
-
-**How to use this page:**
-- This page uses a custom CSS file at `/assets/css/style.css` to set `line-height: 1.0` for `pre` sections.
-- You can edit this file to adjust styling as desired.
-- To view this page styled, visit your GitHub Pages site (see instructions below).
-
----
-
-## How to view this page
-
-1. **Enable GitHub Pages** in your repository:
-    - Go to your repository on GitHub.
-    - Click on `Settings` → `Pages`.
-    - As the source, select the branch you want (usually `main`) and the folder (`/root` or `/docs`) where `index.md` is located.
-    - Save.
-2. **Visit your site:**  
-   Your Page will be at:  
-   `https://tbanel.github.io/uniline/`
-
-
-
-
-
-# Table of Contents
-
-1.  [Getting started in 10 seconds](#getting-started-in-10-seconds)
-2.  [New](#orgd832c58)
-3.  [Table of Contents](#table-of-contents)
-4.  [Pure UNICODE text diagrams in Emacs](#pure-unicode-text-diagrams-in-emacs)
-5.  [Minor mode](#minor-mode)
-6.  [Drawing lines](#drawing-lines)
-7.  [Brush style](#brush-style)
-8.  [The `<insert>` key](#the-insert-key)
-9.  [Arrows glyphs `▷ ▶ → ▹ ▸ ↔`](#arrows-glyphs------)
-10. [Intersection glyphs `■ ◆ ●`](#intersection-glyphs---)
-11. [Drawing rectangles](#drawing-rectangles)
-12. [Moving rectangles](#moving-rectangles)
-13. [Copying, killing, yanking rectangles](#copying-killing-yanking-rectangles)
-14. [Tracing a contour](#tracing-a-contour)
-15. [Flood-fill](#flood-fill)
-16. [Text direction](#text-direction)
-17. [Macros](#macros)
-18. [Fine tweaking](#fine-tweaking)
-19. [Dashed lines and other styles](#dashed-lines-and-other-styles)
-20. [ASCII to UNICODE](#ascii-to-unicode)
-21. [Which fonts?](#which-fonts)
-22. [Hydra or Transient?](#hydra-or-transient)
-    1.  [The Hydra interface](#the-hydra-interface)
-    2.  [The Transient interface](#the-transient-interface)
-23. [Line spacing](#line-spacing)
-24. [Customization](#customization)
-25. [How `Uniline` behaves with its environment?](#how-uniline-behaves-with-its-environment)
-    1.  [Compatibility with Picture-mode](#compatibility-with-picture-mode)
-    2.  [Compatibility with Artist-mode](#compatibility-with-artist-mode)
-    3.  [Compatibility with Whitespace-mode](#compatibility-with-whitespace-mode)
-    4.  [Compatibility with Org Mode](#compatibility-with-org-mode)
-    5.  [Org Mode and LaTex](#org-mode-and-latex)
-    6.  [What about `\t` tabs?](#what-about-t-tabs)
-    7.  [What about `^L` page separation?](#what-about-l-page-separation)
-    8.  [Emacs on the Linux console](#emacs-on-the-linux-console)
-    9.  [Emacs on a graphical terminal emulator](#emacs-on-a-graphical-terminal-emulator)
-    10. [Emacs on Windows](#emacs-on-windows)
-26. [Lisp API](#lisp-api)
-27. [Installation](#installation)
-28. [Related packages](#related-packages)
-29. [Author, contributors](#author-contributors)
-30. [License](#license)
-
 
 
 <a id="getting-started-in-10-seconds"></a>
@@ -98,35 +9,13 @@ This page demonstrates custom line-height for code/pre sections.
 -   Quit `C-c C-c`
 
 
-<a id="orgd832c58"></a>
+<a id="new"></a>
 
 # New
 
-The `uniline-hint-style` customizable setting now works on Transient
-menus (it used to be Hydra-only). To achieve that, it modifies
-`transient-show-popup`. It does so only in the Uniline buffers.
-
-Old news:
-
-Compatibility break.
-
-To choose between `Hydra` or `Transient` user interface, there was a
-pre-installation setting: `uniline-interface-type`.
-
-Now `Uniline` has 3 sub packages: `hydra`, `transient`, `core`.  Choosing the
-interface is a matter of loading one or the other sub-package.
-
-Example of a possible configuration in your `./emacs`:
-
-    (use-package uniline-hydra
-      :bind ("C-<insert>" . uniline-mode))
-
-or:
-
-    (use-package uniline-transient
-      :bind ("C-<insert>" . uniline-mode))
-
-See the "Installation" chapter for details.
+Use `C-t` to toggle one-liner vs. full fledged menus, both in Hydra &
+Transient. In Hydra, it used to be `TAB`. Transient natively offers `C-t`,
+but just in one direction; Uniline extends it to both directions.
 
 
 <a id="table-of-contents"></a>
@@ -134,29 +23,43 @@ See the "Installation" chapter for details.
 # Table of Contents
 
 -   [Getting started in 10 seconds](#getting-started-in-10-seconds)
+-   [New](#new)
 -   [Pure UNICODE text diagrams in Emacs](#pure-unicode-text-diagrams-in-emacs)
 -   [Minor mode](#minor-mode)
 -   [Drawing lines](#drawing-lines)
--   [Brush style](#brush-style)
+    -   [Draw lines by moving the cursor](#draw-lines-by-moving-the-cursor)
+    -   [Brush style](#brush-style)
+    -   [Text direction](#text-direction)
 -   [The <insert> key](#the-insert-key)
--   [Arrows glyphs ▷ ▶ → ▹ ▸ ↔](#arrows-glyphs------)
--   [Intersection glyphs ■ ◆ ●](#intersection-glyphs---)
--   [Drawing rectangles](#drawing-rectangles)
--   [Moving rectangles](#moving-rectangles)
--   [Copying, killing, yanking rectangles](#copying-killing-yanking-rectangles)
+-   [Glyphs ▷ ▶ → □ ◆ ╮─ insertion & modification](#glyphs-------insertion--modification)
+    -   [Arrows glyphs ▷ ▶ → ▹ ▸ ↔](#arrows-glyphs------)
+    -   [Intersection glyphs ■ ◆ ●](#intersection-glyphs---)
+    -   [Fine tweaking of lines](#fine-tweaking-of-lines)
+-   [Rectangular actions](#rectangular-actions)
+    -   [Drawing a rectangle](#drawing-a-rectangle)
+    -   [Filling a rectangle](#filling-a-rectangle)
+    -   [Moving a rectangle](#moving-a-rectangle)
+    -   [Copying, killing, yanking a rectangle](#copying-killing-yanking-a-rectangle)
+    -   [Dashed lines and other styles](#dashed-lines-and-other-styles)
+    -   [ASCII to UNICODE](#ascii-to-unicode)
 -   [Tracing a contour](#tracing-a-contour)
 -   [Flood-fill](#flood-fill)
--   [Text direction](#text-direction)
 -   [Macros](#macros)
--   [Fine tweaking](#fine-tweaking)
--   [Dashed lines and other styles](#dashed-lines-and-other-styles)
--   [ASCII to UNICODE](#ascii-to-unicode)
 -   [Which fonts?](#which-fonts)
 -   [Hydra or Transient?](#hydra-or-transient)
+    -   [Selecting Hydra or Transient](#selecting-hydra-or-transient)
+    -   [One-liner menus](#one-liner-menus)
     -   [The Hydra interface](#the-hydra-interface)
     -   [The Transient interface](#the-transient-interface)
--   [Line spacing](#line-spacing)
 -   [Customization](#customization)
+    -   [Interface type (obsolete)](#interface-type-obsolete)
+    -   [Insert key](#insert-key)
+    -   [Maximum steps when drawing a contour](#maximum-steps-when-drawing-a-contour)
+    -   [Cursor type](#cursor-type)
+    -   [Hint style](#hint-style)
+    -   [Welcome message visibility](#welcome-message-visibility)
+    -   [Line spacing](#line-spacing)
+    -   [Font](#font)
 -   [How Uniline behaves with its environment?](#how-uniline-behaves-with-its-environment)
     -   [Compatibility with Picture-mode](#compatibility-with-picture-mode)
     -   [Compatibility with Artist-mode](#compatibility-with-artist-mode)
@@ -169,6 +72,7 @@ See the "Installation" chapter for details.
     -   [Emacs on a graphical terminal emulator](#emacs-on-a-graphical-terminal-emulator)
     -   [Emacs on Windows](#emacs-on-windows)
 -   [Lisp API](#lisp-api)
+-   [Mouse support](#mouse-support)
 -   [Installation](#installation)
 -   [Related packages](#related-packages)
 -   [Author, contributors](#author-contributors)
@@ -183,7 +87,6 @@ Draw diagrams like those:
 
 Document a command:
 
-![img](images/document-command.png)
 
        pdfjam source.pdf 3-5,9
             ▲    ▲        ▲  ▲
@@ -194,7 +97,6 @@ Document a command:
 
 Connect boxes with arrows:
 
-![img](images/boxes-arrows.png)
 
                 ╭───────────────────────╮
       ╷123╭────▶┤ hundred and something │
@@ -213,7 +115,6 @@ Connect boxes with arrows:
 
 Explain decisions trees:
 
-![img](images/decision-tree.png)
 
     ┏━━━━━━━━━━━━┓
     ┃which color?┃
@@ -240,7 +141,6 @@ Explain decisions trees:
 
 Draw lines or blocks:
 
-![img](images/lines-blocks.png)
 
                                   ╭─╮←─╮
                              ╭╮   │ │  ╰──╴max 235
@@ -262,7 +162,6 @@ Draw lines or blocks:
 
 Outline the General Relativity equation:
 
-![img](images/general-relativity-equation.png)
 
     
          ╭─────────────────────╴G: Einstein tensor
@@ -280,9 +179,8 @@ Outline the General Relativity equation:
       │   ╰───────╰────────────╴Metric tensor
       ╰────────────────────────╴Ricci tensor
 
-Outline the Schrödinger equation:
+Outline the Schrodinger's equation:
 
-![img](images/schrodinger-equation.png)
 
     
            ╭─────────────────────╴Derivative over time
@@ -290,7 +188,7 @@ Outline the Schrödinger equation:
            │     │          │     (the square of its absolute value
           ╭▽─╮ ╭─▽──╮     ╭─▽──╮   is the probability density)
     ┏━━━━━┷━━┷━┷━━━━┷━━━━━┷━━━━┷━┓
-    ┃ i ħ d/dt |Ψ(t)> = Ĥ |Ψ(t)> ┃◁─╴Schrödinger equation
+    ┃ i ħ d/dt |Ψ(t)> = Ĥ |Ψ(t)> ┃◁─╴Schrodinger's equation
     ┗━△━△━━━━△━━━━△━━━━━△━━━━△━━━┛
       │ │    ╰────╰─────┤────╰───╴Time
       │ │               ╰────────╴Hamiltonian
@@ -299,7 +197,6 @@ Outline the Schrödinger equation:
 
 Explain the structure of a sentence in a foreign language (which one?):
 
-![img](images/foreign-language-sentence.png)
 
     
     ┏━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━┓
@@ -321,7 +218,6 @@ Explain the structure of a sentence in a foreign language (which one?):
 
 Explain Lisp lists:
 
-![img](images/lisp-lists.png)
 
       '(a b c)
          ┏━━━┳━━━┓   ┏━━━┳━━━┓   ┏━━━┳━━━┓
@@ -340,7 +236,6 @@ Explain Lisp lists:
 
 Draw sketched objects:
 
-![img](images/sketched-objects.png)
 
     
      ◀─(-)────────(+)──▶    ~╭──────╮~
@@ -351,7 +246,6 @@ Draw sketched objects:
     │                   ╰──────╯  │
     ╰─────────────────────────────╯
 
-![img](images/water-sketch.png)
 
      ╶╮       ╭╴
     ┏┳┥▒▒▒▒▒▒▒┝╸
@@ -370,8 +264,10 @@ Draw sketched objects:
     ▝▀▀▀▀▀▀▘        ▝▀▘        ▝▀▘      ▀▀▀▀▀▀▀▀▀▀▀▀▀
 
 Those diagrams are pure text. There is nothing graphic. They are
-achieved using UNICODE characters. Most often, the text file will be
-encoded as UTF-8.
+achieved using UNICODE characters.
+
+Most often, the text file will be encoded as UTF-8. This is becoming
+the de-facto standard for text files, including source code files.
 
 Creating such diagrams by hand is painfully slow. Use `Uniline` to
 draw lines while you move the cursor with keyboard arrows.
@@ -398,15 +294,21 @@ Exit it with:
 The current major mode is still active underneath `uniline-mode`.
 
 While in `uniline-mode`, overwriting is active, as well as long lines
-truncation. Also, a hollow cursor is provided. Those settings are
-reset to their previous state when exiting `uniline-mode`.
+truncation. Also, a hollow cursor is provided (customizable). Those
+settings are reset to their previous state when exiting `uniline-mode`.
 
 
 <a id="drawing-lines"></a>
 
 # Drawing lines
 
-Use keyboard arrows to draw lines.
+Use keyboard arrows to draw lines. Change the brush to any of the 6
+styles.
+
+
+<a id="draw-lines-by-moving-the-cursor"></a>
+
+## Draw lines by moving the cursor
 
 By default, drawing lines only happens over empty space or over other
 lines. If there is already text, it will not be erased. However, by
@@ -423,7 +325,7 @@ characters wide downward, type: `M-12 <down>`
 
 <a id="brush-style"></a>
 
-# Brush style
+## Brush style
 
 Set the current brush with:
 
@@ -447,7 +349,6 @@ The current brush and the current text direction (see below) are
 reflected in the mode-line (at the bottom of the Emacs screen). It
 looks like this:
 
-![img](images/mode-line.png)
 
     
      current text                  current
@@ -456,6 +357,23 @@ looks like this:
     ══════════════════╧═══════╧══════════════
     U:** buff    (... →Uniline┼ ...)
     ═════════════════════════════════════════
+
+
+<a id="text-direction"></a>
+
+## Text direction
+
+Usually, inserting text in a buffer moves the cursor to the right. (And
+sometimes to the left for some locales). Any of the 4 directions can be
+selected under `Uniline`. Just type any of:
+
+-   `<insert> C-<up>`
+-   `<insert> C-<right>`
+-   `<insert> C-<down>`
+-   `<insert> C-<left>`
+
+The current direction is reflected in the mode-line, just before the
+word `"uniline"`.
 
 
 <a id="the-insert-key"></a>
@@ -479,17 +397,36 @@ Why `<insert>`? Because:
 
 So preempting `<insert>` does not sacrifices anything.
 
+**Customization**
+
+Another key may be defined instead of `<insert>`. Type:
+
+    M-x customize-variable uniline-key-insert
+
+
+<a id="glyphs-------insertion--modification"></a>
+
+# Glyphs `▷ ▶ → □ ◆ ╮─` insertion & modification
+
+Individual character glyphs may be inserted and changed.
+
+-   Put the cursor where a glyphs should be edited or inserted.
+-   Then press `<insert>` (this key may be customized, see the
+    "Customization" chapter).
+
+Arrows, squares, circles, crosses may be handled. Also lines may be
+fine tweaked a single character at a time.
+
 
 <a id="arrows-glyphs------"></a>
 
-# Arrows glyphs `▷ ▶ → ▹ ▸ ↔`
+## Arrows glyphs `▷ ▶ → ▹ ▸ ↔`
 
-At any time, an arrow may be drawn. The arrow points in the direction
-that the line drawing follows.
+When inserting an arrow, it points in the direction that the line
+drawing follows.
 
 `Uniline` supports 6 arrows types: `▷ ▶ → ▹ ▸ ↔`
 
-![img](images/arrow-styles.png)
 
     
     □
@@ -519,10 +456,10 @@ To change the direction of the arrow, use shift-arrow, for example:
 
 <a id="intersection-glyphs---"></a>
 
-# Intersection glyphs `■ ◆ ●`
+## Intersection glyphs `■ ◆ ●`
 
-There are a few other UNICODE characters which are mono-space and
-symmetric in the 4 directions. They are great at line intersections:
+There are a few UNICODE characters which are mono-space and symmetric
+in the 4 directions. They are great at line intersections:
 
 To insert a square `□ ■ ▫ ▪ ◆ ◊` type:
 `<insert> s s s...` (`s` cycles, `S` cycles backward).
@@ -530,16 +467,15 @@ To insert a square `□ ■ ▫ ▪ ◆ ◊` type:
 To insert a circular shape `· ∙ • ● ◦ Ø ø` type:
 `<insert> o o o...` (`o` cycles, `O` cycles backward).
 
-To insert a cross shape `╳ ÷ × ± ¤` type:
+To insert a cross shape `╳ ╱ ╲ ÷ × ± ¤` type:
 `<insert> x x x...` (`x` cycles, `X` cycles backward).
 
 To insert a usual ASCII letter or symbol, just type it.
 
-As the keys `- + = #` are preempted by `Uniline` mode, to type them,
+As the keys `- + = #` are preempted by `uniline-mode`, to type them,
 prefix them with `<insert>`. Example: `<insert> -` inserts a `-` and
 `<insert> +` inserts a `+`.
 
-![img](images/insert-glyphs.png)
 
     
     <insert>
@@ -551,9 +487,9 @@ prefix them with `<insert>`. Example: `<insert> -` inserts a `-` and
        ╭┴╮   ╭───────╮  ╭─────────────────────╮
        │o├─▶─┼circles┼──┤ ·  ∙  •  ●  ◦  Ø  ø │
        ╰┬╯   ╰───────╯  ╰─────────────────────╯
-       ╭┴╮   ╭───────╮  ╭───────────────╮
-       │x├─▶─┼crosses┼──┤ ╳  ÷  ×  ±  ¤ │
-       ╰┬╯   ╰───────╯  ╰───────────────╯
+       ╭┴╮   ╭───────╮  ╭───────────────────╮
+       │x├─▶─┼crosses┼──┤ ╳  ╱ ╲ ÷  ×  ±  ¤ │
+       ╰┬╯   ╰───────╯  ╰───────────────────╯
        ╭┴╮              ╭───╮
        │+├─▶────────────┤ + │
        ╰┬╯              ╰───╯
@@ -568,282 +504,10 @@ prefix them with `<insert>`. Example: `<insert> -` inserts a `-` and
        ╰─╯              ╰───╯
 
 
-<a id="drawing-rectangles"></a>
+<a id="fine-tweaking-of-lines"></a>
 
-# Drawing rectangles
+## Fine tweaking of lines
 
-To draw a rectangle in one shot, select a rectangular region with
-`C-SPC` or `C-x SPC` and move the cursor.
-
-You may also use `S-<arrow>` (`<arrow>` being any of the 4
-directions) to extend the selection. The buffer grows as needed with
-white spaces to accommodate the selection. Selection extension mode is
-active when `shift-select-mode` is non-nil.
-
-If needed, change the brush with any of
- `- + = # <delete>`
-
-then hit
-
--   `r` to draw a rectangle inside the selection
--   `S-R` to draw a rectangle outside the selection
--   `C-r` to overwrite a rectangle inside the selection
--   `C-S-R` to overwrite a rectangle outside the selection
-
-![img](images/draw-rectangle.png)
-
-    ╭───────╮          r: inside╮╭───────╮
-    │ one   │          ▗▄▄▄▄▄▄▖╭┤│▛▀▀▀▀▀▜│
-    │  ┏━━━━┿━━━━━━┓   ▐╭────╮▌│╰┼▌     ▐│
-    ╰──╂────╯ two  ┃   ▐│    │▌│ │▙▄▄▄▄▄▟│
-       ┃   ╔═══════╋═╗ ▐│    ├▌╯ ╰─────┬─╯
-       ┗━━━╋━━━━━━━┛ ║ ▐╰────╯▌────────┴───╮
-           ║  three  ║ ▝▀▀▀▀▀▀▘  R: outside╯
-           ╚═════════╝
-    
-                           ╭─────────╮
-    my text I              │my text I│
-    want to  ╶─<insert>R─▷ │want to  │
-    box                    │box      │
-                           ╰─────────╯
-
-The usual `C-_` or `C-/` keys may be hit to undo, even with the region still
-active visually.
-
-
-<a id="moving-rectangles"></a>
-
-# Moving rectangles
-
-Select a region, then press `<insert>`. The selection becomes rectangular if it
-was not.
-
-Use arrow keys to move the rectangle around. A numeric prefix may be
-used to move the rectangle that many characters. Be sure to specify
-the numeric prefix with just digits, without the `Alt` key. Typing
-`15 <left>` moves the rectangle 15 characters to the left. `M-15 <left>`
-does not work.
-
-Press `q`, `<return>`, or `C-g` to stop moving the rectangle.
-
-The `C-_` key may also be used to undo the previous movements, even
-though the selection is still active.
-
-![img](images/move-rectangle.png)
-
-                    ▲
-                    │
-                   <up>
-              ╭─────┴──────╮
-              │this is     │
-              │my rectangle│
-    ◀─<left>──┤I want to   ├─<right>─▶
-              │move        │
-              ╰─────┬──────╯
-                  <down>
-                    │
-                    ▼
-
-
-<a id="copying-killing-yanking-rectangles"></a>
-
-# Copying, killing, yanking rectangles
-
-A rectangle can be copied or killed, then yanked somewhere else. Press:
-
--   `c` to copy
--   `k` to kill
--   `y` to yank (aka paste)
-
-This is similar to the Emacs standard rectangle handling:
-
--   `C-x r r` copy rectangle to register
--   `C-x r k` kill rectangle
--   `C-x r y` yank killed rectangle
-
-The first difference is that `Uniline` rectangles when killed and
-yanked, do not move surrounding characters.
-
-The second difference is that the white characters of the yanked
-rectangle are considered transparent. The result is that only
-non-blank parts of the yanked rectangle are over-printed.
-
-`Uniline` and Emacs standard rectangle share the same storage for copied
-and killed rectangles, `killed-rectangle`. So, a rectangle can be killed
-one way, and yanked another way.
-
-
-<a id="tracing-a-contour"></a>
-
-# Tracing a contour
-
-![img](images/contour-tracing.png)
-
-      ╭──────────────╮
-    ╭─╯A.written.text╰────────╮
-    │outlined by the.`contour'│
-    ╰─╮function.gets╶┬────────╯
-      ╰╮a.surrounding╰───────╮
-       ╰─╮line.in.the.current│
-         ╰─╮brush.style╭─────╯
-           ╰───────────╯
-
-Choose or change the brush style with any of `-,+,=_,#,<delete>`. Put
-the cursor anywhere on the shape or outside but touching it. Then
-type:
-
-`<insert> c`
-
-A contour line is traced (or erased if brush style is `<delete>`)
-around the contiguous shape close to the cursor.
-
-When hitting capital letter: `<insert> C` the contour is
-overwritten. This means that if there was already a different style of
-line on the contour path, it is overwritten.
-
-The shape is distinguished because it floats in a blank characters
-ocean. For the shake of the contour function, blank characters are
-those containing lines as drawn by `Uniline` (including true blank
-characters). Locations outside the buffer are also considered blank.
-
-The algorithm has an upper limit of 10000 steps. This avoids an
-infinite loop in which the algorithm may end up in some rare
-cases. One of those cases is when the contour crosses a new-page
-character, displayed by Emacs as `^L`. 10000 steps require a fraction of
-a second to run. For shapes really huge, you may launch the contour
-command once again, at the point where the previous run ended.
-
-
-<a id="flood-fill"></a>
-
-# Flood-fill
-
-![img](images/flood-fill.png)
-
-    
-    this.text.surrounds      this.text.surrounds
-    .                 /      .▒▒▒▒▒▒▒▒▒▒▒▒▒▒▒▒▒/
-    .                //╶───▷╴.▒▒▒▒▒▒▒▒▒▒▒▒▒▒▒▒//
-    ...            ////      ...▒▒▒▒▒▒▒▒▒▒▒▒////
-      ...a.hole/////           ...a.hole/////
-
-A hollow shape is a contiguous region of identical characters (not
-necessarily blank), surrounded by a boundary of different
-characters. The end of the buffer in any direction is also considered
-a boundary.
-
-Put the cursor anywhere in the hole. Then type:
-
-`<insert> i`
-
-Answer by giving a character to fill the hole.
-
-If instead of a character, `SPC` or `DEL` is typed, then a shade of grey
-character is picked. `SPC` selects a darker grey than the one the point
-is on, while `DEL` selects a lighter. There are 5 shades of grey in the
-UNICODE standard: `" ░▒▓█"`.  Those grey characters are well supported
-by the suggested fonts.
-
-`C-y` is also an option. The first character in the top of the kill
-ring will be chosen as the filling character. The kill ring is filled
-by functions like `C-k` or `M-w`.
-
-Typing `<return>` or `C-g` aborts the filling operation.
-
-A rectangular shape may also be filled.
-
--   Mark a region
--   `<insert> i`
--   answer which character should be used to fill.
-
-There is no limit on the area to fill. Therefore, the filling
-operation may flood the entire buffer (but no more).
-
-
-<a id="text-direction"></a>
-
-# Text direction
-
-Usually, inserting text in a buffer moves the cursor to the right. (And
-sometimes to the left for some locales). Any of the 4 directions can be
-selected under `Uniline`. Just type any of:
-
--   `<insert> C-<up>`
--   `<insert> C-<right>`
--   `<insert> C-<down>`
--   `<insert> C-<left>`
-
-The current direction is reflected in the mode-line, just before the
-word `"uniline"`.
-
-
-<a id="macros"></a>
-
-# Macros
-
-`Uniline` adds directional macros to the Emacs standard macros.
-
-Record a macro as usual with `C-x (` … `C-x )`.
-
-Then call it with the usual `C-x e`. But then, instead of executing
-the macro, a menu is offered to execute it in any of the 4 directions.
-
-When a macro is executed in a direction other than the one it was
-recorded, it is twisted in that direction. This means that recorded
-hits on the 4 keyboard arrows are rotated. It happens also for shift
-and control variations of those keys. Direction of text insertion is
-also rotated.
-
-There is still the classical `e` option to call the last recorded
-macro. So instead of the usual `C-x e`, type `C-x e e`. And of course,
-the usual repetition typing repeatedly `e` is available.
-
-Why are directional macros useful? To create fancy lines. For
-instance, if we want a doted line instead of the continuous one, we
-record a macro for one step:
-
-    C-x (             ;; begin recording
-    INS o             ;; insert a small dot
-    <right> <right>   ;; draw a line over 2 characters
-    C-x )             ;; stop recording
-
-Then we call this macro repeatedly in any of the 4 directions:
-
-![img](images/macro-doted-line.png)
-
-    
-    ·─·─·─·─·  ╷     ·──·
-            │  │     │  │
-            ·  ·     ·  ·
-            │  │     │  │
-            ·  ·─·─·─·  ·
-            │           │
-            ·─·─·─·─·─·─·
-
-We can draw complex shapes by just drawing one step. Hereafter, we
-call a macro in 4 directions, closing a square:
-
-![img](images/macro-fancy-squares.png)
-
-    
-      ╭╮╭╮╭╮╭╮╭╮╭╮     △ △ △ △ △ △       ╭─╮ ╭─╮ ╭─╮ ╭─╮     ╭─╮ ╭─╮ ╭─╮ ╭─╮
-    ╭─╯╰╯╰╯╰╯╰╯╰╯│    ╶╯╶╯╶╯╶╯╶╯╶╯╷   ╭──╯∙╰─╯∙╰─╯∙╰─╯∙│    ▷┤□├▷┤□├▷┤□├▷┤□├▽
-    ╰╮           ╰╮  ◁╮           ╰▷  │∙               │   ╭┴┼─╯ ╰─╯ ╰─╯ ╰─┼┴╮
-    ╭╯           ╭╯   ╵           ╷   ╰╮               ╰╮  │□│             │□│
-    ╰╮           ╰╮  ◁╮           ╰▷   │               ∙│  ╰┬╯             ╰┬╯
-    ╭╯           ╭╯   ╵           ╷   ╭╯               ╭╯   △               ▽
-    ╰╮           ╰╮  ◁╮           ╰▷  │∙               │   ╭┴╮             ╭┴╮
-    ╭╯           ╭╯   ╵           ╷   ╰╮               ╰╮  │□│             │□│
-    ╰╮           ╰╮  ◁╮           ╰▷   │               ∙│  ╰┬┼─╮ ╭─╮ ╭─╮ ╭─┼┬╯
-     │╭╮╭╮╭╮╭╮╭╮╭─╯   ╵╭╴╭╴╭╴╭╴╭╴╭╴    │∙╭─╮∙╭─╮∙╭─╮∙╭──╯   △┤□├◁┤□├◁┤□├◁┤□├◁
-     ╰╯╰╯╰╯╰╯╰╯╰╯      ▽ ▽ ▽ ▽ ▽ ▽     ╰─╯ ╰─╯ ╰─╯ ╰─╯       ╰─╯ ╰─╯ ╰─╯ ╰─╯
-
-
-<a id="fine-tweaking"></a>
-
-# Fine tweaking
-
-![img](images/fine-tweaking.png)
 
     
      convert this  ═══▶   into that
@@ -880,11 +544,156 @@ In the above example, the effect was achieved with:
 `INS S-<up> S-<down> S-<left>`
 
 
+<a id="rectangular-actions"></a>
+
+# Rectangular actions
+
+-   Drawing,
+-   filling,
+-   moving,
+-   copying & yanking,
+-   change line & glyph styles,
+
+those actions may be performed on a rectangular selection.
+
+Select a rectangular region with `C-SPC` or `C-x SPC` and move the cursor.
+
+You may also use `S-<arrow>` (`<arrow>` being any of the 4
+directions) to extend the selection. The buffer grows as needed with
+white spaces to accommodate the selection. Selection extension mode is
+active when `shift-select-mode` is non-nil.
+
+Or you may use the mouse to highlight the desired region.
+
+All those region-highlighting are standard in Emacs, and unrelated to
+Uniline.
+
+Once you have a region highlighted, press `<insert>` (this key can be
+customized, see the "Customization" chapter). The selection becomes
+rectangular if it was not. You are offered a menu of possible actions.
+
+
+<a id="drawing-a-rectangle"></a>
+
+## Drawing a rectangle
+
+To draw a rectangle in one shot, select a region, press `<insert>`, then
+hit:
+
+-   `r` to draw a rectangle inside the selection
+-   `S-R` to draw a rectangle outside the selection
+-   `C-r` to overwrite a rectangle inside the selection
+-   `C-S-R` to overwrite a rectangle outside the selection
+
+If needed, change the brush with any of `- + = # <delete>`
+
+
+    ╭───────╮          r: inside╮╭───────╮
+    │ one   │          ▗▄▄▄▄▄▄▖╭┤│▛▀▀▀▀▀▜│
+    │  ┏━━━━┿━━━━━━┓   ▐╭────╮▌│╰┼▌     ▐│
+    ╰──╂────╯ two  ┃   ▐│    │▌│ │▙▄▄▄▄▄▟│
+       ┃   ╔═══════╋═╗ ▐│    ├▌╯ ╰─────┬─╯
+       ┗━━━╋━━━━━━━┛ ║ ▐╰────╯▌────────┴───╮
+           ║  three  ║ ▝▀▀▀▀▀▀▘  R: outside╯
+           ╚═════════╝
+    
+                           ╭─────────╮
+    my text I              │my text I│
+    want to  ╶─<insert>R─▷ │want to  │
+    box                    │box      │
+                           ╰─────────╯
+
+The usual `C-_` or `C-/` keys may be hit to undo, even with the region
+still active visually.
+
+
+<a id="filling-a-rectangle"></a>
+
+## Filling a rectangle
+
+While the rectangular mode is active, press `i` to fill the
+rectangle. You will be asked to choose a character. You have those
+options:
+
+-   for a regular character like `t`, just type it.
+-   `SPC` or `DEL` for a shade of grey `" ░▒▓█"` among the 5 available in
+    UNICODE. `SPC` to make it darker and darker. `DEL` to make the rectangle
+    lighter and lighter.
+-   `C-y` to chose the first character in the top of the kill ring.
+
+The above selection is the same as for the flood-fill action (see the
+"Flood-fill" chapter).
+
+
+<a id="moving-a-rectangle"></a>
+
+## Moving a rectangle
+
+Select a region, then press `<insert>`.
+
+Use arrow keys to move the rectangle around. A numeric prefix may be
+used to move the rectangle that many characters.
+
+-   Under `Hydra`, be sure to specify the numeric prefix with just digits,
+    without the `Alt` key. Typing `15 <left>` moves the rectangle 15
+    characters to the left. `M-15 <left>` does not work.
+-   Under `Transient`, use the `Alt` key, like anywhere else in Emacs. Type
+    `M-15 <left>` to move the selected rectangle 15 characters to the left.
+
+Press `q`, `<return>`, or `C-g` to stop moving the rectangle.
+
+The `C-_` key may also be used to undo the previous movements, even
+though the selection is still active.
+
+
+                    ▲
+                    │
+                   <up>
+              ╭─────┴──────╮
+              │this is     │
+              │my rectangle│
+    ◀─<left>──┤I want to   ├─<right>─▶
+              │move        │
+              ╰─────┬──────╯
+                  <down>
+                    │
+                    ▼
+
+
+<a id="copying-killing-yanking-a-rectangle"></a>
+
+## Copying, killing, yanking a rectangle
+
+A rectangle can be copied or killed, then yanked somewhere else.
+
+Select a region, press `<insert>`, then:
+
+-   `c` to copy
+-   `k` to kill
+-   `y` to yank (aka paste)
+
+This is similar to the Emacs standard rectangle handling:
+
+-   `C-x r r` copy rectangle to register
+-   `C-x r k` kill rectangle
+-   `C-x r y` yank killed rectangle
+
+The first difference is that `Uniline` rectangles, when killed and
+yanked, do not move surrounding characters.
+
+The second difference is that the white characters of the yanked
+rectangle are considered transparent. As a result, only non-blank
+parts of the yanked rectangle are over-printed.
+
+`Uniline` and Emacs standard rectangle share the same storage for copied
+and killed rectangles, namely the `killed-rectangle` Lisp variable. So,
+a rectangle can be killed one way, and yanked another way.
+
+
 <a id="dashed-lines-and-other-styles"></a>
 
-# Dashed lines and other styles
+## Dashed lines and other styles
 
-![img](images/four-styles.png)
 
     
     ╭────▷───╮   ┏━━━━▶━━━┓   ╔════▶═══╗
@@ -909,7 +718,7 @@ A base drawing can be converted to dashed lines. Moreover, lines can
 be made either thin or thick.
 
 -   Select the rectangular area you want to operate on (with mouse drag
-    or `S-<left>`, `S-<down>` and so on).
+    or `S-<left>`, `S-<down>` and so on as described earlier).
 -   Type `INS`, then `s` (as "style").
 
 You will be offered a choice of styles:
@@ -918,21 +727,20 @@ You will be offered a choice of styles:
     horizontal ones will get 2 dashes per character.
 -   `4`: vertical and horizontal lines will get 4 dashes per character.
 -   `h`: thin lines corners, which are usually rounded, become hard angles.
--   `+`: thin lines corners and intersections become thick, empty glyphs
-    get filled.
--   `-`: thick lines corners and intersections become thin, filled glyphs
-    are emptied.
+-   `+`: thin lines and intersections become thick, empty glyphs get
+    filled.
+-   `-`: thick lines and intersections become thin, filled glyphs are
+    emptied.
 -   `=`: thick and thin lines become double lines.
--   `0`: come back to standard base-line `Uniline` style: plain not-dashed
+-   `0`: come back to standard base-line `Uniline` style: plain, not-dashed
     lines, thin corner rounded, ASCII art is converted to UNICODE.
 -   `a`: apply the `aa2u-rectangle` function from the unrelated
     `ascii-art-to-unicode` package, to convert ASCII art to UNICODE (this
-    only works if `ascii-art-to-unicode` is already installed)
+    only works if `ascii-art-to-unicode` is already installed).
 
 Converting parts of a drawing from one style to another can produce
 nice looking sketches.
 
-![img](images/same-sketch-several-styles.png)
 
     
     ╭───╮   ╭───╮   ╭───╮
@@ -956,7 +764,7 @@ nice looking sketches.
 
 <a id="ascii-to-unicode"></a>
 
-# ASCII to UNICODE
+## ASCII to UNICODE
 
 The standard base-line `Uniline` (`INS s 0`) or `aa2u-rectangle` (`INS s a`)
 conversions may be used to convert ASCII art to UNICODE. The original
@@ -969,7 +777,6 @@ dependency on this package, by lazy evaluating any call to
 `aa2u-rectangle`.
 See <https://elpa.gnu.org/packages/ascii-art-to-unicode.html>
 
-![img](images/ascii-2-unicode.png)
 
     
     +-------------+    +--+
@@ -1007,7 +814,6 @@ happens also for `<-` for instance.
 Here is a fairly convoluted ASCII-art example, along with its
 conversion by `INS s 0`:
 
-![img](images/ascii-2-unicode-b.png)
 
     
          ╭─↔--<-◁-◀--━+           +--->------==+
@@ -1025,6 +831,155 @@ conversion by `INS s 0`:
     │    ╰──┬──────┬──╯   │   │   ╰────┬────┬──╯ ║  ▷▷▶▷
     ╰▷──╮   │      │      ╰───╯        │    │    ║
         ▽   ╘══◁═══╛   a=b 1=2 a-to-b  ╰────╯ ◁══╝  ▷─▷
+
+
+<a id="tracing-a-contour"></a>
+
+# Tracing a contour
+
+
+      ╭──────────────╮
+    ╭─╯A.written.text╰────────╮
+    │outlined by the.`contour'│
+    ╰─╮function.gets╶┬────────╯
+      ╰╮a.surrounding╰───────╮
+       ╰─╮line.in.the.current│
+         ╰─╮brush.style╭─────╯
+           ╰───────────╯
+
+Choose or change the brush style with any of `-,+,=_,#,<delete>`. Put
+the cursor anywhere on the shape or outside but touching it. Then
+type:
+
+`<insert> c`
+
+A contour line is traced (or erased if brush style is `<delete>`)
+around the contiguous shape close to the cursor.
+
+When hitting capital letter: `<insert> S-C` the contour is
+overwritten. This means that if there was already a different style of
+line on the contour path, it is overwritten.
+
+The shape is distinguished because it floats in a blank characters
+ocean. For the shake of the contour function, blank characters are
+those containing lines as drawn by `Uniline` (including true blank
+characters). Locations outside the buffer are also considered blank.
+
+The algorithm has an upper limit of `10000` steps. This avoids an
+infinite loop in which the algorithm may end up in some rare
+cases. One of those cases is when the contour crosses a new-page
+character, displayed by Emacs as `^L`. `10000` steps require a fraction of
+a second to run. For shapes really huge, you may launch the contour
+command once again, at the point where the previous run ended.
+
+This `10000` steps limit is customizable. Type:
+
+    M-x customize-variable uniline-contour-max-steps
+
+
+<a id="flood-fill"></a>
+
+# Flood-fill
+
+
+    
+    this.text.surrounds      this.text.surrounds
+    .                 /      .▒▒▒▒▒▒▒▒▒▒▒▒▒▒▒▒▒/
+    .                //╶───▷╴.▒▒▒▒▒▒▒▒▒▒▒▒▒▒▒▒//
+    ...            ////      ...▒▒▒▒▒▒▒▒▒▒▒▒////
+      ...a.hole/////           ...a.hole/////
+
+A hollow shape is a contiguous region of identical characters (not
+necessarily blank), surrounded by a boundary of different
+characters. The end of the buffer in any direction is also considered
+a boundary.
+
+Put the cursor anywhere in the hole. Then type:
+
+`<insert> i`
+
+Answer by giving a character to fill the hole.
+
+If instead of a character, `SPC` or `DEL` is typed, then a shade of grey
+character is picked. `SPC` selects a darker grey than the one the point
+is on, while `DEL` selects a lighter. There are 5 shades of grey in the
+UNICODE standard: `" ░▒▓█"`.  Those grey characters are well supported
+by the suggested fonts.
+
+`C-y` is also an option. The first character in the top of the kill
+ring will be chosen as the filling character. (The kill ring is filled
+by functions like `C-k` or `M-w`, unrelated to `Uniline`).
+
+Typing `<return>` or `C-g` aborts the filling operation.
+
+A rectangular shape may also be filled.
+
+-   Mark a region
+-   `<insert> i`
+-   answer which character should be used to fill.
+
+There is no limit on the area to fill. Therefore, the filling
+operation may flood the entire buffer (but no more).
+
+
+<a id="macros"></a>
+
+# Macros
+
+`Uniline` adds directional macros to the Emacs standard macros.
+
+Record a macro as usual with `C-x (` … `C-x )`.
+
+Then call it with the usual `C-x e`. But then, instead of executing
+the macro, a menu is offered to execute it in any of the 4 directions.
+
+When a macro is executed in a direction other than the one it was
+recorded, it is twisted in that direction. This means that recorded
+hits on the 4 keyboard arrows are rotated. It happens also for shift
+and control variations of those keys. Direction of text insertion is
+also rotated.
+
+There is still the classical `e` option to call the last recorded
+macro. So instead of the usual `C-x e`, type `C-x e e`. And of course,
+the usual repetition typing repeatedly `e` is available.
+
+Why are directional macros useful? To create fancy lines. For
+instance, if we want a doted-line instead of the continuous one, we
+record a macro for one step:
+
+    C-x (             ;; begin recording
+    INS o             ;; insert a small dot
+    <right> <right>   ;; draw a line over 2 characters
+    C-x )             ;; stop recording
+
+Then we call this macro repeatedly in any of the 4 directions:
+
+
+    
+    ·─·─·─·─·  ╷     ·──·
+            │  │     │  │
+            ·  ·     ·  ·
+            │  │     │  │
+            ·  ·─·─·─·  ·
+            │           │
+            ·─·─·─·─·─·─·
+
+We can draw complex shapes by just drawing one step. Hereafter, we
+call a macro in 4 directions, closing a square:
+
+
+    
+      ╭╮╭╮╭╮╭╮╭╮╭╮     △ △ △ △ △ △       ╭─╮ ╭─╮ ╭─╮ ╭─╮     ╭─╮ ╭─╮ ╭─╮ ╭─╮
+    ╭─╯╰╯╰╯╰╯╰╯╰╯│    ╶╯╶╯╶╯╶╯╶╯╶╯╷   ╭──╯∙╰─╯∙╰─╯∙╰─╯∙│    ▷┤□├▷┤□├▷┤□├▷┤□├▽
+    ╰╮           ╰╮  ◁╮           ╰▷  │∙               │   ╭┴┼─╯ ╰─╯ ╰─╯ ╰─┼┴╮
+    ╭╯           ╭╯   ╵           ╷   ╰╮               ╰╮  │□│             │□│
+    ╰╮           ╰╮  ◁╮           ╰▷   │               ∙│  ╰┬╯             ╰┬╯
+    ╭╯           ╭╯   ╵           ╷   ╭╯               ╭╯   △               ▽
+    ╰╮           ╰╮  ◁╮           ╰▷  │∙               │   ╭┴╮             ╭┴╮
+    ╭╯           ╭╯   ╵           ╷   ╰╮               ╰╮  │□│             │□│
+    ╰╮           ╰╮  ◁╮           ╰▷   │               ∙│  ╰┬┼─╮ ╭─╮ ╭─╮ ╭─┼┬╯
+     │╭╮╭╮╭╮╭╮╭╮╭─╯   ╵╭╴╭╴╭╴╭╴╭╴╭╴    │∙╭─╮∙╭─╮∙╭─╮∙╭──╯   △┤□├◁┤□├◁┤□├◁┤□├◁
+     ╰╯╰╯╰╯╰╯╰╯╰╯      ▽ ▽ ▽ ▽ ▽ ▽     ╰─╯ ╰─╯ ╰─╯ ╰─╯       ╰─╯ ╰─╯ ╰─╯ ╰─╯
 
 
 <a id="which-fonts"></a>
@@ -1072,7 +1027,9 @@ or
 Beware that Emacs tries to compensate for missing UNICODE support by
 the current font. Emacs substitutes one font for another, character
 per character. The user may not notice until the drawings done under
-Emacs are displayed on another text editor or on the Web.
+Emacs are displayed on another text editor or on the Web. Of course,
+using the suggested fonts and the UNICODEs drawn by `Uniline` keeps you
+away from those glitches.
 
 To know which font Emacs has chosen for a given character, type:
 
@@ -1086,8 +1043,8 @@ The font should already be available.
 
 # Hydra or Transient?
 
-Casual usage of `Uniline` should be easy: just move the point, and lines
-are traced.
+The basic usage of `Uniline` should be easy: just move the point, and lines
+are traced. Change brush to draw thicker lines.
 
 More complex actions are summoned by the `<insert>` key, with or without
 selection. This is a single key to remember. Then a textual menu is
@@ -1100,6 +1057,11 @@ may prefer one or the other.
 
 `Uniline` was developed from day one with `Hydra`. `Transient` is a late
 addition.
+
+
+<a id="selecting-hydra-or-transient"></a>
+
+## Selecting Hydra or Transient
 
 Two files are compiled when installing `Uniline`
 
@@ -1122,34 +1084,24 @@ Note: there used to be a customizable setting to switch between the
 two interfaces. This had many issues. One of them is that the
 native-compiler is blind to all user-customized settings.
 
-Therefore, now `Uniline` ships with 3 Lisp source files (hydra,
-transient, core). Loading `uniline-hydra.el` or `uniline-transient.el`
-automatically loads `uniline-core.el`.
+There is a third file, `uniline-code.elc`. Loading `uniline-hydra.elc` or
+`uniline-transient.elc` automatically loads `uniline-core.elc`.
 
 
-<a id="the-hydra-interface"></a>
+<a id="one-liner-menus"></a>
 
-## The Hydra interface
+## One-liner menus
 
-    (use-package uniline-hydra
-      :bind ("C-<insert>" . uniline-mode))
-
-Beware that the `Melpa` package no longer declares `Hydra` as a dependency
-as it used to. Therefore, the `Hydra` package must be installed
-separately prior to installing `Uniline`. This is for avoiding the
-automatic and useless installation of `Hydra` when `Transient` is
-chosen. (There is no way to make the dependencies conditional).
-
-The multi-lines Hydra's menus are quite useful for casual users. For
-seasoned users, those huge textual menus may distract them from
-their workflow.
+The multi-lines menus in Hydra and Transient are quite useful for
+casual users. For seasoned users, those huge textual menus may
+distract them from their workflow.
 
 It is now possible to switch to less distracting textual menus. They
 are displayed in the echo-area on a single line.
 
 To do so, type:
 
--   `TAB` within a sub-mode (glyph insertion mode, rectangle handling,
+-   `C-t` within a sub-mode (glyph insertion mode, rectangle handling,
     etc.)
 -   `C-h TAB` at the top-level.
 
@@ -1166,52 +1118,53 @@ The current size is controlled by the `uniline-hint-style` variable:
 The variable is "buffer-local", which means that it can take distinct
 values on distinct buffers.
 
-Its default value can be customized and save for future sessions:
+Its default value can be customized and saved for future sessions:
 
 `M-x customize-variable uniline-hint-style`
 
-It can be changed later, on a buffer per buffer basis, with the `TAB`
-key.
+After customization it can be changed later, on a buffer per buffer
+basis, with the `C-t` or `C-h TAB` keys.
+
+Transient natively offers a similar setting:
+`transient-show-popup`. (There is no such variable in Hydra). It can be
+customized with `t`, `nil`, `0` (zero), or a number. This is similar but not
+exactly the same as the Hydra behavior and the `uniline-hint-style`.
+the Transient setting stays in effect until the `C-t` or `C-h TAB` keys
+are not used, . As soon as one of those keys is invoked,
+`transient-show-popup` is toggled (which does not happens in Transient
+alone). The change is kept in effect throughout the Uniline session,
+but no longer.
+
+
+<a id="the-hydra-interface"></a>
+
+## The Hydra interface
+
+Put that in your `~/.emacs` file:
+
+    (use-package uniline-hydra
+      :bind ("C-<insert>" . uniline-mode))
+
+It has been asked by `Transient`-only users to avoid installing the
+`Hydra` package. Currently, it is not possible to make dependencies
+conditional in `Melpa`. And removing the `Hydra` dependency would hurt
+`Hydra` users. Therefore, for the time being, the `Hydra` package is still
+installed when installing `Uniline` through `Melpa`.
 
 
 <a id="the-transient-interface"></a>
 
 ## The Transient interface
 
+Put that in your `~/.emacs` file:
+
     (use-package uniline-transient
       :bind ("C-<insert>" . uniline-mode))
 
 `Transient` interface was added recently to `Uniline`. This leaded to the
 splitting of the single `uniline.el` file into 4 source
-files. Hopefully, the added complexity remains hidden by the `Elpa`-`Melpa`
-packaging system.
-
-
-<a id="line-spacing"></a>
-
-# Line spacing
-
-The `line-spacing` setting in Emacs can change the display of a sketch.
-
-The best looking effect is given by:
-
-    (setq line-spacing nil)
-
-You may want to change your current setting. `Uniline` may handle this
-variable some day. Right now, `line-spacing` is left as a matter of
-choice for everyone.
-
-![img](images/line-spacing.png)
-
-    
-    ╭────┬────────┬────╮   ╺┯━━━━┯┯━━┯┯━┯┯━━━━━━━━┯┯━━━━━━━┯┯━━━━━━┯╸
-    │▒▒▒▒╰────────╯▒▒▒▒│    │    │╰is╯╰a╯│        ││       │╰around╯
-    │▒▒▒▒▒▒▒▒▒▒▒▒▒▒▒▒▒▒│    ╰this╯       ╰sentence╯╰hanging╯
-    │▒▒▒╭─╮▒▒▒▒▒▒╭─╮▒▒▒│            △
-    │▒▒▒╰─╯▒▒▒▒▒▒╰─╯▒▒▒│            │                  △
-    │▒▒▒▒▒▒▒▒▒▒▒▒▒▒▒▒▒▒│            ╰─────────┬────────╯
-    ╰──────────────────╯                    verbs
-                 (setq line-spacing nil)
+files. Hopefully, the added complexity remains hidden by the `Elpa` -
+`Melpa` packaging system.
 
 
 <a id="customization"></a>
@@ -1227,29 +1180,121 @@ will be saved in the file pointed to by the `custom-file` variable if
 set, or your `~/.emacs` file. (Along with all your other settings
 unrelated to `Uniline`).
 
-Two settings are special.
+Two settings are special: interface type (obsolete) & the insert
+key. The other settings are self-explanatory
 
-**Interface type.**
 
-This switch is obsolete. Choosing between `Hydra` or `Transient` interface
+<a id="interface-type-obsolete"></a>
+
+## Interface type (obsolete)
+
+This switch is **obsolete**. Choosing between `Hydra` or `Transient` interface
 is done by loading one or the other sub-package. See "Installation"
 for details.
 
-**Insert key.**
 
-By default, the `<insert>` or `INS` key is the prefix for most
-of the `Uniline` actions. Some computers do not have an `INS` key
-(Apple?), or it is bound to some other command.
+<a id="insert-key"></a>
+
+## Insert key
+
+By default, the `<insert>` or `INS` key is the prefix for most of the
+`Uniline` actions. Some computers do not have an `INS` key, or it is bound
+to some other command (Apple?).
 
 This can be changed temporarily or permanently. The customization
-allows to set several keys.
+allows to set several keys at the same time.
 
 Depending on whether Emacs is run in a graphical environment or a
 text-only terminal, either the `<insert>` or the `<insertchar>` events are
 generated by the `INS` key. Therefore, by default `Uniline` defines both
 events as the `INS` key.
 
-The other settings are self-explanatory.
+Variable `uniline-key-insert`.
+
+
+<a id="maximum-steps-when-drawing-a-contour"></a>
+
+## Maximum steps when drawing a contour
+
+Defaults to `10000`.
+To avoid an infinite loop in some rare cases.
+
+Variable `uniline-contour-max-steps`.
+
+
+<a id="cursor-type"></a>
+
+## Cursor type
+
+Hollow by default, so that what is under the cursor remains visible.
+
+There is the option to leave the cursor as it is.
+
+Variable `uniline-cursor-type.`
+
+
+<a id="hint-style"></a>
+
+## Hint style
+
+Currently only applicable to the `Hydra`.
+It defaults to "full fledged menus".
+
+Variable `uniline-hint-style`.
+
+`Transient` offers a similar setting: `transient-show-popup`.
+
+
+<a id="welcome-message-visibility"></a>
+
+## Welcome message visibility
+
+Default is "on". Turn it "off" for less distraction.
+
+Even when turned of, the welcome message can still be displayed by
+pressing `C-h TAB`.
+
+Variable `uniline-show-welcome-message`.
+
+
+<a id="line-spacing"></a>
+
+## Line spacing
+
+The `line-spacing` setting in Emacs can change the display of a
+sketch. (This setting is unrelated to `Uniline`).
+
+The best looking effect is given by:
+
+    (setq line-spacing nil)
+
+You may want to change your current setting. `Uniline` may handle this
+variable some day. Right now, `line-spacing` is left as a matter of
+choice for everyone.
+
+
+    
+    ╭────┬────────┬────╮   ╺┯━━━━┯┯━━┯┯━┯┯━━━━━━━━┯┯━━━━━━━┯┯━━━━━━┯╸
+    │▒▒▒▒╰────────╯▒▒▒▒│    │    │╰is╯╰a╯│        ││       │╰around╯
+    │▒▒▒▒▒▒▒▒▒▒▒▒▒▒▒▒▒▒│    ╰this╯       ╰sentence╯╰hanging╯
+    │▒▒▒╭─╮▒▒▒▒▒▒╭─╮▒▒▒│            △
+    │▒▒▒╰─╯▒▒▒▒▒▒╰─╯▒▒▒│            │                  △
+    │▒▒▒▒▒▒▒▒▒▒▒▒▒▒▒▒▒▒│            ╰─────────┬────────╯
+    ╰──────────────────╯                    verbs
+                 (setq line-spacing nil)
+
+
+<a id="font"></a>
+
+## Font
+
+Face customization is unrelated to `Uniline`. However, `Uniline` can
+assist in choosing a good font and customizing the `default` face. See
+the "Which fonts?" chapter.
+
+Type `<insert> f` to select a font just for the current `Uniline`
+session. Type `*` to enter the Emacs customization of the `default` face
+and retain your choice for future sessions.
 
 
 <a id="how-uniline-behaves-with-its-environment"></a>
@@ -1326,6 +1371,22 @@ difference is that the `Uniline`'s one handles the infinite-ness of the
 buffer.
 
 Other than that, `Uniline` is compatible with `Org Mode`
+
+Thanks to jdtsmith (GitHub) for sharing a funny fact he discovered. If
+a source block is created with the `Uniline` language (`Uniline` is
+**not** a language like `C++,` `Python`, or `Bash`), then it can be
+edited (`M-x org-edit-special`) with `uniline-mode` automatically
+activated.
+
+    #+begin_src uniline
+    ╭───╮   ╭───╮
+    │ ╷ ╰───╯ ╷ │
+    │ ╰─    ╶─╯ │
+    ╰╮ ●     ● ╭╯
+     │      ╷  │
+     ╰╮ ────╯ ╭╯
+      ╰───────╯
+    #+end_src
 
 
 <a id="org-mode-and-latex"></a>
@@ -1407,7 +1468,7 @@ One way to see what is going on, is to activate the `whitespace-mode`.
 ## What about `^L` page separation?
 
 `Uniline` does not work well with `^L` (page separation)
-character. Nore with similar characters, like `^T`. When trying to
+character. Nor with similar characters, like `^T`. When trying to
 draw a line over such a character, the cursor may get stuck. This is
 because those characters occupy twice the width of a normal character.
 
@@ -1438,7 +1499,7 @@ found here: <https://www.emacswiki.org/emacs/MissingKeys>
 ## Emacs on a graphical terminal emulator
 
 This is the Emacs launched from a terminal typing `emacs -nw`. In this
-environment, `<insert>` does not exists. It is replaced by
+environment, `<insert>` does not exist. It is replaced by
 `<insertchar>`. This has already been taken into account by `Uniline`
 by duplicating the key-bindings for the two flavors of this key.
 
@@ -1475,7 +1536,7 @@ Of course, other fonts may be installed. It is quite easy.
 Could `Uniline` be programmed (versus used interactively)?
 Yes!
 
-The API is usable programatically:
+The API is usable programmatically:
 
 Move cursor while drawing lines by calling any of the 4 directions
 functions:
@@ -1490,12 +1551,12 @@ overwrite the buffer
 
 Set the current brush by calling any of the following:
 
--   `uniline--set-brush-nil   ;; write nothing`
--   `uniline--set-brush-0     ;; eraser`
--   `uniline--set-brush-1     ;; single thin line╶─╴`
--   `uniline--set-brush-2     ;; single thick line╺━╸`
--   `uniline--set-brush-3     ;; double line╺═╸`
--   `uniline--set-brush-block ;; blocks ▙▄▟▀`
+-   `uniline--set-brush-nil`   ;; write nothing
+-   `uniline--set-brush-0`     ;; eraser
+-   `uniline--set-brush-1`     ;; single thin line╶─╴
+-   `uniline--set-brush-2`     ;; single thick line╺━╸
+-   `uniline--set-brush-3`     ;; double line╺═╸
+-   `uniline--set-brush-block` ;; blocks ▙▄▟▀
 
 Those functions are equivalent to:
 
@@ -1529,7 +1590,6 @@ we can code it as follows:
 Calling `M-x uniline-draw-plus` will result in this nice little
 plus-shape:
 
-![img](images/plus-shape.png)
 
      ╭╮
     ╭╯╰╮
@@ -1556,19 +1616,22 @@ parameter:
       (uniline-write-ri→ size)
       (uniline-write-up↑ size))
 
-The `(interactive "Nsize? ")` form prompt user for the size of the shape
-if not given as a parameter.
+The `(interactive "Nsize? ")` form prompts user for the size of the
+shape if not given as a parameter.
 
-This API works in any mode, not only in `Uniline` minor mode. They take
+This API works in any mode, not only in `Uniline` minor mode. It takes
 care of the infiniteness of the buffer in the right and down
 directions.
 
-Other useful functions are:
-
-Drawing and moving many characters at once:
+There are other useful functions operating on many characters at
+once. Contour tracing and flood-filling are among them:
 
 -   `uniline-contour`
 -   `uniline-fill`
+
+The following functions operate on a rectangular region, which must be
+active prior to calling them:
+
 -   `uniline-draw-inner-rectangle`
 -   `uniline-draw-outer-rectangle`
 -   `uniline-copy-rectangle`
@@ -1582,10 +1645,10 @@ Drawing and moving many characters at once:
 
 Constants for the 4 directions:
 
--   `uniline-direction-up↑ ;; constant 0`
--   `uniline-direction-ri→ ;; constant 1`
--   `uniline-direction-dw↓ ;; constant 2`
--   `uniline-direction-lf← ;; constant 3`
+-   `uniline-direction-up↑` ;; constant 0
+-   `uniline-direction-ri→` ;; constant 1
+-   `uniline-direction-dw↓` ;; constant 2
+-   `uniline-direction-lf←` ;; constant 3
 
 Changing text direction:
 
@@ -1626,14 +1689,46 @@ Rotate arrow or tweak 4-half-lines or 4-block characters:
 -   `uniline-rotate-dw↓`
 -   `uniline-rotate-lf←`
 
-Move point, possibly extending the buffer in right and bottom
-directions:
+Here are the lowest level functions. Move point, possibly extending
+the buffer in right and bottom directions:
 
 -   `uniline-move-to-column`
 -   `uniline-move-to-line`
 -   `uniline-move-to-lin-col`
 -   `uniline-move-to-delta-column`
 -   `uniline-move-to-delta-line`
+
+A drawing in a rectangular selection may have its style changed:
+
+-   `uniline-change-style-dot-3-2`      ;; 3 dashes vert. ┆, 2 horiz. ╌
+-   `uniline-change-style-dot-4-4`      ;; 4 dashes vert. ┊ & horiz. ┈
+-   `uniline-change-style-standard`     ;; back to Uniline base style
+-   `uniline-change-style-hard-corners` ;; rounded corners╭╴become hard┌
+-   `uniline-change-style-thin`         ;; convert to ╭╴ thin lines
+-   `uniline-change-style-thick`        ;; convert to ┏╸ thick lines
+-   `uniline-change-style-double`       ;; convert to ╔═ thick lines
+-   `uniline-aa2u-rectangle`            ;; call aa2u to convert ASCII to Unicode
+
+The above functions require a region to be marked.
+
+
+<a id="mouse-support"></a>
+
+# Mouse support
+
+The out-of-the-box mouse support of Emacs works perfectly. Except when
+the mouse clicks on a position outside the buffer. This happens when
+clicking past the end of a too short line, or past the end of the buffer.
+
+To handle those cases, a few standard Emacs functions have been
+extended to add blank characters or blank lines. Doing so, the
+mouse-click now falls on a valid part of the buffer. Of course, those
+extensions are only active on `uniline-mode` activated buffers.
+
+Beware that when the window is at the same time zoomed with `C-x C-+
+C--` AND horizontally scrolled with `C-x <`, the cursor positioning is
+not accurate. This is due to Emacs limitations and bugs. Just click
+twice to fix the inaccuracy.
 
 
 <a id="installation"></a>
@@ -1676,8 +1771,8 @@ or if you prefer the Transient interface over the Hydra one:
     ;; or    "uniline-core.elc"
     ;; or    "uniline-core.eln"
 
-You should prefer the byte-compiled or native-compiles forms over the
-interpreted form, because there are a lot of optimizations performed
+You should prefer the byte-compiled or native-compiled forms over the
+interpreted forms, because there are a lot of optimizations performed
 at compile time.
 
 You may want to give `uniline-mode` a key-binding. `use-package`
@@ -1696,7 +1791,7 @@ or as an alias to `uniline-hydra`:
     (use-package uniline
       :bind ("C-<insert>" . uniline-mode))
 
-In this example, `C-<insert>` was chosen. You can use whatever keys combination you want.
+In this example, `C-<insert>` was chosen. You can use whatever key combinations you want.
 `<insert>` happens to also be the key used inside `Uniline`.
 
 If you do not have `use-package`, you can add those lines in your `~/.emacs` file:
@@ -1706,9 +1801,6 @@ If you do not have `use-package`, you can add those lines in your `~/.emacs` fil
 
 The downside is that `Uniline` will be loaded as soon as `Emacs` is
 launched, rather than deferred until invoked.
-
-If the `Hydra` package is not installed, `Uniline` installation completes
-nonetheless. Then `uniline-hydra` will lack most of its features.
 
 
 <a id="related-packages"></a>
@@ -1788,7 +1880,7 @@ nonetheless. Then `uniline-hydra` will lack most of its features.
 
 -   `make-box.el`: box around part of a buffer
 
--   `vim drawit ascii diagrams`: in Vin, in ASCII
+-   `vim drawit ascii diagrams`: in Vim, in ASCII
 
 
 <a id="author-contributors"></a>
@@ -1818,8 +1910,8 @@ Feedback:
     the dependencies conundrum, arthurno1 participated in the `Hydra` -
     `Transient` discussion
 
--   karthink pointed to the new `Aporetic` font family, which was added
-    to the `Uniline` supported fonts
+-   karthink pointed to the new `Aporetic` font family, which was then
+    added to the `Uniline` supported fonts
 
 Contributors:
 
