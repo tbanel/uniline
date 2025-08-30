@@ -6,14 +6,15 @@ body {
 }
 
 pre {
-  line-height: 1.0;
+  line-height: 1.5em;
   background-color: #ebefea;
   color: black;
   font-family: DejaVu Sans Mono, Cascadia Mono, JuliaMono, JetBrains Mono, Agave, Source Code Pro, Iosevka Comfy Fixed, Iosevka Comfy Wide Fixed, Aporetic Sans Mono, Aporetic Serif Mono, FreeMono, Unifont, Hack;
+  font-size: 1.5em;
 }
 
 pre code {
-    font-size: 100%;
+    font-size: 1.5em;
     background-color: #0000;
     margin: 0;
     white-space: break-spaces;
@@ -21,7 +22,7 @@ pre code {
 }
 
 code {
-    font-size: 120%;
+    font-size: 1.5em;
     background-color: #ebefea;
     margin: 0;
     white-space: break-spaces;
@@ -32,9 +33,13 @@ p {
 }
 
 h1 {
+    font-size: 1.7em;
+    padding-top: 1em;
 }
 
 h2 {
+    font-size: 1.3em;
+    padding-top: 0.8em;
 }
 
 ul {
