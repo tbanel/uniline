@@ -12,6 +12,17 @@
 - Move cursor with the arrow-keys on the keyboard =→ ← ↑ ↓=
 - Quit =C-c C-c=
 
+[[file:images/first-drawing.png]]
+
+#+begin_example
+ ╷   ╭─────────╮
+ ╰───┤my first ├─╮
+     │drawing  │ ╰───╮
+     ╰─────────╯     │
+        ╭────┬───────╯
+        ╰────╯
+#+end_example
+
 * New
 :PROPERTIES:
 :CUSTOM_ID: new
@@ -19,7 +30,7 @@
 
 Use =C-t= to toggle one-liner vs. full fledged menus, both in Hydra &
 Transient. In Hydra, it used to be =TAB=. Transient natively offers =C-t=,
-but just in one direction; Uniline extends it to both directions.
+but just in one direction; =Uniline= extends it to both directions.
 
 * Table of Contents
 :PROPERTIES:
@@ -31,8 +42,18 @@ but just in one direction; Uniline extends it to both directions.
 - [[#getting-started-in-10-seconds][Getting started in 10 seconds]]
 - [[#new][New]]
 - [[#pure-unicode-text-diagrams-in-emacs][Pure UNICODE text diagrams in Emacs]]
-- [[#minor-mode][Minor mode]]
-- [[#drawing-lines][Drawing lines]]
+  - [[#document-a-command][Document a command]]
+  - [[#connect-boxes-with-arrows][Connect boxes with arrows]]
+  - [[#explain-decisions-trees][Explain decisions trees]]
+  - [[#draw-lines-or-blocks][Draw lines or blocks]]
+  - [[#outline-the-general-relativity-and-the-schrödingers-equations][Outline the General Relativity and the Schrödinger's equations]]
+  - [[#explain-the-structure-of-a-sentence-in-a-foreign-language][Explain the structure of a sentence in a foreign language]]
+  - [[#explain-lisp-lists][Explain Lisp lists]]
+  - [[#draw-sketched-objects][Draw sketched objects]]
+  - [[#pure-text][Pure text]]
+  - [[#beware][Beware!]]
+- [[#a-minor-mode-for-drawing][A minor mode for drawing]]
+  - [[#minor-mode][Minor mode]]
   - [[#draw-lines-by-moving-the-cursor][Draw lines by moving the cursor]]
   - [[#brush-style][Brush style]]
   - [[#text-direction][Text direction]]
@@ -48,8 +69,9 @@ but just in one direction; Uniline extends it to both directions.
   - [[#copying-killing-yanking-a-rectangle][Copying, killing, yanking a rectangle]]
   - [[#dashed-lines-and-other-styles][Dashed lines and other styles]]
   - [[#ascii-to-unicode][ASCII to UNICODE]]
-- [[#tracing-a-contour][Tracing a contour]]
-- [[#flood-fill][Flood-fill]]
+- [[#long-range-actions-contour-and-flood-fill][Long range actions: contour and flood-fill]]
+  - [[#tracing-a-contour][Tracing a contour]]
+  - [[#flood-fill][Flood-fill]]
 - [[#macros][Macros]]
 - [[#which-fonts][Which fonts?]]
 - [[#hydra-or-transient][Hydra or Transient?]]
@@ -78,6 +100,14 @@ but just in one direction; Uniline extends it to both directions.
   - [[#emacs-on-a-graphical-terminal-emulator][Emacs on a graphical terminal emulator]]
   - [[#emacs-on-windows][Emacs on Windows]]
 - [[#lisp-api][Lisp API]]
+  - [[#move-the-cursor][Move the cursor]]
+  - [[#brush][Brush]]
+  - [[#example-lisp-function-to-draw-a-plus-sign][Example: Lisp function to draw a plus sign]]
+  - [[#long-range-actions-contour-flood-fill-rectangle][Long range actions (contour, flood-fill, rectangle)]]
+  - [[#constants][Constants]]
+  - [[#macro-and-text-direction][Macro and text direction]]
+  - [[#insert-and-tweak-glyphs][Insert and tweak glyphs]]
+  - [[#change-to-alternate-styles][Change to alternate styles]]
 - [[#mouse-support][Mouse support]]
 - [[#installation][Installation]]
 - [[#related-packages][Related packages]]
@@ -91,20 +121,26 @@ but just in one direction; Uniline extends it to both directions.
 :END:
 Draw diagrams like those:
 
-Document a command:
+** Document a command
+:PROPERTIES:
+:CUSTOM_ID: document-a-command
+:END:
 
 [[file:images/document-command.png]]
 
 #+begin_example
    pdfjam source.pdf 3-5,9
-        ▲    ▲        ▲  ▲
+  ╶─────▲────▲────────▲──▲╴
 command╶╯    │        │  │
 input file╶──╯        │  │
 select pages 3,4,5╶───╯  │
 and page 9╶──────────────╯
 #+end_example
 
-Connect boxes with arrows:
+** Connect boxes with arrows
+:PROPERTIES:
+:CUSTOM_ID: connect-boxes-with-arrows
+:END:
 
 [[file:images/boxes-arrows.png]]
 
@@ -125,7 +161,10 @@ Connect boxes with arrows:
         ╰─────────╯
 #+end_example
 
-Explain decisions trees:
+** Explain decisions trees
+:PROPERTIES:
+:CUSTOM_ID: explain-decisions-trees
+:END:
 
 [[file:images/decision-tree.png]]
 
@@ -154,7 +193,10 @@ Explain decisions trees:
           ╰─────╯   ╰═════════╯
 #+end_example
 
-Draw lines or blocks:
+** Draw lines or blocks
+:PROPERTIES:
+:CUSTOM_ID: draw-lines-or-blocks
+:END:
 
 [[file:images/lines-blocks.png]]
 
@@ -179,7 +221,10 @@ Draw lines or blocks:
 
 #+end_example
 
-Outline the General Relativity equation:
+** Outline the General Relativity and the Schrödinger's equations
+:PROPERTIES:
+:CUSTOM_ID: outline-the-general-relativity-and-the-schrödingers-equations
+:END:
 
 [[file:images/general-relativity-equation.png]]
 
@@ -202,8 +247,6 @@ Outline the General Relativity equation:
 
   #+end_example
 
-Outline the Schrodinger's equation:
-
 [[file:images/schrodinger-equation.png]]
 
 #+begin_example
@@ -213,7 +256,7 @@ Outline the Schrodinger's equation:
          │     │          │     (the square of its absolute value
         ╭▽─╮ ╭─▽──╮     ╭─▽──╮   is the probability density)
   ┏━━━━━┷━━┷━┷━━━━┷━━━━━┷━━━━┷━┓
-  ┃ i ħ d/dt |Ψ(t)> = Ĥ |Ψ(t)> ┃◁─╴Schrodinger's equation
+  ┃ i ħ d/dt |Ψ(t)> = Ĥ |Ψ(t)> ┃◁─╴Schrödinger's equation
   ┗━△━△━━━━△━━━━△━━━━━△━━━━△━━━┛
     │ │    ╰────╰─────┤────╰───╴Time
     │ │               ╰────────╴Hamiltonian
@@ -222,7 +265,11 @@ Outline the Schrodinger's equation:
 
 #+end_example
 
-Explain the structure of a sentence in a foreign language (which one?):
+** Explain the structure of a sentence in a foreign language
+:PROPERTIES:
+:CUSTOM_ID: explain-the-structure-of-a-sentence-in-a-foreign-language
+:END:
+(which language?)
 
 [[file:images/foreign-language-sentence.png]]
 
@@ -247,7 +294,10 @@ Explain the structure of a sentence in a foreign language (which one?):
 
 #+end_example
 
-Explain Lisp lists:
+** Explain Lisp lists
+:PROPERTIES:
+:CUSTOM_ID: explain-lisp-lists
+:END:
 
 [[file:images/lisp-lists.png]]
 
@@ -268,7 +318,10 @@ Explain Lisp lists:
           ╵     ╵           ╵
 #+end_example
 
-Draw sketched objects:
+** Draw sketched objects
+:PROPERTIES:
+:CUSTOM_ID: draw-sketched-objects
+:END:
 
 [[file:images/sketched-objects.png]]
 
@@ -303,22 +356,38 @@ Draw sketched objects:
   ▝▀▀▀▀▀▀▘        ▝▀▘        ▝▀▘      ▀▀▀▀▀▀▀▀▀▀▀▀▀
 #+end_example
 
+** Pure text
+:PROPERTIES:
+:CUSTOM_ID: pure-text
+:END:
+
 Those diagrams are pure text. There is nothing graphic. They are
-achieved using UNICODE characters.
+achieved using UNICODE characters. Therefore they can be drawn within
+any text formatted document, like Org Mode, Markdown, txt, comments in
+any programming language source code (C++, Python, Rust, D,
+JavaScript, GnuPlot, LaTex, whatever).
 
 Most often, the text file will be encoded as UTF-8. This is becoming
-the de-facto standard for text files, including source code files.
+the de-facto standard for text and source code files.
 
 Creating such diagrams by hand is painfully slow. Use =Uniline= to
 draw lines while you move the cursor with keyboard arrows.
 
-*Beware!*
+** Beware!
+:PROPERTIES:
+:CUSTOM_ID: beware
+:END:
 
 If you see those diagrams miss-aligned, most likely the font used to
 display them does not support UNICODE block characters. See bellow the
 paragraph "Which fonts?".
 
-* Minor mode
+* A minor mode for drawing
+:PROPERTIES:
+:CUSTOM_ID: a-minor-mode-for-drawing
+:END:
+
+** Minor mode
 :PROPERTIES:
 :CUSTOM_ID: minor-mode
 :END:
@@ -336,18 +405,12 @@ While in =uniline-mode=, overwriting is active, as well as long lines
 truncation. Also, a hollow cursor is provided (customizable). Those
 settings are reset to their previous state when exiting =uniline-mode=.
 
-* Drawing lines
-:PROPERTIES:
-:CUSTOM_ID: drawing-lines
-:END:
-
-Use keyboard arrows to draw lines. Change the brush to any of the 6
-styles.
-
 ** Draw lines by moving the cursor
 :PROPERTIES:
 :CUSTOM_ID: draw-lines-by-moving-the-cursor
 :END:
+
+Use keyboard arrows to draw lines.
 
 By default, drawing lines only happens over empty space or over other
 lines. If there is already text, it will not be erased. However, by
@@ -384,7 +447,7 @@ Set the current brush with:
 - ~<return>~ move without drawing anything
 
 The current brush and the current text direction (see below) are
-reflected in the mode-line (at the bottom of the Emacs screen). It
+reflected in the mode-line (at the bottom of the =Emacs= screen). It
 looks like this:
 
 [[file:images/mode-line.png]]
@@ -614,8 +677,8 @@ active when =shift-select-mode= is non-nil.
 
 Or you may use the mouse to highlight the desired region.
 
-All those region-highlighting are standard in Emacs, and unrelated to
-Uniline.
+All those region-highlighting are standard in =Emacs=, and unrelated to
+=Uniline=.
 
 Once you have a region highlighted, press =<insert>= (this key can be
 customized, see the "Customization" chapter). The selection becomes
@@ -686,7 +749,7 @@ used to move the rectangle that many characters.
 - Under =Hydra=, be sure to specify the numeric prefix with just digits,
   without the =Alt= key. Typing =15 <left>= moves the rectangle 15
   characters to the left. =M-15 <left>= does not work.
-- Under =Transient=, use the =Alt= key, like anywhere else in Emacs. Type
+- Under =Transient=, use the =Alt= key, like anywhere else in =Emacs=. Type
   =M-15 <left>= to move the selected rectangle 15 characters to the left.
 
 Press =q=, =<return>=, or =C-g= to stop moving the rectangle.
@@ -723,7 +786,7 @@ Select a region, press =<insert>=, then:
 - =k= to kill
 - =y= to yank (aka paste)
 
-This is similar to the Emacs standard rectangle handling:
+This is similar to the =Emacs= standard rectangle handling:
 - =C-x r r= copy rectangle to register
 - =C-x r k= kill rectangle
 - =C-x r y= yank killed rectangle
@@ -735,7 +798,7 @@ The second difference is that the white characters of the yanked
 rectangle are considered transparent. As a result, only non-blank
 parts of the yanked rectangle are over-printed.
 
-=Uniline= and Emacs standard rectangle share the same storage for copied
+=Uniline= and =Emacs= standard rectangle share the same storage for copied
 and killed rectangles, namely the =killed-rectangle= Lisp variable. So,
 a rectangle can be killed one way, and yanked another way.
 
@@ -896,7 +959,11 @@ conversion by =INS s 0=:
 
 #+end_example
 
-* Tracing a contour
+* Long range actions: contour and flood-fill
+:PROPERTIES:
+:CUSTOM_ID: long-range-actions-contour-and-flood-fill
+:END:
+** Tracing a contour
 :PROPERTIES:
 :CUSTOM_ID: tracing-a-contour
 :END:
@@ -935,7 +1002,7 @@ characters). Locations outside the buffer are also considered blank.
 The algorithm has an upper limit of =10000= steps. This avoids an
 infinite loop in which the algorithm may end up in some rare
 cases. One of those cases is when the contour crosses a new-page
-character, displayed by Emacs as =^L=. =10000= steps require a fraction of
+character, displayed by =Emacs= as =^L=. =10000= steps require a fraction of
 a second to run. For shapes really huge, you may launch the contour
 command once again, at the point where the previous run ended.
 
@@ -945,7 +1012,7 @@ This =10000= steps limit is customizable. Type:
 M-x customize-variable uniline-contour-max-steps
 #+end_example
 
-* Flood-fill
+** Flood-fill
 :PROPERTIES:
 :CUSTOM_ID: flood-fill
 :END:
@@ -997,7 +1064,7 @@ operation may flood the entire buffer (but no more).
 :PROPERTIES:
 :CUSTOM_ID: macros
 :END:
-=Uniline= adds directional macros to the Emacs standard macros.
+=Uniline= adds directional macros to the =Emacs= standard macros.
 
 Record a macro as usual with =C-x (= … =C-x )=.
 
@@ -1096,7 +1163,7 @@ also execute the above Lisp commands like that:
 =M-: (set-frame-font "DejaVu Sans Mono")=
 
 This setting is for the current session only. If you want to make it
-permanent, you may use the Emacs customization:
+permanent, you may use the =Emacs= customization:
 
 =<insert> f *=
 
@@ -1104,14 +1171,14 @@ or
 
 =M-x customize-face default=
 
-Beware that Emacs tries to compensate for missing UNICODE support by
-the current font. Emacs substitutes one font for another, character
+Beware that =Emacs= tries to compensate for missing UNICODE support by
+the current font. =Emacs= substitutes one font for another, character
 per character. The user may not notice until the drawings done under
-Emacs are displayed on another text editor or on the Web. Of course,
+=Emacs= are displayed on another text editor or on the Web. Of course,
 using the suggested fonts and the UNICODEs drawn by =Uniline= keeps you
 away from those glitches.
 
-To know which font Emacs has chosen for a given character, type:
+To know which font =Emacs= has chosen for a given character, type:
 
 =C-u C-x ==
 
@@ -1129,7 +1196,7 @@ More complex actions are summoned by the =<insert>= key, with or without
 selection. This is a single key to remember. Then a textual menu is
 displayed, giving the possible keys continuations and their
 meaning. All that is achieved by the =Hydra= or =Transient= libraries,
-which are now part of Emacs (thanks!).
+which are now part of =Emacs= (thanks!).
 
 The =Hydra= and =Transient= libraries offer similar features. Some users
 may prefer one or the other.
@@ -1211,7 +1278,7 @@ exactly the same as the Hydra behavior and the =uniline-hint-style=.
 the Transient setting stays in effect until the =C-t= or =C-h TAB= keys
 are not used, . As soon as one of those keys is invoked,
 =transient-show-popup= is toggled (which does not happens in Transient
-alone). The change is kept in effect throughout the Uniline session,
+alone). The change is kept in effect throughout the =Uniline= session,
 but no longer.
 
 ** The Hydra interface
@@ -1257,7 +1324,7 @@ Type: =M-x customize-group uniline=.
 
 Or =Menu bar ⟶ Options ⟶ Customize Emacs ⟶ Specific Group… ⟶ "uniline"=.
 
-This invokes the standard Emacs customization system. Your settings
+This invokes the standard =Emacs= customization system. Your settings
 will be saved in the file pointed to by the =custom-file= variable if
 set, or your =~/.emacs= file. (Along with all your other settings
 unrelated to =Uniline=).
@@ -1286,7 +1353,7 @@ to some other command (Apple?).
 This can be changed temporarily or permanently. The customization
 allows to set several keys at the same time.
 
-Depending on whether Emacs is run in a graphical environment or a
+Depending on whether =Emacs= is run in a graphical environment or a
 text-only terminal, either the =<insert>= or the =<insertchar>= events are
 generated by the =INS= key. Therefore, by default =Uniline= defines both
 events as the =INS= key.
@@ -1339,7 +1406,7 @@ Variable =uniline-show-welcome-message=.
 :CUSTOM_ID: line-spacing
 :END:
 
-The =line-spacing= setting in Emacs can change the display of a
+The =line-spacing= setting in =Emacs= can change the display of a
 sketch. (This setting is unrelated to =Uniline=).
 
 The best looking effect is given by:
@@ -1374,10 +1441,10 @@ assist in choosing a good font and customizing the =default= face. See
 the "Which fonts?" chapter.
 
 Type =<insert> f= to select a font just for the current =Uniline=
-session. Type =*= to enter the Emacs customization of the =default= face
+session. Type =*= to enter the =Emacs= customization of the =default= face
 and retain your choice for future sessions.
 
-* How =Uniline= behaves with its environment?
+* How Uniline behaves with its environment?
 :PROPERTIES:
 :CUSTOM_ID: how-uniline-behaves-with-its-environment
 :END:
@@ -1457,6 +1524,8 @@ a source block is created with the =Uniline= language (=Uniline= is
 edited (=M-x org-edit-special=) with =uniline-mode= automatically
 activated.
 
+[[file:images/org-src-block.png]]
+
 #+begin_example
 #+begin_src uniline
 ╭───╮   ╭───╮
@@ -1478,8 +1547,9 @@ drawing" characters in LaTex documents.
 
 Example:
 
-#+begin_example
+[[file:images/latex-block.png]]
 
+#+begin_example
 #+LATEX_HEADER: \usepackage{pmboxdraw}
 
 #+begin_src text
@@ -1521,7 +1591,6 @@ this works:
  └── non-graph
 
 #+end_src
-
 #+end_example
 
 Note that corners of thin lines should be sharp. There is no support
@@ -1570,14 +1639,14 @@ lines of the 3 types, mixing all of them in thin lines though.
 
 Another problem is that by default =S-<left>= and =C-<left>= are
 indistinguishable from =<left>=. Same problem with =<right>=, =<up>=, =<down>=
-and =<insert>=. This has nothing to do with Emacs. A solution can be
+and =<insert>=. This has nothing to do with =Emacs=. A solution can be
 found here: https://www.emacswiki.org/emacs/MissingKeys
 
 ** Emacs on a graphical terminal emulator
 :PROPERTIES:
 :CUSTOM_ID: emacs-on-a-graphical-terminal-emulator
 :END:
-This is the Emacs launched from a terminal typing =emacs -nw=. In this
+This is the =Emacs= launched from a terminal typing =emacs -nw=. In this
 environment, =<insert>= does not exist. It is replaced by
 =<insertchar>=. This has already been taken into account by =Uniline=
 by duplicating the key-bindings for the two flavors of this key.
@@ -1617,6 +1686,11 @@ Yes!
 
 The API is usable programmatically:
 
+** Move the cursor
+:PROPERTIES:
+:CUSTOM_ID: move-the-cursor
+:END:
+
 Move cursor while drawing lines by calling any of the 4 directions
 functions:
 - =uniline-write-up↑=
@@ -1626,6 +1700,11 @@ functions:
 
 They expect a repeat =count= (usually 1) and optionally =force=t= to
 overwrite the buffer
+
+** Brush
+:PROPERTIES:
+:CUSTOM_ID: brush
+:END:
 
 Set the current brush by calling any of the following:
 
@@ -1647,6 +1726,10 @@ Those functions are equivalent to:
 
 except the functions also update the mode-line.
 
+** Example: Lisp function to draw a plus sign
+:PROPERTIES:
+:CUSTOM_ID: example-lisp-function-to-draw-a-plus-sign
+:END:
 For instance, if we want to create a function to draw a "plus" sign,
 we can code it as follows:
 
@@ -1708,6 +1791,11 @@ This API works in any mode, not only in =Uniline= minor mode. It takes
 care of the infiniteness of the buffer in the right and down
 directions.
 
+** Long range actions (contour, flood-fill, rectangle)
+:PROPERTIES:
+:CUSTOM_ID: long-range-actions-contour-flood-fill-rectangle
+:END:
+
 There are other useful functions operating on many characters at
 once. Contour tracing and flood-filling are among them:
 
@@ -1728,12 +1816,22 @@ active prior to calling them:
 - =uniline-move-rect-dw↓=
 - =uniline-move-rect-lf←=
 
+** Constants
+:PROPERTIES:
+:CUSTOM_ID: constants
+:END:
+
 Constants for the 4 directions:
 
 - =uniline-direction-up↑= ;; constant 0
 - =uniline-direction-ri→= ;; constant 1
 - =uniline-direction-dw↓= ;; constant 2
 - =uniline-direction-lf←= ;; constant 3
+
+** Macro and text direction
+:PROPERTIES:
+:CUSTOM_ID: macro-and-text-direction
+:END:
 
 Changing text direction:
 
@@ -1756,7 +1854,10 @@ Call macro in any direction:
 - =uniline-call-macro-in-direction-dw↓=
 - =uniline-call-macro-in-direction-lf←=
 
-Insert glyphs:
+** Insert and tweak glyphs
+:PROPERTIES:
+:CUSTOM_ID: insert-and-tweak-glyphs
+:END:
 
 - =uniline-insert-fw-arrow=
 - =uniline-insert-fw-square=
@@ -1783,6 +1884,11 @@ the buffer in right and bottom directions:
 - =uniline-move-to-delta-column=
 - =uniline-move-to-delta-line=
 
+** Change to alternate styles
+:PROPERTIES:
+:CUSTOM_ID: change-to-alternate-styles
+:END:
+
 A drawing in a rectangular selection may have its style changed:
 
 - =uniline-change-style-dot-3-2=      ;; 3 dashes vert. ┆, 2 horiz. ╌
@@ -1800,18 +1906,18 @@ The above functions require a region to be marked.
 :PROPERTIES:
 :CUSTOM_ID: mouse-support
 :END:
-The out-of-the-box mouse support of Emacs works perfectly. Except when
+The out-of-the-box mouse support of =Emacs= works perfectly. Except when
 the mouse clicks on a position outside the buffer. This happens when
 clicking past the end of a too short line, or past the end of the buffer.
 
-To handle those cases, a few standard Emacs functions have been
+To handle those cases, a few standard =Emacs= functions have been
 extended to add blank characters or blank lines. Doing so, the
 mouse-click now falls on a valid part of the buffer. Of course, those
 extensions are only active on =uniline-mode= activated buffers.
 
 Beware that when the window is at the same time zoomed with =C-x C-+
 C--= AND horizontally scrolled with =C-x <=, the cursor positioning is
-not accurate. This is due to Emacs limitations and bugs. Just click
+not accurate. This is due to =Emacs= limitations and bugs. Just click
 twice to fix the inaccuracy.
 
 * Installation
@@ -1908,7 +2014,7 @@ launched, rather than deferred until invoked.
 :CUSTOM_ID: related-packages
 :END:
 
-- =artist-mode=: the ASCII art mode built into Emacs.
+- =artist-mode=: the ASCII art mode built into =Emacs=.
 
 - =ascii-art-to-unicode=: as the name suggest, converts ASCII drawings
   to UNICODE, giving results similar to those of =Uniline=.
@@ -1916,7 +2022,7 @@ launched, rather than deferred until invoked.
 - =picture-mode=: as in =Uniline=, the buffer is infinite in east & south
   directions.
 
-- =ascii-art-to-unicode= ASCII art to UNICODE in Emacs. This is a
+- =ascii-art-to-unicode= ASCII art to UNICODE in =Emacs=. This is a
   standard ELPA package by Thien-Thi Nguyen (rest in peace). =Uniline=
   may call it to convert ASCII art drawings to equivalent
   UNICODE. =Uniline= arranges to not require a dependency on
@@ -1928,7 +2034,7 @@ launched, rather than deferred until invoked.
 - =boxes=: draws artistic boxes around text, with nice looking unicorns,
   flowers, parchments, all in ASCII art.
 
-- =org-drawio=: a bridge between the Draw.Io editor and Emacs, producing
+- =org-drawio=: a bridge between the Draw.Io editor and =Emacs=, producing
   drawing similar to those of =Uniline=, but in =.svg=.
 
 - =syntree=: draws ASCII trees on-the-fly from description.
@@ -1936,13 +2042,13 @@ launched, rather than deferred until invoked.
 - =unicode-enbox=: create a UNICODE box around a text; input and output
   are strings.
 
-- =unicode-fonts=: in Emacs, helps alleviate the lack of full UNICODE
+- =unicode-fonts=: in =Emacs=, helps alleviate the lack of full UNICODE
   coverage of most fonts.
 
 - =org-superstar=: prettify headings and plain lists in Org Mode, using
   UNICODE glyphs.
 
-- =charmap=: UNICODE table viewer for Emacs.
+- =charmap=: UNICODE table viewer for =Emacs=.
 
 - =insert-char-preview=: insert UNICODEs with character preview in
   completion prompt.
@@ -1955,14 +2061,14 @@ launched, rather than deferred until invoked.
 - =ob-svgbob=: convert your ascii diagram scribbles into happy little
   SVG
 
-- =el-easydraw=: a full featured SVG editor right inside your Emacs
+- =el-easydraw=: a full featured SVG editor right inside your =Emacs=
 
-- =asciiflow=: (not Emacs) draw on the web, then copy-paste your UNICODE text
+- =asciiflow=: (not =Emacs=) draw on the web, then copy-paste your UNICODE text
 
-- =dot-to-ascii.ggerganov.com:= (not Emacs) describe your schema in the
+- =dot-to-ascii.ggerganov.com:= (not =Emacs=) describe your schema in the
   Graphviz language, and copy-past your UNICODE text.
 
-- =monosketch=: (not Emacs) draw on the web, then copy-paste your UNICODE text
+- =monosketch=: (not =Emacs=) draw on the web, then copy-paste your UNICODE text
 
 - =ibm-box-drawing-hydra.el=: keyboard interface to insert UNICODE
   box-drawing characters one at a time
@@ -2006,7 +2112,7 @@ Feedback:
 - LuciusChen & lhindir on GitHub, arthurno1 & karthink on Reddit,
   pushed toward =Transient= as the default interface instead of =Hydra=
 
-- karthink noted that =Transient= was now built into Emacs, loosening
+- karthink noted that =Transient= was now built into =Emacs=, loosening
   the dependencies conundrum, arthurno1 participated in the =Hydra= -
   =Transient= discussion
 
@@ -2015,9 +2121,13 @@ Feedback:
 
 Contributors:
 
- - JD Smith (jdtsmith on GitHub) rewrote the =:lighter= for added
+- JD Smith (jdtsmith on GitHub) rewrote the =:lighter= for added
    flexibility (the information in the mode-line about the state of
-   Uniline)
+   =Uniline=)
+
+- JD Smith also pointed to =#+begin_src uniline= Org Mode block
+  suprising behavior (editing its content automatically switches to
+  =uniline-mode=)
 
 Utilities:
 
