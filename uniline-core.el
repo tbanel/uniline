@@ -235,26 +235,39 @@ DIR & returned values are in [0,1,2,3]."
     "Return DIR turned 90° anti-clockwise.
 DIR & returned values are in [0,1,2,3]."
     (% (+ 3 dir) 4))
+  )
 
-  (defmacro uniline-move-to-column (x)
-    "Move to column X staying on the same line.
+(defmacro uniline-move-to-column (x)
+  "Move to column X staying on the same line.
 Add blanks if line is too short.
 Move to 0 if X negative."
-    `(move-to-column (max ,x 0) t)))
+  ;; x is never numeric in the Uniline calls
+  ;; so it is pointless to optimize this case
+  `(move-to-column (max ,x 0) t))
 
-(defun uniline-move-to-delta-column (x)
+(defmacro uniline-move-to-delta-column (x)
   "Move X characters, staying on the same line.
 Add blanks if line is too short.
 X may be negative to move backward.
 Move to 0 if target is beyond the left border of buffer."
-  (uniline-move-to-column (+ (current-column) x)))
+  (cond
+   ((eq x  0) ()) ;; this case never happens in Uniline calls
+   ((eq x  1) `(move-to-column      (1+ (current-column)   )    t))
+   ((eq x -1) `(move-to-column (max (1- (current-column)   ) 0) t))
+   ((and
+     (numberp x)
+     (>= x  0))
+    (progn    `(move-to-column      (+  (current-column) ,x)    t)))
+   (t         `(move-to-column (max (+  (current-column) ,x) 0) t))))
 
-(defsubst uniline--forward-line-force (y)
+(defsubst uniline--forward-line-force (y p)
   "Helper function to move cursor Y lines.
 Create lines at the end of the buffer if there
 are not enough lines to honor Y.
 Y may be negative.
-Does not preserve current column."
+Does not preserve current column.
+P may be (point) for a relative Y move,
+or (point-min) for an absolute Y move."
   ;; here we fix a bug in the return of (forward-line):
   ;; when (forward-line) cannot move enough lines
   ;; because it is stuck at the end of buffer,
@@ -264,12 +277,12 @@ Does not preserve current column."
   ;; so here we get out of the corner-case of the
   ;; (forward-line) bug, by ensuring that there is an empty
   ;; line at the end of buffer
-  (goto-char
-   (prog1 (point)
-     (goto-char (point-max))
-     (or (bolp) (insert ?\n))))
+  (goto-char (point-max))
+  (or (bolp) (insert ?\n))
+  (goto-char p)
   (let ((y (forward-line y))) ; faster than (setq y (forward-line y))
-    (while (>= (setq y (1- y)) 0)
+    (while (> y 0)
+      (setq y (1- y))
       (insert ?\n))))
 
 (defun uniline-move-to-line (y)
@@ -280,8 +293,7 @@ Y=0 means first line in buffer."
   (move-to-column
    (prog1
        (current-column)
-     (goto-char (point-min))
-     (uniline--forward-line-force y))
+     (uniline--forward-line-force y (point-min)))
    t))
 
 (defun uniline-move-to-delta-line (y)
@@ -292,7 +304,7 @@ Y may be negative to move backward."
   (move-to-column
    (prog1
        (current-column)
-     (uniline--forward-line-force y))
+     (uniline--forward-line-force y (point)))
    t))
 
 (defun uniline-move-to-lin-col (y x)
@@ -301,8 +313,7 @@ Create blank lines at the end of the buffer if needed,
 or blank characters at the end of target line if needed.
 Y=0 means first line of buffer.
 X=0 means first column of buffer."
-  (goto-char (point-min))
-  (uniline--forward-line-force y)
+  (uniline--forward-line-force y (point-min))
   (uniline-move-to-column x))
 
 (eval-when-compile ; not needed at runtime
@@ -3936,22 +3947,22 @@ with the one used to invoke Uniline-mode."
   '("Uniline"
     :visible t
     :active t
-    ["write right"     uniline-write-ri→     t]
-    ["write left"      uniline-write-lf←     t]
-    ["write up"        uniline-write-up↑     t]
-    ["write down"      uniline-write-dw↓     t]
+    ["write right" uniline-write-ri→ t]
+    ["write left"  uniline-write-lf← t]
+    ["write up"    uniline-write-up↑ t]
+    ["write down"  uniline-write-dw↓ t]
     ("Overwrite"
      ["overwrite right" uniline-overwrite-ri→ t]
      ["overwrite left"  uniline-overwrite-lf← t]
      ["overwrite up"    uniline-overwrite-up↑ t]
      ["overwrite down"  uniline-overwrite-dw↓ t])
     "----"
-    ["─ light brush"   uniline-set-brush-1     :style radio :selected (eq uniline-brush 1     )]
-    ["━ heavy brush"   uniline-set-brush-2     :style radio :selected (eq uniline-brush 2     )]
-    ["═ double brush"  uniline-set-brush-3     :style radio :selected (eq uniline-brush 3     )]
-    ["▞ blocks brush"  uniline-set-brush-block :style radio :selected (eq uniline-brush :block)]
-    ["eraser brush"    uniline-set-brush-0     :style radio :selected (eq uniline-brush 0     )]
-    ["inactive brush"  uniline-set-brush-nil   :style radio :selected (eq uniline-brush nil   )]
+    ["─ light brush"  uniline-set-brush-1     :style radio :selected (eq uniline-brush 1     )]
+    ["━ heavy brush"  uniline-set-brush-2     :style radio :selected (eq uniline-brush 2     )]
+    ["═ double brush" uniline-set-brush-3     :style radio :selected (eq uniline-brush 3     )]
+    ["▞ blocks brush" uniline-set-brush-block :style radio :selected (eq uniline-brush :block)]
+    ["eraser brush"   uniline-set-brush-0     :style radio :selected (eq uniline-brush 0     )]
+    ["inactive brush" uniline-set-brush-nil   :style radio :selected (eq uniline-brush nil   )]
     "----"
     ("Insert glyph"
      ["insert arrow ▷ ▶ → ▹ ▸ ↔" uniline-insert-fw-arrow  :keys "INS a"]
@@ -3969,15 +3980,15 @@ with the one used to invoke Uniline-mode."
      ["move selection up"    uniline-move-rect-up↑ :keys "INS <up>"   ]
      ["move selection down"  uniline-move-rect-dw↓ :keys "INS <down>" ]
      "----"
-     ["copy"         uniline-copy-rectangle :keys "INS c"]
-     ["kill"         uniline-kill-rectangle :keys "INS k"]
-     ["yank, paste"  uniline-yank-rectangle :keys "INS y"]
+     ["copy"        uniline-copy-rectangle :keys "INS c"]
+     ["kill"        uniline-kill-rectangle :keys "INS k"]
+     ["yank, paste" uniline-yank-rectangle :keys "INS y"]
      "----"
-     ["trace rectangle inside selection" uniline-draw-inner-rectangle :keys "INS r"]
-     ["trace rectangle around selection" uniline-draw-outer-rectangle :keys "INS R"]
+     ["trace rectangle inside selection"     uniline-draw-inner-rectangle      :keys "INS r"  ]
+     ["trace rectangle around selection"     uniline-draw-outer-rectangle      :keys "INS R"  ]
      ["overwrite rectangle inside selection" uniline-overwrite-inner-rectangle :keys "INS C-r"]
      ["overwrite rectangle around selection" uniline-overwrite-outer-rectangle :keys "INS C-R"]
-     ["fill" uniline-fill-rectangle :keys "INS i"])
+     ["fill"                                 uniline-fill-rectangle            :keys "INS i"  ])
     ("Alternate styles" :active (region-active-p)
      ["thin lines"          uniline-change-style-thin     :keys "INS s -"]
      ["thick lines"         uniline-change-style-thick    :keys "INS s +"]
@@ -3999,20 +4010,20 @@ with the one used to invoke Uniline-mode."
     "----"
     ["large hints sizes" uniline-toggle-hints :keys "TAB or C-h TAB" :style toggle :selected (eq uniline-hint-style t)]
     ("Font"
-     ["DejaVu Sans Mono"             (set-frame-font "DejaVu Sans Mono"           ) :keys "INS f d" :style radio :selected (uniline--is-font ?d)]
-     ["Hack"                         (set-frame-font "Hack"                       ) :keys "INS f h" :style radio :selected (uniline--is-font ?h)]
-     ["Cascadia Mono"                (set-frame-font "Cascadia Mono"              ) :keys "INS f c" :style radio :selected (uniline--is-font ?c)]
-     ["JuliaMono"                    (set-frame-font "JuliaMono"                  ) :keys "INS f j" :style radio :selected (uniline--is-font ?j)]
-     ["JetBrains Mono"               (set-frame-font "JetBrains Mono"             ) :keys "INS f b" :style radio :selected (uniline--is-font ?b)]
-     ["FreeMono"                     (set-frame-font "FreeMono"                   ) :keys "INS f f" :style radio :selected (uniline--is-font ?f)]
-     ["Source Code Pro"              (set-frame-font "Source Code Pro"            ) :keys "INS f s" :style radio :selected (uniline--is-font ?s)]
-     ["Iosevka Comfy Fixed"          (set-frame-font "Iosevka Comfy Fixed"        ) :keys "INS f i" :style radio :selected (uniline--is-font ?i)]
-     ["Iosevka Comfy Wide Fixed"     (set-frame-font "Iosevka Comfy Wide Fixed"   ) :keys "INS f I" :style radio :selected (uniline--is-font ?I)]
-     ["Aporetic Sans Mono"           (set-frame-font "Aporetic Sans Mono"         ) :keys "INS f p" :style radio :selected (uniline--is-font ?p)]
-     ["Aporetic Serif Mono"          (set-frame-font "Aporetic Serif Mono"        ) :keys "INS f P" :style radio :selected (uniline--is-font ?P)]
-     ["Unifont"                      (set-frame-font "Unifont"                    ) :keys "INS f u" :style radio :selected (uniline--is-font ?u)]
-     ["Agave"                        (set-frame-font "Agave"                      ) :keys "INS f a" :style radio :selected (uniline--is-font ?a)]
-     ["permanently configure" uniline-customize-face               :keys "INS f *"])
+     ["DejaVu Sans Mono"         (set-frame-font "DejaVu Sans Mono"        ) :keys "INS f d" :style radio :selected (uniline--is-font ?d)]
+     ["Hack"                     (set-frame-font "Hack"                    ) :keys "INS f h" :style radio :selected (uniline--is-font ?h)]
+     ["Cascadia Mono"            (set-frame-font "Cascadia Mono"           ) :keys "INS f c" :style radio :selected (uniline--is-font ?c)]
+     ["JuliaMono"                (set-frame-font "JuliaMono"               ) :keys "INS f j" :style radio :selected (uniline--is-font ?j)]
+     ["JetBrains Mono"           (set-frame-font "JetBrains Mono"          ) :keys "INS f b" :style radio :selected (uniline--is-font ?b)]
+     ["FreeMono"                 (set-frame-font "FreeMono"                ) :keys "INS f f" :style radio :selected (uniline--is-font ?f)]
+     ["Source Code Pro"          (set-frame-font "Source Code Pro"         ) :keys "INS f s" :style radio :selected (uniline--is-font ?s)]
+     ["Iosevka Comfy Fixed"      (set-frame-font "Iosevka Comfy Fixed"     ) :keys "INS f i" :style radio :selected (uniline--is-font ?i)]
+     ["Iosevka Comfy Wide Fixed" (set-frame-font "Iosevka Comfy Wide Fixed") :keys "INS f I" :style radio :selected (uniline--is-font ?I)]
+     ["Aporetic Sans Mono"       (set-frame-font "Aporetic Sans Mono"      ) :keys "INS f p" :style radio :selected (uniline--is-font ?p)]
+     ["Aporetic Serif Mono"      (set-frame-font "Aporetic Serif Mono"     ) :keys "INS f P" :style radio :selected (uniline--is-font ?P)]
+     ["Unifont"                  (set-frame-font "Unifont"                 ) :keys "INS f u" :style radio :selected (uniline--is-font ?u)]
+     ["Agave"                    (set-frame-font "Agave"                   ) :keys "INS f a" :style radio :selected (uniline--is-font ?a)]
+     ["permanently configure" uniline-customize-face                         :keys "INS f *"])
     ["info" (info "uniline") :keys "M-: (info \"uniline\")"]
     ["Customize" (customize-group 'uniline)]
     ["quit Uniline Mode" uniline-mode t] ))
