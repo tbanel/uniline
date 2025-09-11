@@ -1432,29 +1432,12 @@ When FORCE is not nil, overwrite a possible non quadrant-block
 character at point."
   (if (eolp)
       (uniline--insert-char ? ))
-  (let ((bits
-         (or
-          (uniline--char-to-4quadb (uniline--char-after))
-          (and force 0))))
-    (if bits
-        (uniline--insert-4quadb
-         (logior bits uniline--which-quadrant)))))
-
-(eval-when-compile ; not needed at runtime
-  (defmacro uniline--clear-two-4quadb (dir)
-    "Helper function to clear half a quadrant-block at point.
-Assume that point is on a quadrant-block character.
-Clear the half of this character pointing in DIR direction."
-    (setq dir (eval dir))
-    `(let ((bits (uniline--char-to-4quadb (uniline--char-after))))
-       (if bits
-           (uniline--insert-4quadb
-            (logand
-             bits
-             ,(uniline--4quadb-pushed
-               dir
-               (uniline--char-to-4quadb ?█) ; this is constant 15 = 0b1111
-               )))))))
+  (let ((bits (uniline--char-to-4quadb (uniline--char-after))))
+    (cond
+     (bits
+      (uniline--insert-4quadb (logior bits uniline--which-quadrant)))
+     (force
+      (uniline--insert-4quadb              uniline--which-quadrant)))))
 
 ;;;╭────────────────────────────────╮
 ;;;│Test blanks in the neighbourhood│
@@ -1573,6 +1556,41 @@ Blank include:
 This might be 0, 1, 2, 3, as defined by the four constants
 `uniline-direction-up↑', `uniline-direction-lf←', ...")
 
+(defun uniline--write-one-4halfs-impl (dir force 4halfmask 4quadmask)
+    "Draw half a line.
+If there are too few characters on the row where the line
+will be drawn, fill it with blank characters.
+Cursor does not move.
+DIR is one of the 4 directions.
+When FORCE is not nil, overwrite a possible non-4halfs character.
+4HALFMASK is a bit-mask to erase 4halfs lines found at (point).
+4QUADMASK is a bit-mask to erase 4quads blocks found at (point)."
+  (if (eolp)
+      (uniline--insert-char ? ))
+  (if uniline-brush
+      (let ((bits
+             (gethash (uniline--char-after) uniline--char-to-4halfs)))
+        (cond
+         ;; 1st case: (char-after) is a line-character like ├,
+         ;; or any character if FORCE
+         ;; then change a half-line of this character
+         ;; for example changing it from ├ to ┽
+         (bits
+          (uniline--insert-4halfs
+           (logior
+            (logand bits 4halfmask)
+            (uniline--shift-4half uniline-brush dir))))
+         ;; 2nd case: (char-after) is a block character like ▜,
+         ;; and the brush is the eraser
+         ;; then clear only half of this character
+         ((eq uniline-brush 0)
+          (if (setq bits (uniline--char-to-4quadb (uniline--char-after)))
+              (uniline--insert-4quadb (logand 4quadmask bits))))
+         ;; 3th case: force
+         (force
+          (uniline--insert-4halfs
+           (uniline--shift-4half uniline-brush dir)))))))
+
 (eval-when-compile ; not needed at runtime
   (defmacro uniline--write-one-4halfs (dir force)
     "Draw half a line in the direction DIR.
@@ -1580,31 +1598,13 @@ If there are too few characters on the row where the line
 will be drawn, fill it with blank characters.
 Cursor does not move.
 When FORCE is not nil, overwrite a possible non-4halfs character."
-    `(progn
-       (if (eolp)
-           (uniline--insert-char ? ))
-       (if uniline-brush
-           (let ((bits
-                  (or
-                   (gethash (uniline--char-after) uniline--char-to-4halfs)
-                   (and ,force 0))))
-             (cond
-              ;; 1st case: (char-after) is a line-character like ├,
-              ;; or any character if FORCE
-              ;; then change a half-line of this character
-              ;; for example changing it from ├ to ┽
-              (bits
-               (uniline--insert-4halfs
-                (logior
-                 (logand
-                  bits
-                  ,(lognot (uniline--shift-4half 3 dir)))
-                 (uniline--shift-4half uniline-brush ,dir))))
-              ;; 2nd case: (char-after) is a block character like ▜,
-              ;; and the brush is the eraser
-              ;; then clear only half of this character
-              ((eq uniline-brush 0)
-               (uniline--clear-two-4quadb ,dir))))))))
+    `(uniline--write-one-4halfs-impl
+      ,dir
+      ,force
+      ,(lognot (uniline--shift-4half 3 dir))
+      ,(uniline--4quadb-pushed
+        (uniline--reverse-direction dir)
+        (uniline--char-to-4quadb ?█))))) ; this is constant 15 = 0b1111
 
 (eval-when-compile ; not needed at runtime
   (defmacro uniline--write-impl (dir force)
@@ -1622,66 +1622,62 @@ or the number of quadrant-blocks to draw,
 or the length to extend region.
 REPEAT defaults to 1.
 When FORCE is not nil, overwrite characters which are not lines."
-    (setq dir (eval dir)) ;; to convert 'uniline-direction-dw↓ into 2
-    `(progn
-       (unless repeat (setq repeat 1))
-       (setq uniline--arrow-direction ,dir)
-       (handle-shift-selection)
-       (cond
-        ((region-active-p)
-         ;; region is marked, continue extending it
-         (uniline--move-in-direction ,dir repeat)
-         (setq deactivate-mark nil))
+    (let* ((dir (eval dir)) ;; to convert 'uniline-direction-dw↓ into 2
+           (odir (uniline--reverse-direction dir)))
+      `(progn
+         (unless repeat (setq repeat 1))
+         (setq uniline--arrow-direction ,dir)
+         (handle-shift-selection)
+         (cond
+          ((region-active-p)
+           ;; region is marked, continue extending it
+           (uniline--move-in-direction ,dir repeat)
+           (setq deactivate-mark nil))
 
-        ((eq uniline-brush :block)
-         ;; draw quadrant-blocks ▝▙▄▌
-         (cl-loop
-          repeat repeat
-          do
-          (uniline--store-undo-quadrant-cursor)
+          ((eq uniline-brush :block)
+           ;; draw quadrant-blocks ▝▙▄▌
+           (uniline--store-undo-quadrant-cursor)
+           (cl-loop
+            repeat repeat
+            do
 
-          (if (eq
-               (logand
-                uniline--which-quadrant
-                ,(uniline--4quadb-pushed
-                  (uniline--reverse-direction dir)
-                  (uniline--char-to-4quadb ?█)))
-               0)
-              (uniline--move-in-direction ,dir))
+            (if (eq
+                 (logand
+                  uniline--which-quadrant
+                  ,(uniline--4quadb-pushed odir (uniline--char-to-4quadb ?█)))
+                 0)
+                (uniline--move-in-direction ,dir))
 
-          (setq uniline--which-quadrant
-                ;; this huge expression is evaluated only at compile time
-                ;; and folded to a mere, fast reference to a constant vector
-                ;; for instance:
-                ;; (aref [nil 4 8 nil 1 nil nil nil 2] uniline--which-quadrant)
-                ,(cond
-                  ((memq dir (list uniline-direction-up↑ uniline-direction-dw↓))
-                   '(uniline--switch-with-table uniline--which-quadrant
-                      ((uniline--char-to-4quadb ?▘) (uniline--char-to-4quadb ?▖))
-                      ((uniline--char-to-4quadb ?▖) (uniline--char-to-4quadb ?▘))
-                      ((uniline--char-to-4quadb ?▗) (uniline--char-to-4quadb ?▝))
-                      ((uniline--char-to-4quadb ?▝) (uniline--char-to-4quadb ?▗))))
-                  ((memq dir (list uniline-direction-ri→ uniline-direction-lf←))
-                   '(uniline--switch-with-table uniline--which-quadrant
-                      ((uniline--char-to-4quadb ?▘) (uniline--char-to-4quadb ?▝))
-                      ((uniline--char-to-4quadb ?▖) (uniline--char-to-4quadb ?▗))
-                      ((uniline--char-to-4quadb ?▗) (uniline--char-to-4quadb ?▖))
-                      ((uniline--char-to-4quadb ?▝) (uniline--char-to-4quadb ?▘))))))
+            (setq
+             uniline--which-quadrant
+             ;; this huge expression is evaluated only at compile time
+             ;; and folded to a mere, fast reference to a constant vector
+             ;; for instance:
+             ;; (aref [nil 4 8 nil 1 nil nil nil 2] uniline--which-quadrant)
+             ,(cond
+               ((memq dir (list uniline-direction-up↑ uniline-direction-dw↓))
+                '(uniline--switch-with-table uniline--which-quadrant
+                   ((uniline--char-to-4quadb ?▘) (uniline--char-to-4quadb ?▖))
+                   ((uniline--char-to-4quadb ?▖) (uniline--char-to-4quadb ?▘))
+                   ((uniline--char-to-4quadb ?▗) (uniline--char-to-4quadb ?▝))
+                   ((uniline--char-to-4quadb ?▝) (uniline--char-to-4quadb ?▗))))
+               ((memq dir (list uniline-direction-ri→ uniline-direction-lf←))
+                '(uniline--switch-with-table uniline--which-quadrant
+                   ((uniline--char-to-4quadb ?▘) (uniline--char-to-4quadb ?▝))
+                   ((uniline--char-to-4quadb ?▖) (uniline--char-to-4quadb ?▗))
+                   ((uniline--char-to-4quadb ?▗) (uniline--char-to-4quadb ?▖))
+                   ((uniline--char-to-4quadb ?▝) (uniline--char-to-4quadb ?▘))))))
 
-          (uniline--write-one-4quadb ,force)))
+            (uniline--write-one-4quadb ,force)))
 
-        (t
-         ;; draw lines ╰──╮
-         (cl-loop
-          repeat repeat
-          do
-          (uniline--write-one-4halfs ,dir ,force)
-          until (uniline--at-border-p ,dir)
-          do
-          (uniline--move-in-direction ,dir)
-          (uniline--write-one-4halfs
-           ,(uniline--reverse-direction dir)
-           ,force)))))))
+          (t
+           ;; draw lines ╰──╮
+           (cl-loop
+            repeat repeat
+            do
+            (uniline--write-one-4halfs ,dir ,force)
+            (uniline--move-in-direction ,dir)
+            (uniline--write-one-4halfs ,odir ,force))))))))
 
 (defun uniline-write-up↑ (repeat &optional force)
   "Move cursor up drawing or erasing glyphs, or extending region.
