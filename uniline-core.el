@@ -226,15 +226,15 @@ DIR is any of the 4 `uniline-direction-*'.
 Exchange left with right, up with down."
     `(% (+ 2 ,dir) 4))
 
-  (defsubst uniline--turn-right (dir)
+  (defmacro uniline--turn-right (dir)
     "Return DIR turned 90° clockwise.
 DIR & returned values are in [0,1,2,3]."
-    (% (1+ dir) 4))
+    `(% (1+ ,dir) 4))
 
-  (defsubst uniline--turn-left (dir)
+  (defmacro uniline--turn-left (dir)
     "Return DIR turned 90° anti-clockwise.
 DIR & returned values are in [0,1,2,3]."
-    (% (+ 3 dir) 4))
+    `(% (+ 3 ,dir) 4))
   )
 
 (defmacro uniline-move-to-column (x)
@@ -260,7 +260,7 @@ Move to 0 if target is beyond the left border of buffer."
     (progn    `(move-to-column      (+  (current-column) ,x)    t)))
    (t         `(move-to-column (max (+  (current-column) ,x) 0) t))))
 
-(defsubst uniline--forward-line-force (y p)
+(defmacro uniline--forward-line-force (y p)
   "Helper function to move cursor Y lines.
 Create lines at the end of the buffer if there
 are not enough lines to honor Y.
@@ -277,13 +277,12 @@ or (point-min) for an absolute Y move."
   ;; so here we get out of the corner-case of the
   ;; (forward-line) bug, by ensuring that there is an empty
   ;; line at the end of buffer
-  (goto-char (point-max))
-  (or (bolp) (insert ?\n))
-  (goto-char p)
-  (let ((y (forward-line y))) ; faster than (setq y (forward-line y))
-    (while (> y 0)
-      (setq y (1- y))
-      (insert ?\n))))
+  `(progn
+     (goto-char
+      (prog1 ,p
+        (goto-char (point-max))
+        (or (bolp) (insert ?\n))))
+     (insert-byte ?\n (forward-line ,y))))
 
 (defun uniline-move-to-line (y)
   "Move to line Y, while staying on the same column.
@@ -1332,6 +1331,12 @@ Access it with this snippet:
   (defmacro uniline--4quadb-pushed (dir 4quadb)
     "Accessor to the `uniline--4quadb-pushed' array.
 Folds to a single number if DIR & 4QUADB are themselves numbers."
+    (condition-case nil
+        (setq dir (eval dir)) ;; fold if dir is a numerical sexpr
+      (error nil))            ;; otherwise leave dir alone
+    (condition-case nil
+        (setq 4quadb (eval 4quadb)) ;; fold if 4quadb is a numerical sexpr
+      (error nil))            ;; otherwise leave 4quadb alone
     (if (and (fixnump dir)
              (fixnump 4quadb))
         (aref (aref uniline--4quadb-pushed  dir)  4quadb)
@@ -1379,20 +1384,20 @@ nil: no action except cursor movements
 :block block drawing like ▙▄▟▀")
 
 (eval-when-compile ; not needed at runtime
-  (defsubst uniline--insert-4halfs (4halfs)
+  (defmacro uniline--insert-4halfs (4halfs)
     "Insert at (point) a UNICODE like ┬.
 The UNICODE character is described by the 4HALFS bits pattern.
 The (point) does not move."
-    (uniline--insert-char
-     (aref uniline--4halfs-to-char 4halfs))))
+    `(uniline--insert-char
+      (aref uniline--4halfs-to-char ,4halfs))))
 
 (eval-when-compile ; not needed at runtime
-  (defsubst uniline--insert-4quadb (4quadb)
+  (defmacro uniline--insert-4quadb (4quadb)
     "Insert at (point) a UNICODE like ▙.
 The UNICODE character is described by the 4QUADB bits pattern.
 The (point) does not move."
-    (uniline--insert-char
-     (aref uniline--4quadb-to-char 4quadb))))
+    `(uniline--insert-char
+      (aref uniline--4quadb-to-char ,4quadb))))
 
 ;;;╭───────────────────────────────────────────────────────────────╮
 ;;;│Low level management of ▙▄▟▀ quadrant-blocks UNICODE characters│
@@ -1455,10 +1460,10 @@ The last two cases will be changed to an actual blank character by
 virtue of the infinite buffer."
   (or
    (not p)
-   (<= (point-max) p) ;; corner case
    (let ((c (char-after p)))
      (or
-      (eq c ?\n)
+      (memq c '(?\n nil))
+      ;; the case c==nil never happens in Uniline calls
       (gethash c uniline--char-to-4halfs)
       (uniline--char-to-4quadb c)))))
 
@@ -1508,28 +1513,30 @@ Blank include:
      (uniline-direction-dw↓ (uniline--neighbour-point uniline-direction-dw↓))
      (uniline-direction-lf← (uniline--neighbour-point uniline-direction-lf←)))))
 
-(defsubst uniline--blank-neighbour4 (dir)
+(eval-when-compile ;; not used at runtime
+  ;; a (defmacro) vs. a (defsubst) saves 2 bytecodes
+  (defmacro uniline--blank-neighbour4 (dir)
   "Return non-nil if the quarter point cursor can move in DIR
 while staying on the same (point)."
   ;; Try typing (disassemble 'uniline--blank-neighbour4)
   ;; You will see a short 9 byte-codes function which references
   ;; a constant vector. This is the fastest it can be.
-  (eq
-   (logand
-    uniline--which-quadrant
-    (uniline--switch-with-table dir
-      ;; This lambda computes the values in the resulting lookup table
-      ;; for each entry. It is run at compile-time, never at run-time.
-      (lambda (dir)
-        (uniline--4quadb-pushed
-         dir
-         (uniline--char-to-4quadb ?█) ; this is constant 15 = 0b1111
-         ))
-      (uniline-direction-up↑)
-      (uniline-direction-ri→)
-      (uniline-direction-dw↓)
-      (uniline-direction-lf←)))
-   0))
+  `(eq
+    (logand
+     uniline--which-quadrant
+     (uniline--switch-with-table ,dir
+       ;; This lambda computes the values in the resulting lookup table
+       ;; for each entry. It is run at compile-time, never at run-time.
+       (lambda (dir)
+         (uniline--4quadb-pushed
+          dir
+          (uniline--char-to-4quadb ?█)         ; this is constant 15 = 0b1111
+          ))
+       (uniline-direction-up↑)
+       (uniline-direction-ri→)
+       (uniline-direction-dw↓)
+       (uniline-direction-lf←)))
+    0)))
 
 (defun uniline--blank-neighbour (dir)
   "Return non-nil if the neighbour in DIR direction is blank.
@@ -1808,33 +1815,35 @@ Some values of the input character are replaced by computed values:
           ?█))
      (t char))))
 
-(defun uniline-fill (char)
+(defun uniline-fill (&optional char)
   "Fill a hollow shape with character CHAR.
+CHAR is optional, if not given, user is queried.
 The hole is the set of contiguous identical characters.
 The character at point is used as reference for other
 identical characters."
   (interactive)
+  (unless char
+    (setq char (uniline--choose-fill-char)))
+
   ;; why is stack initialized with twice the current point?
   ;; the first is for starting the filling process
   ;; the second is for returning to the starting point after filling
   (let ((currentchar (uniline--char-after))
         (stack (list (point) (point)))
         p)
-    (if (and
-         char
-         (not (eq char currentchar)))
-        (while stack
-          (goto-char (pop stack))
-          (when (eq (char-after) currentchar) ; not (uniline--char-after) !
-            (uniline--insert-char char)
-            (if (setq p (uniline--neighbour-point uniline-direction-up↑))
-                (push p stack))
-            (if (setq p (uniline--neighbour-point uniline-direction-ri→))
-                (push p stack))
-            (if (setq p (uniline--neighbour-point uniline-direction-dw↓))
-                (push p stack))
-            (if (setq p (uniline--neighbour-point uniline-direction-lf←))
-                (push p stack)))))))
+    (unless (eq char currentchar)
+      (while stack
+        (goto-char (pop stack))
+        (when (eq (char-after) currentchar) ; not (uniline--char-after) !
+          (uniline--insert-char char)
+          (if (setq p (uniline--neighbour-point uniline-direction-up↑))
+              (push p stack))
+          (if (setq p (uniline--neighbour-point uniline-direction-ri→))
+              (push p stack))
+          (if (setq p (uniline--neighbour-point uniline-direction-dw↓))
+              (push p stack))
+          (if (setq p (uniline--neighbour-point uniline-direction-lf←))
+              (push p stack)))))))
 
 ;;;╭────────────────────────╮
 ;;;│Undo rectangle selection│
@@ -1926,29 +1935,26 @@ Then the leakage of the two glyphs fills in E:
     ┗╸"
     (setq dir (eval dir))
     (let ((odir (uniline--reverse-direction dir)))
-      `(let ((here
-              (or
-               (gethash (uniline--char-after) uniline--char-to-4halfs)
-               0))
-             (prev    ; char preceding (point) as a 4halfs-bit-pattern
-              (let ((p (uniline--neighbour-point ,odir)))
-                (or
-                 (and
-                  p
-                  (gethash (uniline--char-after p) uniline--char-to-4halfs))
-                 0))))
-         ;; mask pairs of bits in the desired direction
-         (setq
-          here (logand here ,(uniline--shift-4half 3 odir))
-          prev (logand prev ,(uniline--shift-4half 3 dir)))
-
-         ;; rotate pairs of bits 180°
-         (setq
-          here (uniline--shift-4half here ,(- dir odir))
-          prev (uniline--shift-4half prev ,(- odir dir)))
-
-         ;; return the blank char with leakage from neighbours.
-         (aref uniline--4halfs-to-char (logior here prev))))))
+      (cl-flet
+          ;; beware! compute-half-leak is kind of a (defmacro)
+          ;; but local within uniline--compute-leakage-4halfs
+          ;; which itself is a (defmacro).
+          ;; its purpose? to avoid writing twice those 5 lines of Lisp.
+          ;; it generate Lisp code to compute the leakage from point PP
+          ;; in direction OD, which is then rotated to direction DI.
+          ((compute-half-leak (pp di od)
+             `(uniline--shift-4half
+               (logand
+                (gethash (uniline--char-after ,pp) uniline--char-to-4halfs 0)
+                ,(uniline--shift-4half 3 od))
+               ,(- di od))))
+        `(aref
+          uniline--4halfs-to-char
+          (let ((leak ,(compute-half-leak '(point) dir odir))
+                (p (uniline--neighbour-point ,odir)))
+            (if p
+                (logior leak ,(compute-half-leak 'p odir dir))
+              leak)))))))
 
 (eval-when-compile ; not needed at runtime
   (defmacro uniline--compute-leakage-quadb (dir)
@@ -1977,6 +1983,40 @@ Then the leakage of the two glyphs fills in E:
           here (uniline--4quadb-pushed , dir here)
           prev (uniline--4quadb-pushed ,odir prev))
          (aref uniline--4quadb-to-char (logior here prev))))))
+
+(eval-when-compile ; not needed at runtime
+  (defmacro uniline--compute-leakage-quadb (dir)
+    "Compute lines leakage from two directions for 4quadb characters.
+When a rectangle moves, it leaves blank chars.
+Those chars are filled with leakage from their two neighbours,
+in DIR direction, and its opposite.
+For instance consider a situation like this:
+    ▌
+     <<< empty space
+    ▙
+A space is leaved empty after translation.
+Then the leakage of the two glyphs fills in E:
+    ▌
+    ▌<<< filled with leakage
+    ▙"
+    (setq dir (eval dir))
+    (let ((odir (uniline--reverse-direction dir)))
+      `(let ((leak ;; leak from (point)
+              (uniline--4quadb-pushed
+               ,dir
+               (or (uniline--char-to-4quadb (uniline--char-after)) 0)))
+             (lean ;; leak from neighbour of (point)
+              (let ((p (uniline--neighbour-point ,odir)))
+                (and
+                 p
+                 (uniline--char-to-4quadb (uniline--char-after p))))))
+         (aref uniline--4quadb-to-char
+               (if (not lean)
+                   leak
+                 (logior
+                  leak
+                  (uniline--4quadb-pushed ,odir lean)
+                  )))))))
 
 (eval-when-compile ; not needed at runtime
   (defmacro uniline--compute-leakage (dir)
@@ -2806,16 +2846,24 @@ When FORCE is not nil, overwrite whatever is in the buffer.
   (while (not (uniline--blank-after (point)))
     (uniline-move-to-delta-column 1))
 
-  (let ((dir (uniline-direction-dw↓))
+  (let ((dir)
         (e)
         (start (point-marker))
         (q uniline--which-quadrant)
         (n 0))
     (and
-     (uniline--blank-neighbour1 (setq e (uniline--turn-right       dir)))
-     (uniline--blank-neighbour1 (setq e (uniline--turn-right (setq dir e))))
-     (uniline--blank-neighbour1 (setq e (uniline--turn-right (setq dir e))))
-     (uniline--blank-neighbour1         (uniline--turn-right (setq dir e)))
+     (progn
+       (setq dir (uniline-direction-dw↓))
+       (uniline--blank-neighbour1 (uniline-direction-lf←)))
+     (progn
+       (setq dir (uniline-direction-lf←))
+       (uniline--blank-neighbour1 (uniline-direction-up↑)))
+     (progn
+       (setq dir (uniline-direction-up↑))
+       (uniline--blank-neighbour1 (uniline-direction-ri→)))
+     (progn
+       (setq dir (uniline-direction-ri→))
+       (uniline--blank-neighbour1 (uniline-direction-dw↓)))
      (error "No border of any shape found around point"))
     (if (eq uniline-brush :block)
         (setq
@@ -2853,7 +2901,7 @@ When FORCE is not nil, overwrite whatever is in the buffer.
                   0)))
             (while
                 (and
-                 (= (forward-line -1) 0)
+                 (eq (forward-line -1) 0)
                  (not (uniline--blank-after (point)))))
             (if (uniline--at-border-p uniline-direction-up↑)
                 (setq dir (uniline-direction-up↑)
@@ -3995,9 +4043,9 @@ with the one used to invoke Uniline-mode."
      ["back to standard"    uniline-change-style-standard :keys "INS s 0"]
      ["aa2u (ext. package)" uniline-aa2u-rectangle        :keys "INS s a"])
     ("Fill & contour"
-     ["contour"         uniline-contour                 :keys "INS c"]
-     ["contour overw"  (uniline-contour t)              :keys "INS C"]
-     ["fill" (uniline-fill (uniline--choose-fill-char)) :keys "INS i"])
+     ["contour"        uniline-contour    :keys "INS c"]
+     ["contour overw" (uniline-contour t) :keys "INS C"]
+     ["fill"           uniline-fill       :keys "INS i"])
     ("Text insertion direction"
      ["→ right" uniline-text-direction-ri→ :keys "INS C-<right>" :style radio :selected (eq uniline-text-direction (uniline-direction-ri→))]
      ["← left"  uniline-text-direction-lf← :keys "INS C-<left> " :style radio :selected (eq uniline-text-direction (uniline-direction-lf←))]

@@ -214,7 +214,7 @@ for later menu invocation in the same Uniline session."
    ["Contour, Fill"
     ("c" "Draw  contour" uniline-contour)
     ("C" "Ovwrt contour" (lambda () (interactive) (uniline-contour t)))
-    ("i" "Fill area"     (lambda () (interactive) (uniline-fill (uniline--choose-fill-char))))]
+    ("i" "Fill area"     uniline-fill)]
    ["Navigation"
     ("f" "Choose font" uniline-transient-fonts)
     ("C-t" "Togg hints" uniline-toggle-transient-hints-suffix)

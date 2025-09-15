@@ -189,7 +189,7 @@
               ("f" uniline-hydra-fonts/body :exit t)
               ("c" uniline-contour          :exit t)
               ("C" (uniline-contour t)      :exit t)
-              ("i" (uniline-fill (uniline--choose-fill-char)) :exit t)
+              ("i" uniline-fill             :exit t)
               ("q"   ()                     :exit t)
               ("C-t" uniline-toggle-hints)
               ("TAB" uniline-toggle-hints)
