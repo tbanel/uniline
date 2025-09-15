@@ -1334,9 +1334,6 @@ Folds to a single number if DIR & 4QUADB are themselves numbers."
     (condition-case nil
         (setq dir (eval dir)) ;; fold if dir is a numerical sexpr
       (error nil))            ;; otherwise leave dir alone
-    (condition-case nil
-        (setq 4quadb (eval 4quadb)) ;; fold if 4quadb is a numerical sexpr
-      (error nil))            ;; otherwise leave 4quadb alone
     (if (and (fixnump dir)
              (fixnump 4quadb))
         (aref (aref uniline--4quadb-pushed  dir)  4quadb)
