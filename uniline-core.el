@@ -2841,29 +2841,46 @@ When FORCE is not nil, overwrite whatever is in the buffer.
     (uniline-move-to-delta-column 1))
 
   (let ((dir)
-        (e)
         (start (point-marker))
         (q uniline--which-quadrant)
         (n 0))
+    ;; look for a surrounding wall successively in directions lf← up↑ ri→ dw↓.
+    ;; stop as soon as hitting a wall.
+    ;; then initialize dir-ection turning left from the wall.
+    ;; so for instance, if there is empty space toward west lf←,
+    ;; and a wall toward north up↑, then initial dir will be set to west lf←.
+    ;;      \\\\\\\\\\\\\\\\\
+    ;;      ╺━━━━━━╳━━━━━━┓ \
+    ;;             ↑      ┃ \
+    ;;          ╭──╯──╮   ┃ \
+    ;;          │     │   ┃ \
+    ;;        ←─╮  ●  ╰──→╳ \
+    ;;          ╰──╯  │   ┃ \
+    ;;           ╭─╭──╯   ┃ \
+    ;;   error╶──╯ ↓      ┃ \
+    ;;                    ╹ \
     (and
      (progn
-       (setq dir (uniline-direction-dw↓))
-       (uniline--blank-neighbour1 (uniline-direction-lf←)))
+       (setq dir (uniline--turn-left (uniline-direction-lf←)))
+       (uniline--blank-neighbour1    (uniline-direction-lf←)))
      (progn
-       (setq dir (uniline-direction-lf←))
-       (uniline--blank-neighbour1 (uniline-direction-up↑)))
+       (setq dir (uniline--turn-left (uniline-direction-up↑)))
+       (uniline--blank-neighbour1    (uniline-direction-up↑)))
      (progn
-       (setq dir (uniline-direction-up↑))
-       (uniline--blank-neighbour1 (uniline-direction-ri→)))
+       (setq dir (uniline--turn-left (uniline-direction-ri→)))
+       (uniline--blank-neighbour1    (uniline-direction-ri→)))
      (progn
-       (setq dir (uniline-direction-ri→))
-       (uniline--blank-neighbour1 (uniline-direction-dw↓)))
+       (setq dir (uniline--turn-left (uniline-direction-dw↓)))
+       (uniline--blank-neighbour1    (uniline-direction-dw↓)))
      (error "No border of any shape found around point"))
     (if (eq uniline-brush :block)
         (setq
          q
          (setq
           uniline--which-quadrant
+          ;; this huge expression folds to just:
+          ;; (aref [8 4 1 2] dir)
+          ;; which is as fast as can be at runtime
           (uniline--switch-with-table dir
             (lambda (dir)
               (uniline--4quadb-pushed
@@ -2877,13 +2894,24 @@ When FORCE is not nil, overwrite whatever is in the buffer.
             (uniline-direction-lf←)))))
     (while
         (progn
-          (cond
-           ((uniline--blank-neighbour (setq e (uniline--turn-right dir)))
-            (setq dir e))
-           ((uniline--blank-neighbour dir))
-           ((uniline--blank-neighbour (setq dir (uniline--turn-left dir))))
-           ((uniline--blank-neighbour (setq dir (uniline--turn-left dir))))
-           (t (error "Cursor is surrounded by walls")))
+          ;; change current dir-ection in whichever direction there is no wall.
+          ;; in this example dir pointed north up↑, and was changed to west lf←
+          ;;       \\\\\\\\\\\\\\\\\\\\\\
+          ;;       ╺━━━━━━━━╳━━━━━━┓\\\\\
+          ;;                ↑      ┃\\\\\
+          ;;            ╭───╰───╮  ┃\\\\\
+          ;;            │   ╭─╮ │  ┃\\\\\
+          ;;  no wall ←─╯   ● │ ╭─→╳\\\\\
+          ;;            │     ╰─╯  ╹\\\\\
+          ;;            ╰───╮───╮     \\\
+          ;;                ↓   ╰error  \
+          (let ((d dir))
+            (cond
+             ((uniline--blank-neighbour (setq dir (uniline--turn-right dir))))
+             ((uniline--blank-neighbour (setq dir d)))
+             ((uniline--blank-neighbour (setq dir (uniline--turn-left dir))))
+             ((uniline--blank-neighbour (setq dir (uniline--turn-left dir))))
+             (t (error "Cursor is surrounded by walls"))))
           (cond
            ((and
              (eq dir (uniline-direction-lf←))
