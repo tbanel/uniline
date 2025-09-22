@@ -1823,21 +1823,20 @@ identical characters."
   ;; the first is for starting the filling process
   ;; the second is for returning to the starting point after filling
   (let ((currentchar (uniline--char-after))
-        (stack (list (point) (point)))
-        p)
+        (stack (list (point) (point))))
     (unless (eq char currentchar)
       (while stack
         (goto-char (pop stack))
         (when (eq (char-after) currentchar) ; not (uniline--char-after) !
           (uniline--insert-char char)
-          (if (setq p (uniline--neighbour-point uniline-direction-up↑))
-              (push p stack))
-          (if (setq p (uniline--neighbour-point uniline-direction-ri→))
-              (push p stack))
-          (if (setq p (uniline--neighbour-point uniline-direction-dw↓))
-              (push p stack))
-          (if (setq p (uniline--neighbour-point uniline-direction-lf←))
-              (push p stack)))))))
+          (let ((p (uniline--neighbour-point uniline-direction-up↑)))
+            (if  p (push p stack)))
+          (let ((p (uniline--neighbour-point uniline-direction-ri→)))
+            (if  p (push p stack)))
+          (let ((p (uniline--neighbour-point uniline-direction-dw↓)))
+            (if  p (push p stack)))
+          (let ((p (uniline--neighbour-point uniline-direction-lf←)))
+            (if  p (push p stack))))))))
 
 ;;;╭────────────────────────╮
 ;;;│Undo rectangle selection│
@@ -2906,13 +2905,18 @@ When FORCE is not nil, overwrite whatever is in the buffer.
           ;;            ╰───╮───╮     \\\
           ;;                ↓   ╰error  \
           (let ((d dir))
-            (cond
-             ((uniline--blank-neighbour (setq dir (uniline--turn-right dir))))
-             ((uniline--blank-neighbour (setq dir d)))
-             ((uniline--blank-neighbour (setq dir (uniline--turn-left dir))))
-             ((uniline--blank-neighbour (setq dir (uniline--turn-left dir))))
-             (t (error "Cursor is surrounded by walls"))))
+            (or
+             (uniline--blank-neighbour (setq dir (uniline--turn-right dir)))
+             (uniline--blank-neighbour (setq dir d))
+             (uniline--blank-neighbour (setq dir (uniline--turn-left dir)))
+             (uniline--blank-neighbour (setq dir (uniline--turn-left dir)))
+             (error "Cursor is surrounded by walls")))
+          ;; bumping into the left or upper borders?
+          ;; move the (point) silently as if drawing outside the buffer
+          ;; until finding a blank (or eolp)) which allows the (point)
+          ;; to re-enter the actual buffer.
           (cond
+           ;; bump into le left border
            ((and
              (eq dir (uniline-direction-lf←))
              (uniline--at-border-p uniline-direction-lf←)
@@ -2930,6 +2934,7 @@ When FORCE is not nil, overwrite whatever is in the buffer.
                       uniline--which-quadrant (uniline--char-to-4quadb ?▝))
               (setq dir (uniline-direction-ri→)
                     uniline--which-quadrant (uniline--char-to-4quadb ?▖))))
+           ;; bump into the upper border
            ((and
              (eq dir (uniline-direction-up↑))
              (uniline--at-border-p uniline-direction-up↑)
@@ -2944,6 +2949,7 @@ When FORCE is not nil, overwrite whatever is in the buffer.
                   (not (uniline--blank-after (point)))))
             (setq dir (uniline-direction-dw↓))
             (setq uniline--which-quadrant (uniline--char-to-4quadb ?▘)))
+           ;; not bumping into a border, so just draw
            (t
             (uniline--write dir force)
             (setq n (1+ n))))
@@ -2966,20 +2972,17 @@ FROMTO is a hash-table telling what are the characters replacements.
 The changes are reversible in a single undo command."
     (interactive)
     (uniline--operate-on-rectangle
-     (let ((handle (prepare-change-group)))
-       (cl-loop
-        for y from begy below endy
-        do
-        (uniline-move-to-line y)
-        (cl-loop
-         for x from begx below endx
-         do
-         (uniline-move-to-column x)
-         (let ((rep (gethash (uniline--char-after) fromto)))
-           (if rep
-               (uniline--insert-char rep)))))
-       (undo-amalgamate-change-group handle)
-       (accept-change-group handle))))
+     (cl-loop
+      for y from begy below endy
+      do
+      (uniline-move-to-line y)
+      (cl-loop
+       for x from begx below endx
+       do
+       (uniline-move-to-column x)
+       (let ((rep (gethash (uniline--char-after) fromto)))
+         (if rep
+             (uniline--insert-char rep)))))))
 
 (uniline--defconst-hash-table uniline--char-to-dot-3-2-char
   '((?─ . ?╌)
@@ -3119,19 +3122,18 @@ Also ASCII-art is converted to UNICODE-art."
   ;; complete them with half lines so that they will connect
   ;; seamlessly with their surrounding.
   (uniline--operate-on-rectangle
-   (let ((handle (prepare-change-group)))
-     (cl-loop
-      for y from begy below endy
-      do
-      (uniline-move-to-line y)
-      (cl-loop
-       for x from begx below endx
-       do
-       (uniline-move-to-column x)
-       (let ((char (uniline--char-after)))
-         (if (memq char
-                   '(?^ ?v ?V ?| ?\" ?- ?_ ?> ?< ?=
-                        ?+ ?/ ?\\ ?' ?` ?# ?o ?O ?* ?.))
+   (cl-loop
+    for y from begy below endy
+    do
+    (uniline-move-to-line y)
+    (cl-loop
+     for x from begx below endx
+     do
+     (uniline-move-to-column x)
+     (let ((char (uniline--char-after)))
+       (if (memq char
+                 '(?^ ?v ?V ?| ?\" ?- ?_ ?> ?< ?=
+                      ?+ ?/ ?\\ ?' ?` ?# ?o ?O ?* ?.))
            (let*
                ((4halfvert
                  (logior
@@ -3168,9 +3170,7 @@ Also ASCII-art is converted to UNICODE-art."
                  (uniline--insert-char newchar)
                (unless (eq 4half 0)
                  (if (memq char '(?+ ?# ?/ ?\\ ?' ?`))
-                     (uniline--insert-4halfs 4half)))))))))
-     (undo-amalgamate-change-group handle)
-     (accept-change-group handle))))
+                     (uniline--insert-4halfs 4half)))))))))))
 
 (uniline--defconst-hash-table uniline--char-to-hard-corner-char
   '((?╮ . ?┐)
