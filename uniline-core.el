@@ -3678,7 +3678,8 @@ It is a list containing:
   - `overwrite-mode'
   - `indent-tabs-mode'
   - `truncate-lines'
-  - `cursor-type'")
+  - `cursor-type'
+  - `post-self-insert-hook'")
 
 ;; toggle between normal hydra hints, and one-liners
 (defcustom uniline-hint-style t
