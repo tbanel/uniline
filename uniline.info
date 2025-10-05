@@ -97,6 +97,7 @@ Customization
 
 How Uniline behaves with its environment?
 
+* Language environment::
 * Compatibility with Picture-mode::
 * Compatibility with Artist-mode::
 * Compatibility with Whitespace-mode::
@@ -145,10 +146,9 @@ File: uniline.info,  Node: New,  Next: Pure UNICODE text diagrams in Emacs,  Pre
 2 New
 *****
 
-Use ‘C-t’ to toggle one-liner vs.  full fledged menus, both in Hydra &
-Transient.  In Hydra, it used to be ‘TAB’.  Transient natively offers
-‘C-t’, but just in one direction; ‘Uniline’ extends it to both
-directions.
+Sometimes while drawing a line, the line gets broken and misaligned.
+The issue was discovered and diagnosed by a user.  See *note Language
+environment:: for details.
 
 
 File: uniline.info,  Node: Pure UNICODE text diagrams in Emacs,  Next: A minor mode for drawing,  Prev: New,  Up: Top
@@ -421,7 +421,12 @@ File: uniline.info,  Node: Beware!,  Prev: Pure text,  Up: Pure UNICODE text dia
 
 If you see those diagrams miss-aligned, most likely the font used to
 display them does not support UNICODE block characters.  See bellow the
-paragraph "Which fonts?".
+paragraph *note Which fonts?:: for details.
+
+   If you get misalignment when drawing, this could come from too wide
+characters.  Emojis are an example.  Usual characters may also be
+considered twice as wide as normal under some "language environments".
+See the paragraph *note Language environment:: for details.
 
 
 File: uniline.info,  Node: A minor mode for drawing,  Next: The <insert> key,  Prev: Pure UNICODE text diagrams in Emacs,  Up: Top
@@ -1545,6 +1550,7 @@ File: uniline.info,  Node: How Uniline behaves with its environment?,  Next: Lis
 
 * Menu:
 
+* Language environment::
 * Compatibility with Picture-mode::
 * Compatibility with Artist-mode::
 * Compatibility with Whitespace-mode::
@@ -1557,9 +1563,57 @@ File: uniline.info,  Node: How Uniline behaves with its environment?,  Next: Lis
 * Emacs on Windows::
 
 
-File: uniline.info,  Node: Compatibility with Picture-mode,  Next: Compatibility with Artist-mode,  Up: How Uniline behaves with its environment?
+File: uniline.info,  Node: Language environment,  Next: Compatibility with Picture-mode,  Up: How Uniline behaves with its environment?
 
-13.1 Compatibility with Picture-mode
+13.1 Language environment
+=========================
+
+The so called "language environment" in Emacs can cause unwanted line
+breaks, like in this drawing:
+
+
+
+
+     ╶───────────┬─────╮
+                            │           │
+                            │           │
+                            │           │
+                            ╰───────────╯
+        unexpected broken lines
+
+     ╶─────┬───────────╮
+           │           │
+           │           │
+           │           │
+           ╰───────────╯
+        expected continuous lines
+
+
+   The above example was drawn first with the ‘Chinese-BIG5’ language
+environment, then with the ‘English’ environment.
+
+   In ‘Chinese-BIG5’, some characters are considered twice as wide as
+standard characters.  Whereas in ‘English’, all characters needed by
+Uniline are 1 unit wide.
+
+   Thanks to *rumengling* (GitHub) for discovering and diagnosing the
+issue!
+
+   The workaround for the time being, is to change the language while
+using Uniline.  To do so, type:
+
+     C-x RET l UTF-8
+
+   or
+
+     C-x RET l English
+
+   A more satisfying solution is being investigated.  Stay tuned.
+
+
+File: uniline.info,  Node: Compatibility with Picture-mode,  Next: Compatibility with Artist-mode,  Prev: Language environment,  Up: How Uniline behaves with its environment?
+
+13.2 Compatibility with Picture-mode
 ====================================
 
 ‘Picture-mode’ and ‘uniline-mode’ are compatible.  Their features
@@ -1579,7 +1633,7 @@ overlap somehow:
 
 File: uniline.info,  Node: Compatibility with Artist-mode,  Next: Compatibility with Whitespace-mode,  Prev: Compatibility with Picture-mode,  Up: How Uniline behaves with its environment?
 
-13.2 Compatibility with Artist-mode
+13.3 Compatibility with Artist-mode
 ===================================
 
 ‘Artist-mode’ and ‘uniline-mode’ are mostly incompatible.  This is
@@ -1591,7 +1645,7 @@ large part of ‘uniline-mode’ features.
 
 File: uniline.info,  Node: Compatibility with Whitespace-mode,  Next: Compatibility with Org Mode,  Prev: Compatibility with Artist-mode,  Up: How Uniline behaves with its environment?
 
-13.3 Compatibility with Whitespace-mode
+13.4 Compatibility with Whitespace-mode
 =======================================
 
 ‘Whitespace-mode’ and ‘uniline-mode’ are mostly compatible.
@@ -1613,7 +1667,7 @@ attached to newlines.  And ‘uniline-mode’ makes heavy use of
 
 File: uniline.info,  Node: Compatibility with Org Mode,  Next: Org Mode and LaTex,  Prev: Compatibility with Whitespace-mode,  Up: How Uniline behaves with its environment?
 
-13.4 Compatibility with Org Mode
+13.5 Compatibility with Org Mode
 ================================
 
 You may want to customize the shift extension mode in ‘Org Mode’.  This
@@ -1650,7 +1704,7 @@ If a source block is created with the ‘Uniline’ language (‘Uniline’ is
 
 File: uniline.info,  Node: Org Mode and LaTex,  Next: What about \t tabs?,  Prev: Compatibility with Org Mode,  Up: How Uniline behaves with its environment?
 
-13.5 Org Mode and LaTex
+13.6 Org Mode and LaTex
 =======================
 
 Use the ‘pmboxdraw’ LaTex module.  This gives limited support for "box
@@ -1712,7 +1766,7 @@ for rounded corners.
 
 File: uniline.info,  Node: What about \t tabs?,  Next: What about ^L page separation?,  Prev: Org Mode and LaTex,  Up: How Uniline behaves with its environment?
 
-13.6 What about ‘\t’ tabs?
+13.7 What about ‘\t’ tabs?
 ==========================
 
 Some files may contain tabs (the character ‘\t’).  Those include
@@ -1728,7 +1782,7 @@ invisible.  So be cautious if tabs have a special meaning in the file.
 
 File: uniline.info,  Node: What about ^L page separation?,  Next: Emacs on the Linux console,  Prev: What about \t tabs?,  Up: How Uniline behaves with its environment?
 
-13.7 What about ‘^L’ page separation?
+13.8 What about ‘^L’ page separation?
 =====================================
 
 ‘Uniline’ does not work well with ‘^L’ (page separation) character.  Nor
@@ -1742,7 +1796,7 @@ characters occupy twice the width of a normal character.
 
 File: uniline.info,  Node: Emacs on the Linux console,  Next: Emacs on a graphical terminal emulator,  Prev: What about ^L page separation?,  Up: How Uniline behaves with its environment?
 
-13.8 Emacs on the Linux console
+13.9 Emacs on the Linux console
 ===============================
 
 Linux consoles are the 7 non-graphic screens which can be accessed
@@ -1763,8 +1817,8 @@ solution can be found here:
 
 File: uniline.info,  Node: Emacs on a graphical terminal emulator,  Next: Emacs on Windows,  Prev: Emacs on the Linux console,  Up: How Uniline behaves with its environment?
 
-13.9 Emacs on a graphical terminal emulator
-===========================================
+13.10 Emacs on a graphical terminal emulator
+============================================
 
 This is the ‘Emacs’ launched from a terminal typing ‘emacs -nw’.  In
 this environment, ‘<insert>’ does not exist.  It is replaced by
@@ -1784,7 +1838,7 @@ file:
 
 File: uniline.info,  Node: Emacs on Windows,  Prev: Emacs on a graphical terminal emulator,  Up: How Uniline behaves with its environment?
 
-13.10 Emacs on Windows
+13.11 Emacs on Windows
 ======================
 
 On Windows the only native mono-spaced fonts are ‘Lucida Console’ and
@@ -2250,6 +2304,10 @@ File: uniline.info,  Node: Author contributors,  Next: License,  Prev: Related p
    • karthink pointed to the new ‘Aporetic’ font family, which was then
      added to the ‘Uniline’ supported fonts
 
+   • rumengling on GitHub found and diagnosed the misaligned lines issue
+     produced by some "language environments" (see *note Language
+     environment::).
+
    Contributors:
 
    • JD Smith (jdtsmith on GitHub) rewrote the ‘:lighter’ for added
@@ -2293,80 +2351,81 @@ along with this program.  If not, see <http://www.gnu.org/licenses/>.
 
 Tag Table:
 Node: Top75
-Node: Getting started in 10 seconds2646
-Node: New3252
-Node: Pure UNICODE text diagrams in Emacs3624
-Node: Document a command4170
-Node: Connect boxes with arrows4700
-Node: Explain decisions trees6017
-Node: Draw lines or blocks7520
-Node: Outline the General Relativity and the Schrödinger's equations9059
-Node: Explain the structure of a sentence in a foreign language11745
-Node: Explain Lisp lists13322
-Node: Draw sketched objects14535
-Node: Pure text16497
-Node: Beware!17226
-Node: A minor mode for drawing17519
-Node: Minor mode17804
-Node: Draw lines by moving the cursor18366
-Node: Brush style19121
-Node: Text direction20261
-Node: The <insert> key20811
-Node: Glyphs ▷ ▶ → □ ◆ ╮─ insertion & modification21812
-Node: Arrows glyphs ▷ ▶ → ▹ ▸ ↔22538
-Node: Intersection glyphs ■ ◆ ●24110
-Node: Fine tweaking of lines26828
-Node: Rectangular actions28711
-Node: Drawing a rectangle30043
-Node: Filling a rectangle31694
-Node: Moving a rectangle32459
-Node: Copying killing yanking a rectangle33891
-Node: Dashed lines and other styles35050
-Node: ASCII to UNICODE39166
-Node: Long range actions contour and flood-fill42849
-Node: Tracing a contour43112
-Node: Flood-fill45026
-Node: Macros46800
-Node: Which fonts?50191
-Node: Hydra or Transient?52343
-Node: Selecting Hydra or Transient53289
-Node: One-liner menus54259
-Node: The Hydra interface56187
-Node: The Transient interface56860
-Node: Customization57398
-Node: Interface type (obsolete)58249
-Node: Insert key58576
-Node: Maximum steps when drawing a contour59369
-Node: Cursor type59699
-Node: Hint style60024
-Node: Welcome message visibility60371
-Node: Line spacing60752
-Node: Font62218
-Node: How Uniline behaves with its environment?62709
-Node: Compatibility with Picture-mode63250
-Node: Compatibility with Artist-mode64168
-Node: Compatibility with Whitespace-mode64687
-Node: Compatibility with Org Mode65587
-Node: Org Mode and LaTex67008
-Node: What about \t tabs?68868
-Node: What about ^L page separation?69516
-Node: Emacs on the Linux console70139
-Node: Emacs on a graphical terminal emulator71099
-Node: Emacs on Windows72027
-Node: Lisp API72671
-Node: Move the cursor73221
-Node: Brush73652
-Node: Example Lisp function to draw a plus sign74521
-Node: Long range actions (contour flood-fill rectangle)76357
-Node: Constants77295
-Node: Macro and text direction77710
-Node: Insert and tweak glyphs78645
-Node: Change to alternate styles79647
-Node: Mouse support80556
-Node: Installation81440
-Node: Related packages83779
-Node: Author contributors86898
-Node: License88590
+Node: Getting started in 10 seconds2671
+Node: New3277
+Node: Pure UNICODE text diagrams in Emacs3583
+Node: Document a command4129
+Node: Connect boxes with arrows4659
+Node: Explain decisions trees5976
+Node: Draw lines or blocks7479
+Node: Outline the General Relativity and the Schrödinger's equations9018
+Node: Explain the structure of a sentence in a foreign language11704
+Node: Explain Lisp lists13281
+Node: Draw sketched objects14494
+Node: Pure text16456
+Node: Beware!17185
+Node: A minor mode for drawing17765
+Node: Minor mode18050
+Node: Draw lines by moving the cursor18612
+Node: Brush style19367
+Node: Text direction20507
+Node: The <insert> key21057
+Node: Glyphs ▷ ▶ → □ ◆ ╮─ insertion & modification22058
+Node: Arrows glyphs ▷ ▶ → ▹ ▸ ↔22784
+Node: Intersection glyphs ■ ◆ ●24356
+Node: Fine tweaking of lines27074
+Node: Rectangular actions28957
+Node: Drawing a rectangle30289
+Node: Filling a rectangle31940
+Node: Moving a rectangle32705
+Node: Copying killing yanking a rectangle34137
+Node: Dashed lines and other styles35296
+Node: ASCII to UNICODE39412
+Node: Long range actions contour and flood-fill43095
+Node: Tracing a contour43358
+Node: Flood-fill45272
+Node: Macros47046
+Node: Which fonts?50437
+Node: Hydra or Transient?52589
+Node: Selecting Hydra or Transient53535
+Node: One-liner menus54505
+Node: The Hydra interface56433
+Node: The Transient interface57106
+Node: Customization57644
+Node: Interface type (obsolete)58495
+Node: Insert key58822
+Node: Maximum steps when drawing a contour59615
+Node: Cursor type59945
+Node: Hint style60270
+Node: Welcome message visibility60617
+Node: Line spacing60998
+Node: Font62464
+Node: How Uniline behaves with its environment?62955
+Node: Language environment63521
+Node: Compatibility with Picture-mode65010
+Node: Compatibility with Artist-mode65957
+Node: Compatibility with Whitespace-mode66476
+Node: Compatibility with Org Mode67376
+Node: Org Mode and LaTex68797
+Node: What about \t tabs?70657
+Node: What about ^L page separation?71305
+Node: Emacs on the Linux console71928
+Node: Emacs on a graphical terminal emulator72888
+Node: Emacs on Windows73818
+Node: Lisp API74462
+Node: Move the cursor75012
+Node: Brush75443
+Node: Example Lisp function to draw a plus sign76312
+Node: Long range actions (contour flood-fill rectangle)78148
+Node: Constants79086
+Node: Macro and text direction79501
+Node: Insert and tweak glyphs80436
+Node: Change to alternate styles81438
+Node: Mouse support82347
+Node: Installation83231
+Node: Related packages85570
+Node: Author contributors88689
+Node: License90544
 
 End Tag Table
 

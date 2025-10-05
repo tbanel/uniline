@@ -28,9 +28,9 @@
 :CUSTOM_ID: new
 :END:
 
-Use =C-t= to toggle one-liner vs. full fledged menus, both in Hydra &
-Transient. In Hydra, it used to be =TAB=. Transient natively offers =C-t=,
-but just in one direction; =Uniline= extends it to both directions.
+Sometimes while drawing a line, the line gets broken and
+misaligned. The issue was discovered and diagnosed by a user. See
+[[#language-environment][Language environment]] for details.
 
 * Table of Contents
 :PROPERTIES:
@@ -89,6 +89,7 @@ but just in one direction; =Uniline= extends it to both directions.
   - [[#line-spacing][Line spacing]]
   - [[#font][Font]]
 - [[#how-uniline-behaves-with-its-environment][How Uniline behaves with its environment?]]
+  - [[#language-environment][Language environment]]
   - [[#compatibility-with-picture-mode][Compatibility with Picture-mode]]
   - [[#compatibility-with-artist-mode][Compatibility with Artist-mode]]
   - [[#compatibility-with-whitespace-mode][Compatibility with Whitespace-mode]]
@@ -380,7 +381,12 @@ draw lines while you move the cursor with keyboard arrows.
 
 If you see those diagrams miss-aligned, most likely the font used to
 display them does not support UNICODE block characters. See bellow the
-paragraph "Which fonts?".
+paragraph [[#which-fonts][Which fonts?]] for details.
+
+If you get misalignment when drawing, this could come from too wide
+characters. Emojis are an example. Usual characters may also be
+considered twice as wide as normal under some "language
+environments". See the paragraph [[#language-environment][Language environment]] for details.
 
 * A minor mode for drawing
 :PROPERTIES:
@@ -1448,6 +1454,58 @@ and retain your choice for future sessions.
 :PROPERTIES:
 :CUSTOM_ID: how-uniline-behaves-with-its-environment
 :END:
+** Language environment
+:PROPERTIES:
+:CUSTOM_ID: language-environment
+:END:
+The so called "language environment" in Emacs can cause unwanted line
+breaks, like in this drawing:
+
+[[file:images/broken-lines-lang-env.png]]
+
+#+begin_example
+
+  ╶───────────┬─────╮
+                         │           │
+                         │           │
+                         │           │
+                         ╰───────────╯
+     unexpected broken lines
+
+  ╶─────┬───────────╮
+        │           │
+        │           │
+        │           │
+        ╰───────────╯
+     expected continuous lines
+
+#+end_example
+
+The above example was drawn first with the =Chinese-BIG5= language
+environment, then with the =English= environment.
+
+In =Chinese-BIG5=, some characters are considered twice as wide as
+standard characters. Whereas in =English=, all characters needed by
+Uniline are 1 unit wide.
+
+Thanks to *rumengling* (GitHub) for discovering and diagnosing the
+issue!
+
+The workaround for the time being, is to change the language while
+using Uniline. To do so, type:
+
+#+begin_example
+C-x RET l UTF-8
+#+end_example
+
+or
+
+#+begin_example
+C-x RET l English
+#+end_example
+
+A more satisfying solution is being investigated. Stay tuned.
+
 ** Compatibility with Picture-mode
 :PROPERTIES:
 :CUSTOM_ID: compatibility-with-picture-mode
@@ -2118,6 +2176,9 @@ Feedback:
 
 - karthink pointed to the new =Aporetic= font family, which was then
   added to the =Uniline= supported fonts
+
+- rumengling on GitHub found and diagnosed the misaligned lines issue
+  produced by some "language environments" (see [[#language-environment][Language environment]]).
 
 Contributors:
 
