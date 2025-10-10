@@ -1608,7 +1608,7 @@ When FORCE is not nil, overwrite a possible non-4halfs character."
         (uniline--char-to-4quadb ?█))))) ; this is constant 15 = 0b1111
 
 (eval-when-compile ; not needed at runtime
-  (defmacro uniline--write-impl (dir force)
+  (defmacro uniline--write-impl (dir repeat force)
     "Move cursor in direction DIR drawing or erasing lines.
 Or extending region.
 This is an implementation function for the 4 actual functions.
@@ -1626,20 +1626,20 @@ When FORCE is not nil, overwrite characters which are not lines."
     (let* ((dir (eval dir)) ;; to convert 'uniline-direction-dw↓ into 2
            (odir (uniline--reverse-direction dir)))
       `(progn
-         (unless repeat (setq repeat 1))
+         (unless ,repeat (setq ,repeat 1))
          (setq uniline--arrow-direction ,dir)
          (handle-shift-selection)
          (cond
           ((region-active-p)
            ;; region is marked, continue extending it
-           (uniline--move-in-direction ,dir repeat)
+           (uniline--move-in-direction ,dir ,repeat)
            (setq deactivate-mark nil))
 
           ((eq uniline-brush :block)
            ;; draw quadrant-blocks ▝▙▄▌
            (uniline--store-undo-quadrant-cursor)
            (cl-loop
-            repeat repeat
+            repeat ,repeat
             do
 
             (if (eq
@@ -1674,7 +1674,7 @@ When FORCE is not nil, overwrite characters which are not lines."
           (t
            ;; draw lines ╰──╮
            (cl-loop
-            repeat repeat
+            repeat ,repeat
             do
             (uniline--write-one-4halfs ,dir ,force)
             (uniline--move-in-direction ,dir)
@@ -1693,7 +1693,7 @@ or the length to extend region.
 REPEAT defaults to 1.
 When FORCE is not nil, overwrite characters which are not lines."
   (interactive "P")
-  (uniline--write-impl uniline-direction-up↑ force))
+  (uniline--write-impl uniline-direction-up↑ repeat force))
 
 (defun uniline-write-ri→ (repeat &optional force)
   "Move cursor right drawing or erasing glyphs, or extending region.
@@ -1708,7 +1708,7 @@ or the length to extend region.
 REPEAT defaults to 1.
 When FORCE is not nil, overwrite characters which are not lines."
   (interactive "P")
-  (uniline--write-impl uniline-direction-ri→ force))
+  (uniline--write-impl uniline-direction-ri→ repeat force))
 
 (defun uniline-write-dw↓ (repeat &optional force)
   "Move cursor down drawing or erasing glyphs, or extending region.
@@ -1723,7 +1723,7 @@ or the length to extend region.
 REPEAT defaults to 1.
 When FORCE is not nil, overwrite characters which are not lines."
   (interactive "P")
-  (uniline--write-impl uniline-direction-dw↓ force))
+  (uniline--write-impl uniline-direction-dw↓ repeat force))
 
 (defun uniline-write-lf← (repeat &optional force)
   "Move cursor left drawing or erasing glyphs, or extending region.
@@ -1738,7 +1738,7 @@ or the length to extend region.
 REPEAT defaults to 1.
 When FORCE is not nil, overwrite characters which are not lines."
   (interactive "P")
-  (uniline--write-impl uniline-direction-lf← force))
+  (uniline--write-impl uniline-direction-lf← repeat force))
 
 (defun uniline-overwrite-up↑ (repeat)
   "Like `uniline-write-up↑' but overwriting.
