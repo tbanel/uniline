@@ -1158,8 +1158,9 @@ This list is ciurcular in backward order."))
 (eval-and-compile
   (defconst uniline--glyphs-fw
     (eval-when-compile
+      (let ((r (cl-copy-list uniline--glyphs-tmp)))
       ;; nconc is used to create a circular list on purpose
-      (nconc uniline--glyphs-tmp uniline--glyphs-tmp))
+        (nconc r r)))
     "List of good looking UNICODE glyphs.
 Those are:
 - arrows in 4 directions,
@@ -3470,6 +3471,69 @@ and highlighted."
   (interactive)
   (deactivate-mark))
 
+;;;╭────────────────────╮
+;;;│Language environment│
+;;;╰────────────────────╯
+
+;; Some language environments give a double width to some characters
+;; used by Uniline. For instance
+;;   M-x set-language-environment Chinese-BIG5
+;; gives a width of 2 to ─
+;; It does so through char-width-table, which is a global Emacs variable.
+;; So we fix that by patching (setq char-width-table …)
+;; to a new table which inherit from the original char-width-table,
+;; and set the witdh of all needed characters to 1.
+;; No attempt is done to revert the change on exiting uniline-mode,
+;; because this would create more problems than it solves.
+;; To revert char-width-table, just re-set the language environments:
+;;   C-x RET l Chinese-BIG5
+
+(defun uniline--fix-char-width-table ()
+  "Create a descendent of char-width-table with characters widths set to 1.
+It does so for all characters Uniline creates.
+The process is lazy in the sense that if a character already has a width of 1,
+its entry in the table is left as is."
+  (let ((allchars))
+    (maphash ;; list characters like ╶─┴╮╶╼━┻━┳━═══╩╦╸
+     (lambda (key _val) (push key allchars))
+     uniline--char-to-4halfs)
+    (cl-loop ;; list characters like ▝▙▄█ ▗▄▖ ▖ ▘
+     for e across uniline--4quadb-to-char
+     do (push e allchars))
+    (let ((x uniline--glyphs-fw)) ;; warning: circular list
+      (while ;; list characters like ◁▲→□■·●╳
+          (progn
+            (setq allchars (append (cdr (car x)) allchars))
+            (not (eq (setq x (cdr x)) uniline--glyphs-fw)))))
+    (setq allchars (sort allchars #'<=))
+    (cl-loop ;; filter out characters already 1 in width, and duplicates
+     for  iter on allchars
+     for  curr  = (car iter)
+     with prev  = nil
+     do
+     (if (or
+          (eq prev curr)                       ;; duplicate
+          (eq (aref char-width-table curr) 1)) ;; width already 1
+         (setcar iter nil))
+     (setq prev curr))
+    (setq allchars (delq nil allchars))
+
+    (if allchars ;; patch only if there are characters to patch
+      (let ((ct (make-char-table nil)))
+        (nconc allchars (list nil))     ;; a last entry to close the algorithm
+        (cl-loop
+         for  curr in (cdr allchars)
+         with prev  = (car allchars)
+         with start = (car allchars)
+         do
+         (if (eq curr prev) (message "duplicate cannot happen"))
+         (unless (eq (1+ prev) curr)
+           (set-char-table-range ct (cons start prev) 1)
+           (setq start curr))
+         (setq prev curr))
+        (set-char-table-parent ct char-width-table)
+        (setq char-width-table ct)))))
+
 ;;;╭─────────────╮
 ;;;│Mouse support│
 ;;;╰─────────────╯
@@ -3671,16 +3735,6 @@ so any possible choice is available."
   :local t
   :group 'uniline)
 
-(defvar-local uniline--remember-settings
-    nil
-  "Remember settings before entering uniline minor-mode.
-It is a list containing:
-  - `overwrite-mode'
-  - `indent-tabs-mode'
-  - `truncate-lines'
-  - `cursor-type'
-  - `post-self-insert-hook'")
-
 ;; toggle between normal hydra hints, and one-liners
 (defcustom uniline-hint-style t
   "Which kind of hint message should the Hydras menus display?
@@ -3760,6 +3814,16 @@ text within will be colored."
   (uniline-toggle-hints)
   (uniline--welcome-message))
 
+(defvar-local uniline--remember-settings
+    nil
+  "Remember settings before entering uniline minor-mode.
+It is a list containing:
+  - `overwrite-mode'
+  - `indent-tabs-mode'
+  - `truncate-lines'
+  - `cursor-type'
+  - `post-self-insert-hook'")
+
 (defun uniline--mode-pre ()
   "Change settings when entering uniline mode.
 And backup previous settings."
@@ -3778,6 +3842,7 @@ And backup previous settings."
    'post-self-insert-hook
    #'uniline--post-self-insert
    nil 'local)
+  (uniline--fix-char-width-table)
   (uniline-toggle-hints t)
   (uniline--update-mode-line)
   (if uniline-show-welcome-message

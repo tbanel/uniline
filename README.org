@@ -1484,6 +1484,14 @@ breaks, like in this drawing:
 The above example was drawn first with the =Chinese-BIG5= language
 environment, then with the =English= environment.
 
+There is nothing specific about =Chinese-BIG5=. It is just an instance
+picked out from more than 100 language environments.
+
+#+begin_example
+C-x RET l Chinese-BIG5
+C-x RET l English
+#+end_example
+
 In =Chinese-BIG5=, some characters are considered twice as wide as
 standard characters. Whereas in =English=, all characters needed by
 Uniline are 1 unit wide.
@@ -1491,20 +1499,24 @@ Uniline are 1 unit wide.
 Thanks to *rumengling* (GitHub) for discovering and diagnosing the
 issue!
 
-The workaround for the time being, is to change the language while
-using Uniline. To do so, type:
+To workaround the issue, when entering =uniline-mode=, the width of all
+characters Uniline uses is checked. If some of them are more than 1,
+the =char-width-table= variable is patched.
 
-#+begin_example
-C-x RET l UTF-8
-#+end_example
+What are the consequences of this patch? The =char-width-table= variable
+is an Emacs global. Therefore the patch by Uniline will affect all
+buffers. As the characters touched by the patch are graphic, and have
+nothing to do with Chinese, it should not have any significance on
+text written in Chinese.
 
-or
+It was pondered whether Uniline should put back =char-width-table= at
+its original value upon exiting =uniline-mode=, or leaving the
+patch. For now, it has been decided to leave it. Because anyway,
+intertwining several =uniline-mode= and changes to the language
+environment is intractable.
 
-#+begin_example
-C-x RET l English
-#+end_example
-
-A more satisfying solution is being investigated. Stay tuned.
+In case of something, re-setting the language environment to its same
+value cancels the patch to =char-width-table= by Uniline.
 
 ** Compatibility with Picture-mode
 :PROPERTIES:
