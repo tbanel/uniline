@@ -3911,7 +3911,7 @@ And backup previous settings."
 │ \\`a' or \\`A' arrows ▷ ▶ → ▹ ▸ ↔
 │ \\`s' or \\`S' squares  □ ■ ◆ ◊
 │ \\`o' or \\`O' circles  · ● ◦ Ø ø
-│ \\`x' or \\`X' crosses  ╳ ÷ × ± ¤
+│ \\`x' or \\`X' crosses  ╳ ╱ ╲ ÷ × ± ¤
 │ Shifting the key cycles backward
 ├─Arrow direction────────────╴
 │ \\`S-<right>' point arrow → right
@@ -4097,10 +4097,10 @@ with the one used to invoke Uniline-mode."
     ["inactive brush" uniline-set-brush-nil   :style radio :selected (eq uniline-brush nil   )]
     "----"
     ("Insert glyph"
-     ["insert arrow ▷ ▶ → ▹ ▸ ↔" uniline-insert-fw-arrow  :keys "INS a"]
-     ["insert square □ ■ ◆ ◊"    uniline-insert-fw-square :keys "INS s"]
-     ["insert oshape · ● ◦ Ø ø"  uniline-insert-fw-oshape :keys "INS o"]
-     ["insert cross ╳ ÷ × ± ¤"   uniline-insert-fw-cross  :keys "INS x"])
+     ["insert arrow ▷ ▶ → ▹ ▸ ↔"   uniline-insert-fw-arrow  :keys "INS a"]
+     ["insert square □ ■ ◆ ◊"      uniline-insert-fw-square :keys "INS s"]
+     ["insert oshape · ● ◦ Ø ø"    uniline-insert-fw-oshape :keys "INS o"]
+     ["insert cross ╳ ╱ ╲ ÷ × ± ¤" uniline-insert-fw-cross  :keys "INS x"])
     ("Rotate arrow, tweak ¼ line"
      ["rotate arrow, tweak ¼ line → right" uniline-rotate-ri→ :keys "INS S-<right>"]
      ["rotate arrow, tweak ¼ line ← left"  uniline-rotate-lf← :keys "INS S-<left>" ]

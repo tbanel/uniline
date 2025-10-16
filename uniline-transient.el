@@ -152,6 +152,7 @@ for later menu invocation in the same Uniline session."
   :transient-non-suffix 'transient-quit-one
   [:class
    transient-columns
+   :pad-keys t
    ["Try a font"
     ("d" (lambda () (uniline--font-name-ticked ?d)) uniline--set-font-d :transient t)
     ("h" (lambda () (uniline--font-name-ticked ?h)) uniline--set-font-h :transient t)
@@ -169,10 +170,10 @@ for later menu invocation in the same Uniline session."
     ("p" (lambda () (uniline--font-name-ticked ?p)) uniline--set-font-p :transient t)
     ("P" (lambda () (uniline--font-name-ticked ?P)) uniline--set-font-P :transient t)]
    ["Actions"
-    ("*" "Configure" uniline-customize-face)
+    ("*"   "Configure"  uniline-customize-face)
     ("C-t" "Togg hints" uniline-toggle-transient-hints-suffix)
-    ("q" "  Quit" transient-quit-one)
-    ("RET" "Quit" (lambda () (interactive)) :transient nil)]]
+    ("q"   "Quit"       transient-quit-one)
+    ("RET" "Quit"       (lambda () (interactive)) :transient nil)]]
   (interactive)
   (transient-setup 'uniline-transient-fonts))
 
@@ -183,37 +184,38 @@ for later menu invocation in the same Uniline session."
   :transient-non-suffix 'transient--do-leave
   [:class
    transient-columns
+   :pad-keys t
    ["Insert"
-    ("a" "▷▶→▹▸↔" uniline-insert-fw-arrow  :transient t)
-    ("s" "□■◆◊"  uniline-insert-fw-square :transient t)
-    ("o" "·●◦Øø"  uniline-insert-fw-oshape :transient t)
-    ("x" "╳÷×±¤"  uniline-insert-fw-cross  :transient t)]
+    ("a" "▷▶→▹▸↔"  uniline-insert-fw-arrow  :transient t)
+    ("s" "□■◆◊"    uniline-insert-fw-square :transient t)
+    ("o" "·●◦Øø"   uniline-insert-fw-oshape :transient t)
+    ("x" "╳╱╲÷×±¤" uniline-insert-fw-cross  :transient t)]
    [""
-    ("A" "↔▸▹→▶▷" uniline-insert-bw-arrow  :transient t)
-    ("S" "◊◆■□"  uniline-insert-bw-square :transient t)
-    ("O" "øØ◦●·"  uniline-insert-bw-oshape :transient t)
-    ("X" "¤±×÷╳"  uniline-insert-bw-cross  :transient t)]
+    ("A" "↔▸▹→▶▷"  uniline-insert-bw-arrow  :transient t)
+    ("S" "◊◆■□"    uniline-insert-bw-square :transient t)
+    ("O" "øØ◦●·"   uniline-insert-bw-oshape :transient t)
+    ("X" "¤±×÷╲╱╳" uniline-insert-bw-cross  :transient t)]
    [""
-    ("-" " -" uniline--self-insert-- :transient t)
-    ("+" " +" uniline--self-insert-+ :transient t)
-    ("=" " =" self-insert-command    :transient t)
-    ("#" " #" self-insert-command    :transient t)]
+    ("-" "-" uniline--self-insert-- :transient t)
+    ("+" "+" uniline--self-insert-+ :transient t)
+    ("=" "=" self-insert-command    :transient t)
+    ("#" "#" self-insert-command    :transient t)]
    ["Rotate & tweak"
-    ("S-<up>" "   ↑" uniline-rotate-up↑ :transient t)
+    ("S-<up>"    "↑" uniline-rotate-up↑ :transient t)
     ("S-<right>" "→" uniline-rotate-ri→ :transient t)
-    ("S-<down>" " ↓" uniline-rotate-dw↓ :transient t)
-    ("S-<left>" " ←" uniline-rotate-lf← :transient t)]
+    ("S-<down>"  "↓" uniline-rotate-dw↓ :transient t)
+    ("S-<left>"  "←" uniline-rotate-lf← :transient t)]
    ["Text dir"
-    ("C-<up>" "   ↑" uniline-text-direction-up↑ :transient nil)
+    ("C-<up>"    "↑" uniline-text-direction-up↑ :transient nil)
     ("C-<right>" "→" uniline-text-direction-ri→ :transient nil)
-    ("C-<down>" " ↓" uniline-text-direction-dw↓ :transient nil)
-    ("C-<left>" " ←" uniline-text-direction-lf← :transient nil)]
+    ("C-<down>"  "↓" uniline-text-direction-dw↓ :transient nil)
+    ("C-<left>"  "←" uniline-text-direction-lf← :transient nil)]
    ["Contour, Fill"
     ("c" "Draw  contour" uniline-contour)
     ("C" "Ovwrt contour" (lambda () (interactive) (uniline-contour t)))
     ("i" "Fill area"     uniline-fill)]
    ["Navigation"
-    ("f" "Choose font" uniline-transient-fonts)
+    ("f"  "Choose font" uniline-transient-fonts)
     ("C-t" "Togg hints" uniline-toggle-transient-hints-suffix)
     ("RET" "Quit" (lambda () (interactive)) :transient nil)]]
   (interactive)
@@ -235,28 +237,29 @@ for later menu invocation in the same Uniline session."
   :transient-non-suffix 'transient-quit-one
   [:class
    transient-columns
+   :pad-keys t
    ["Dashes"
     ("3"    "3x2 dots" uniline-change-style-dot-3-2      :transient t)
     ("4"    "4x4 dots" uniline-change-style-dot-4-4      :transient t)
     ("h" "hard corner" uniline-change-style-hard-corners :transient t)]
    ["Thickness"
-    ("-" "thin"   uniline-change-style-thin   :transient t)
-    ("+" "thick"  uniline-change-style-thick  :transient t)
-    ("=" "double" uniline-change-style-double :transient t)]
+    ("-"        "thin" uniline-change-style-thin         :transient t)
+    ("+"       "thick" uniline-change-style-thick        :transient t)
+    ("="      "double" uniline-change-style-double       :transient t)]
    ["Base style"
-    ("0" "standard" uniline-change-style-standard :transient t)
-    ("a"     "aa2u" uniline-aa2u-rectangle        :transient t)]
+    ("0"    "standard" uniline-change-style-standard     :transient t)
+    ("a"        "aa2u" uniline-aa2u-rectangle            :transient t)]
    ;;["Move rectangle"
    ;; ("<right>" "→" uniline-move-rect-ri→ :transient t)
    ;; ("<left>"  "←" uniline-move-rect-lf← :transient t)
    ;; ("<up>"    "↑" uniline-move-rect-up↑ :transient t)
    ;; ("<down>"  "↓" uniline-move-rect-dw↓ :transient t)]
    ["Misc"
-    ("f"       "fonts" uniline-transient-fonts)
-    ("C-_"     "undo" uniline--rect-undo :transient t)
+    ("f"        "fonts" uniline-transient-fonts)
+    ("C-_"       "undo" uniline--rect-undo :transient t)
     ("C-t" "Togg hints" uniline-toggle-transient-hints-suffix)
-    ("s"       "back" uniline-transient-moverect)
-    ("RET"     "exit" uniline--rect-quit)]
+    ("s"         "back" uniline-transient-moverect)
+    ("RET"       "exit" uniline--rect-quit)]
    ]
   (interactive)
   (rectangle-mark-mode 1)
@@ -268,30 +271,31 @@ for later menu invocation in the same Uniline session."
   :transient-non-suffix 'transient-quit-one
   [:class
    transient-columns
+   :pad-keys t
    ["Move"
-    ("<left>" " ←" uniline-move-rect-lf← :transient t)
+    ("<left>"  "←" uniline-move-rect-lf← :transient t)
     ("<right>" "→" uniline-move-rect-ri→ :transient t)
-    ("<up>" "   ↑" uniline-move-rect-up↑ :transient t)
-    ("<down>" " ↓" uniline-move-rect-dw↓ :transient t)]
+    ("<up>"    "↑" uniline-move-rect-up↑ :transient t)
+    ("<down>"  "↓" uniline-move-rect-dw↓ :transient t)]
    ["Draw"
-    ("r" "    Trace inner" uniline-draw-inner-rectangle      :transient t)
-    ("R" "    Trace outer" uniline-draw-outer-rectangle      :transient t)
-    ("C-r" "  Ovwrt inner" uniline-overwrite-inner-rectangle :transient t)
+    ("r"     "Trace inner" uniline-draw-inner-rectangle      :transient t)
+    ("R"     "Trace outer" uniline-draw-outer-rectangle      :transient t)
+    ("C-r"   "Ovwrt inner" uniline-overwrite-inner-rectangle :transient t)
     ("C-S-R" "Ovwrt outer" uniline-overwrite-outer-rectangle :transient t)
-    ("i" "    Fill"        uniline-fill-rectangle            :transient t)]
+    ("i"     "Fill"        uniline-fill-rectangle            :transient t)]
    ["Copy-paste"
     ("c" "Copy" uniline-copy-rectangle :transient nil)
     ("k" "Kill" uniline-kill-rectangle :transient nil)
     ("y" "Yank" uniline-yank-rectangle :transient t)]
    ["Brush"
-    ("-" "  ╭─╯" uniline-set-brush-1     :transient t)
-    ("+" "  ┏━┛" uniline-set-brush-2     :transient t)
-    ("=" "  ╔═╝" uniline-set-brush-3     :transient t)
-    ("#" "  ▄▄▟" uniline-set-brush-block :transient t)
+    ("-"   "╭─╯" uniline-set-brush-1     :transient t)
+    ("+"   "┏━┛" uniline-set-brush-2     :transient t)
+    ("="   "╔═╝" uniline-set-brush-3     :transient t)
+    ("#"   "▄▄▟" uniline-set-brush-block :transient t)
     ("DEL" "DEL" uniline-set-brush-0     :transient t)]
    ["Misc"
-    ("s" "  Line styles" uniline-transient-alt-styles)
-    ("f" "  Choose font" uniline-transient-fonts)
+    ("s"   "Line styles" uniline-transient-alt-styles)
+    ("f"   "Choose font" uniline-transient-fonts)
     ;;("C-x C-x" "Exchg point-mark" rectangle-exchange-point-and-mark :transient t)
     ("C-_" "Undo"        uniline--rect-undo)
     ("C-t" "Togg hints"  uniline-toggle-transient-hints-suffix)
@@ -334,16 +338,17 @@ for later menu invocation in the same Uniline session."
   :transient-non-suffix 'transient-quit-one
   [:class
    transient-columns
+   :pad-keys t
    ["Call macro in direction"
     ("<right>"   "→" uniline--transient-call-macro-in-direction-ri→)
-    ("<up>"   "   ↑" uniline--transient-call-macro-in-direction-up↑)
-    ("<down>"   " ↓" uniline--transient-call-macro-in-direction-dw↓)
-    ("<left>"   " ←" uniline--transient-call-macro-in-direction-lf←)]
+    ("<up>"      "↑" uniline--transient-call-macro-in-direction-up↑)
+    ("<down>"    "↓" uniline--transient-call-macro-in-direction-dw↓)
+    ("<left>"    "←" uniline--transient-call-macro-in-direction-lf←)]
    [""
-    ("e" "  Normal call" uniline--transient-call-macro)
-    ("C-t" "Togg hints" uniline-toggle-transient-hints-suffix)
-    ("RET" "Quit" transient-quit-one)
-    ("q" "  Quit" transient-quit-one)]
+    ("e"   "Normal call" uniline--transient-call-macro)
+    ("C-t" "Togg hints"  uniline-toggle-transient-hints-suffix)
+    ("RET" "Quit"        transient-quit-one)
+    ("q"   "Quit"        transient-quit-one)]
    ]
   (interactive)
   (transient-setup 'uniline-transient-macro-exec))
