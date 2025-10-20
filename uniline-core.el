@@ -545,7 +545,10 @@ range of [0..256).  It is handy to index vectors rather than
     '(;;╭───────────────unicode char
       ;;│  ╭─┬─┬─┬──────4half description
       ;;▽  ▽ ▽ ▽ ▽
-      ( ?  0 0 0 0 )
+      (?\t 0 0 0 0 ) ;; TAB character     considered as a space
+      ( ?  0 0 0 0 ) ;; NO-BREAK SPACE    considered as a space
+      (8200 0 0 0 0) ;; PUNCTUATION SPACE considered as a space
+      ( ?  0 0 0 0 ) ;; real space comes AFTER the exotic spaces
       ( ?╵ 1 0 0 0 )
       ( ?╹ 2 0 0 0 )
       ( ?╶ 0 1 0 0 )
@@ -866,7 +869,10 @@ which in turn is converted to ┕."))
        collect
        (cons (car x)
              (uniline--pack-4halfs (cdr x)))))
-    128 'eq
+    256 'eq
+    ;; the setting 256 'eq
+    ;; creates 1 collision between almost never used characters
+    ;; this is the best that can be done
     "Convert a UNICODE character to a 4halfs description.
 The UNICODE character is supposed to represent
 a combination of half lines in 4 directions
@@ -1267,11 +1273,15 @@ of this table."))
 (eval-and-compile
   (uniline--defconst-hash-table uniline--char-to-4quadb1
     (eval-when-compile
-      (cl-loop
-       for c across uniline--4quadb-to-char
-       for i from 0
-       collect (cons c i)))
-    32 'eq
+      (append
+       '((?\t .  0)  ;; TAB considered as space character
+         (?    . 0)  ;; NO-BREAK SPACE
+         (8200 . 0)) ;; PUNCTUATION SPACE
+       (cl-loop
+        for c across uniline--4quadb-to-char
+        for i from 0
+        collect (cons c i))))
+    64 'eq
     "Convert a UNICODE character to a quadrant bitmap.
 Reverse of `uniline--4quadb-to-char'"))
 
@@ -1359,6 +1369,10 @@ Folds to a single number if DIR & 4QUADB are themselves numbers."
 
 (defun uniline--insert-char (char)
   "Insert CHAR in overwrite mode avoiding cursor moving."
+  ;; automatic untabification with (move-to-column … t)
+  ;; is not enough when cursor goes right onto the beginning of a TAB
+  (if (eq (char-after) ?\t)
+      (untabify (point) (1+ (point))))
   ;; `insert' before `delete-char' to preserve `point-marker'
   (insert char)
   (or (eolp) (delete-char 1))

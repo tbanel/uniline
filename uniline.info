@@ -146,9 +146,10 @@ File: uniline.info,  Node: New,  Next: Pure UNICODE text diagrams in Emacs,  Pre
 2 New
 *****
 
-Sometimes while drawing a line, the line gets broken and misaligned.
-The issue was discovered and diagnosed by a user.  See *note Language
-environment:: for details.
+Tabulation characters were taken into account, except when drawing right
+onto a TAB.  This is fixed: a tabulation behave as a space.
+Non-breakable spaces and punctuation spaces are also now regarded as
+spaces.
 
 
 File: uniline.info,  Node: Pure UNICODE text diagrams in Emacs,  Next: A minor mode for drawing,  Prev: New,  Up: Top
@@ -2367,79 +2368,79 @@ Tag Table:
 Node: Top75
 Node: Getting started in 10 seconds2671
 Node: New3277
-Node: Pure UNICODE text diagrams in Emacs3583
-Node: Document a command4129
-Node: Connect boxes with arrows4659
-Node: Explain decisions trees5976
-Node: Draw lines or blocks7479
-Node: Outline the General Relativity and the Schrödinger's equations9018
-Node: Explain the structure of a sentence in a foreign language11704
-Node: Explain Lisp lists13281
-Node: Draw sketched objects14494
-Node: Pure text16456
-Node: Beware!17185
-Node: A minor mode for drawing17765
-Node: Minor mode18050
-Node: Draw lines by moving the cursor18612
-Node: Brush style19367
-Node: Text direction20507
-Node: The <insert> key21057
-Node: Glyphs ▷ ▶ → □ ◆ ╮─ insertion & modification22058
-Node: Arrows glyphs ▷ ▶ → ▹ ▸ ↔22784
-Node: Intersection glyphs ■ ◆ ●24356
-Node: Fine tweaking of lines27074
-Node: Rectangular actions28957
-Node: Drawing a rectangle30289
-Node: Filling a rectangle31940
-Node: Moving a rectangle32705
-Node: Copying killing yanking a rectangle34137
-Node: Dashed lines and other styles35296
-Node: ASCII to UNICODE39412
-Node: Long range actions contour and flood-fill43095
-Node: Tracing a contour43358
-Node: Flood-fill45272
-Node: Macros47046
-Node: Which fonts?50437
-Node: Hydra or Transient?52589
-Node: Selecting Hydra or Transient53535
-Node: One-liner menus54505
-Node: The Hydra interface56433
-Node: The Transient interface57106
-Node: Customization57644
-Node: Interface type (obsolete)58495
-Node: Insert key58822
-Node: Maximum steps when drawing a contour59615
-Node: Cursor type59945
-Node: Hint style60270
-Node: Welcome message visibility60617
-Node: Line spacing60998
-Node: Font62464
-Node: How Uniline behaves with its environment?62955
-Node: Language environment63521
-Node: Compatibility with Picture-mode65926
-Node: Compatibility with Artist-mode66873
-Node: Compatibility with Whitespace-mode67392
-Node: Compatibility with Org Mode68292
-Node: Org Mode and LaTex69713
-Node: What about \t tabs?71573
-Node: What about ^L page separation?72221
-Node: Emacs on the Linux console72844
-Node: Emacs on a graphical terminal emulator73804
-Node: Emacs on Windows74734
-Node: Lisp API75378
-Node: Move the cursor75928
-Node: Brush76359
-Node: Example Lisp function to draw a plus sign77228
-Node: Long range actions (contour flood-fill rectangle)79064
-Node: Constants80002
-Node: Macro and text direction80417
-Node: Insert and tweak glyphs81352
-Node: Change to alternate styles82354
-Node: Mouse support83263
-Node: Installation84147
-Node: Related packages86486
-Node: Author contributors89605
-Node: License91460
+Node: Pure UNICODE text diagrams in Emacs3627
+Node: Document a command4173
+Node: Connect boxes with arrows4703
+Node: Explain decisions trees6020
+Node: Draw lines or blocks7523
+Node: Outline the General Relativity and the Schrödinger's equations9062
+Node: Explain the structure of a sentence in a foreign language11748
+Node: Explain Lisp lists13325
+Node: Draw sketched objects14538
+Node: Pure text16500
+Node: Beware!17229
+Node: A minor mode for drawing17809
+Node: Minor mode18094
+Node: Draw lines by moving the cursor18656
+Node: Brush style19411
+Node: Text direction20551
+Node: The <insert> key21101
+Node: Glyphs ▷ ▶ → □ ◆ ╮─ insertion & modification22102
+Node: Arrows glyphs ▷ ▶ → ▹ ▸ ↔22828
+Node: Intersection glyphs ■ ◆ ●24400
+Node: Fine tweaking of lines27118
+Node: Rectangular actions29001
+Node: Drawing a rectangle30333
+Node: Filling a rectangle31984
+Node: Moving a rectangle32749
+Node: Copying killing yanking a rectangle34181
+Node: Dashed lines and other styles35340
+Node: ASCII to UNICODE39456
+Node: Long range actions contour and flood-fill43139
+Node: Tracing a contour43402
+Node: Flood-fill45316
+Node: Macros47090
+Node: Which fonts?50481
+Node: Hydra or Transient?52633
+Node: Selecting Hydra or Transient53579
+Node: One-liner menus54549
+Node: The Hydra interface56477
+Node: The Transient interface57150
+Node: Customization57688
+Node: Interface type (obsolete)58539
+Node: Insert key58866
+Node: Maximum steps when drawing a contour59659
+Node: Cursor type59989
+Node: Hint style60314
+Node: Welcome message visibility60661
+Node: Line spacing61042
+Node: Font62508
+Node: How Uniline behaves with its environment?62999
+Node: Language environment63565
+Node: Compatibility with Picture-mode65970
+Node: Compatibility with Artist-mode66917
+Node: Compatibility with Whitespace-mode67436
+Node: Compatibility with Org Mode68336
+Node: Org Mode and LaTex69757
+Node: What about \t tabs?71617
+Node: What about ^L page separation?72265
+Node: Emacs on the Linux console72888
+Node: Emacs on a graphical terminal emulator73848
+Node: Emacs on Windows74778
+Node: Lisp API75422
+Node: Move the cursor75972
+Node: Brush76403
+Node: Example Lisp function to draw a plus sign77272
+Node: Long range actions (contour flood-fill rectangle)79108
+Node: Constants80046
+Node: Macro and text direction80461
+Node: Insert and tweak glyphs81396
+Node: Change to alternate styles82398
+Node: Mouse support83307
+Node: Installation84191
+Node: Related packages86530
+Node: Author contributors89649
+Node: License91504
 
 End Tag Table
 

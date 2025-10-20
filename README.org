@@ -28,9 +28,10 @@
 :CUSTOM_ID: new
 :END:
 
-Sometimes while drawing a line, the line gets broken and
-misaligned. The issue was discovered and diagnosed by a user. See
-[[#language-environment][Language environment]] for details.
+Tabulation characters were taken into account, except when drawing
+right onto a TAB. This is fixed: a tabulation behave as a
+space. Non-breakable spaces and punctuation spaces are also now
+regarded as spaces.
 
 * Table of Contents
 :PROPERTIES:
