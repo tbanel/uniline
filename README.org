@@ -33,6 +33,11 @@ right onto a TAB. This is fixed: a tabulation behave as a
 space. Non-breakable spaces and punctuation spaces are also now
 regarded as spaces.
 
+Rectangles are first untabified (if there are TABs) before moving
+them. This avoids some rare instances of misalignment.
+
+See [[#what-about-t-tabs][What about \t tabs?]].
+
 * Table of Contents
 :PROPERTIES:
 :TOC:      :include all :depth 3 :force () :ignore (this) :local (nothing)
@@ -1678,9 +1683,13 @@ To export this Org Mode example to PDF through LaTex, type:
 Some files may contain tabs (the character =\t=). Those include
 programming code (Python, Perl, C++, D, Rust, JavaScript and so on).
 
-When =Uniline= draws something in the middle of a tab, it first
-converts it to spaces, then proceeds as usual. This process is
-invisible. So be cautious if tabs have a special meaning in the file.
+When =Uniline= draws something in the middle of a TAB, or right onto a
+TAB, it first converts it to spaces, then proceeds as usual. This
+process is invisible. So be cautious if TABs have a special meaning in
+the file.
+
+Also, rectangles are first untabified (if there are TABs) before
+moving them. This avoids some rare instances of misalignment.
 
 One way to see what is going on, is to activate the =whitespace-mode=.
 

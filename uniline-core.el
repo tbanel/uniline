@@ -2064,6 +2064,27 @@ Return the replaced region as a string."
     (insert hand)
     line))
 
+(defun uniline--untabity-rectangle (begy endy)
+  "Untabify all lines over which the rectangle operates.
+BEGY and ENDY are the line-numbers of the beggining en ending
+of the rectangle.
+The costly `untabify' function is called only if there are
+TAB characters in the region."
+  (let ((end
+         (progn
+           (uniline-move-to-line (1- endy))
+           (end-of-line)
+           (point)))
+        (beg
+         (progn
+           (uniline-move-to-line begy)
+           (beginning-of-line)
+           (point))))
+    ;; (point) is at beg
+    (when (search-forward "\t" end t)
+      (untabify beg end))))
+
+
 (defun uniline-move-rect-up↑ (repeat)
   "Move the rectangle marked by selection one line upper.
 Truncate the selection if it touches the upper side of the buffer.
@@ -2080,6 +2101,7 @@ defaulting to 1.
    repeat (or repeat 1)
    do
    (uniline--operate-on-rectangle
+    (uniline--untabity-rectangle begy endy)
     (setq
      begy (max (1- begy) 0)
      endy (max (1- endy) 0))
@@ -2105,6 +2127,7 @@ defaulting to 1.
    repeat (or repeat 1)
    do
    (uniline--operate-on-rectangle
+    (uniline--untabity-rectangle begy endy)
     (cl-loop
      with hand = (uniline--compute-leakage-on-region
                   uniline-direction-dw↓ begy begx endx)
@@ -2129,6 +2152,7 @@ defaulting to 1.
    repeat (or repeat 1)
    do
    (uniline--operate-on-rectangle
+    (uniline--untabity-rectangle begy endy)
     (cl-loop
      for y from begy below endy
      do
@@ -2156,6 +2180,7 @@ defaulting to 1.
    repeat (or repeat 1)
    do
    (uniline--operate-on-rectangle
+    (uniline--untabity-rectangle begy endy)
     (setq
      begx (max (1- begx) 0)
      endx (max (1- endx) 0))

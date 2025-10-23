@@ -20,9 +20,27 @@
 ;; along with this program.  If not, see <http://www.gnu.org/licenses/>.
 
 (uniline-bench
- "C-c C-c i n i t i a l SPC t e x t e <backspace> <return> SPC SPC g o o d <return> C-a M-x u n i l i n e - m o d e RET <up> <up> C-SPC <down> <right> <right> <right> <right> <right> <right> <right> <right> <right> <right> <right> <right> <insert> <down> <down> <right> <right> <right> R <end> <return> <kp-subtract> <right> q <return> <left> <kp-subtract> <down> <left> <left> <return> <up> <up> <right> <right> <down> <kp-subtract> <up> <right> <right> <right> <up> <up> <up> <return> <down> <down> <down> <up> <up> <right> <down> <down> <down> C-SPC <left> <left> <left> <left> <left> <left> <left> <left> <left> <left> <left> <left> <left> <left> <left> <left> <left> <left> <left> <up> <up> <up> <insert> <up> <down> <down> c <end> C-SPC <insert> y <return> <return> <down> <down> <down> <right> <right> <right> <right> = <down> <left> <left> <left> <left> <left> <left> <insert> s s s <left> <left> <left> <left> <left> <insert> o <left> <left> <left> <left> <left> <left> <up>"
+ "C-c C-c i n i t i a l SPC t e x t e <backspace> <return> SPC SPC g o o d <return> C-a M-x u n i l i n e - m o d e RET
+ 2*<up> C-SPC <down> 12*<right> <insert>
+ 2*<down> 3*<right> R
+ <end> <return>
+ <kp-subtract> <right> q
+ <return> <left>
+ <kp-subtract> <down> 2*<left>
+ <return> 2*<up> 2*<right> <down>
+ <kp-subtract> <up> 3*<right> 3*<up>
+ <return> 3*<down> 2*<up> <right> 3*<down>
+ C-SPC 19*<left> 3*<up> <insert>
+ <up> 2*<down> c
+ <end> C-SPC <insert> y
+ 2*<return> 3*<down> 4*<right>
+ = <down> 6*<left>
+ <insert> s s s
+ 5*<left>
+ <insert> o
+ 6*<left> <up>"
  "\
-                    ╷
+                    ╷ 
                     │ 
   ╭────────────╮ ╭──╯ ╭────────────╮ ╭──╯
   │initial text│ q    │initial text│ q   

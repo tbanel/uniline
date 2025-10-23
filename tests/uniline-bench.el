@@ -158,7 +158,7 @@ If there are no errors, a summary is presented."
    (elp-restore-all)))
 
 (if nil
-    (uniline-bench-run "bench15.el" "bench16.el"))
+    (uniline-bench-run "bench26.el" "bench27.el"))
 
 (provide 'uniline-bench)
 ;;; uniline-bench.el ends here

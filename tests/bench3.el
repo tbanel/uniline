@@ -20,10 +20,19 @@
 ;; along with this program.  If not, see <http://www.gnu.org/licenses/>.
 
 (uniline-bench
- "<return> <return> <down> <down> <right> <right> <right> # <right> <right> <right> <right> <right> <right> <down> <down> <down> <right> <right> <right> <right> <right> <right> <up> <up> <up> <right> <right> <right> <right> <right> <right> <down> <down> <down> <right> <right> <right> <right> <right> <right> <up> <up> <up> <up> <right> <right> <right> <down> <down> <down> <down> <down> <down> <left> <left> <left> <left> <left> <left> <left> <left> <left> <left> <left> <left> <return> <up> <right> <right> <right> <right> <right> <right> <right> <right> <right> <right> <right> <right> <right> <right> <right> <up> C-SPC <down> <down> <down> <down> <right> <right> <right> <right> <right> <right> <right> <right> <right> <right> <right> <right> <insert> r # R <return> <kp-subtract> <down> <down> <down> <down> <right> <right> <right> <right> <right> <right> <right> <right> <right> <right> <right> <up> <up> <up> <up> <left> <left> <left> <left> <left> <left> <left> <left> <left> <left> <left> <return> <left> <left> <left> <left> <left> <left> <left> <left> <left> <left> <left> <left> <left> <left> <left> <left> <left> <left> <left> <left> <left> <left> <left> <up> <up> C-SPC <down> <down> <down> <down> <right> <right> <right> <right> <right> <right> <right> <right> <right> <right> <right> <right> <right> <right> <right> <right> <insert> <down> <down> <right> <right> <right> <return> C-c C-c"
-
+ "2*<return>
+ 2*<down> 3*<right>
+ # 6*<right> 3*<down> 6*<right> 3*<up> 6*<right> 3*<down> 6*<right> 4*<up> 3*<right> 6*<down> 12*<left>
+ <return> <up> 15*<right> <up>
+ C-SPC 4*<down> 12*<right> <insert>
+ r # R
+ <return> <kp-subtract> 4*<down> 11*<right> 4*<up> 11*<left>
+ <return> 23*<left> 2*<up>
+ C-SPC 4*<down> 16*<right> <insert>
+ 2*<down> 3*<right>
+ <return> C-c C-c"
  "\
-                  
+                                      
                         ▗▄▄▄▄▄▄▄▄▄▄▄▄▖
                         ▐╭──────────╮▌
                   ▄▄    ▐│          │▌
