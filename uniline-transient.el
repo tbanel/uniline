@@ -148,7 +148,7 @@ for later menu invocation in the same Uniline session."
 
 (transient-define-prefix uniline-transient-fonts ()
   "Font selection menu."
-  :info-manual "(uniline) Fonts"
+  :info-manual "(uniline) Which fonts?"
   :transient-non-suffix 'transient-quit-one
   [:class
    transient-columns
@@ -179,7 +179,7 @@ for later menu invocation in the same Uniline session."
 
 (transient-define-prefix uniline-transient-arrows ()
   "Arrows and shapes interface."
-  :info-manual "(uniline) Arrows"
+  :info-manual "uniline"
   :transient-suffix 'transient--do-leave
   :transient-non-suffix 'transient--do-leave
   [:class
@@ -233,7 +233,7 @@ for later menu invocation in the same Uniline session."
 
 (transient-define-prefix uniline-transient-alt-styles ()
   "Change lines style interface."
-  :info-manual "(uniline) Dashed lines and other styles"
+  :info-manual "(uniline) Rectangular actions"
   :transient-non-suffix 'transient-quit-one
   [:class
    transient-columns
@@ -267,7 +267,7 @@ for later menu invocation in the same Uniline session."
 
 (transient-define-prefix uniline-transient-moverect ()
   "Rectangle manipulation interface."
-  :info-manual "(uniline) Rectangle"
+  :info-manual "(uniline) Rectangular actions"
   :transient-non-suffix 'transient-quit-one
   [:class
    transient-columns
@@ -334,7 +334,7 @@ for later menu invocation in the same Uniline session."
 
 (transient-define-prefix uniline-transient-macro-exec ()
   "Macro execution interface."
-  :info-manual "(uniline) Macro"
+  :info-manual "(uniline) Macros"
   :transient-non-suffix 'transient-quit-one
   [:class
    transient-columns

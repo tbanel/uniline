@@ -28,15 +28,17 @@
 :CUSTOM_ID: new
 :END:
 
-Tabulation characters were taken into account, except when drawing
-right onto a TAB. This is fixed: a tabulation behave as a
-space. Non-breakable spaces and punctuation spaces are also now
-regarded as spaces.
+Navigating to the relevant section of the =info-mode= documentation is
+now just two key-strokes away. Under =Transient= type =??=. Coming soon
+under =Hydra=.
 
-Rectangles are first untabified (if there are TABs) before moving
-them. This avoids some rare instances of misalignment.
+The documentation is also reachable from the menu, in the menu-bar at
+the top of the screen. The menu is also available by left-clicking on
+=Uniline= on the mode-bar at the bottom of the screen.
 
-See [[#what-about-t-tabs][What about \t tabs?]].
+Note that there is also a standard description of =uniline-mode= and its
+key-bindings. Just press =C-h m= or middle-click on =Uniline= on the
+mode-bar at the bottom of the screen.
 
 * Table of Contents
 :PROPERTIES:
