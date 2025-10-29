@@ -29,8 +29,9 @@
 :END:
 
 Navigating to the relevant section of the =info-mode= documentation is
-now just two key-strokes away. Under =Transient= type =??=. Coming soon
-under =Hydra=.
+now just one or two key-strokes away.
+- Under =Hydra= type =?=.
+- Under =Transient= type =??=.
 
 The documentation is also reachable from the menu, in the menu-bar at
 the top of the screen. The menu is also available by left-clicking on

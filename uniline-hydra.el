@@ -124,9 +124,9 @@
 ╭^─Try a font^──^─^───────────^─^───────────────────╮╭^─^───^─^──────╮
 │_d_ DejaVu     _b_ JetBrains _i_ Iosevka Comfy     ││_*_ ^^configure│
 │_h_ Hack       _f_ FreeMono  _I_ Iosevka Comfy Wide││_C-t_^^ tg hint│
-│_c_ Cascadia   _a_ Agave     _p_ Aporetic Sans     ││_RET_ _q_  exit│
-│_j_ JuliaMono  _u_ Unifont   _P_ Aporetic Serif    │╰^─^───^─^──────╯
-│_s_ Source Code Pro^^╭───────^─^───────────────────╯
+│_c_ Cascadia   _a_ Agave     _p_ Aporetic Sans     ││_?_ ^^info-mode│
+│_j_ JuliaMono  _u_ Unifont   _P_ Aporetic Serif    ││_RET_ _q_  exit│
+│_s_ Source Code Pro^^╭───────^─^───────────────────╯╰^─^───^─^──────╯
 ╰^─^────────────^─^───╯"))
               ("d" uniline--set-font-d)
               ("u" uniline--set-font-u)
@@ -144,6 +144,7 @@
               ("*" uniline-customize-face :exit t)
               ("C-t" uniline-toggle-hints)
               ("TAB" uniline-toggle-hints)
+              ("?"  (info "(uniline) Which fonts?"))
               ("q"   () :exit t)
               ("RET" () :exit t))
 
@@ -155,12 +156,13 @@
                 "Text dir────"
                 "Text dir─╴%s(uniline-text-direction-str)╶"
                 "\
-╭^─^─^Insert glyph^─────╮╭^Rotate arrow^╮╭^Text dir────^╮╭^─Contour─^╮╭^─^─^─^─^─^─^─^────────────╮
-│_a_,_A_rrow ▷ ▶ → ▹ ▸ ↔││_S-<left>_  ← ││_C-<left>_  ← ││_c_ contour││_-_ _+_ _=_ _#_ self-insert│
-│_s_,_S_quare  □ ■ ◆ ◊  ││_S-<right>_ → ││_C-<right>_ → ││_C_ ovwrt  ││_f_ ^^^^^^      choose font│
-│_o_,_O_-shape · ● ◦ Ø ø││_S-<up>_    ↑ ││_C-<up>_    ↑ │╭^─────────^╮│_C-t_   ^^^^^^  short hint │
-│_x_,_X_-cross ╳ ÷ × ± ¤││_S-<down>_  ↓ ││_C-<down>_  ↓ ││_i_ fill   ││_q_ _RET_ ^^^^  exit       │
-╰^─^─^─^────────────────╯╰^Tweak glyph─^╯╰^─^───────────╯╰^─Fill────^╯╰^─^─^─^─^─^─^─^────────────╯"))
+╭^─^─^Insert glyph^─^─^─^─^─╮╭^Rotate arrow^╮╭^─Contour─^╮╭^Text dir────^╮╭^─^─^─^──────────────╮
+│_a_,_A_rrow ▷ ▶ → ▹ ▸ ↔^^^^│╭^Tweak glyph─^╮│_c_ contour││_C-<left>_  ← ││_f_    ^^ choose font│
+│_s_,_S_quare  □ ■ ◆ ◊  ^^^^││_S-<left>_  ← ││_C_ ovwrt  ││_C-<right>_ → ││_C-t_  ^^ short hint │
+│_o_,_O_-shape · ● ◦ Ø ø^^^^││_S-<right>_ → │╰^─────────^╯│_C-<up>_    ↑ ││_?_    ^^ info-mode  │
+│_x_,_X_-cross ╳ ÷ × ± ¤^^^^││_S-<up>_    ↑ │╭^─Fill────^╮│_C-<down>_  ↓ ││_q_ _RET_ exit       │
+│_-_ _+_ _=_ _#_ self-insert││_S-<down>_  ↓ ││_i_ fill   │╰^─^───────────╯╰^─^─^─^──────────────╯
+╰^─^─^─^─^─^─^─^────────────╯╰^────────────^╯╰^─────────^╯"))
               ("a" uniline-insert-fw-arrow )
               ("A" uniline-insert-bw-arrow )
               ("s" uniline-insert-fw-square)
@@ -190,17 +192,19 @@
               ("q"   ()                     :exit t)
               ("C-t" uniline-toggle-hints)
               ("TAB" uniline-toggle-hints)
+              ("?"  (info "uniline"))
               ("RET" ()                     :exit t))
 
     (defhydra uniline-hydra-alt-styles
               (:pre (rectangle-mark-mode 1) :hint nil :exit nil)
               ;; Docstring MUST begin with an empty line to benefit from substitutions
               "
-╭^─^───────╮╭^─Alt styles^──╮╭─^─^────────╮
-│_-_ thin  ││_3_ 3x2 dots   ││_0_ standard│
-│_+_ thick ││_4_ 4x4 dots   ││_a_ aa2u    │
-│_=_ double││_h_ hard corner││_RET_ quit  │
-╰^─^───────╯╰^─^────────────╯╰─^─^────────╯"
+╭^Thickness^╮╭^─Alt styles^──╮╭^Base style^╮╭^─^─^─^──────────────╮
+│_-_ thin   ││_3_ 3x2 dots   ││_0_ standard││_f_    ^^ choose font│
+│_+_ thick  ││_4_ 4x4 dots   ││_a_ aa2u    ││_C-t_  ^^ short hint │
+│_=_ double ││_h_ hard corner│╰─^─^────────╯│_?_    ^^ info-mode  │
+╰^─^────────╯╰^─^────────────╯ ^ ^          │_q_ _RET_ exit       │
+ ^ ^          ^ ^              ^ ^          ╰^─^─^─^──────────────╯"
               ("3"             uniline-change-style-dot-3-2)
               ("<kp-3>"        uniline-change-style-dot-3-2)
               ("4"             uniline-change-style-dot-4-4)
@@ -233,6 +237,8 @@
               ("C-x u"   uniline--rect-undo)
               ("C-t"     uniline-toggle-hints)
               ("TAB"     uniline-toggle-hints)
+              ("?"      (info "(uniline) Rectangular actions"))
+              ("q"       uniline--rect-quit :exit t)
               ("RET"     uniline--rect-quit :exit t))
 
     (defhydra uniline-hydra-moverect
@@ -275,6 +281,7 @@
 
               ("C-t" uniline-toggle-hints)
               ("TAB" uniline-toggle-hints)
+              ("?"  (info "(uniline) Rectangular actions"))
               ("f"     uniline-hydra-fonts/body      :exit t)
               ("s"     uniline-hydra-alt-styles/body :exit t)
               ("C-/"   uniline--rect-undo)
@@ -299,12 +306,13 @@ Otherwise, the arrows & shapes hydra is invoked."
               (:hint nil :exit nil)
               ;; Docstring MUST begin with an empty line to benefit from substitutions
               "
-╭^^Call macro in direction╶^^^^──────╮
-│_<right>_ call → │_e_ usual call^^  │
-│_<left>_  call ← │^ ^ ^   ^         │
-│_<up>_    call ↑ │_C-t_^^ short hint│
-│_<down>_  call ↓ │_q_ _RET_ exit    │
-╰^^───────────────┴^─^─^───^─────────╯"
+╭^╴Call macro╶^───╮╭^^^^──────────────╮
+│_e_ usual call   ││_C-t_^^ short hint│
+│_<right>_ call → ││_?_ ^^  info-mode │
+│_<left>_  call ← ││_q_ _RET_ exit    │
+│_<up>_    call ↑ │╰^─^─^───^─────────╯
+│_<down>_  call ↓ │
+╰^^───────────────╯"
               ("e"       (kmacro-end-and-call-macro 1))
               ("<right>" uniline-call-macro-in-direction-ri→)
               ("<left>"  uniline-call-macro-in-direction-lf←)
@@ -312,6 +320,7 @@ Otherwise, the arrows & shapes hydra is invoked."
               ("<down>"  uniline-call-macro-in-direction-dw↓)
               ("C-t" uniline-toggle-hints)
               ("TAB" uniline-toggle-hints)
+              ("?"  (info "(uniline) Macros"))
               ("q"   () :exit t)
               ("RET" () :exit t))
 
