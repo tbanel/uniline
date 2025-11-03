@@ -80,6 +80,7 @@ Long range actions: contour and flood-fill
 Hydra or Transient?
 
 * Selecting Hydra or Transient::
+* Instantly selecting Hydra or Transient::
 * One-liner menus::
 * The Hydra interface::
 * The Transient interface::
@@ -120,6 +121,11 @@ Lisp API
 * Insert and tweak glyphs::
 * Change to alternate styles::
 
+Installation
+
+* use-package, the straightforward way: use-package the straightforward way.
+* Without use-package::
+
 
 
 File: uniline.info,  Node: Getting started in 10 seconds,  Next: New,  Prev: Top,  Up: Top
@@ -146,18 +152,20 @@ File: uniline.info,  Node: New,  Next: Pure UNICODE text diagrams in Emacs,  Pre
 2 New
 *****
 
-Navigating to the relevant section of the ‘info-mode’ documentation is
-now just one or two key-strokes away.
-   • Under ‘Hydra’ type ‘?’.
-   • Under ‘Transient’ type ‘??’.
+Changing user-interface from Hydra to Transient and the other way around
+is now possible without restarting the Uniline session.
 
-   The documentation is also reachable from the menu, in the menu-bar at
-the top of the screen.  The menu is also available by left-clicking on
-‘Uniline’ on the mode-bar at the bottom of the screen.
+   Take a look at the new "Customize" entry in the Uniline menu.  This
+menu is available:
+   • from the menu-bar at the top of the Emacs screen (if not made
+     invisible),
+   • by left-clicking on ‘"Uniline"’ in the mode-line, at the bottom of
+     the Emacs screen.
 
-   Note that there is also a standard description of ‘uniline-mode’ and
-its key-bindings.  Just press ‘C-h m’ or middle-click on ‘Uniline’ on
-the mode-bar at the bottom of the screen.
+   Note that those changes are for the current session only.  To
+permanently choose Hydra or Transient, change your ‘~/.emacs’.
+
+   See *note Hydra or Transient?::
 
 
 File: uniline.info,  Node: Pure UNICODE text diagrams in Emacs,  Next: A minor mode for drawing,  Prev: New,  Up: Top
@@ -1288,12 +1296,13 @@ late addition.
 * Menu:
 
 * Selecting Hydra or Transient::
+* Instantly selecting Hydra or Transient::
 * One-liner menus::
 * The Hydra interface::
 * The Transient interface::
 
 
-File: uniline.info,  Node: Selecting Hydra or Transient,  Next: One-liner menus,  Up: Hydra or Transient?
+File: uniline.info,  Node: Selecting Hydra or Transient,  Next: Instantly selecting Hydra or Transient,  Up: Hydra or Transient?
 
 11.1 Selecting Hydra or Transient
 =================================
@@ -1322,9 +1331,35 @@ native-compiler is blind to all user-customized settings.
 ‘uniline-core.elc’.
 
 
-File: uniline.info,  Node: One-liner menus,  Next: The Hydra interface,  Prev: Selecting Hydra or Transient,  Up: Hydra or Transient?
+File: uniline.info,  Node: Instantly selecting Hydra or Transient,  Next: One-liner menus,  Prev: Selecting Hydra or Transient,  Up: Hydra or Transient?
 
-11.2 One-liner menus
+11.2 Instantly selecting Hydra or Transient
+===========================================
+
+It is now possible to switch user interfaces on the fly.
+
+   To do so, look at the "Customize" entry in the Uniline menu.  This
+menu is available:
+   • from the menu-bar at the top of the Emacs screen (if not made
+     invisible),
+   • by left-clicking on ‘"Uniline"’ in the mode-line, at the bottom of
+     the Emacs screen.
+
+   Note that the changes are for the current session only.  To
+permanently choose Hydra or Transient, change your
+=~/.emacs=initialization file as describe in *note Selecting Hydra or
+Transient::.
+
+   The actions performed by the menu are:
+   • ‘(load-library "uniline-hydra")’
+   • ‘(load-library "uniline-transient")’
+
+   You can execute them directly or by other means.
+
+
+File: uniline.info,  Node: One-liner menus,  Next: The Hydra interface,  Prev: Instantly selecting Hydra or Transient,  Up: Hydra or Transient?
+
+11.3 One-liner menus
 ====================
 
 The multi-lines menus in Hydra and Transient are quite useful for casual
@@ -1370,7 +1405,7 @@ in effect throughout the ‘Uniline’ session, but no longer.
 
 File: uniline.info,  Node: The Hydra interface,  Next: The Transient interface,  Prev: One-liner menus,  Up: Hydra or Transient?
 
-11.3 The Hydra interface
+11.4 The Hydra interface
 ========================
 
 Put that in your ‘~/.emacs’ file:
@@ -1387,7 +1422,7 @@ still installed when installing ‘Uniline’ through ‘Melpa’.
 
 File: uniline.info,  Node: The Transient interface,  Prev: The Hydra interface,  Up: Hydra or Transient?
 
-11.4 The Transient interface
+11.5 The Transient interface
 ============================
 
 Put that in your ‘~/.emacs’ file:
@@ -2147,8 +2182,27 @@ File: uniline.info,  Node: Installation,  Next: Related packages,  Prev: Mouse s
 16 Installation
 ***************
 
-Add the following lines to your ‘.emacs’ file, and reload it, if not
-already done:
+* Menu:
+
+* use-package, the straightforward way: use-package the straightforward way.
+* Without use-package::
+
+
+File: uniline.info,  Node: use-package the straightforward way,  Next: Without use-package,  Up: Installation
+
+16.1 use-package, the straightforward way
+=========================================
+
+The ‘use-package’ library became the de-facto standard to manage
+packages in your ‘.emacs’ initialization file.  The ‘use-package’
+library comes along with Emacs.  It can (among other services) delay
+loading external packages until they are used, and bind keyboard
+shortcuts to the package’s entry points.
+
+   Add the following lines to your ‘.emacs’ file, and reload it, if not
+already done.  This says that the popular Melpa repository is one of the
+central store of third parties packages.  To day, it provides almost
+7000 packages to choose from.
 
      (add-to-list 'package-archives
                   '("melpa" . "http://melpa.org/packages/")
@@ -2159,11 +2213,44 @@ already done:
 
      M-x customize-variable package-archives
 
-   Then download the package:
+   Then add those lines in your Emacs initialization file (usually
+‘~/.emacs’):
+
+     (use-package uniline-hydra
+       :bind ("C-<insert>" . uniline-mode))
+
+   or:
+
+     (use-package uniline-transient
+       :bind ("C-<insert>" . uniline-mode))
+
+   This tell Emacs:
+   • Be prepared to load ‘uniline-mode’ when the user request it, but do
+     not load it now.
+   • Bind the ‘C-<insert>’ keys to the function ‘uniline-mode’.  This
+     shortens the longer ‘M-x uniline-mode’ command.  Any other key
+     combinations can be bound, as you prefer.  ‘<insert>’ happens to
+     also be the key used inside ‘Uniline’ (customizable).
+   • Load either the ‘uniline-hydra’ or the ‘uniline-transient’ file, as
+     you prefer.  This gives Uniline one or the other flavour of
+     user-interface.
+
+   There is an alias to ‘uniline-hydra’:
+
+     (use-package uniline
+       :bind ("C-<insert>" . uniline-mode))
+
+
+File: uniline.info,  Node: Without use-package,  Prev: use-package the straightforward way,  Up: Installation
+
+16.2 Without use-package
+========================
+
+Download the package from Melpa:
 
      (package-install "uniline")
 
-   Alternately, you can download the Lisp files, and load them.
+   Alternately, you can download the Lisp files, and load them manually:
 
      (load-file "uniline-hydra.el")   ;; interpreted form
      (load-file "uniline-hydra.elc")  ;; byte-compiled form
@@ -2186,28 +2273,9 @@ already done:
 interpreted forms, because there are a lot of optimizations performed at
 compile time.
 
-   You may want to give ‘uniline-mode’ a key-binding.  ‘use-package’ in
-your ‘$HOME/.emacs’ file is great for that:
-
-     (use-package uniline-hydra
-       :bind ("C-<insert>" . uniline-mode))
-
-   or:
-
-     (use-package uniline-transient
-       :bind ("C-<insert>" . uniline-mode))
-
-   or as an alias to ‘uniline-hydra’:
-
-     (use-package uniline
-       :bind ("C-<insert>" . uniline-mode))
-
-   In this example, ‘C-<insert>’ was chosen.  You can use whatever key
-combinations you want.  ‘<insert>’ happens to also be the key used
-inside ‘Uniline’.
-
-   If you do not have ‘use-package’, you can add those lines in your
-‘~/.emacs’ file:
+   You may want to give ‘uniline-mode’ a key-binding.  A way to do that
+without ‘use-package’ is to add those lines to your initialization file
+(usually ‘~/.emacs’):
 
      (require 'uniline-hydra)
      (bind-keys :package uniline-hydra ("C-<insert>" . uniline-mode))
@@ -2378,81 +2446,84 @@ along with this program.  If not, see <http://www.gnu.org/licenses/>.
 
 Tag Table:
 Node: Top75
-Node: Getting started in 10 seconds2671
-Node: New3277
-Node: Pure UNICODE text diagrams in Emacs4014
-Node: Document a command4560
-Node: Connect boxes with arrows5090
-Node: Explain decisions trees6407
-Node: Draw lines or blocks7910
-Node: Outline the General Relativity and the Schrödinger's equations9449
-Node: Explain the structure of a sentence in a foreign language12135
-Node: Explain Lisp lists13712
-Node: Draw sketched objects14925
-Node: Pure text16887
-Node: Beware!17616
-Node: A minor mode for drawing18196
-Node: Minor mode18481
-Node: Draw lines by moving the cursor19043
-Node: Brush style19798
-Node: Text direction20938
-Node: The <insert> key21488
-Node: Glyphs ▷ ▶ → □ ◆ ╮─ insertion & modification22489
-Node: Arrows glyphs ▷ ▶ → ▹ ▸ ↔23215
-Node: Intersection glyphs ■ ◆ ●24787
-Node: Fine tweaking of lines27505
-Node: Rectangular actions29388
-Node: Drawing a rectangle30720
-Node: Filling a rectangle32371
-Node: Moving a rectangle33136
-Node: Copying killing yanking a rectangle34568
-Node: Dashed lines and other styles35727
-Node: ASCII to UNICODE39843
-Node: Long range actions contour and flood-fill43526
-Node: Tracing a contour43789
-Node: Flood-fill45703
-Node: Macros47477
-Node: Which fonts?50868
-Node: Hydra or Transient?53020
-Node: Selecting Hydra or Transient53966
-Node: One-liner menus54936
-Node: The Hydra interface56864
-Node: The Transient interface57537
-Node: Customization58075
-Node: Interface type (obsolete)58926
-Node: Insert key59253
-Node: Maximum steps when drawing a contour60046
-Node: Cursor type60376
-Node: Hint style60701
-Node: Welcome message visibility61048
-Node: Line spacing61429
-Node: Font62895
-Node: How Uniline behaves with its environment?63386
-Node: Language environment63952
-Node: Compatibility with Picture-mode66357
-Node: Compatibility with Artist-mode67304
-Node: Compatibility with Whitespace-mode67823
-Node: Compatibility with Org Mode68723
-Node: Org Mode and LaTex70144
-Node: What about \t tabs?72004
-Node: What about ^L page separation?72805
-Node: Emacs on the Linux console73428
-Node: Emacs on a graphical terminal emulator74388
-Node: Emacs on Windows75318
-Node: Lisp API75962
-Node: Move the cursor76512
-Node: Brush76943
-Node: Example Lisp function to draw a plus sign77812
-Node: Long range actions (contour flood-fill rectangle)79648
-Node: Constants80586
-Node: Macro and text direction81001
-Node: Insert and tweak glyphs81936
-Node: Change to alternate styles82938
-Node: Mouse support83847
-Node: Installation84731
-Node: Related packages87070
-Node: Author contributors90189
-Node: License92044
+Node: Getting started in 10 seconds2830
+Node: New3436
+Node: Pure UNICODE text diagrams in Emacs4152
+Node: Document a command4698
+Node: Connect boxes with arrows5228
+Node: Explain decisions trees6545
+Node: Draw lines or blocks8048
+Node: Outline the General Relativity and the Schrödinger's equations9587
+Node: Explain the structure of a sentence in a foreign language12273
+Node: Explain Lisp lists13850
+Node: Draw sketched objects15063
+Node: Pure text17025
+Node: Beware!17754
+Node: A minor mode for drawing18334
+Node: Minor mode18619
+Node: Draw lines by moving the cursor19181
+Node: Brush style19936
+Node: Text direction21076
+Node: The <insert> key21626
+Node: Glyphs ▷ ▶ → □ ◆ ╮─ insertion & modification22627
+Node: Arrows glyphs ▷ ▶ → ▹ ▸ ↔23353
+Node: Intersection glyphs ■ ◆ ●24925
+Node: Fine tweaking of lines27643
+Node: Rectangular actions29526
+Node: Drawing a rectangle30858
+Node: Filling a rectangle32509
+Node: Moving a rectangle33274
+Node: Copying killing yanking a rectangle34706
+Node: Dashed lines and other styles35865
+Node: ASCII to UNICODE39981
+Node: Long range actions contour and flood-fill43664
+Node: Tracing a contour43927
+Node: Flood-fill45841
+Node: Macros47615
+Node: Which fonts?51006
+Node: Hydra or Transient?53158
+Node: Selecting Hydra or Transient54147
+Node: Instantly selecting Hydra or Transient55140
+Node: One-liner menus56106
+Node: The Hydra interface58044
+Node: The Transient interface58717
+Node: Customization59255
+Node: Interface type (obsolete)60106
+Node: Insert key60433
+Node: Maximum steps when drawing a contour61226
+Node: Cursor type61556
+Node: Hint style61881
+Node: Welcome message visibility62228
+Node: Line spacing62609
+Node: Font64075
+Node: How Uniline behaves with its environment?64566
+Node: Language environment65132
+Node: Compatibility with Picture-mode67537
+Node: Compatibility with Artist-mode68484
+Node: Compatibility with Whitespace-mode69003
+Node: Compatibility with Org Mode69903
+Node: Org Mode and LaTex71324
+Node: What about \t tabs?73184
+Node: What about ^L page separation?73985
+Node: Emacs on the Linux console74608
+Node: Emacs on a graphical terminal emulator75568
+Node: Emacs on Windows76498
+Node: Lisp API77142
+Node: Move the cursor77692
+Node: Brush78123
+Node: Example Lisp function to draw a plus sign78992
+Node: Long range actions (contour flood-fill rectangle)80828
+Node: Constants81766
+Node: Macro and text direction82181
+Node: Insert and tweak glyphs83116
+Node: Change to alternate styles84118
+Node: Mouse support85027
+Node: Installation85911
+Node: use-package the straightforward way86155
+Node: Without use-package88110
+Node: Related packages89671
+Node: Author contributors92790
+Node: License94645
 
 End Tag Table
 

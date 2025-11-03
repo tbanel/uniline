@@ -4179,7 +4179,6 @@ with the one used to invoke Uniline-mode."
      ["↑ up"    uniline-text-direction-up↑ :keys "INS C-<up>   " :style radio :selected (eq uniline-text-direction (uniline-direction-up↑))]
      ["↓ down"  uniline-text-direction-dw↓ :keys "INS C-<down> " :style radio :selected (eq uniline-text-direction (uniline-direction-dw↓))])
     "----"
-    ["large hints sizes" uniline-toggle-hints :keys "TAB or C-h TAB" :style toggle :selected (eq uniline-hint-style t)]
     ("Font"
      ["DejaVu Sans Mono"         (set-frame-font "DejaVu Sans Mono"        ) :keys "INS f d" :style radio :selected (uniline--is-font ?d)]
      ["Hack"                     (set-frame-font "Hack"                    ) :keys "INS f h" :style radio :selected (uniline--is-font ?h)]
@@ -4194,9 +4193,17 @@ with the one used to invoke Uniline-mode."
      ["Aporetic Serif Mono"      (set-frame-font "Aporetic Serif Mono"     ) :keys "INS f P" :style radio :selected (uniline--is-font ?P)]
      ["Unifont"                  (set-frame-font "Unifont"                 ) :keys "INS f u" :style radio :selected (uniline--is-font ?u)]
      ["Agave"                    (set-frame-font "Agave"                   ) :keys "INS f a" :style radio :selected (uniline--is-font ?a)]
-     ["permanently configure" uniline-customize-face                         :keys "INS f *"])
+     ["Configure permanently"    uniline-customize-face                      :keys "INS f *"])
     ["info" (info "uniline") :keys "M-: (info \"uniline\")"]
-    ["Customize" (customize-group 'uniline)]
+    ("Customize"
+     ["Current session only:" :selected nil]
+     ["large hints sizes" uniline-toggle-hints :keys "C-t or C-h C-t" :style toggle :selected (eq uniline-hint-style t)]
+     ["Hydra"     (load-library "uniline-hydra"    )]
+     ["Transient" (load-library "uniline-transient")]
+     "----"
+     ["Future sessions:" :selected nil]
+     ["Uniline Group" (customize-group 'uniline)]
+     ["Hydra or Transient (change .emacs)" (info "(uniline) Installation")])
     ["quit Uniline Mode" uniline-mode t] ))
 
 (provide 'uniline-core)

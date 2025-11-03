@@ -28,18 +28,20 @@
 :CUSTOM_ID: new
 :END:
 
-Navigating to the relevant section of the =info-mode= documentation is
-now just one or two key-strokes away.
-- Under =Hydra= type =?=.
-- Under =Transient= type =??=.
+Changing user-interface from Hydra to Transient and the other way
+around is now possible without restarting the Uniline session.
 
-The documentation is also reachable from the menu, in the menu-bar at
-the top of the screen. The menu is also available by left-clicking on
-=Uniline= on the mode-bar at the bottom of the screen.
+Take a look at the new "Customize" entry in the Uniline menu. This
+menu is available:
+- from the menu-bar at the top of the Emacs screen (if not made
+  invisible),
+- by left-clicking on ="Uniline"= in the mode-line, at the bottom of the
+  Emacs screen.
 
-Note that there is also a standard description of =uniline-mode= and its
-key-bindings. Just press =C-h m= or middle-click on =Uniline= on the
-mode-bar at the bottom of the screen.
+Note that those changes are for the current session only. To
+permanently choose Hydra or Transient, change your =~/.emacs=.
+
+See [[#hydra-or-transient][Hydra or Transient?]]
 
 * Table of Contents
 :PROPERTIES:
@@ -85,6 +87,7 @@ mode-bar at the bottom of the screen.
 - [[#which-fonts][Which fonts?]]
 - [[#hydra-or-transient][Hydra or Transient?]]
   - [[#selecting-hydra-or-transient][Selecting Hydra or Transient]]
+  - [[#instantly-selecting-hydra-or-transient][Instantly selecting Hydra or Transient]]
   - [[#one-liner-menus][One-liner menus]]
   - [[#the-hydra-interface][The Hydra interface]]
   - [[#the-transient-interface][The Transient interface]]
@@ -120,6 +123,8 @@ mode-bar at the bottom of the screen.
   - [[#change-to-alternate-styles][Change to alternate styles]]
 - [[#mouse-support][Mouse support]]
 - [[#installation][Installation]]
+  - [[#use-package-the-straightforward-way][use-package, the straightforward way]]
+  - [[#without-use-package][Without use-package]]
 - [[#related-packages][Related packages]]
 - [[#author-contributors][Author, contributors]]
 - [[#license][License]]
@@ -1251,6 +1256,29 @@ native-compiler is blind to all user-customized settings.
 There is a third file, =uniline-code.elc=. Loading =uniline-hydra.elc= or
 =uniline-transient.elc= automatically loads =uniline-core.elc=.
 
+** Instantly selecting Hydra or Transient
+:PROPERTIES:
+:CUSTOM_ID: instantly-selecting-hydra-or-transient
+:END:
+It is now possible to switch user interfaces on the fly.
+
+To do so, look at the "Customize" entry in the Uniline menu. This
+menu is available:
+- from the menu-bar at the top of the Emacs screen (if not made
+  invisible),
+- by left-clicking on ="Uniline"= in the mode-line, at the bottom of the
+  Emacs screen.
+
+Note that the changes are for the current session only. To permanently
+choose Hydra or Transient, change your =~/.emacs=initialization file
+as describe in [[#selecting-hydra-or-transient][Selecting Hydra or Transient]].
+
+The actions performed by the menu are:
+- =(load-library "uniline-hydra")=
+- =(load-library "uniline-transient")=
+
+You can execute them directly or by other means.
+
 ** One-liner menus
 :PROPERTIES:
 :CUSTOM_ID: one-liner-menus
@@ -2008,8 +2036,21 @@ twice to fix the inaccuracy.
 :CUSTOM_ID: installation
 :END:
 
-Add the following lines to your =.emacs= file,
-and reload it, if not already done:
+** use-package, the straightforward way
+:PROPERTIES:
+:CUSTOM_ID: use-package-the-straightforward-way
+:END:
+
+The =use-package= library became the de-facto standard to manage
+packages in your =.emacs= initialization file. The =use-package= library
+comes along with Emacs. It can (among other services) delay loading
+external packages until they are used, and bind keyboard shortcuts to
+the package's entry points.
+
+Add the following lines to your =.emacs= file, and reload it, if not
+already done. This says that the popular Melpa repository is one of
+the central store of third parties packages. To day, it provides almost
+7000 packages to choose from.
 
 #+begin_src elisp
 (add-to-list 'package-archives
@@ -2024,13 +2065,49 @@ Alternately you may customize this variable:
 M-x customize-variable package-archives
 #+end_example
 
-Then download the package:
+Then add those lines in your Emacs initialization file (usually =~/.emacs=):
+
+#+begin_src elisp
+(use-package uniline-hydra
+  :bind ("C-<insert>" . uniline-mode))
+#+end_src
+
+or:
+
+#+begin_src elisp
+(use-package uniline-transient
+  :bind ("C-<insert>" . uniline-mode))
+#+end_src
+
+This tell Emacs:
+- Be prepared to load =uniline-mode= when the user request it, but do
+  not load it now.
+- Bind the =C-<insert>= keys to the function =uniline-mode=. This shortens
+  the longer =M-x uniline-mode= command. Any other key combinations can
+  be bound, as you prefer. =<insert>= happens to also be the key used
+  inside =Uniline= (customizable).
+- Load either the =uniline-hydra= or the =uniline-transient= file, as you
+  prefer. This gives Uniline one or the other flavour of
+  user-interface.
+
+There is an alias to =uniline-hydra=:
+
+#+begin_src elisp
+(use-package uniline
+  :bind ("C-<insert>" . uniline-mode))
+#+end_src
+
+** Without use-package
+:PROPERTIES:
+:CUSTOM_ID: without-use-package
+:END:
+Download the package from Melpa:
 
 #+begin_src elisp
 (package-install "uniline")
 #+end_src
 
-Alternately, you can download the Lisp files, and load them.
+Alternately, you can download the Lisp files, and load them manually:
 
 #+begin_src elisp
 (load-file "uniline-hydra.el")   ;; interpreted form
@@ -2057,32 +2134,9 @@ You should prefer the byte-compiled or native-compiled forms over the
 interpreted forms, because there are a lot of optimizations performed
 at compile time.
 
-You may want to give =uniline-mode= a key-binding. =use-package=
-in your =$HOME/.emacs= file is great for that:
-
-#+begin_src elisp
-(use-package uniline-hydra
-  :bind ("C-<insert>" . uniline-mode))
-#+end_src
-
-or:
-
-#+begin_src elisp
-(use-package uniline-transient
-  :bind ("C-<insert>" . uniline-mode))
-#+end_src
-
-or as an alias to =uniline-hydra=:
-
-#+begin_src elisp
-(use-package uniline
-  :bind ("C-<insert>" . uniline-mode))
-#+end_src
-
-In this example, =C-<insert>= was chosen. You can use whatever key combinations you want.
-=<insert>= happens to also be the key used inside =Uniline=.
-
-If you do not have =use-package=, you can add those lines in your =~/.emacs= file:
+You may want to give =uniline-mode= a key-binding. A way to do that
+without =use-package= is to add those lines to your initialization file
+(usually =~/.emacs=):
 
 #+begin_src elisp
 (require 'uniline-hydra)
