@@ -20,7 +20,36 @@
 ;; along with this program.  If not, see <http://www.gnu.org/licenses/>.
 
 (uniline-bench
-"<return> <down> <down> <down> <right> <right> <right> <right> <right> <right> <right> <right> <right> <right> <kp-subtract> <up> <up> <right> <right> <right> <insert> a <right> <insert> a a <right> <insert> a a a <right> <insert> a a a a <right> <insert> a a a a a <right> <insert> a a a a a a <right> <right> <right> <down> <insert> A <down> <insert> A A <down> <insert> a <down> <insert> A A A A <down> <insert> a S-<right> <down> <left> <left> <left> <insert> A <left> <home> <return> <right> <right> <right> <right> <right> <right> <right> <right> <right> <right> <right> <right> <right> <right> <right> <right> <right> <right> <left> <insert> A S-<up> <left> <insert> a <left> <left> <kp-subtract> <left> <left> <insert> A A A A <left> <left> <up> <insert> a a a S-<left> <up> <insert> a S-<right> <up> <insert> a a a <up> <insert> a a a a a <up> <insert> a a a a a a S-<right> <right> <right> <right> <return> <insert> a <right> <right> <right> <up> <insert> S-<down> <down> <down> <down> <right> <right> <right> <right> <right> <insert> S-<right> <return>"
+ "<return> 3*<down> 10*<right>
+ <kp-subtract>
+ 2*<up> 3*<right> <insert> a
+ <right> <insert> 2*a
+ <right> <insert> 3*a
+ <right> <insert> 4*a
+ <right> <insert> 5*a
+ <right> <insert> 6*a
+ 3*<right> <down> <insert> A
+ <down> <insert> 2*A
+ <down> <insert> a
+ <down> <insert> 4*A
+ <down> <insert> a S-<right>
+ <down> 3*<left> <insert> A
+ <left> <home>
+ <return> 18*<right> <left> <insert> A S-<up>
+ <left> <insert> a
+ 2*<left>
+ <kp-subtract> 2*<left> <insert> 4*A
+ 2*<left> <up> <insert> 3*a S-<left>
+ <up> <insert> a S-<right>
+ <up> <insert> 3*a
+ <up> <insert> 5*a
+ <up> <insert> 6*a S-<right>
+ 3*<right>
+ <return>
+ <insert> a
+ 3*<right> <up> <insert> S-<down>
+ 3*<down> 5*<right> <insert> S-<right>
+ <return>"
 "\
  
           ╭──▷▶→▿▸↔──╮

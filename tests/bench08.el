@@ -20,7 +20,64 @@
 ;; along with this program.  If not, see <http://www.gnu.org/licenses/>.
 
 (uniline-bench
-"<return> a <left> <down> a <left> <down> a <left> <up> <up> <right> a  a  a <left> <kp-add> <insert> c <return> <right> <right> <right> <right> <right> <right> h  h  h  h <left> <down> h <left> <left> h <left> <down> h  h  h  h  h  h  h  h  h <left> <up> h <left> <up> h  h  h  h <left> <left> <left> <down> h <left> <down> h <left> + <insert> c <return> <home> <down> <down> <down> <down> <down> g  g  g  g <left> <down> g <left> <down> g <left> <down> g <left> <down> g <left> <down> g <left> <left> g <left> <left> g <left> <left> g <left> <down> g  g  g  g <left> <down> g <left> <down> g <left> <down> g <left> <down> g <left> <left> g <left> <left> g <left> <left> g <left> <kp-subtract> <insert> c <return> <up> <up> <up> <up> <up> <up> <up> <up> <up> <up> <right> <right> <right> <right> <right> <right> <right> <right> o  o  o  o  o  o  o  o <left> <down> <right> o <left> <down> o <left> <down> o <left> <down> o <left> <down> o <left> <down> o <left> <down> o <left> <down> o <left> <left> <down> o <left> <left> o <left> <left> o <left> <left> o <left> <left> o <left> <up> <left> o <left> <up> <left> o <left> <up> <left> o <left> <up> <left> o <left> <up> o <left> <up> o <left> <up> o <left> <up> o <left> <kp-subtract> <insert> c <return> <down> <right> <right> <insert> i * <return> <up> <up> <kp-subtract> <insert> c"
+"<return> a
+ <left> <down> a
+ <left> <down> a
+ <left> 2*<up> <right> 3*a
+ <left> <kp-add> <insert> c
+ <return> 6*<right> 4*h
+ <left> <down> h
+ 2*<left> h
+ <left> <down> 9*h
+ <left> <up> h
+ <left> <up> 4*h
+ 3*<left> <down> h
+ <left> <down> h
+ <left>
+ + <insert> c
+ <return> <home> 5*<down> 4*g
+ <left> <down> g
+ <left> <down> g
+ <left> <down> g
+ <left> <down> g
+ <left> <down> g
+ 2*<left> g
+ 2*<left> g
+ 2*<left> g
+ <left> <down> 4*g
+ <left> <down> g
+ <left> <down> g
+ <left> <down> g
+ <left> <down> g
+ 2*<left> g
+ 2*<left> g
+ 2*<left> g
+ <left> <kp-subtract> <insert> c
+ <return> 10*<up> 8*<right> 8*o
+ <left> <down> <right> o
+ <left> <down> o
+ <left> <down> o
+ <left> <down> o
+ <left> <down> o
+ <left> <down> o
+ <left> <down> o
+ <left> <down> o
+ 2*<left> <down> o
+ 2*<left> o
+ 2*<left> o
+ 2*<left> o
+ 2*<left> o
+ <left> <up> <left> o
+ <left> <up> <left> o
+ <left> <up> <left> o
+ <left> <up> <left> o
+ <left> <up> o
+ <left> <up> o
+ <left> <up> o
+ <left> <up> o
+ <left> <kp-subtract> <insert> c
+ <return> <down> 2*<right> <insert> i *
+ <return> 2*<up> <kp-subtract> <insert> c"
 "\
 aaaa╻    ╻hhhh╻    ╻hhhh╻
 a┏━━┛    ┗━┓hh┗━━━━┛hh┏━┛

@@ -112,6 +112,56 @@ Do not call it directly."
   (insert "\")\n")
   (lisp-mode))
 
+(defmacro uniline-bench-numcompact-n (n)
+  "If N is 3, replace in the buffer <left> <left> <left> to 3*<left>
+It is a macro, because N is a dynamic variable which must be
+inserted into a regexp."
+  `(save-excursion
+     (replace-regexp
+      (rx " "
+          (group (+ (any "a-zA-Z<>-")))
+          (= ,(1- n)
+             (+ blank)
+             (backref 1)))
+      ,(format " %d*\\1" n))))
+
+(defun uniline-bench-numcompact ()
+  "Change <left> <left> <left> to 3*<left>.
+The `kbd' function understand this notation.
+And it is easier to read.
+Put the cursor inside the string to modify."
+  (interactive)
+  (search-backward "\"")
+  (narrow-to-region (point) (progn (forward-sexp) (point)))
+  (goto-char (point-min))
+  (uniline-bench-numcompact-n 27)
+  (uniline-bench-numcompact-n 26)
+  (uniline-bench-numcompact-n 25)
+  (uniline-bench-numcompact-n 24)
+  (uniline-bench-numcompact-n 23)
+  (uniline-bench-numcompact-n 22)
+  (uniline-bench-numcompact-n 21)
+  (uniline-bench-numcompact-n 20)
+  (uniline-bench-numcompact-n 19)
+  (uniline-bench-numcompact-n 18)
+  (uniline-bench-numcompact-n 17)
+  (uniline-bench-numcompact-n 16)
+  (uniline-bench-numcompact-n 15)
+  (uniline-bench-numcompact-n 14)
+  (uniline-bench-numcompact-n 13)
+  (uniline-bench-numcompact-n 12)
+  (uniline-bench-numcompact-n 11)
+  (uniline-bench-numcompact-n 10)
+  (uniline-bench-numcompact-n  9)
+  (uniline-bench-numcompact-n  8)
+  (uniline-bench-numcompact-n  7)
+  (uniline-bench-numcompact-n  6)
+  (uniline-bench-numcompact-n  5)
+  (uniline-bench-numcompact-n  4)
+  (uniline-bench-numcompact-n  3)
+  (uniline-bench-numcompact-n  2)
+  (widen))
+
 (defun uniline-bench-run (&rest files)
   "Run all benches, or a specified list.
 When FILES is nil, the benches are all files with *.el suffix.
@@ -123,7 +173,7 @@ If there are no errors, a summary is presented."
   (interactive)
   (unless files
     (setq files
-          (delete "uniline-bench.el" (directory-files "." nil "\\.el$"))))
+          (directory-files "." nil "^bench.*\\.el$")))
   (let* ((buf (current-buffer))
          (nbpassed 0)
          (nbfailed 0)

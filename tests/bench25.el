@@ -20,18 +20,28 @@
 ;; along with this program.  If not, see <http://www.gnu.org/licenses/>.
 
 (uniline-bench
- "<return> <down> <right> <right> a a a a a
- <down> <left> a a a a a
- <down> M-7 <left> t t t t t
- <up> <up> M-5 <right>
- S-<down> S-<down> M-7 S-<right> <insert> <kp-subtract> r
- <return> <return>
- <down> <right> <right> <right> <right> <insert> o o o
+ "<return>
+ <down> 2*<right> 5*a
+ <down> <left> 5*a
+ <down> M-7 <left> 5*t
+ 2*<up> M-5 <right>
+ 2*S-<down> M-7 S-<right>
+ <insert> <kp-subtract> r
+ 2*<return>
+ <down> 4*<right> <insert> 3*o
  <up> M-4 <left> 
- C-SPC <down> <down> M-7 <right> <insert> c <return>
- M-5 <left> <up> C-x SPC <insert> y <return> <return>
- M-12 <left> <up> <left> <up> C-SPC <insert> y <return>
- <down> <down> <down> <right> <right> <right> <up> C-SPC <insert> y <return>"
+ C-SPC 2*<down> M-7 <right>
+ <insert> c
+ <return>
+ M-5 <left> <up>
+ C-x SPC <insert> y
+ 2*<return>
+ M-12 <left> <up> <left> <up>
+ C-SPC <insert> y
+ <return>
+ 3*<down> 3*<right> <up>
+ C-SPC <insert> y
+ <return>"
 "\
    ╭─────╮
   a│aaa• │    ╭─────╮

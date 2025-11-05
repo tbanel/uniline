@@ -20,7 +20,30 @@
 ;; along with this program.  If not, see <http://www.gnu.org/licenses/>.
 
 (uniline-bench
-"<return> <return> <down> <down> <right> <right> <right> S-<right> S-<right> S-<right> S-<right> S-<right> S-<right> S-<right> S-<right> S-<right> S-<right> S-<right> S-<right> S-<down> S-<down> S-<down> S-<down> S-<down> S-<down> # <insert> r <return> <insert> S-<down> <return> <right> <right> <right> <right> <return> <right> <right> <right> <right> <insert> S-<left> <right> <right> <right> <right> <right> <insert> S-<up> S-<right> S-<left> S-<up> <down> <down> <down> <insert> S-<left> <down> <down> <down> <insert> S-<right> S-<right> S-<down> S-<up> <left> <left> <left> <left> <left> <insert> S-<up> S-<right> <left> <left> <left> <left> <left> <left> <insert> S-<up> S-<right> S-<left> <return> <up> <up> <up> <kp-subtract> <right> <right> <right> <right> <insert> a S-<up> <right> <right> <insert> a S-<down> <right> <right> <insert> a S-<left> <right> <right> <insert> S-<left> S-<left> <return> <left> <left> <left> <left> <left> <left> <left> <left> <left> <return> <insert> S-<right> S-<right> S-<left> S-<left> S-<up> S-<right> <right> <right> <insert> S-<right> S-<right> S-<up> S-<down> <return>"
+ "<return> <return>
+ 2*<down> 3*<right> 12*S-<right> 6*S-<down> # <insert> r
+ <return> <insert> S-<down>
+ <return> 4*<right>
+ <return> 4*<right> <insert> S-<left> 5*<right>
+ <insert> S-<up> S-<right> S-<left> S-<up> 3*<down>
+ <insert> S-<left> 3*<down>
+ <insert> 2*S-<right> S-<down> S-<up> 5*<left>
+ <insert> S-<up> S-<right> 6*<left>
+ <insert> S-<up> S-<right> S-<left>
+ <return> 3*<up>
+ <kp-subtract> 4*<right>
+ <insert> a
+ S-<up> 2*<right>
+ <insert> a
+ S-<down> 2*<right>
+ <insert> a
+ S-<left> 2*<right>
+ <insert>
+ 2*S-<left>
+ <return> 9*<left>
+ <return> <insert> 2*S-<right> 2*S-<left> S-<up> S-<right> 2*<right>
+ <insert> 2*S-<right> S-<up> S-<down>
+ <return>"
 "\
  
  

@@ -26,7 +26,23 @@
 ;; in the uniline--char-to-4halfs hash-table
 
 (uniline-bench
-"<escape> 3 0 <right> <escape> 2 0 <down> <return> <up> <up> <up> <up> <up> <up> <up> <up> <up> <up> <up> <up> <up> <up> <up> <up> <left> <left> <left> <left> <left> <left> <left> <left> = <down> <down> <left> <right> <kp-add> <down> <right> <left> <down> <return> <up> <insert> S-<down> S-<down> <up> <insert> S-<down> S-<left> C-x h M-x t a b i f y <return> <kp-subtract> <right> <right> <right> <right> <right> <right> <right> <right> <down> <down> <down> <down> <down> <down> <down> <down> <down> <down> <right> <right> <right> <right> <right> <right> <right> <right> <right> <right> <right> <right> <right> <right> <return> <up> <up> <right> <right> C-SPC C-p C-p C-p C-p C-b C-b C-b <insert> c <return> <right> <right> <right> <right> C-SPC <insert> y <return> <right> <up> <kp-subtract> <down> <down> <down> <down> <down> <down> <down> <left> <left> <left> <left>"
+ "<escape> 3 0 <right>
+ <escape> 2 0 <down>
+ <return> 16*<up> 8*<left>
+ = 2*<down> <left> <right>
+ <kp-add> <down> <right> <left> <down> <return> <up>
+ <insert> 2*S-<down>
+ <up>
+ <insert> S-<down> S-<left>
+ C-x h M-x t a b i f y <return>
+ <kp-subtract> 8*<right> 10*<down> 14*<right> <return> 2*<up> 2*<right>
+ C-SPC 4*C-p 3*C-b
+ <insert> c
+ <return>
+ 4*<right>
+ C-SPC <insert> y
+ <return>
+ <right> <up> <kp-subtract> 7*<down> 4*<left>"
 "\
 ╶───────┬─────────────────────╮
 	│       	      │

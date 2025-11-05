@@ -19,8 +19,24 @@
 ;; You should have received a copy of the GNU General Public License
 ;; along with this program.  If not, see <http://www.gnu.org/licenses/>.
 
+;; Test glyph insertion
+
 (uniline-bench
-"<kp-subtract> <return> <down> <down> <right> <right> <right> <right> <kp-subtract> <right> <right> <right> <right> <down> <down> <insert> a <up> <up> <right> <right> <right> <up> <insert> s <down> <right> <right> <right> <down> <down> <right> <right> <right> <left> <left> <left> <down> <down> <insert> o o <up> <up> <return> <left> <left> <up> <left> <left> <left> <left> <up> <insert> S-<right> S-<right> <right> <right> <right> <insert> S-<right> S-<right> <right> <right> <right> <down> <down> <insert> S-<down> S-<down> <right> <right> <right> <insert> S-<right> S-<right> <return> <left> <left> <left> <left> <left> <left> <left> <left> <left> <left> <left> <left> <left> <up> <up> <insert> S-<left> S-<left>"
+ "<kp-subtract> <return>
+ 2*<down> 4*<right>
+ <kp-subtract> 4*<right> 2*<down>
+ <insert> a
+ 2*<up> 3*<right> <up>
+ <insert> s
+ <down> 3*<right> 2*<down> 3*<right> 3*<left> 2*<down>
+ <insert> 2*o
+ 2*<up> <return> 2*<left> <up> 4*<left> <up>
+ <insert> 2*S-<right> 3*<right>
+ <insert> 2*S-<right> 3*<right> 2*<down>
+ <insert> 2*S-<down> 3*<right>
+ <insert> 2*S-<right>
+ <return>
+ 13*<left> 2*<up> <insert> 2*S-<left>"
 "\
  
            □

@@ -20,7 +20,23 @@
 ;; along with this program.  If not, see <http://www.gnu.org/licenses/>.
 
 (uniline-bench
-"<return> <down> <right> <right> <right> <right> <right> <insert> a <right> <right> <insert> A <right> <right> <insert> a S-<up> <right> <right> <insert> A S-<up> <down> C-a <up> C-k C-y <down> <home> C-y <left> <insert> a <left> <left> <insert> a <left> <left> <insert> a <left> <left> <insert> a C-a C-k C-y <right> <down> C-a C-y C-a <right> <right> <right> <right> <right> <insert> A A <right> <right> <insert> A <right> <right> <insert> A A <right> <right> <insert> A"
+ "<return>
+ <down> 5*<right> <insert> a
+ 2*<right> <insert> A
+ 2*<right> <insert> a S-<up>
+ 2*<right> <insert> A S-<up>
+ <down> C-a <up> C-k C-y
+ <down> <home> C-y
+ <left> <insert> a
+ 2*<left> <insert> a
+ 2*<left> <insert> a
+ 2*<left> <insert> a
+ C-a C-k C-y
+ <right> <down> C-a C-y
+ C-a 5*<right> <insert> 2*A
+ 2*<right> <insert> A
+ 2*<right> <insert> 2*A
+ 2*<right> <insert> A"
 "\
  
      ▷ ↔ △ ↕ 

@@ -19,8 +19,23 @@
 ;; You should have received a copy of the GNU General Public License
 ;; along with this program.  If not, see <http://www.gnu.org/licenses/>.
 
+;; Test fine tweaking
+
 (uniline-bench
-"<return> <down> <down> <right> <right> <kp-subtract> <right> <right> <right> <right> <down> <right> <right> <right> <kp-add> <up> <up> <left> <left> <left> = <left> <left> <left> <left> <down> <down> <down> <down> <right> <kp-add> <right> <right> <right> <right> <right> <up> <up> <insert> S-<left> S-<left> <return> <up> <return> <left> <up> <left> <left> <insert> S-<up> S-<left> <end> <return> <right> <right> <down> # <right> <right> <right> <right> <right> <right> <right> <right> <left> <left> <left> <insert> S-<up> <down> <left>"
+ "<return>
+ 2*<down> 2*<right>
+ <kp-subtract> 4*<right> <down> 3*<right>
+ <kp-add> 2*<up> 3*<left>
+ = 4*<left> 4*<down> <right>
+ <kp-add> 5*<right> 2*<up>
+ <insert> 2*S-<left>
+ <return>
+ <up> <return> <left> <up> 2*<left>
+ <insert> S-<up> S-<left>
+ <end> <return> 2*<right> <down>
+ # 8*<right> 3*<left>
+ <insert> S-<up>
+ <down> <left>"
 "\
  
   ╔══╘═━━┓   

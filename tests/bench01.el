@@ -20,7 +20,17 @@
 ;; along with this program.  If not, see <http://www.gnu.org/licenses/>.
 
 (uniline-bench
- "b RET c - <right> <right> <right> <down> <left> <left> <left> <left> <left> <up> C-SPC <down> <right> <right> <right> <right> <right> <right> <insert> <down> <right> <right> <right> <right> <right> <right> <right> <right> <right> <right> <right> RET RET <down> <right> <right> + <down> <left> <left> <left> <left> <insert> a a <left> <left> <left> <insert> a S-<up> <left> <left> <left> <left> <left> <left> <left> <left> RET <up> <up> <right> <right> <right> <right> <right> <right> <right> <right> <right> <right> <right> <right> <right> <right> - <up> <up> <up>"
+ "b RET c
+ - 3*<right> <down> 5*<left> <up>
+ C-SPC <down> 6*<right> <insert> <down> 11*<right> 2*RET
+ <down> 2*<right>
+ + <down> 4*<left>
+ <insert> 2*a
+ 3*<left>
+ <insert> a S-<up>
+ 8*<left>
+ RET 2*<up> 14*<right>
+ - 3*<up>"
 
  "\
               │

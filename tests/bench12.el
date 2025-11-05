@@ -19,8 +19,14 @@
 ;; You should have received a copy of the GNU General Public License
 ;; along with this program.  If not, see <http://www.gnu.org/licenses/>.
 
+;; Test rectangle fill
+
 (uniline-bench
-"<return> <down> <down> <down> <right> <right> <right> <right> <right> S-<down> S-<down> S-<down> S-<down> S-<down> S-<down> S-<right> S-<right> S-<right> S-<right> S-<right> S-<right> S-<right> S-<right> S-<right> S-<right> S-<right> <insert> i SPC <return> <down> <down> <down> <right> <right> <right> <right> <right> <right> <right> <down> S-<down> S-<down> S-<down> S-<down> S-<down> S-<down> S-<right> S-<right> S-<right> S-<right> S-<right> S-<right> S-<right> S-<right> <insert> i y <return> <up> <up> S-<left> S-<left> S-<left> S-<left> S-<left> S-<up> <insert> i SPC <return>"
+ "<return> 3*<down> 5*<right>
+ 6*S-<down> 11*S-<right> <insert> i SPC
+ <return> 3*<down> 7*<right> <down> 6*S-<down> 8*S-<right> <insert> i y
+ <return> 2*<up> 5*S-<left> S-<up> <insert> i SPC
+ <return>"
 "\
  
  

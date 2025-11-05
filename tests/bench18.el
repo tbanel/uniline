@@ -19,8 +19,18 @@
 ;; You should have received a copy of the GNU General Public License
 ;; along with this program.  If not, see <http://www.gnu.org/licenses/>.
 
+;; Check # blocks contour
+
 (uniline-bench
-"<return> <down> <right> <right> <right> t t t t t t <down> <left> <left> <left> y y <down> <left> <left> <left> <left> <left> r r r r <down> <insert> C-<left> o o o o <right> <down> o o o o o <insert> C-<right> <up> <up> <right> <right> <right> <right> <right> # <insert> c"
+ "<return>
+ <down> 3*<right> 6*t
+ <down> 3*<left> 2*y
+ <down> 5*<left> 4*r
+ <down>
+ <insert> C-<left> 4*o
+ <right> <down> 5*o
+ <insert> C-<right> 2*<up> 5*<right>
+ # <insert> c"
 "\
   ▗▄▄▄▄▄▄▖
   ▐tttttt▌

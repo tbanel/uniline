@@ -20,23 +20,23 @@
 ;; along with this program.  If not, see <http://www.gnu.org/licenses/>.
 
 (uniline-bench
- "<return> <down> <right> <right> <right> <right> <down> <down> <right> <right> <right> <right> <down> <left>
+ "<return> <down> 4*<right> 2*<down> 4*<right> <down> <left>
  M
  <left>
- = <up> <up> <up> M-6 <right> <down> <down> <down> <left> <left>
+ = 3*<up> M-6 <right> 3*<down> 2*<left>
  <insert> a
  M-7 <left>
- <insert> a a a
- <left> <down> <down> <down> M-4 <right> <up> <up> <up>
- <return> <up> <up> <right> <right>
+ <insert> 3*a
+ <left> 3*<down> M-4 <right> 3*<up>
+ <return> 2*<up> 2*<right>
  <insert> s
- <down> <right> <right>
- <insert> s s
- <down> <down> <down> M-6 <left>
+ <down> 2*<right>
+ <insert> 2*s
+ 3*<down> M-6 <left>
  <insert> x
  <up>
- <insert> o o o o o
- <up> <up> <up> <up> M-9 <right>
+ <insert> 5*o
+ 4*<up> M-9 <right>
  C-SPC M-6 <down> M-12 <left>
  <insert> c
  <right> <return> M-13 <right> M-6 <up>

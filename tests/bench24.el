@@ -19,28 +19,30 @@
 ;; You should have received a copy of the GNU General Public License
 ;; along with this program.  If not, see <http://www.gnu.org/licenses/>.
 
+;; Test undo
+
 (uniline-bench
  "<return>
- <down> <down> <down> M-5 <right>
- u u u u u u
- <down> <left> <left> <left> <left>
- u u u u u u
+ 3*<down> M-5 <right>
+ 6*u
+ <down> 4*<left>
+ 6*u
  #
- <down> <down> <left> <left> <down> <left> <left> <left> <left> <left> <left> <left> <up> <left> <left> <left>
- C-_ C-_ C-_ C-_ C-_ C-_
- <down> <down>
+ 2*<down> 2*<left> <down> 7*<left> <up> 3*<left>
+ 6*C-_
+ 2*<down>
  <return>
- <up> <up> <up> <up>
+ 4*<up>
  <kp-subtract>
- <left> <left> <left> M-4 <down> M-6 <right> <up> <up> <up> <up> <left> <left> <left> <left>
- <return> <left> <left> <left>
- S-<down> S-<down> S-<down> S-<down> M-8 S-<right>
+ 3*<left> M-4 <down> M-6 <right> 4*<up> 4*<left>
+ <return> 3*<left>
+ 4*S-<down> M-8 S-<right>
  <insert>
- <right> <right>
+ 2*<right>
  s <kp-add>
  <kp-3>
- C-_ C-_ C-_ C-_ C-_
- <return> <return>"
+ 5*C-_
+ 2*<return>"
 "\
  
  

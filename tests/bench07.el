@@ -20,7 +20,29 @@
 ;; along with this program.  If not, see <http://www.gnu.org/licenses/>.
 
 (uniline-bench
-"a a <return> <right> a a <left> <left> <left> a <right> <down> a <down> <left> a <down> <left> a a a a a a <up> <left> a <up> <left> a <up> <left> a a a a a <down> <left> <left> <home> <down> <up> a <down> <left> a <down> <left> a <down> <left> a <down> <left> a a a a <down> <left> a <down> <left> a <down> <left> a <left> <left> a <left> <left> a <left> <left> a <down> <left> a <left> <kp-subtract> <insert> c"
+"a a <return>
+ <right> 2*a
+ 3*<left> a
+ <right> <down> a
+ <down> <left> a
+ <down> <left> 6*a
+ <up> <left> a
+ <up> <left> a
+ <up> <left> 5*a
+ <down> 2*<left>
+ <home> <down> <up> a
+ <down> <left> a
+ <down> <left> a
+ <down> <left> a
+ <down> <left> 4*a
+ <down> <left> a
+ <down> <left> a
+ <down> <left> a
+ 2*<left> a
+ 2*<left> a
+ 2*<left> a
+ <down> <left> a
+ <left> <kp-subtract> <insert> c"
 "\
 aaaaa╷  ╷aaaaa╷
 a╭─╮a│  │a╭───╯

@@ -20,55 +20,55 @@
 ;; along with this program.  If not, see <http://www.gnu.org/licenses/>.
 
 (uniline-bench
- "<return> <down> <down> M-3 <right>
- <kp-subtract> M-9 <right> M-3 <down> M-5 <left> M-4 <up> M-11 <right> <down> <down>
+ "<return> 2*<down> M-3 <right>
+ <kp-subtract> M-9 <right> M-3 <down> M-5 <left> M-4 <up> M-11 <right> 2*<down>
  <insert> a
- <down> <left> <left> <left> <down>
- <insert> a a
- <down> <left> <left> <left>
- <insert> a a a
- <left> <left> <left>
- <insert> a a a a
- <left> <left> <left> <left> <up>
- <insert> a a a a a
- <up> <up> <left> <left> <up>
+ <down> 3*<left> <down>
+ <insert> 2*a
+ <down> 3*<left>
+ <insert> 3*a
+ 3*<left>
+ <insert> 4*a
+ 4*<left> <up>
+ <insert> 5*a
+ 2*<up> 2*<left> <up>
  <return> <up>
  C-x SPC M-5 <down> M-16 <right>
  <insert> c <return>
  M-5 <up> M-4 <right>
  C-SPC <insert> y s h <return>
- A A A M-3 <left>
+ 3*A M-3 <left>
 
  <return> M-20 <right>
  C-SPC <insert> y s 4 <return>
- B B B M-3 <left>
+ 3*B M-3 <left>
 
  C-SPC <insert> y s + 4 <return>
-C C C M-3 <left>
+ 3*C M-3 <left>
 
  M-15 <down> M-40 <left>
  C-x SPC <insert> y s + <return>
- D D D M-3 <left>
+ 3*D M-3 <left>
 
  M-0 <right> M-8 <up>
  C-x SPC y <backspace>
  C-x SPC <insert> y s 3 <return>
- E E E M-3 <left>
+ 3*E M-3 <left>
 
  M-20 <right>
  C-x SPC <insert> y s 4 <return>
- F F F M-3 <left>
+ 3*F M-3 <left>
 
  M-19 <right>
  C-SPC <insert> y s + <return>
- G G G M-3 <left>
+ 3*G M-3 <left>
 
  M-3 <down> <return> M-5 <down> <left>
  <return>
 
  M-18 <left>
  C-x SPC <insert> y s + 3 <return>
- H H H M-3 <left>
+ 3*H M-3 <left>
 "
 "\
  

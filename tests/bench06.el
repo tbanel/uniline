@@ -20,37 +20,37 @@
 ;; along with this program.  If not, see <http://www.gnu.org/licenses/>.
 
 (uniline-bench
- "<return> <down> <down> <right> <right> <right> <right> <right>
+ "<return> 2*<down> 5*<right>
  m ù q <down>
  v <down>
  h u <down> <left>
  u <down> <left>
  u <down> <left>
- u <left> <left>
- u <left> <left>
- u <left> <left>
+ u 2*<left>
+ u 2*<left>
+ u 2*<left>
  u <down> <left>
- u <left> <left>
- u <left> <left>
- u <left> <left>
+ u 2*<left>
+ u 2*<left>
+ u 2*<left>
  u <up> <left>
- u <left> <left>
+ u 2*<left>
  a <up> <left>
- é <up> <left> <left>
+ é <up> 2*<left>
  1 <up> <left>
- 2 i i <down> <up>
- i <up> <up> <left> <left> <left> <left>
- C-SPC <down> <down> <down> <down> <down> <down> <right> <right> <right> <right> <right> <right> <right> <right> <right>
+ 2 2*i <down> <up>
+ i 2*<up> 4*<left>
+ C-SPC 6*<down> 9*<right>
  <insert> c <return>
  M-3 <right> M-5 <up>
  C-SPC <insert> y <return>
- <left> <left> <left> <left> <left> <left>
+ 6*<left>
  <insert> <return>
  <kp-subtract>
  <insert> c <return>
- <right> <right> <right> <right> <right> <right> <right>
+ 7*<right>
  j <down> <left>
- j <down> <down>
+ j 2*<down>
  <insert> i SPC"
 "\
  

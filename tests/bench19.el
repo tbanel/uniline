@@ -20,7 +20,33 @@
 ;; along with this program.  If not, see <http://www.gnu.org/licenses/>.
 
 (uniline-bench
-"<return> <right> <right> <right> <insert> C-<down> t t t t <insert> C-<right> y y y y y y <insert> C-<up> h h h h h <insert> C-<right> g g g g <insert> C-<down> a a a a a a a a <insert> C-<left> b b b b b b b b b b b b b b <insert> C-<up> f f <insert> C-<right> f f f f <home> <down> <down> <down> <down> <down> d d d d d d <home> <down> g g g g g <down> <home> SPC SPC SPC SPC h h h <down> <home> SPC SPC SPC SPC SPC i i i i <down> <home> h h <down> <left> h h h h h h <up> <left> h <home> M-< <right> <right> <right> <right> <right> <right> <right> <right> <right> <right> <right> <right> <right> <right> <right> <right> <right> <right> <right> i i <down> <left> i i <down> <left> i i <down> <left> i i i i <up> <left> i i <up> <left> i i <up> <left> i i # <insert> c M-< <return> <right> <right> <right> # <insert> c <return> <home> <down> <down> <down> <down> <down> <down> <down> <down> <down> <down> <down> <down> <end> C-a M-f <insert> c # <insert> c"
+ "<return>
+ 3*<right> <insert> C-<down> 4*t
+ <insert> C-<right> 6*y
+ <insert> C-<up> 5*h
+ <insert> C-<right> 4*g
+ <insert> C-<down> 8*a
+ <insert> C-<left> 14*b
+ <insert> C-<up> 2*f
+ <insert> C-<right> 4*f
+ <home> 5*<down> 6*d
+ <home> <down> 5*g
+ <down> <home> 4*SPC 3*h
+ <down> <home> 5*SPC 4*i
+ <down> <home> 2*h
+ <down> <left> 6*h
+ <up> <left> h
+ <home> M-< 19*<right> 2*i
+ <down> <left> 2*i
+ <down> <left> 2*i
+ <down> <left> 4*i
+ <up> <left> 2*i
+ <up> <left> 2*i
+ <up> <left> 2*i
+ # <insert> c
+ M-< <return> 3*<right> # <insert> c
+ <return> <home> 12*<down> <end> C-a M-f <insert> c
+ # <insert> c"
 "\
   ▐t▖   ▐gggga▖   ▐ii▄▖  ▗▟ii▖
   ▐t▌   ▐h▛▀▜a▌   ▝▜ii▙▖▗▟ii▛▘

@@ -20,7 +20,37 @@
 ;; along with this program.  If not, see <http://www.gnu.org/licenses/>.
 
 (uniline-bench
-"<return> <down> <down> <right> <right> <right> <right> <right> M-x p i c t u r e - m o d e <return> S-<down> S-<down> S-<down> S-<down> S-<down> S-<right> S-<right> S-<right> S-<right> S-<right> S-<right> S-<right> S-<right> S-<right> S-<right> S-<right> S-<right> S-<right> S-<right> S-<right> S-<right> S-<right> S-<right> S-<right> S-<left> S-<left> C-c C-r <up> <up> <up> <left> <left> <left> <left> <left> <left> <left> <left> <left> <left> S-<down> S-<down> S-<down> S-<down> S-<down> S-<right> S-<right> S-<right> S-<right> S-<right> S-<right> S-<right> S-<right> S-<right> S-<right> S-<right> S-<right> S-<right> S-<right> S-<right> S-<right> S-<right> C-c C-r <up> <up> <up> <up> <up> <up> M-x M-p <end> ( <backspace> - r <backspace> e x i t <return> <up> <home> <right> <right> <down> <down> <down> <down> <down> <right> <right> <right> <right> <right> <right> <right> <right> <right> <right> <insert> <kp-add> <up> <up> <up> <up> <up> <left> <left> <left> <left> <left> <left> <left> <left> <left> <left> <up> S-<down> S-<down> S-<down> S-<down> S-<down> S-<down> S-<down> S-<down> S-<down> S-<right> S-<right> S-<right> S-<right> S-<right> S-<right> S-<right> S-<right> S-<right> S-<right> S-<right> S-<right> S-<right> S-<right> S-<right> S-<right> S-<right> S-<right> S-<right> S-<right> S-<right> S-<right> S-<right> S-<right> S-<right> S-<right> S-<right> S-<right> S-<right> <insert> s <kp-0> <return> <down> <right> <right> <right> <right> <right> <right> <up> M-x M-p M-p <return> S-<down> S-<down> S-<down> S-<down> S-<down> S-<right> S-<right> S-<right> S-<right> S-<right> S-<right> S-<right> S-<right> S-<right> C-c C-r M-x M-p M-p <return> <left> <left> <left> <left> <left> <left> <insert> <kp-add> <up> <up> <up> <up> <up> <left> <left> <left> <left> <left> <left> <left> <left> <left> <left> <right> <right> <right> <right> <right> S-<down> S-<down> S-<down> S-<down> S-<down> S-<down> S-<down> S-<right> S-<right> S-<right> S-<right> S-<right> S-<right> S-<right> <insert> s <kp-0> <kp-add> <return> <down> <down> <down> <down> <right> <right> <right> <right> <right> <right> <right> <right> S-<down> S-<down> S-<down> S-<down> S-<down> S-<right> S-<right> S-<right> S-<right> S-<right> S-<right> S-<right> S-<right> S-<right> S-<right> <insert> s = <return>"
+ "<return>
+ 2*<down> 5*<right>
+ M-x p i c t u r e - m o d e <return>
+ 5*S-<down> 19*S-<right> 2*S-<left> C-c C-r
+ 3*<up> 10*<left>
+ 5*S-<down> 17*S-<right> C-c C-r
+ 6*<up>
+ M-x M-p <end>
+ ( <backspace>
+ -
+ r <backspace>
+ e x i t <return>
+ <up> <home> 2*<right> 5*<down> 10*<right>
+ <insert> <kp-add>
+ 5*<up> 10*<left> <up>
+ 9*S-<down> 27*S-<right> 2*S-<right>
+ <insert> s <kp-0>
+ <return>
+ <down> 6*<right> <up>
+ M-x 2*M-p <return>
+ 5*S-<down> 9*S-<right> C-c C-r
+ M-x 2*M-p <return>
+ 6*<left>
+ <insert> <kp-add>
+ 5*<up> 10*<left> 5*<right>
+ 7*S-<down> 7*S-<right>
+ <insert> s <kp-0> <kp-add>
+ <return>
+ 4*<down> 8*<right>
+ 5*S-<down> 10*S-<right>
+ <insert> s = <return>"
 "\
 
          ┏━━━━━---+

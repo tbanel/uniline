@@ -19,8 +19,13 @@
 ;; You should have received a copy of the GNU General Public License
 ;; along with this program.  If not, see <http://www.gnu.org/licenses/>.
 
+;; Check if TABs are converted to SPC when drawing on them
+
 (uniline-bench
-"C-q <tab> t a b s SPC ? <return> <down> C-a C-q <tab> C-q <tab> 2 SPC t a b s <down> <home> <kp-subtract> <right> <right> <up> <up> <right> <right> <right> <right> <right> <right> <right> <right> <right> <right> <down> <down> <insert> s <return>"
+ "C-q <tab> t a b s SPC ?
+ <return> <down> C-a C-q <tab> C-q <tab> 2 SPC t a b s
+ <down> <home> <kp-subtract> 2*<right> 2*<up> 10*<right> 2*<down>
+ <insert> s <return>"
 "\
   ╭─────tabs╮? 
   │         │   2 tabs         

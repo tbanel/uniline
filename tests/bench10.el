@@ -24,7 +24,13 @@
 (setq last-kbd-macro (kbd "<kp-subtract> <right> C-<up> C-<right> <down>"))
 
 (uniline-bench
-  "<return> <down> <down> <right> <right> a a a a a a a a a a a a a a a a a a a a C-a C-k C-y C-a <down> C-y C-a <down> C-y C-a <up> <up> <up> <up> <down> <up> <right> <down>    C-x e e e e <right> <right> <right> <down> <down> <down> <left> <left> <left> <left> <left> <up> <up> <up> <return>"
+ "<return> 2*<down> 2*<right> 20*a
+ C-a C-k C-y
+ C-a <down> C-y
+ C-a <down> C-y
+ C-a 4*<up> <down> <up> <right> <down>
+ C-x 4*e 3*<right> 3*<down> 5*<left> 3*<up>
+ <return>"
  "\
   ╭╮╭╮╭╮╭╮╭╮╭╮
  ╶┼┴╯╰╯╰╯╰╯╰╯│

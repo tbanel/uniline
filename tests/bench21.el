@@ -19,8 +19,41 @@
 ;; You should have received a copy of the GNU General Public License
 ;; along with this program.  If not, see <http://www.gnu.org/licenses/>.
 
+;; Test rectangle tracing & moving
+
 (uniline-bench
-"<return> <down> <down> <down> <down> <down> <right> <right> <right> <right> <right> <right> <right> <right> <right> <right> <right> S-<down> S-<down> S-<down> S-<down> S-<down> S-<down> S-<down> S-<down> S-<down> S-<down> S-<down> S-<down> S-<down> S-<down> S-<down> S-<right> S-<right> S-<right> S-<right> S-<right> S-<right> S-<right> S-<right> S-<right> S-<right> S-<right> S-<right> S-<right> S-<right> S-<right> S-<right> S-<right> S-<right> S-<right> S-<right> S-<right> S-<right> S-<right> S-<right> S-<right> S-<right> S-<right> S-<right> S-<right> S-<right> S-<right> S-<left> S-<left> # <insert> R <return> <return> <down> <right> <right> <right> <left> S-<down> S-<down> S-<down> S-<down> S-<down> S-<down> S-<down> S-<down> S-<down> S-<down> S-<down> S-<down> S-<down> S-<right> S-<right> S-<right> S-<right> S-<right> S-<right> S-<right> S-<right> S-<right> S-<right> S-<right> S-<right> S-<right> S-<right> S-<right> S-<right> S-<right> S-<right> S-<right> S-<right> S-<right> S-<right> S-<right> S-<right> S-<right> S-<left> S-<right> <insert> # r <return> <return> <down> <down> <right> <right> <right> S-<down> S-<down> S-<down> S-<down> S-<down> S-<down> S-<down> S-<down> S-<down> S-<right> S-<right> S-<right> S-<right> S-<right> S-<right> S-<right> S-<right> S-<right> S-<right> S-<right> S-<right> S-<right> S-<right> S-<right> S-<right> S-<right> S-<right> <insert> <kp-subtract> r <return> <return> <down> <down> <right> <right> <right> S-<down> S-<down> S-<down> S-<down> S-<down> S-<right> S-<right> S-<right> S-<right> S-<right> S-<right> S-<right> S-<right> S-<right> S-<right> S-<right> <insert> S-<right> = r <return> <return> <up> <up> <up> <up> <up> <down> <down> <right> <right> <right> <up> <up> <up> <up> S-<down> S-<down> S-<down> S-<down> S-<down> S-<down> S-<down> S-<down> S-<down> S-<down> S-<down> S-<down> S-<down> S-<down> S-<down> S-<down> S-<down> S-<down> S-<down> S-<left> S-<left> S-<left> S-<left> S-<left> S-<left> S-<left> S-<left> S-<left> S-<left> S-<left> S-<left> S-<left> S-<left> S-<left> S-<left> <insert> <left> <left> <return> <return> S-<down> S-<down> S-<down> S-<down> S-<down> S-<down> S-<down> S-<down> S-<down> S-<right> S-<right> S-<right> S-<right> S-<right> S-<right> S-<right> S-<right> S-<right> S-<right> S-<right> S-<right> S-<right> S-<right> S-<right> S-<right> S-<right> S-<right> S-<right> S-<right> S-<right> S-<right> S-<right> S-<right> S-<right> S-<right> S-<right> S-<right> S-<right> S-<right> S-<right> S-<right> S-<right> S-<right> S-<right> S-<right> S-<right> S-<right> S-<right> <insert> <up> <up> <return> <return> <down> <down> <down> <down> <down> <down> <down> <down> <down> <down> <down> <down> <down> <down> <down> <up> <up> S-<right> S-<right> S-<right> S-<right> S-<right> S-<right> S-<right> S-<right> S-<right> S-<right> S-<right> S-<right> S-<right> S-<right> S-<right> S-<right> S-<right> S-<right> S-<right> S-<right> S-<right> S-<right> S-<right> S-<right> S-<right> S-<right> S-<right> S-<right> S-<right> S-<right> S-<right> S-<right> S-<right> S-<right> S-<right> S-<right> S-<right> S-<right> S-<right> S-<down> S-<down> S-<down> S-<down> S-<down> S-<down> S-<down> S-<down> S-<down> <insert> <down> <down> <return> <return> <right> <right> <right> <right> <right> <right> <right> <right> <right> <right> <right> <right> <right> <right> <right> <right> <right> <right> <right> <down> <down> <down> <down> <down> <down> <down> <down> <down> S-<up> S-<up> S-<up> S-<up> S-<up> S-<up> S-<up> S-<up> S-<up> S-<up> S-<up> S-<up> S-<up> S-<up> S-<up> S-<up> S-<up> S-<up> S-<up> S-<up> S-<up> S-<up> S-<up> S-<up> S-<right> S-<right> S-<right> S-<right> S-<right> S-<right> S-<right> S-<right> S-<right> S-<right> S-<right> S-<right> S-<right> S-<right> S-<right> S-<right> S-<right> S-<right> S-<right> S-<right> S-<right> <insert> <right> <right> <return>"
+ "<return>
+ 5*<down> 11*<right>
+ 15*S-<down> 31*S-<right> 2*S-<left>
+ # <insert> R
+ 2*<return>
+ <down> 3*<right> <left>
+ 13*S-<down> 25*S-<right> S-<left> S-<right>
+ <insert> # r
+ 2*<return>
+ 2*<down> 3*<right>
+ 9*S-<down> 18*S-<right>
+ <insert> <kp-subtract> r
+ 2*<return>
+ 2*<down> 3*<right>
+ 5*S-<down> 11*S-<right>
+ <insert> S-<right> = r
+ 2*<return>
+ 5*<up> 2*<down> 3*<right> 4*<up>
+ 19*S-<down> 16*S-<left>
+ <insert> 2*<left>
+ 2*<return>
+ 9*S-<down> 27*S-<right> 12*S-<right>
+ <insert> 2*<up>
+ 2*<return>
+ 15*<down> 2*<up>
+ 27*S-<right> 12*S-<right> 9*S-<down>
+ <insert> 2*<down>
+ 2*<return>
+ 19*<right> 9*<down>
+ 24*S-<up> 21*S-<right>
+ <insert> 2*<right>
+ <return>"
 "\
  
                                                
