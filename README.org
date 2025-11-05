@@ -112,6 +112,7 @@ See [[#hydra-or-transient][Hydra or Transient?]]
   - [[#emacs-on-the-linux-console][Emacs on the Linux console]]
   - [[#emacs-on-a-graphical-terminal-emulator][Emacs on a graphical terminal emulator]]
   - [[#emacs-on-windows][Emacs on Windows]]
+  - [[#compatibility-with-asciiflow][Compatibility with ASCIIFlow]]
 - [[#lisp-api][Lisp API]]
   - [[#move-the-cursor][Move the cursor]]
   - [[#brush][Brush]]
@@ -1787,6 +1788,30 @@ the required Unicodes to draw lines. A few glyphs produce unaligned
 result though. They should be avoided under =Consolas=: =△▶▹◆=
 
 Of course, other fonts may be installed. It is quite easy.
+
+** Compatibility with ASCIIFlow
+:PROPERTIES:
+:CUSTOM_ID: compatibility-with-asciiflow
+:END:
+
+ASCIIFlow is a ASCII-UNICODE diagram drawing tool (as Uniline). It
+works on a web browser. Just open https://asciiflow.com and start
+drawing. There is no server, ASCIIFlow operates locally on your
+PC. Your diagrams survive web browser sessions, as they are saved
+locally behind the scene.
+
+When your drawing is complete, you can export it to Emacs-Uniline:
+- Click on the download button
+- Select "ASCII Extended"
+- Paste your diagram in Emacs with =C-y=
+- Modify it with Uniline
+
+For the other way around, a Uniline drawing can be exported to
+ASCIIFlow:
+- Copy it from Emacs (with =M-w= for instance).
+- In ASCIIFlow, choose ="Select & Move"=
+- Type =C-v=
+- Edit with ASCIIFlow
 
 * Lisp API
 :PROPERTIES:
