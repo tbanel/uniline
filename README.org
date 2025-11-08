@@ -438,7 +438,7 @@ lines. If there is already text, it will not be erased. However, by
 hitting the control-key while moving, lines overwrite whatever there
 is.
 
-The buffer is "infinite" in bottom and right directions. Which means
+The buffer is infinite ∞ in bottom and right directions. Which means
 that when the cursor ends up outside the buffer, white space
 characters are automatically added.
 
@@ -467,7 +467,7 @@ Set the current brush with:
 
 - ~<return>~ move without drawing anything
 
-The current brush and the current text direction (see below) are
+The current brush and the current text direction (see [[#text-direction][Text direction]]) are
 reflected in the mode-line (at the bottom of the =Emacs= screen). It
 looks like this:
 
@@ -534,8 +534,7 @@ M-x customize-variable uniline-key-insert
 
 Individual character glyphs may be inserted and changed.
 - Put the cursor where a glyphs should be edited or inserted.
-- Then press =<insert>= (this key may be customized, see the
-  "Customization" chapter).
+- Then press =<insert>= (this key may be customized, see [[#insert-key][Insert key]]).
 
 Arrows, squares, circles, crosses may be handled. Also lines may be
 fine tweaked a single character at a time.
@@ -702,8 +701,8 @@ All those region-highlighting are standard in =Emacs=, and unrelated to
 =Uniline=.
 
 Once you have a region highlighted, press =<insert>= (this key can be
-customized, see the "Customization" chapter). The selection becomes
-rectangular if it was not. You are offered a menu of possible actions.
+customized, see [[#insert-key][Insert key]]). The selection becomes rectangular if it
+was not. You are offered a menu of possible actions.
 
 ** Drawing a rectangle
 :PROPERTIES:
@@ -756,8 +755,8 @@ options:
   lighter and lighter.
 - =C-y= to chose the first character in the top of the kill ring.
 
-The above selection is the same as for the flood-fill action (see the
-"Flood-fill" chapter).
+The above selection is the same as for the flood-fill action (see
+[[#flood-fill][Flood-fill]]).
 
 ** Moving a rectangle
 :PROPERTIES:
@@ -1382,8 +1381,8 @@ key. The other settings are self-explanatory
 :END:
 
 This switch is *obsolete*. Choosing between =Hydra= or =Transient= interface
-is done by loading one or the other sub-package. See "Installation"
-for details.
+is done by loading one or the other sub-package. See [[#installation][Installation]] for
+details.
 
 ** Insert key
 :PROPERTIES:
@@ -1482,7 +1481,7 @@ choice for everyone.
 
 Face customization is unrelated to =Uniline=. However, =Uniline= can
 assist in choosing a good font and customizing the =default= face. See
-the "Which fonts?" chapter.
+[[#which-fonts][Which fonts?]].
 
 Type =<insert> f= to select a font just for the current =Uniline=
 session. Type =*= to enter the =Emacs= customization of the =default= face
@@ -1745,9 +1744,9 @@ Linux consoles are the 7 non-graphic screens which can be accessed
 usually typing =C-M-F1=, =C-M-F2=, and so on. Such a screen is also
 presented when connecting through =ssh= or =tls= into a non-graphical server.
 
-By default they use a font
-named "Fixed" with poor support for Unicode. However, it supports
-lines of the 3 types, mixing all of them in thin lines though.
+By default they use a font named "Fixed" with poor support for
+Unicode. However, it supports lines of the 3 types, mixing all of them
+in thin lines though.
 
 Another problem is that by default =S-<left>= and =C-<left>= are
 indistinguishable from =<left>=. Same problem with =<right>=, =<up>=, =<down>=
@@ -1802,7 +1801,7 @@ locally behind the scene.
 
 When your drawing is complete, you can export it to Emacs-Uniline:
 - Click on the download button
-- Select "ASCII Extended"
+- Select ="ASCII Extended"=
 - Paste your diagram in Emacs with =C-y=
 - Modify it with Uniline
 

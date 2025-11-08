@@ -491,7 +491,7 @@ Use keyboard arrows to draw lines.
 lines.  If there is already text, it will not be erased.  However, by
 hitting the control-key while moving, lines overwrite whatever there is.
 
-   The buffer is "infinite" in bottom and right directions.  Which means
+   The buffer is infinite ∞ in bottom and right directions.  Which means
 that when the cursor ends up outside the buffer, white space characters
 are automatically added.
 
@@ -518,9 +518,9 @@ Set the current brush with:
 
    • ‘<return>’ move without drawing anything
 
-   The current brush and the current text direction (see below) are
-reflected in the mode-line (at the bottom of the ‘Emacs’ screen).  It
-looks like this:
+   The current brush and the current text direction (see *note Text
+direction::) are reflected in the mode-line (at the bottom of the
+‘Emacs’ screen).  It looks like this:
 
 
 
@@ -586,8 +586,8 @@ File: uniline.info,  Node: Glyphs ▷ ▶ → □ ◆ ╮─ insertion & modific
 
 Individual character glyphs may be inserted and changed.
    • Put the cursor where a glyphs should be edited or inserted.
-   • Then press ‘<insert>’ (this key may be customized, see the
-     "Customization" chapter).
+   • Then press ‘<insert>’ (this key may be customized, see *note Insert
+     key::).
 
    Arrows, squares, circles, crosses may be handled.  Also lines may be
 fine tweaked a single character at a time.
@@ -762,8 +762,8 @@ active when ‘shift-select-mode’ is non-nil.
 to ‘Uniline’.
 
    Once you have a region highlighted, press ‘<insert>’ (this key can be
-customized, see the "Customization" chapter).  The selection becomes
-rectangular if it was not.  You are offered a menu of possible actions.
+customized, see *note Insert key::).  The selection becomes rectangular
+if it was not.  You are offered a menu of possible actions.
 
 * Menu:
 
@@ -824,8 +824,8 @@ You will be asked to choose a character.  You have those options:
      rectangle lighter and lighter.
    • ‘C-y’ to chose the first character in the top of the kill ring.
 
-   The above selection is the same as for the flood-fill action (see the
-"Flood-fill" chapter).
+   The above selection is the same as for the flood-fill action (see
+*note Flood-fill::).
 
 
 File: uniline.info,  Node: Moving a rectangle,  Next: Copying killing yanking a rectangle,  Prev: Filling a rectangle,  Up: Rectangular actions
@@ -1473,8 +1473,8 @@ File: uniline.info,  Node: Interface type (obsolete),  Next: Insert key,  Up: Cu
 ==============================
 
 This switch is *obsolete*.  Choosing between ‘Hydra’ or ‘Transient’
-interface is done by loading one or the other sub-package.  See
-"Installation" for details.
+interface is done by loading one or the other sub-package.  See *note
+Installation:: for details.
 
 
 File: uniline.info,  Node: Insert key,  Next: Maximum steps when drawing a contour,  Prev: Interface type (obsolete),  Up: Customization
@@ -1581,7 +1581,7 @@ File: uniline.info,  Node: Font,  Prev: Line spacing,  Up: Customization
 
 Face customization is unrelated to ‘Uniline’.  However, ‘Uniline’ can
 assist in choosing a good font and customizing the ‘default’ face.  See
-the "Which fonts?"  chapter.
+*note Which fonts?::.
 
    Type ‘<insert> f’ to select a font just for the current ‘Uniline’
 session.  Type ‘*’ to enter the ‘Emacs’ customization of the ‘default’
@@ -1930,7 +1930,7 @@ behind the scene.
 
    When your drawing is complete, you can export it to Emacs-Uniline:
    • Click on the download button
-   • Select "ASCII Extended"
+   • Select ‘"ASCII Extended"’
    • Paste your diagram in Emacs with ‘C-y’
    • Modify it with Uniline
 
@@ -2489,53 +2489,53 @@ Node: Beware!17787
 Node: A minor mode for drawing18367
 Node: Minor mode18652
 Node: Draw lines by moving the cursor19214
-Node: Brush style19969
-Node: Text direction21109
-Node: The <insert> key21659
-Node: Glyphs ▷ ▶ → □ ◆ ╮─ insertion & modification22660
-Node: Arrows glyphs ▷ ▶ → ▹ ▸ ↔23386
-Node: Intersection glyphs ■ ◆ ●24958
-Node: Fine tweaking of lines27676
-Node: Rectangular actions29559
-Node: Drawing a rectangle30891
-Node: Filling a rectangle32542
-Node: Moving a rectangle33307
-Node: Copying killing yanking a rectangle34739
-Node: Dashed lines and other styles35898
-Node: ASCII to UNICODE40014
-Node: Long range actions contour and flood-fill43697
-Node: Tracing a contour43960
-Node: Flood-fill45874
-Node: Macros47648
-Node: Which fonts?51039
-Node: Hydra or Transient?53191
-Node: Selecting Hydra or Transient54180
-Node: Instantly selecting Hydra or Transient55173
-Node: One-liner menus56139
-Node: The Hydra interface58077
-Node: The Transient interface58750
-Node: Customization59288
-Node: Interface type (obsolete)60139
-Node: Insert key60466
-Node: Maximum steps when drawing a contour61259
-Node: Cursor type61589
-Node: Hint style61914
-Node: Welcome message visibility62261
-Node: Line spacing62642
-Node: Font64108
-Node: How Uniline behaves with its environment?64599
-Node: Language environment65198
-Node: Compatibility with Picture-mode67603
-Node: Compatibility with Artist-mode68550
-Node: Compatibility with Whitespace-mode69069
-Node: Compatibility with Org Mode69969
-Node: Org Mode and LaTex71390
-Node: What about \t tabs?73250
-Node: What about ^L page separation?74051
-Node: Emacs on the Linux console74674
-Node: Emacs on a graphical terminal emulator75634
-Node: Emacs on Windows76564
-Node: Compatibility with ASCIIFlow77245
+Node: Brush style19971
+Node: Text direction21128
+Node: The <insert> key21678
+Node: Glyphs ▷ ▶ → □ ◆ ╮─ insertion & modification22679
+Node: Arrows glyphs ▷ ▶ → ▹ ▸ ↔23396
+Node: Intersection glyphs ■ ◆ ●24968
+Node: Fine tweaking of lines27686
+Node: Rectangular actions29569
+Node: Drawing a rectangle30892
+Node: Filling a rectangle32543
+Node: Moving a rectangle33302
+Node: Copying killing yanking a rectangle34734
+Node: Dashed lines and other styles35893
+Node: ASCII to UNICODE40009
+Node: Long range actions contour and flood-fill43692
+Node: Tracing a contour43955
+Node: Flood-fill45869
+Node: Macros47643
+Node: Which fonts?51034
+Node: Hydra or Transient?53186
+Node: Selecting Hydra or Transient54175
+Node: Instantly selecting Hydra or Transient55168
+Node: One-liner menus56134
+Node: The Hydra interface58072
+Node: The Transient interface58745
+Node: Customization59283
+Node: Interface type (obsolete)60134
+Node: Insert key60467
+Node: Maximum steps when drawing a contour61260
+Node: Cursor type61590
+Node: Hint style61915
+Node: Welcome message visibility62262
+Node: Line spacing62643
+Node: Font64109
+Node: How Uniline behaves with its environment?64593
+Node: Language environment65192
+Node: Compatibility with Picture-mode67597
+Node: Compatibility with Artist-mode68544
+Node: Compatibility with Whitespace-mode69063
+Node: Compatibility with Org Mode69963
+Node: Org Mode and LaTex71384
+Node: What about \t tabs?73244
+Node: What about ^L page separation?74045
+Node: Emacs on the Linux console74668
+Node: Emacs on a graphical terminal emulator75628
+Node: Emacs on Windows76558
+Node: Compatibility with ASCIIFlow77239
 Node: Lisp API78195
 Node: Move the cursor78745
 Node: Brush79176
