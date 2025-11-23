@@ -341,31 +341,31 @@ Otherwise, the arrows & shapes hydra is invoked."
           ,uniline-hydra-arrows/hint
         ,(eval-when-compile
            (uniline--color-hint
-            "glyph:^aAsSoOxX-+=#^ arr&tweak:^S-→←↑↓^ text-dir:^C-→←↑↓^ ^c^-ontour f-^i^-ll ^f^-onts ^C-t^")))
+            "glyph:^aAsSoOxX-+=#^ arr&tweak:^S-→←↑↓^ text-dir:^C-→←↑↓^ ^c^ontour f^i^ll ^f^onts ^C-t^")))
      uniline-hydra-fonts/hint
      `(if (eq uniline-hint-style t)
           ,uniline-hydra-fonts/hint
         ,(eval-when-compile
            (uniline--color-hint
-            "choose font: ^dhcjbfsiIpPua^  config font: ^*^  hint: ^C-t^")))
+            "font:^dhcjbfsiIpPua^ config:^*^ hint:^C-t^")))
      uniline-hydra-moverect/hint
      `(if (eq uniline-hint-style t)
           ,uniline-hydra-moverect/hint
         ,(eval-when-compile
            (uniline--color-hint
-            "move: ^→←↑↓^ trace: ^rR C-rR^ copy-paste: ^cky^ f-^i^-ll brush: ^-+=# DEL^ ^s^tyle ^f^-onts ^C-t^")))
+            "move:^→←↑↓^ trace:^rR C-rR^ copy-paste:^cky^ f^i^ll brush:^-+=# DEL^ ^s^tyle ^f^onts ^C-t^")))
      uniline-hydra-macro-exec/hint
      `(if (eq uniline-hint-style t)
           ,uniline-hydra-macro-exec/hint
         ,(eval-when-compile
            (uniline--color-hint
-            "macro exec usual: ^e^  directional: ^→←↑↓^  hint: ^C-t^")))
+            "macro exec, usual:^e^ directional:^→←↑↓^ hint:^C-t^")))
      uniline-hydra-alt-styles/hint
      `(if (eq uniline-hint-style t)
           ,uniline-hydra-alt-styles/hint
         ,(eval-when-compile
            (uniline--color-hint
-            "alt styles, brush: ^-+=^, dashed: ^34^ corners: ^h^ standard: ^0^ ^a^a2u ^C-t^"))))
+            "alt styles, thick:^-+=^ dashed:^34^ corners:^h^ standard:^0^ ^a^a2u ^C-t^"))))
 
     (defun uniline-toggle-hints (&optional notoggle)
       "Toggle between styles of hydra hints.
