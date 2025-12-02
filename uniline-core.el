@@ -4108,6 +4108,20 @@ with the one used to invoke Uniline-mode."
   :set 'uniline--set-insert-key
   :group 'uniline)
 
+(defun uniline-about ()
+  "Print a message containing the MELPA version and the repository URL."
+  (interactive)
+  (let ((path
+         (cl-loop
+          for p in load-path
+          if (string-match (rx "/uniline-" (group (+ (any "0-9."))) eos) p)
+          collect (match-string 1 p))))
+    (setq path
+          (if (listp path)
+              (car path)
+            ""))
+    (message "Uniline %s, https://github.com/tbanel/uniline" path)))
+
 (easy-menu-define
   uniline-menu
   uniline-mode-map
@@ -4118,15 +4132,15 @@ with the one used to invoke Uniline-mode."
   '("Uniline"
     :visible t
     :active t
-    ["write right" uniline-write-ri→ t]
-    ["write left"  uniline-write-lf← t]
-    ["write up"    uniline-write-up↑ t]
-    ["write down"  uniline-write-dw↓ t]
+    ["Write right" uniline-write-ri→ t]
+    ["Write left"  uniline-write-lf← t]
+    ["Write up"    uniline-write-up↑ t]
+    ["Write down"  uniline-write-dw↓ t]
     ("Overwrite"
-     ["overwrite right" uniline-overwrite-ri→ t]
-     ["overwrite left"  uniline-overwrite-lf← t]
-     ["overwrite up"    uniline-overwrite-up↑ t]
-     ["overwrite down"  uniline-overwrite-dw↓ t])
+     ["Overwrite right" uniline-overwrite-ri→ t]
+     ["Overwrite left"  uniline-overwrite-lf← t]
+     ["Overwrite up"    uniline-overwrite-up↑ t]
+     ["Overwrite down"  uniline-overwrite-dw↓ t])
     "----"
     ["─ light brush"  uniline-set-brush-1     :style radio :selected (eq uniline-brush 1     )]
     ["━ heavy brush"  uniline-set-brush-2     :style radio :selected (eq uniline-brush 2     )]
@@ -4136,43 +4150,43 @@ with the one used to invoke Uniline-mode."
     ["inactive brush" uniline-set-brush-nil   :style radio :selected (eq uniline-brush nil   )]
     "----"
     ("Insert glyph"
-     ["insert arrow ▷ ▶ → ▹ ▸ ↔"   uniline-insert-fw-arrow  :keys "INS a"]
-     ["insert square □ ■ ◆ ◊"      uniline-insert-fw-square :keys "INS s"]
-     ["insert oshape · ● ◦ Ø ø"    uniline-insert-fw-oshape :keys "INS o"]
-     ["insert cross ╳ ╱ ╲ ÷ × ± ¤" uniline-insert-fw-cross  :keys "INS x"])
+     ["Insert arrow ▷ ▶ → ▹ ▸ ↔"   uniline-insert-fw-arrow  :keys "INS a"]
+     ["Insert square □ ■ ◆ ◊"      uniline-insert-fw-square :keys "INS s"]
+     ["Insert oshape · ● ◦ Ø ø"    uniline-insert-fw-oshape :keys "INS o"]
+     ["Insert cross ╳ ╱ ╲ ÷ × ± ¤" uniline-insert-fw-cross  :keys "INS x"])
     ("Rotate arrow, tweak ¼ line"
-     ["rotate arrow, tweak ¼ line → right" uniline-rotate-ri→ :keys "INS S-<right>"]
-     ["rotate arrow, tweak ¼ line ← left"  uniline-rotate-lf← :keys "INS S-<left>" ]
-     ["rotate arrow, tweak ¼ line ↑ up"    uniline-rotate-up↑ :keys "INS S-<up>"   ]
-     ["rotate arrow, tweak ¼ line ↓ down"  uniline-rotate-dw↓ :keys "INS S-<down>" ])
+     ["Rotate arrow, tweak ¼ line → right" uniline-rotate-ri→ :keys "INS S-<right>"]
+     ["Rotate arrow, tweak ¼ line ← left"  uniline-rotate-lf← :keys "INS S-<left>" ]
+     ["Rotate arrow, tweak ¼ line ↑ up"    uniline-rotate-up↑ :keys "INS S-<up>"   ]
+     ["Rotate arrow, tweak ¼ line ↓ down"  uniline-rotate-dw↓ :keys "INS S-<down>" ])
     ("Rectangular region" :active (region-active-p)
-     ["move selection right" uniline-move-rect-ri→ :keys "INS <right>"]
-     ["move selection left"  uniline-move-rect-lf← :keys "INS <left>" ]
-     ["move selection up"    uniline-move-rect-up↑ :keys "INS <up>"   ]
-     ["move selection down"  uniline-move-rect-dw↓ :keys "INS <down>" ]
+     ["Move selection right" uniline-move-rect-ri→ :keys "INS <right>"]
+     ["Move selection left"  uniline-move-rect-lf← :keys "INS <left>" ]
+     ["Move selection up"    uniline-move-rect-up↑ :keys "INS <up>"   ]
+     ["Move selection down"  uniline-move-rect-dw↓ :keys "INS <down>" ]
      "----"
-     ["copy"        uniline-copy-rectangle :keys "INS c"]
-     ["kill"        uniline-kill-rectangle :keys "INS k"]
-     ["yank, paste" uniline-yank-rectangle :keys "INS y"]
+     ["Copy"        uniline-copy-rectangle :keys "INS c"]
+     ["Kill"        uniline-kill-rectangle :keys "INS k"]
+     ["Yank, paste" uniline-yank-rectangle :keys "INS y"]
      "----"
-     ["trace rectangle inside selection"     uniline-draw-inner-rectangle      :keys "INS r"  ]
-     ["trace rectangle around selection"     uniline-draw-outer-rectangle      :keys "INS R"  ]
-     ["overwrite rectangle inside selection" uniline-overwrite-inner-rectangle :keys "INS C-r"]
-     ["overwrite rectangle around selection" uniline-overwrite-outer-rectangle :keys "INS C-R"]
-     ["fill"                                 uniline-fill-rectangle            :keys "INS i"  ])
+     ["Trace rectangle inside selection"     uniline-draw-inner-rectangle      :keys "INS r"  ]
+     ["Trace rectangle around selection"     uniline-draw-outer-rectangle      :keys "INS R"  ]
+     ["Overwrite rectangle inside selection" uniline-overwrite-inner-rectangle :keys "INS C-r"]
+     ["Overwrite rectangle around selection" uniline-overwrite-outer-rectangle :keys "INS C-R"]
+     ["Fill"                                 uniline-fill-rectangle            :keys "INS i"  ])
     ("Alternate styles" :active (region-active-p)
-     ["thin lines"          uniline-change-style-thin     :keys "INS s -"]
-     ["thick lines"         uniline-change-style-thick    :keys "INS s +"]
-     ["double lines"        uniline-change-style-double   :keys "INS s ="]
-     ["3 dots vert, 2 dots horiz" uniline-change-style-dot-3-2 :keys "INS s 3"]
-     ["4 dots vert & horiz" uniline-change-style-dot-4-4  :keys "INS s 4"]
-     ["hard corners"    uniline-change-style-hard-corners :keys "INS s h"]
-     ["back to standard"    uniline-change-style-standard :keys "INS s 0"]
+     ["─ thin lines"          uniline-change-style-thin     :keys "INS s -"]
+     ["━ thick lines"         uniline-change-style-thick    :keys "INS s +"]
+     ["═ double lines"        uniline-change-style-double   :keys "INS s ="]
+     ["╌ 3 dots vert, 2 dots horiz" uniline-change-style-dot-3-2 :keys "INS s 3"]
+     ["┈ 4 dots vert & horiz" uniline-change-style-dot-4-4  :keys "INS s 4"]
+     ["┌ hard corners"    uniline-change-style-hard-corners :keys "INS s h"]
+     ["╭ back to standard"    uniline-change-style-standard :keys "INS s 0"]
      ["aa2u (ext. package)" uniline-aa2u-rectangle        :keys "INS s a"])
     ("Fill & contour"
-     ["contour"        uniline-contour    :keys "INS c"]
-     ["contour overw" (uniline-contour t) :keys "INS C"]
-     ["fill"           uniline-fill       :keys "INS i"])
+     ["Contour"        uniline-contour    :keys "INS c"]
+     ["Contour overw" (uniline-contour t) :keys "INS C"]
+     ["Fill"           uniline-fill       :keys "INS i"])
     ("Text insertion direction"
      ["→ right" uniline-text-direction-ri→ :keys "INS C-<right>" :style radio :selected (eq uniline-text-direction (uniline-direction-ri→))]
      ["← left"  uniline-text-direction-lf← :keys "INS C-<left> " :style radio :selected (eq uniline-text-direction (uniline-direction-lf←))]
@@ -4194,17 +4208,18 @@ with the one used to invoke Uniline-mode."
      ["Unifont"                  (set-frame-font "Unifont"                 ) :keys "INS f u" :style radio :selected (uniline--is-font ?u)]
      ["Agave"                    (set-frame-font "Agave"                   ) :keys "INS f a" :style radio :selected (uniline--is-font ?a)]
      ["Configure permanently"    uniline-customize-face                      :keys "INS f *"])
-    ["info" (info "uniline") :keys "M-: (info \"uniline\")"]
+    ["Info" (info "uniline") :keys "M-: (info \"uniline\")"]
     ("Customize"
      ["Current session only:" :selected nil]
-     ["large hints sizes" uniline-toggle-hints :keys "C-t or C-h C-t" :style toggle :selected (eq uniline-hint-style t)]
+     ["Large hints sizes" uniline-toggle-hints :keys "C-t or C-h C-t" :style toggle :selected (eq uniline-hint-style t)]
      ["Hydra"     (load-library "uniline-hydra"    )]
      ["Transient" (load-library "uniline-transient")]
      "----"
      ["Future sessions:" :selected nil]
      ["Uniline Group" (customize-group 'uniline)]
      ["Hydra or Transient (change .emacs)" (info "(uniline) Installation")])
-    ["quit Uniline Mode" uniline-mode t] ))
+    ["Quit Uniline Mode" uniline-mode t]
+    ["About" uniline-about t]))
 
 (provide 'uniline-core)
 ;;; uniline-core.el ends here
