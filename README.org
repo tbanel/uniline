@@ -85,6 +85,8 @@ See [[#hydra-or-transient][Hydra or Transient?]]
   - [[#flood-fill][Flood-fill]]
 - [[#macros][Macros]]
 - [[#which-fonts][Which fonts?]]
+  - [[#recommended-fonts][Recommended fonts]]
+  - [[#use-case-mixing-fonts][Use case: mixing fonts]]
 - [[#hydra-or-transient][Hydra or Transient?]]
   - [[#selecting-hydra-or-transient][Selecting Hydra or Transient]]
   - [[#instantly-selecting-hydra-or-transient][Instantly selecting Hydra or Transient]]
@@ -1155,6 +1157,11 @@ call a macro in 4 directions, closing a square:
 :END:
 A mono-space character font must be used. It must also support UNICODE.
 
+** Recommended fonts
+:PROPERTIES:
+:CUSTOM_ID: recommended-fonts
+:END:
+
 Not all fonts are born equal.
 
 - =(set-frame-font "DejaVu Sans Mono"        )=
@@ -1204,6 +1211,69 @@ To know which font =Emacs= has chosen for a given character, type:
 
 Note that none of those commands downloads a font from the Web.
 The font should already be available.
+
+** Use case: mixing fonts
+:PROPERTIES:
+:CUSTOM_ID: use-case-mixing-fonts
+:END:
+
+A user on GitHub, dmullis, exposed his use-case. A source-code base is
+usually edited with a font not in the Uniline list of recommended
+fonts. However, it is desirable to document the source code with
+Uniline, either directly along the source or in separate files. How to
+achieve that without messing with the fonts in several Emacs buffers?
+
+Several solutions have emerged from the discussion.
+
+- =face-remap-add-relative=
+
+A line like this at the top of the files reserved for Uniline drawings:
+
+#+begin_example
+-*- eval: (face-remap-add-relative 'default :family "DejaVu Sans Mono"); -*-
+#+end_example
+
+This confines its effect to just the one single buffer.
+
+- =uniline-mode-hook=
+
+Add a hook (a function called when entering =uniline-mode=):
+
+#+begin_example
+(add-hook
+  'uniline-mode-hook
+  (lambda () (face-remap-add-relative 'default :family "DejaVu Sans Mono")))
+#+end_example
+
+There are also =uniline-mode-on-hook= & =uniline-mode-off-hook= which can be handy.
+
+- =font-lock-comment-face=
+
+An alternative mean of limiting the scope of the font change is the
+Emacs standard font-lock mechanism.
+
+#+begin_example
+(customize-face '(font-lock-comment-face))
+#+end_example
+
+Then check =Font Family=, type in value ="DejaVu Sans Mono",= and =C-x C-s=.
+
+Now any major mode that understands "comments" as distinct from other
+text can safely nest a Uniline drawing within its boundaries, all text
+outside the "comment" unaffected (except perhaps by spacing).
+
+Look also at the =font-lock-constant-face= face.
+
+- Org Mode
+
+In Org Mode, the usable faces could be =org-block=, =org-quote=,
+=org-verse=. But first the =org-fontify-quote-and-verse-blocks= variable
+must be set to =t=.
+
+- Markdown
+
+In Markdown mode, customize the =markdown-pre-face= or
+=markdown-code-face= faces.
 
 * Hydra or Transient?
 :PROPERTIES:
