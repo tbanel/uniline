@@ -1884,6 +1884,43 @@ P is the point."
            ,(point))
           ,@buffer-undo-list)))
 
+;; Here is the list of all interactive functions which leave
+;; the region visually active on the rectangle they just operated on.
+;;
+;; To correclty undo such rectangle operations, the selection should
+;; first be deactivated. This is because some changes in the buffer
+;; are on the fringe of the region, and are not prpoperly undone.
+;;
+;; However deactivating the selection proved to be quite tricky to achieve.
+;;
+;; Therefore we leave the region highlighted, and we instructs `undo'
+;; to disregard the region. The `undo' mechanism provides for that,
+;; by looking at the `undo-inhibit-region' property of the `last-command'
+;;
+;; The following list was hand-compiled by looking for interactive
+;; functions which call `uniline--operate-on-rectangle', either directly
+;; or through a utility function.
+
+(dolist
+    (fun
+     '(uniline-move-rect-up↑
+       uniline-move-rect-dw↓
+       uniline-move-rect-ri→
+       uniline-move-rect-lf←
+       uniline-fill-rectangle
+       uniline-draw-inner-rectangle
+       uniline-draw-outer-rectangle
+       uniline-yank-rectangle
+       uniline-change-style-standard
+       uniline-aa2u-rectangle
+       uniline-change-style-dot-3-2
+       uniline-change-style-dot-4-4
+       uniline-change-style-hard-corners
+       uniline-change-style-thin
+       uniline-change-style-thick
+       uniline-change-style-double))
+  (put fun 'undo-inhibit-region t))
+
 ;;;╭───────────────────────────────────╮
 ;;;│High level management of rectangles│
 ;;;╰───────────────────────────────────╯
@@ -2282,7 +2319,11 @@ When FORCE is not nil, overwrite whatever is there."
          (uniline-write-up↑ height force))
      (when (eq begy 0)
        (goto-char (point-min))
-       (delete-line)))))
+       (delete-line))
+     (setq begx (max (1- begx) 0))
+     (setq begy (max (1- begy) 0))
+     (setq endx      (1+ endx)   )
+     (setq endy      (1+ endy)   ))))
 
 (defun uniline-overwrite-outer-rectangle ()
   "Draws a rectangle outside a rectangular selection.
@@ -3496,14 +3537,6 @@ with a tick-glyph ▶ if current."
     (uniline-direction-ri→ "→")
     (uniline-direction-dw↓ "↓")
     (uniline-direction-lf← "←")))
-
-(defun uniline--rect-undo ()
-  "Make undo work outside selection.
-The selection will be recovered by the undo machinery,
-and highlighted."
-  (interactive)
-  (deactivate-mark)
-  (undo))
 
 (defun uniline--rect-quit ()
   "Quit this hydra or transient."

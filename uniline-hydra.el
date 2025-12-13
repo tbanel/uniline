@@ -232,9 +232,6 @@
               ("s"       uniline-hydra-moverect/body :exit t)
               ;; misc.
               ("C-x C-x" rectangle-exchange-point-and-mark)
-              ("C-/"     uniline--rect-undo)
-              ("C-_"     uniline--rect-undo)
-              ("C-x u"   uniline--rect-undo)
               ("C-t"     uniline-toggle-hints)
               ("TAB"     uniline-toggle-hints)
               ("?"      (info "(uniline) Rectangular actions"))
@@ -248,8 +245,8 @@
 ╭^Move ^rect╮╭────^Draw^ rect────╮╭^─Rect^─╮╭^Brush^╮╭──^Misc^─────────╮
 │_<right>_ →││_r_     trace inner││_c_ copy││_-_ ╭─╯││_s_   alt styles │
 │_<left>_  ←││_R_     trace outer││_k_ kill││_+_ ┏━┛││_f_   choose font│
-│_<up>_    ↑││_C-r_   ovewr inner││_y_ yank││_=_ ╔═╝││_C-/_ undo       │
-│_<down>_  ↓││_C-S-R_ ovewr outer│╰^^┬─────╯╯_#_ ▄▄▟││_C-t_ short hint │
+│_<up>_    ↑││_C-r_   ovewr inner││_y_ yank││_=_ ╔═╝││_C-t_ short hints│
+│_<down>_  ↓││_C-S-R_ ovewr outer│╰^^┬─────╯╯_#_ ▄▄▟││_?_   info       │
 ╰^─────^────╯│_i_     fill       │ ^^│_<delete>_ DEL││_RET_ exit       │
  ^     ^     ╰^────^─────────────╯ ^^╰^────────^────╯╰^───^────────────╯
 "
@@ -284,9 +281,6 @@
               ("?"  (info "(uniline) Rectangular actions"))
               ("f"     uniline-hydra-fonts/body      :exit t)
               ("s"     uniline-hydra-alt-styles/body :exit t)
-              ("C-/"   uniline--rect-undo)
-              ("C-_"   uniline--rect-undo)
-              ("C-x u" uniline--rect-undo)
               ("C-x C-x" rectangle-exchange-point-and-mark)
               ("RET"   uniline--rect-quit :exit t))
 

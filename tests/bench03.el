@@ -26,7 +26,8 @@
  <return> <up> 15*<right> <up>
  C-SPC 4*<down> 12*<right> <insert>
  r # R
- <return> <kp-subtract> 4*<down> 11*<right> 4*<up> 11*<left>
+ <return> <return> <down> <right>
+ <kp-subtract> 4*<down> 11*<right> 4*<up> 11*<left>
  <return> 23*<left> 2*<up>
  C-SPC 4*<down> 16*<right> <insert>
  2*<down> 3*<right>

@@ -256,7 +256,6 @@ for later menu invocation in the same Uniline session."
    ;; ("<down>"  "↓" uniline-move-rect-dw↓ :transient t)]
    ["Misc"
     ("f"        "fonts" uniline-transient-fonts)
-    ("C-_"       "undo" uniline--rect-undo :transient t)
     ("C-t" "Togg hints" uniline-toggle-transient-hints-suffix)
     ("s"         "back" uniline-transient-moverect)
     ("RET"       "exit" uniline--rect-quit)]
@@ -297,7 +296,6 @@ for later menu invocation in the same Uniline session."
     ("s"   "Line styles" uniline-transient-alt-styles)
     ("f"   "Choose font" uniline-transient-fonts)
     ;;("C-x C-x" "Exchg point-mark" rectangle-exchange-point-and-mark :transient t)
-    ("C-_" "Undo"        uniline--rect-undo)
     ("C-t" "Togg hints"  uniline-toggle-transient-hints-suffix)
     ("RET" "Exit"        uniline--rect-quit)]
    ]

@@ -27,6 +27,7 @@
  15*S-<down> 31*S-<right> 2*S-<left>
  # <insert> R
  2*<return>
+ <down> <right>
  <down> 3*<right> <left>
  13*S-<down> 25*S-<right> S-<left> S-<right>
  <insert> # r

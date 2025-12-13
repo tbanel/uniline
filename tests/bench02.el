@@ -24,6 +24,7 @@
  2*<up> C-SPC <down> 12*<right> <insert>
  2*<down> 3*<right> R
  <end> <return>
+ <down>
  <kp-subtract> <right> q
  <return> <left>
  <kp-subtract> <down> 2*<left>
