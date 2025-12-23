@@ -3686,9 +3686,9 @@ There is a bug in Emacs that this function tries to fix.
 The scroll is returned by Emacs as a number of character,
 which is fine. But Emacs assumes that the window is not
 zoomed. When it is, the result is wrong. Here the scroll
-is zommed back. Unfortunately, this is not reliable no matter
+is zoomed back. Unfortunately, this is not reliable no matter
 what is attempted. Zoom is a floating point as powers of 1.2.
-Scroll is an integer number of charecters."
+Scroll is an integer number of characters."
   (let ((scroll (scroll-left 0)))
     (cond
      ((> text-scale-mode-amount 0)
@@ -3703,14 +3703,6 @@ Scroll is an integer number of charecters."
        (setq scroll (ceiling (* scroll text-scale-mode-step))))))
     scroll))
 
-(defvar-local uniline--event-memory nil
-  "A message sent by one event to the followings.
-It has the form (newpoint . oldpoint), where oldpoint
-is the buffer position encoded into the mouse event.
-And newpoint is the correct cursor location computed
-by the event which added blanks into the buffer, for
-subsequent events to fix their event information.")
-
 (defun uniline--intercept-mouse-1 (position)
   "Add blanks characters if mouse click falls outside buffer.
 Also adjust the buffer position coded in POSITION, so that
@@ -3718,41 +3710,25 @@ it will be located right under the mouse event."
   ;; make the clicked window the selected one
   (set-frame-selected-window nil (posn-window position) t)
 
-  (if (and
-       uniline--event-memory
-       (eq (cdr uniline--event-memory) (posn-point position)))
+  (let* ((firstcol (uniline--scroll-horiz))
+         (firstlin (1- (line-number-at-pos (window-start))))
+         (last (point-max))
+         (pxy (posn-x-y position))
+         (wxy (posn-object-width-height position))
+         (x (+ (/ (car pxy) (car wxy)) firstcol))
+         (y (+ (/ (cdr pxy) (cdr wxy)) firstlin)))
 
-      ;; this is the case the 2nd or 3th event in a row get a message
-      ;; from the 1st event
-      (let ((p (car uniline--event-memory)))
-        (setf (nth 1 position) p)
-        (setf (nth 5 position) p))
-
-    ;; no message from the first row, or message outdated
-    (let* ((firstcol (uniline--scroll-horiz))
-           (firstlin (1- (line-number-at-pos (window-start))))
-           (last (point-max))
-           (pxy (posn-x-y position))
-           (wxy (posn-object-width-height position))
-           (x (+ (/ (car pxy) (car wxy)) firstcol))
-           (y (+ (/ (cdr pxy) (cdr wxy)) firstlin))
-           (oldpoint (posn-point position)))
-
-      ;; possibly add blank characters
-      (uniline-move-to-lin-col y x)
-      (if (<= (point-max) last)
-          ;; case where no blank characters where added
-          ;; the point in the event can be trusted
-          () ;; nothing to change
-
-        ;; blanks were added (so we are in the 1st event)
-        (when (eobp) (insert "\n") (forward-char -1))
-        (setf (nth 1 position) (point))
-        (setf (nth 5 position) (point))
-
-        ;; the 1st event send a message to the 2nd and 3th events
-        (setq uniline--event-memory
-              (cons (point) oldpoint))))))
+    ;; possibly add blank characters
+    (uniline-move-to-lin-col y x)
+    (if (<= (point-max) last)
+        ;; case where no blank characters where added
+        ;; the point in the event can be trusted
+        () ;; nothing to change
+      
+      ;; blanks were added
+      (when (eobp) (insert "\n") (forward-char -1))
+      (setf (nth 1 position) (point))
+      (setf (nth 5 position) (point)))))
 
 (defun uniline-mouse-set-point (event &optional promote-to-region)
   "Drop-in replacement for the base mouse-set-point.
@@ -3760,21 +3736,6 @@ It adds blank characters if necessary."
   (interactive "e\np")
   (uniline--intercept-mouse-1 (event-end event))
   (mouse-set-point event promote-to-region))
-
-(defun uniline-mouse-drag-region (start-event)
-  "Drop-in replacement for the base mouse-drag-region.
-It adds blank characters if necessary."
-  (interactive "e")
-  (uniline--intercept-mouse-1 (event-end start-event))
-  (uniline--intercept-mouse-1 (event-start start-event))
-  (mouse-drag-region start-event))
-
-(defun uniline-mouse-set-region (click)
-  "Drop-in replacement for the base mouse-set-region.
-It adds blank characters if necessary."
-  (interactive "e")
-  (uniline--intercept-mouse-1 (event-start click))
-  (mouse-set-region click))
 
 ;;;╭──────────────────╮
 ;;;│Uniline minor mode│
@@ -4099,10 +4060,8 @@ And backup previous settings."
     ([?\C-h ?\t]        . uniline-toggle-hints-welcome)
     ([?\C-h delete]     . uniline-dismiss-welcome-message)
     ([?\C-h deletechar] . uniline-dismiss-welcome-message)
-    ([drag-mouse-1]  . uniline-mouse-set-region ) ;; yes, drag launches set-region
-    ([down-mouse-1]  . uniline-mouse-drag-region) ;; yes, down launches drag-region
-    ([     mouse-1]  . uniline-mouse-set-point  )
-    ([?\C-c ?\C-c]   . uniline-mode))
+    ([mouse-1] . uniline-mouse-set-point  )
+    ([?\C-c ?\C-c] . uniline-mode))
   :after-hook (if uniline-mode (uniline--mode-pre) (uniline--mode-post)))
 
 (defun uniline--keymap-remove-launch-interface (keymap)
