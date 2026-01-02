@@ -847,6 +847,30 @@ range of [0..256).  It is handy to index vectors rather than
                (uniline--pack-4halfs (car x))
                (aref table
                      (uniline--pack-4halfs (cadr x)))))
+        (cl-loop
+         for x in
+         '(
+           ( ?┆ 1 0 1 0 )
+           ( ?┇ 2 0 2 0 )
+           ( ?┄ 0 1 0 1 )
+           ( ?┅ 0 2 0 2 ))
+         for i = (uniline--pack-4halfs (cdr x))
+         for c = (aref table i)
+         do
+         (if (numberp c) (aset table i (setq c (vector c nil nil))))
+         (aset c 1 (car x)))
+        (cl-loop
+         for x in
+         '(
+           ( ?┊ 1 0 1 0 )
+           ( ?┋ 2 0 2 0 )
+           ( ?┈ 0 1 0 1 )
+           ( ?┉ 0 2 0 2 ))
+         for i = (uniline--pack-4halfs (cdr x))
+         for c = (aref table i)
+         do
+         (if (numberp c) (aset table i (setq c (vector c nil nil))))
+         (aset c 2 (car x)))
         table))
     "Convert a 4halfs description to a UNICODE character.
 The 4halfs description is (UP RI DW LF)
@@ -890,6 +914,38 @@ meaning:
 Values (2 1 0 1) are encoded into 2 + 4*1 + 0*16 + 1*64 = 70
 This table is the reverse of `uniline--4halfs-to-char'
 without the fall-back characters."))
+
+(eval-and-compile
+  (defvar-local uniline-brush 1
+    "Controls the style of line.
+Possible values are as follows:
+nil: no action except cursor movements
+  0: erase,
+  1: simple line     like ╰─┤
+  2: thick  line     like ┗━┫
+  3: double line     like ╚═╣
+:block block drawing like ▙▄▟▀")
+
+  (defvar-local uniline-brush-dots 0
+    "Sub brush to control whether lines are plain or dotted.
+0: plain lines
+1: 3 dots vertical, 2 dots horizontal
+2: 4 dots both vertical & horizontal")
+
+  (defun uniline--4halfs-to-char-aref (4halfs)
+    "Access the array `uniline--4halfs-to-char' through this function.
+Because sometimes an indirection is needed to desambiguate between
+several versions of a glyph. For instance there are at least 3
+versions of a vertical thin line:
+- │ plain line
+- ┆ 3 dotted line
+- ┊ 4 dotted line"
+    (let ((c (aref uniline--4halfs-to-char 4halfs)))
+      (if (not (numberp c)) ;; `not' is on purpose to make a shorter bytecode
+          (aref c uniline-brush-dots)
+        c)))
+
+)
 
 (when nil
 
@@ -946,8 +1002,8 @@ without the fall-back characters."))
     (dotimes (r1 4)
       (dotimes (d1 4)
         (dotimes (l1 4)
-          (unless (aref uniline--4halfs-to-char
-                        (uniline--pack-4halfs (list u1 r1 d1 l1)))
+          (unless (uniline--4halfs-to-char-aref
+                   (uniline--pack-4halfs (list u1 r1 d1 l1)))
             (let ((m 9999)
                   m0
                   u3 r3 d3 l3)
@@ -955,8 +1011,8 @@ without the fall-back characters."))
                 (dotimes (r2 4)
                   (dotimes (d2 4)
                     (dotimes (l2 4)
-                      (when (aref uniline--4halfs-to-char
-                                  (uniline--pack-4halfs (list u2 r2 d2 l2)))
+                      (when (uniline--4halfs-to-char-aref
+                             (uniline--pack-4halfs (list u2 r2 d2 l2)))
                         (setq m0 (uniline--penalty u1 r1 d1 l1 u2 r2 d2 l2))
                         (if (< m0 m)
                             (setq m m0
@@ -968,8 +1024,8 @@ without the fall-back characters."))
                (format "((%d %d %d %d) (%d %d %d %d)) ;; %c\n"
                        u1 r1 d1 l1
                        u3 r3 d3 l3
-                       (aref uniline--4halfs-to-char
-                             (uniline--pack-4halfs (list u3 r3 d3 l3))))))))))))
+                       (uniline--4halfs-to-char-aref
+                        (uniline--pack-4halfs (list u3 r3 d3 l3))))))))))))
 
 ;;;╭────────────────────────────────────────────────────────╮
 ;;;│Reference tables of △▶↓□◆● arrows & other UNICODE glyphs│
@@ -1382,23 +1438,13 @@ Folds to a single number if DIR & 4QUADB are themselves numbers."
 ;;;│Low level management of ┏╾╯half-lines UNICODE characters│
 ;;;╰────────────────────────────────────────────────────────╯
 
-(defvar-local uniline-brush 1
-  "Controls the style of line.
-Possible values are as follows:
-nil: no action except cursor movements
-  0: erase,
-  1: simple line     like ╰─┤
-  2: thick  line     like ┗━┫
-  3: double line     like ╚═╣
-:block block drawing like ▙▄▟▀")
-
 (eval-when-compile ; not needed at runtime
   (defmacro uniline--insert-4halfs (4halfs)
     "Insert at (point) a UNICODE like ┬.
 The UNICODE character is described by the 4HALFS bits pattern.
 The (point) does not move."
     `(uniline--insert-char
-      (aref uniline--4halfs-to-char ,4halfs))))
+      (uniline--4halfs-to-char-aref ,4halfs))))
 
 (eval-when-compile ; not needed at runtime
   (defmacro uniline--insert-4quadb (4quadb)
@@ -1984,22 +2030,31 @@ Then the leakage of the two glyphs fills in E:
           ;; beware! compute-half-leak is kind of a (defmacro)
           ;; but local within uniline--compute-leakage-4halfs
           ;; which itself is a (defmacro).
-          ;; its purpose? to avoid writing twice those 5 lines of Lisp.
-          ;; it generate Lisp code to compute the leakage from point PP
+          ;; its purpose? to avoid writing twice those 3 lines of Lisp.
+          ;; it generate Lisp code to compute the leakage from character 4half
           ;; in direction OD, which is then rotated to direction DI.
-          ((compute-half-leak (pp di od)
+          ((compute-half-leak (4half di od)
              `(uniline--shift-4half
-               (logand
-                (gethash (uniline--char-after ,pp) uniline--char-to-4halfs 0)
-                ,(uniline--shift-4half 3 od))
+               (logand ,4half ,(uniline--shift-4half 3 od))
                ,(- di od))))
-        `(aref
-          uniline--4halfs-to-char
-          (let ((leak ,(compute-half-leak '(point) dir odir))
+        `(let* ((cc (uniline--char-after))
+                (4c (gethash cc uniline--char-to-4halfs 0))
+                (leak ,(compute-half-leak '4c dir odir))
                 (p (uniline--neighbour-point ,odir)))
-            (if p
-                (logior leak ,(compute-half-leak 'p odir dir))
-              leak)))))))
+           (if p
+               (setq leak
+                     (logior leak
+                             ,(compute-half-leak
+                               '(gethash (uniline--char-after p) uniline--char-to-4halfs 0)
+                               odir dir))))
+           ;; here the case of dotted line is handled:
+           ;; `leak' and `4c' may be the same code, for example 02-00-02-00
+           ;; denoting 3 possible actual characters: ┇ ┋ ┃
+           ;; in this case, we recover and return the actual character in the bugger
+           ;; not the syntetic `leak'
+           (if (and (not (eq leak 0)) (eq leak 4c))
+               cc
+             (uniline--4halfs-to-char-aref leak)))))))
 
 (eval-when-compile ; not needed at runtime
   (defmacro uniline--compute-leakage-quadb (dir)
@@ -2402,11 +2457,19 @@ the natural cursor movement upon insertion.")
 	  (uniline-direction-dw↓ "↓")
 	  (uniline-direction-lf← "←"))
         uniline--mode-line-brush
-	(uniline--switch-with-table uniline-brush
+	(uniline--switch-with-cond uniline-brush
 	  (nil    " ")
 	  (0      "/")
-	  (1      "┼")
-	  (2      "╋")
+	  (1
+           (uniline--switch-with-table uniline-brush-dots
+             (0   "┼")
+             (1   "┆")
+             (2   "┊")))
+	  (2
+           (uniline--switch-with-table uniline-brush-dots
+             (0   "╋")
+             (1   "┇")
+             (2   "┋")))
 	  (3      "╬")
 	  (:block "▞")))
   (force-mode-line-update))
@@ -2604,6 +2667,30 @@ lines, and moving vertically erase vertical lines.  Characters
 other than lines or arrows are not touched."
   (interactive)
   (setq uniline-brush 0)
+  (uniline--update-mode-line))
+
+(defun uniline-set-brush-0dots ()
+  "Change the current style of line plain."
+  (interactive)
+  (setq uniline-brush-dots 0)
+  (uniline--update-mode-line))
+
+(defun uniline-set-brush-3dots ()
+  "Change the current style of line 3 dots vertical, 2 dots horizontal."
+  (interactive)
+  (setq uniline-brush-dots 1)
+  (uniline--update-mode-line))
+
+(defun uniline-set-brush-4dots ()
+  "Change the current style of line 4 dots vertical & horizontal."
+  (interactive)
+  (setq uniline-brush-dots 2)
+  (uniline--update-mode-line))
+
+(defun uniline-set-brush-dot-toggle ()
+  "Toggle dotted lines: plain → 3-2-dots → 4-4-dots → plain."
+  (interactive)
+  (setq uniline-brush-dots (% (1+ uniline-brush-dots) 3))
   (uniline--update-mode-line))
 
 (defun uniline-set-brush-1 ()
@@ -2827,7 +2914,7 @@ Instead DIR is twisted 45° from the actual direction of the block."
                    (not
                     (eq
                      (gethash
-                      (aref uniline--4halfs-to-char patnew)
+                      (uniline--4halfs-to-char-aref patnew)
                       uniline--char-to-4halfs)
                      patnew))))
              (uniline--insert-4halfs patnew)))
@@ -3281,7 +3368,7 @@ thick-line or double-line rounded corners."
           for u in (uniline--unpack-4halfs v)
           collect (if (or (eq u 2) (eq u 3)) 1 u)))
       unless (eq 4halfs v)
-      collect (cons c (aref uniline--4halfs-to-char 4halfs)))
+      collect (cons c (uniline--4halfs-to-char-aref 4halfs)))
      '((?┅ . ?┄)
        (?┉ . ?┈)
        (?╍ . ?╌)
@@ -3321,7 +3408,7 @@ as well as glyphs (e.g. ■ to □ or ▼ to ▽)."
           for u in (uniline--unpack-4halfs v)
           collect (if (or (eq u 1) (eq u 3)) 2 u)))
       unless (eq 4halfs v)
-      collect (cons c (aref uniline--4halfs-to-char 4halfs)))
+      collect (cons c (uniline--4halfs-to-char-aref 4halfs)))
      '((?┄ . ?┅)
        (?┈ . ?┉)
        (?╌ . ?╍)
@@ -3361,7 +3448,7 @@ as well as glyphs (e.g. □ to ■ or ▽ to ▼)."
           for u in (uniline--unpack-4halfs v)
           collect (if (or (eq u 1) (eq u 2)) 3 u)))
       unless (eq 4halfs v)
-      collect (cons c (aref uniline--4halfs-to-char 4halfs)))
+      collect (cons c (uniline--4halfs-to-char-aref 4halfs)))
      '((?┄ . ?═)
        (?┅ . ?═)
        (?┈ . ?═)
@@ -4056,6 +4143,7 @@ And backup previous settings."
     ([kp-add]        . uniline-set-brush-2)
     ("="             . uniline-set-brush-3)
     ("#"             . uniline-set-brush-block)
+    ("~"             . uniline-set-brush-dot-toggle)
     ([?\C-x ?e]      . uniline-macro-exec)
     ([?\C-h ?\t]        . uniline-toggle-hints-welcome)
     ([?\C-h delete]     . uniline-dismiss-welcome-message)
@@ -4134,12 +4222,16 @@ with the one used to invoke Uniline-mode."
      ["Overwrite up"    uniline-overwrite-up↑ t]
      ["Overwrite down"  uniline-overwrite-dw↓ t])
     "----"
-    ["─ light brush"  uniline-set-brush-1     :style radio :selected (eq uniline-brush 1     )]
-    ["━ heavy brush"  uniline-set-brush-2     :style radio :selected (eq uniline-brush 2     )]
-    ["═ double brush" uniline-set-brush-3     :style radio :selected (eq uniline-brush 3     )]
-    ["▞ blocks brush" uniline-set-brush-block :style radio :selected (eq uniline-brush :block)]
-    ["eraser brush"   uniline-set-brush-0     :style radio :selected (eq uniline-brush 0     )]
-    ["inactive brush" uniline-set-brush-nil   :style radio :selected (eq uniline-brush nil   )]
+    ["─ light brush"    uniline-set-brush-1     :style radio :selected (eq uniline-brush 1     )]
+    ["━ heavy brush"    uniline-set-brush-2     :style radio :selected (eq uniline-brush 2     )]
+    ["═ double brush"   uniline-set-brush-3     :style radio :selected (eq uniline-brush 3     )]
+    ["▞ blocks brush"   uniline-set-brush-block :style radio :selected (eq uniline-brush :block)]
+    ["eraser brush"     uniline-set-brush-0     :style radio :selected (eq uniline-brush 0     )]
+    ["inactive brush"   uniline-set-brush-nil   :style radio :selected (eq uniline-brush nil   )]
+    "----"
+    ["┄ 3-2 dots brush" uniline-set-brush-3dots :style radio :selected (eq uniline-brush-dots 1) :keys "~"  ]
+    ["┄ 4-4 dots brush" uniline-set-brush-4dots :style radio :selected (eq uniline-brush-dots 2) :keys "~~" ]
+    ["┄ no dots brush"  uniline-set-brush-0dots :style radio :selected (eq uniline-brush-dots 0) :keys "~~~"]
     "----"
     ("Insert glyph"
      ["Insert arrow ▷ ▶ → ▹ ▸ ↔"   uniline-insert-fw-arrow  :keys "INS a"]

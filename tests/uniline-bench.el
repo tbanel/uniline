@@ -63,7 +63,8 @@ RESULT is a string representing the expected result."
   (if (fboundp 'transient-quit-all)
       (transient-quit-all))  ;; clear any left-over from previous bench
   (setq uniline--which-quadrant (uniline--char-to-4quadb ?▘))
-  (setq uniline-brush 1)
+  (uniline-set-brush-1)
+  (uniline-set-brush-0dots)
   (execute-kbd-macro (kbd commands))
   
   (setq uniline-bench-result

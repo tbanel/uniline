@@ -196,10 +196,11 @@ for later menu invocation in the same Uniline session."
     ("O" "øØ◦●·"   uniline-insert-bw-oshape :transient t)
     ("X" "¤±×÷╲╱╳" uniline-insert-bw-cross  :transient t)]
    [""
-    ("-" "-" uniline--self-insert-- :transient t)
-    ("+" "+" uniline--self-insert-+ :transient t)
-    ("=" "=" self-insert-command    :transient t)
-    ("#" "#" self-insert-command    :transient t)]
+    ("-" "-" uniline--self-insert--     :transient t)
+    ("+" "+" uniline--self-insert-+     :transient t)
+    ("=" "=" self-insert-command :transient t)
+    ("#" "#" self-insert-command :transient t)
+    ("~" "~" self-insert-command :transient t)]
    ["Rotate & tweak"
     ("S-<up>"    "↑" uniline-rotate-up↑ :transient t)
     ("S-<right>" "→" uniline-rotate-ri→ :transient t)
@@ -287,11 +288,12 @@ for later menu invocation in the same Uniline session."
     ("k" "Kill" uniline-kill-rectangle :transient nil)
     ("y" "Yank" uniline-yank-rectangle :transient t)]
    ["Brush"
-    ("-"   "╭─╯" uniline-set-brush-1     :transient t)
-    ("+"   "┏━┛" uniline-set-brush-2     :transient t)
-    ("="   "╔═╝" uniline-set-brush-3     :transient t)
-    ("#"   "▄▄▟" uniline-set-brush-block :transient t)
-    ("DEL" "DEL" uniline-set-brush-0     :transient t)]
+    ("-"   "╭─╯" uniline-set-brush-1          :transient t)
+    ("+"   "┏━┛" uniline-set-brush-2          :transient t)
+    ("="   "╔═╝" uniline-set-brush-3          :transient t)
+    ("#"   "▄▄▟" uniline-set-brush-block      :transient t)
+    ("~"   "┄┄┄" uniline-set-brush-dot-toggle :transient t)
+    ("DEL" "DEL" uniline-set-brush-0          :transient t)]
    ["Misc"
     ("s"   "Line styles" uniline-transient-alt-styles)
     ("f"   "Choose font" uniline-transient-fonts)

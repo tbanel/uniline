@@ -28,20 +28,38 @@
 :CUSTOM_ID: new
 :END:
 
-Changing user-interface from Hydra to Transient and the other way
-around is now possible without restarting the Uniline session.
+New brushes are available for dotted lines. They come in 4 flavors:
+- 3 dots vertical, 2 dots horizontal, either thin or thick,
+- 4 dots both vertical & horizontal, either thin or thick.
 
-Take a look at the new "Customize" entry in the Uniline menu. This
-menu is available:
-- from the menu-bar at the top of the Emacs screen (if not made
-  invisible),
-- by left-clicking on ="Uniline"= in the mode-line, at the bottom of the
-  Emacs screen.
+[[file:images/dotted-lines.png]]
 
-Note that those changes are for the current session only. To
-permanently choose Hydra or Transient, change your =~/.emacs=.
+#+begin_example
 
-See [[#hydra-or-transient][Hydra or Transient?]]
+            ║   thin  ╷  thick  ╷
+            ║         │         │
+  ══════════╬═════════╪═════════╡
+            ║  ╭╌╌╌╮  │  ┏╍╍╍┓  │
+   3,2 dots ║  ┆   ┆  │  ┇   ┇  │
+            ║  ╰╌╌╌╯  │  ┗╍╍╍┛  │
+  ──────────╫─────────┼─────────┤
+            ║  ╭┈┈┈╮  │  ┏┉┉┉┓  │
+   4,4 dots ║  ┊   ┊  │  ┋   ┋  │
+            ║  ╰┈┈┈╯  │  ┗┉┉┉┛  │
+  ──────────╨─────────┴─────────╯
+
+#+end_example
+
+Dotted lines were already available through the style modifiers on a
+rectangular region. The new brushes add the option to instantly draw
+dotted lines.
+
+See [[#brush-style][Brush style]].
+
+Additionally, leakeage when moving rectangular regions now correctly
+leak dotted lines.
+
+See [[#moving-a-rectangular-region][Moving a rectangular region]].
 
 * Table of Contents
 :PROPERTIES:
@@ -76,8 +94,8 @@ See [[#hydra-or-transient][Hydra or Transient?]]
 - [[#rectangular-actions][Rectangular actions]]
   - [[#drawing-a-rectangle][Drawing a rectangle]]
   - [[#filling-a-rectangle][Filling a rectangle]]
-  - [[#moving-a-rectangle][Moving a rectangle]]
-  - [[#copying-killing-yanking-a-rectangle][Copying, killing, yanking a rectangle]]
+  - [[#moving-a-rectangular-region][Moving a rectangular region]]
+  - [[#copying-killing-yanking-a-rectangular-region][Copying, killing, yanking a rectangular region]]
   - [[#dashed-lines-and-other-styles][Dashed lines and other styles]]
   - [[#ascii-to-unicode][ASCII to UNICODE]]
 - [[#long-range-actions-contour-and-flood-fill][Long range actions: contour and flood-fill]]
@@ -465,6 +483,9 @@ Set the current brush with:
 - ~#~ quarter block
   =▙▄▟▀=
 
+- ~~~ toggle dotted lines
+  =┄┄┄┄=
+
 - ~<delete>~ eraser
 
 - ~<return>~ move without drawing anything
@@ -485,6 +506,38 @@ looks like this:
  ═════════════════════════════════════════
 
 #+end_example
+
+The dotted toggle ~~~ is a modifier for the single thin and thick
+lines. It circles along 3 styles:
+- plain lines,
+- 3 dots vertical, 2 dots horizontal,
+- 4 dots both vertical & horizontal,
+- back to plain line and so on.
+
+[[file:images/dotted-lines.png]]
+
+#+begin_example
+
+            ║   thin  ╷  thick  ╷
+            ║         │         │
+  ══════════╬═════════╪═════════╡
+            ║  ╭╌╌╌╮  │  ┏╍╍╍┓  │
+   3,2 dots ║  ┆   ┆  │  ┇   ┇  │
+            ║  ╰╌╌╌╯  │  ┗╍╍╍┛  │
+  ──────────╫─────────┼─────────┤
+            ║  ╭┈┈┈╮  │  ┏┉┉┉┓  │
+   4,4 dots ║  ┊   ┊  │  ┋   ┋  │
+            ║  ╰┈┈┈╯  │  ┗┉┉┉┛  │
+  ──────────╨─────────┴─────────╯
+
+#+end_example
+
+Note that the UNICODE standard offers very limited support for dotted
+lines. Only vertical and horizontal lines are available. So, no
+crossing of line is possible. In case a line crosses a dotted line,
+Uniline falls back to a plain line crossing character (but still
+preserving thickness). There is no dotted versions of double lines
+either.
 
 ** Text direction
 :PROPERTIES:
@@ -760,9 +813,9 @@ options:
 The above selection is the same as for the flood-fill action (see
 [[#flood-fill][Flood-fill]]).
 
-** Moving a rectangle
+** Moving a rectangular region
 :PROPERTIES:
-:CUSTOM_ID: moving-a-rectangle
+:CUSTOM_ID: moving-a-rectangular-region
 :END:
 Select a region, then press =<insert>=.
 
@@ -796,9 +849,37 @@ though the selection is still active.
                  ▼
 #+end_example
 
-** Copying, killing, yanking a rectangle
+What is leakage? When moving a rectangular region, the rectangle
+leaves behind lines oriented in the movement direction. This is not a
+bug, but a feature. Leakage allows growing a drawing without breaking
+it in two parts.
+
+[[file:images/rect-region-leak.png]]
+
+#+begin_example
+
+      ┏┯━━━┓                 ┏┯━━━┓
+    ┏━┛│   ┗━╦━━┓    with  ┏━┛│   ┗━╦━━┓
+    ┃  │     ║  ┃╶──╮leak  ┃  │     ║  ┃  leaked
+    ┃  │     ║  ┃   ╰────▶ ┃  │     ║  ┃◀──────╴
+    ┗━━┷━━━━━╩━━┛          ┃  │     ║  ┃  lines
+        │                  ┗━━┷━━━━━╩━━┛
+        │without
+        │leak
+        ╰──────╮
+               ▼
+            ┏┯━━━┓
+          ┏━┛│   ┗━╦━━┓
+          ┃  │     ║  ┃   broken
+                        ◀───────╴
+          ┃  │     ║  ┃   drawing
+          ┗━━┷━━━━━╩━━┛
+
+#+end_example
+
+** Copying, killing, yanking a rectangular region
 :PROPERTIES:
-:CUSTOM_ID: copying-killing-yanking-a-rectangle
+:CUSTOM_ID: copying-killing-yanking-a-rectangular-region
 :END:
 
 A rectangle can be copied or killed, then yanked somewhere else.
