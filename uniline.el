@@ -1,6 +1,6 @@
 ;;; uniline.el --- Add▶ ■─UNICODE based diagrams─■ to▶ ■─text files─■ -*- coding:utf-8; lexical-binding: t; -*-
 
-;; Copyright (C) 2024-2025  Thierry Banel
+;; Copyright (C) 2024-2026  Thierry Banel
 
 ;; Author: Thierry Banel tbanelwebmin at free dot fr
 ;; Version: 1.0
