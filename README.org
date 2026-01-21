@@ -28,38 +28,20 @@
 :CUSTOM_ID: new
 :END:
 
-New brushes are available for dotted lines. They come in 4 flavors:
-- 3 dots vertical, 2 dots horizontal, either thin or thick,
-- 4 dots both vertical & horizontal, either thin or thick.
+Five shades of grey characters can now be inserted in the same ways as
+arrows, squares, circles, and crosses characters.
 
-[[file:images/dotted-lines.png]]
+ =░▒▓█=
 
-#+begin_example
+See [[#intersection-glyphs---][Intersection glyphs ■ ◆ ●]].
 
-            ║   thin  ╷  thick  ╷
-            ║         │         │
-  ══════════╬═════════╪═════════╡
-            ║  ╭╌╌╌╮  │  ┏╍╍╍┓  │
-   3,2 dots ║  ┆   ┆  │  ┇   ┇  │
-            ║  ╰╌╌╌╯  │  ┗╍╍╍┛  │
-  ──────────╫─────────┼─────────┤
-            ║  ╭┈┈┈╮  │  ┏┉┉┉┓  │
-   4,4 dots ║  ┊   ┊  │  ┋   ┋  │
-            ║  ╰┈┈┈╯  │  ┗┉┉┉┛  │
-  ──────────╨─────────┴─────────╯
+Note that those 5 shades of grey were already available to fill a
+rectangle or an arbitrary shape. They are now also available as
+individual characters, useful for instance as lines intersections. The
+key-bindings are the same as for filling: space & back-space.
 
-#+end_example
-
-Dotted lines were already available through the style modifiers on a
-rectangular region. The new brushes add the option to instantly draw
-dotted lines.
-
-See [[#brush-style][Brush style]].
-
-Additionally, leakeage when moving rectangular regions now correctly
-leak dotted lines.
-
-See [[#moving-a-rectangular-region][Moving a rectangular region]].
+Those grey characters are well supported by the recommended fonts
+(see [[#which-fonts][Which fonts?]]).
 
 * Table of Contents
 :PROPERTIES:
@@ -641,17 +623,21 @@ There are a few UNICODE characters which are mono-space and symmetric
 in the 4 directions. They are great at line intersections:
 
 To insert a square =□ ■ ▫ ▪ ◆ ◊= type:
-=<insert> s s s...= (=s= cycles, =S= cycles backward).
+=<insert> s s s…= (=s= cycles, =S= cycles backward).
 
 To insert a circular shape =· ∙ • ● ◦ Ø ø= type:
-=<insert> o o o...= (=o= cycles, =O= cycles backward).
+=<insert> o o o…= (=o= cycles, =O= cycles backward).
 
 To insert a cross shape =╳ ╱ ╲ ÷ × ± ¤= type:
-=<insert> x x x...= (=x= cycles, =X= cycles backward).
+=<insert> x x x…= (=x= cycles, =X= cycles backward).
+
+To insert a grey character =░▒▓█= from pure white to pure black type:
+=<insert> SPC SPC SPC…= or =<insert> DEL DEL DEL…= (space key goes from
+white to black, back-space key goes from black to white)
 
 To insert a usual ASCII letter or symbol, just type it.
 
-As the keys =- + = #= are preempted by =uniline-mode=, to type them,
+As the keys =- + = # ~= are preempted by =uniline-mode=, to type them,
 prefix them with =<insert>=. Example: =<insert> -= inserts a =-= and
 =<insert> += inserts a =+=.
 
@@ -660,29 +646,23 @@ prefix them with =<insert>=. Example: =<insert> -= inserts a =-= and
 #+begin_example
 
  <insert>
-     │
-     ▼
-    ╭┴╮   ╭───────╮  ╭──────────────────╮
-    │s├─▶─┤squares├──┤ □  ■  ▫  ▪  ◆  ◊ │
-    ╰┬╯   ╰───────╯  ╰──────────────────╯
-    ╭┴╮   ╭───────╮  ╭─────────────────────╮
-    │o├─▶─┼circles┼──┤ ·  ∙  •  ●  ◦  Ø  ø │
-    ╰┬╯   ╰───────╯  ╰─────────────────────╯
-    ╭┴╮   ╭───────╮  ╭───────────────────╮
-    │x├─▶─┼crosses┼──┤ ╳  ╱ ╲ ÷  ×  ±  ¤ │
-    ╰┬╯   ╰───────╯  ╰───────────────────╯
-    ╭┴╮              ╭───╮
-    │+├─▶────────────┤ + │
-    ╰┬╯              ╰───╯
-    ╭┴╮              ╭───╮
-    │-├─▶────────────┤ - │
-    ╰┬╯              ╰───╯
-    ╭┴╮              ╭───╮
-    │=├─▶────────────┤ = │
-    ╰┬╯              ╰───╯
-    ╭┴╮              ╭───╮
-    │#├─▶────────────┤ # │
-    ╰─╯              ╰───╯
+    │
+    ├────────────────────────────╮
+    ▼        ╭─arrows──────╮     ▼        ╭───╮
+    ╰──▶─(a)─┤ ▷ ▶ → ▹ ▸ ↔ │     ╰──▶─(+)─┤ + │
+    │        ╰─────────────╯     │        ╰───╯
+    │        ╭─suqares─────╮     │        ╭───╮
+    ╰──▶─(s)─┤ □ ■ ▫ ▪ ◆ ◊ │     ╰──▶─(-)─┤ - │
+    │        ╰─────────────╯     │        ╰───╯
+    │        ╭─circles───────╮   │        ╭───╮
+    ╰──▶─(o)─┤ · ∙ • ● ◦ Ø ø │   ╰──▶─(=)─┤ = │
+    │        ╰───────────────╯   │        ╰───╯
+    │        ╭─crosses───────╮   │        ╭───╮
+    ╰──▷─(x)─┤ ╳ ╱ ╲ ÷ × ± ¤ │   ╰──▶─(#)─┤ # │
+    │        ╰───────────────╯   │        ╰───╯
+    │              ╭───────╮     │        ╭───╮
+    ╰──▶─(SPC DEL)─┤  ░▒▓█ │     ╰──▶─(~)─┤ ~ │
+                   ╰───────╯              ╰───╯
 
 #+end_example
 
@@ -2145,14 +2125,18 @@ Call macro in any direction:
 :CUSTOM_ID: insert-and-tweak-glyphs
 :END:
 
+Insert and cycle intersection glyphs:
+
 - =uniline-insert-fw-arrow=
 - =uniline-insert-fw-square=
 - =uniline-insert-fw-oshape=
 - =uniline-insert-fw-cross=
+- =uniline-insert-fw-grey=
 - =uniline-insert-bw-arrow=
 - =uniline-insert-bw-square=
 - =uniline-insert-bw-oshape=
 - =uniline-insert-bw-cross=
+- =uniline-insert-bw-grey=
 
 Rotate arrow or tweak 4-half-lines or 4-block characters:
 

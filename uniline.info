@@ -158,36 +158,20 @@ File: uniline.info,  Node: New,  Next: Pure UNICODE text diagrams in Emacs,  Pre
 2 New
 *****
 
-New brushes are available for dotted lines.  They come in 4 flavors:
-   • 3 dots vertical, 2 dots horizontal, either thin or thick,
-   • 4 dots both vertical & horizontal, either thin or thick.
+Five shades of grey characters can now be inserted in the same ways as
+arrows, squares, circles, and crosses characters.
 
+   ‘░▒▓█’
 
+   See *note Intersection glyphs ■ ◆ ●::.
 
+   Note that those 5 shades of grey were already available to fill a
+rectangle or an arbitrary shape.  They are now also available as
+individual characters, useful for instance as lines intersections.  The
+key-bindings are the same as for filling: space & back-space.
 
-               ║   thin  ╷  thick  ╷
-               ║         │         │
-     ══════════╬═════════╪═════════╡
-               ║  ╭╌╌╌╮  │  ┏╍╍╍┓  │
-      3,2 dots ║  ┆   ┆  │  ┇   ┇  │
-               ║  ╰╌╌╌╯  │  ┗╍╍╍┛  │
-     ──────────╫─────────┼─────────┤
-               ║  ╭┈┈┈╮  │  ┏┉┉┉┓  │
-      4,4 dots ║  ┊   ┊  │  ┋   ┋  │
-               ║  ╰┈┈┈╯  │  ┗┉┉┉┛  │
-     ──────────╨─────────┴─────────╯
-
-
-   Dotted lines were already available through the style modifiers on a
-rectangular region.  The new brushes add the option to instantly draw
-dotted lines.
-
-   See *note Brush style::.
-
-   Additionally, leakeage when moving rectangular regions now correctly
-leak dotted lines.
-
-   See *note Moving a rectangular region::.
+   Those grey characters are well supported by the recommended fonts
+(see *note Which fonts?::).
 
 
 File: uniline.info,  Node: Pure UNICODE text diagrams in Emacs,  Next: A minor mode for drawing,  Prev: New,  Up: Top
@@ -556,8 +540,8 @@ direction::) are reflected in the mode-line (at the bottom of the
      ═════════════════════════════════════════
 
 
-   The dotted toggle is a modifier for the single thin and thick lines.
-It circles along 3 styles:
+   The dotted toggle ‘~’ is a modifier for the single thin and thick
+lines.  It circles along 3 styles:
    • plain lines,
    • 3 dots vertical, 2 dots horizontal,
    • 4 dots both vertical & horizontal,
@@ -699,48 +683,46 @@ File: uniline.info,  Node: Intersection glyphs ■ ◆ ●,  Next: Fine tweaking
 There are a few UNICODE characters which are mono-space and symmetric in
 the 4 directions.  They are great at line intersections:
 
-   To insert a square ‘□ ■ ▫ ▪ ◆ ◊’ type: ‘<insert> s s s...’ (‘s’
-cycles, ‘S’ cycles backward).
+   To insert a square ‘□ ■ ▫ ▪ ◆ ◊’ type: ‘<insert> s s s…’ (‘s’ cycles,
+‘S’ cycles backward).
 
-   To insert a circular shape ‘· ∙ • ● ◦ Ø ø’ type: ‘<insert> o o o...’
+   To insert a circular shape ‘· ∙ • ● ◦ Ø ø’ type: ‘<insert> o o o…’
 (‘o’ cycles, ‘O’ cycles backward).
 
-   To insert a cross shape ‘╳ ╱ ╲ ÷ × ± ¤’ type: ‘<insert> x x x...’
-(‘x’ cycles, ‘X’ cycles backward).
+   To insert a cross shape ‘╳ ╱ ╲ ÷ × ± ¤’ type: ‘<insert> x x x…’ (‘x’
+cycles, ‘X’ cycles backward).
+
+   To insert a grey character ‘░▒▓█’ from pure white to pure black type:
+‘<insert> SPC SPC SPC…’ or ‘<insert> DEL DEL DEL…’ (space key goes from
+white to black, back-space key goes from black to white)
 
    To insert a usual ASCII letter or symbol, just type it.
 
-   As the keys ‘- + = #’ are preempted by ‘uniline-mode’, to type them,
-prefix them with ‘<insert>’.  Example: ‘<insert> -’ inserts a ‘-’ and
-‘<insert> +’ inserts a ‘+’.
+   As the keys ‘- + = # ~’ are preempted by ‘uniline-mode’, to type
+them, prefix them with ‘<insert>’.  Example: ‘<insert> -’ inserts a ‘-’
+and ‘<insert> +’ inserts a ‘+’.
 
 
 
 
      <insert>
-         │
-         ▼
-        ╭┴╮   ╭───────╮  ╭──────────────────╮
-        │s├─▶─┤squares├──┤ □  ■  ▫  ▪  ◆  ◊ │
-        ╰┬╯   ╰───────╯  ╰──────────────────╯
-        ╭┴╮   ╭───────╮  ╭─────────────────────╮
-        │o├─▶─┼circles┼──┤ ·  ∙  •  ●  ◦  Ø  ø │
-        ╰┬╯   ╰───────╯  ╰─────────────────────╯
-        ╭┴╮   ╭───────╮  ╭───────────────────╮
-        │x├─▶─┼crosses┼──┤ ╳  ╱ ╲ ÷  ×  ±  ¤ │
-        ╰┬╯   ╰───────╯  ╰───────────────────╯
-        ╭┴╮              ╭───╮
-        │+├─▶────────────┤ + │
-        ╰┬╯              ╰───╯
-        ╭┴╮              ╭───╮
-        │-├─▶────────────┤ - │
-        ╰┬╯              ╰───╯
-        ╭┴╮              ╭───╮
-        │=├─▶────────────┤ = │
-        ╰┬╯              ╰───╯
-        ╭┴╮              ╭───╮
-        │#├─▶────────────┤ # │
-        ╰─╯              ╰───╯
+        │
+        ├────────────────────────────╮
+        ▼        ╭─arrows──────╮     ▼        ╭───╮
+        ╰──▶─(a)─┤ ▷ ▶ → ▹ ▸ ↔ │     ╰──▶─(+)─┤ + │
+        │        ╰─────────────╯     │        ╰───╯
+        │        ╭─suqares─────╮     │        ╭───╮
+        ╰──▶─(s)─┤ □ ■ ▫ ▪ ◆ ◊ │     ╰──▶─(-)─┤ - │
+        │        ╰─────────────╯     │        ╰───╯
+        │        ╭─circles───────╮   │        ╭───╮
+        ╰──▶─(o)─┤ · ∙ • ● ◦ Ø ø │   ╰──▶─(=)─┤ = │
+        │        ╰───────────────╯   │        ╰───╯
+        │        ╭─crosses───────╮   │        ╭───╮
+        ╰──▷─(x)─┤ ╳ ╱ ╲ ÷ × ± ¤ │   ╰──▶─(#)─┤ # │
+        │        ╰───────────────╯   │        ╰───╯
+        │              ╭───────╮     │        ╭───╮
+        ╰──▶─(SPC DEL)─┤  ░▒▓█ │     ╰──▶─(~)─┤ ~ │
+                       ╰───────╯              ╰───╯
 
 
 
@@ -939,7 +921,7 @@ it in two parts.
            ┏━┛│   ┗━╦━━┓
            ┃  │     ║  ┃   broken
                          ◀───────╴
-           ┃  │     ║  ┃   rectangle
+           ┃  │     ║  ┃   drawing
            ┗━━┷━━━━━╩━━┛
 
 
@@ -2288,14 +2270,18 @@ File: uniline.info,  Node: Insert and tweak glyphs,  Next: Change to alternate s
 14.7 Insert and tweak glyphs
 ============================
 
+Insert and cycle intersection glyphs:
+
    • ‘uniline-insert-fw-arrow’
    • ‘uniline-insert-fw-square’
    • ‘uniline-insert-fw-oshape’
    • ‘uniline-insert-fw-cross’
+   • ‘uniline-insert-fw-grey’
    • ‘uniline-insert-bw-arrow’
    • ‘uniline-insert-bw-square’
    • ‘uniline-insert-bw-oshape’
    • ‘uniline-insert-bw-cross’
+   • ‘uniline-insert-bw-grey’
 
    Rotate arrow or tweak 4-half-lines or 4-block characters:
 
@@ -2626,85 +2612,85 @@ Tag Table:
 Node: Top75
 Node: Getting started in 10 seconds2953
 Node: New3559
-Node: Pure UNICODE text diagrams in Emacs5004
-Node: Document a command5550
-Node: Connect boxes with arrows6080
-Node: Explain decisions trees7397
-Node: Draw lines or blocks8900
-Node: Outline the General Relativity and the Schrödinger's equations10439
-Node: Explain the structure of a sentence in a foreign language13125
-Node: Explain Lisp lists14702
-Node: Draw sketched objects15915
-Node: Pure text17877
-Node: Beware!18606
-Node: A minor mode for drawing19186
-Node: Minor mode19471
-Node: Draw lines by moving the cursor20033
-Node: Brush style20790
-Node: Text direction23378
-Node: The <insert> key23928
-Node: Glyphs ▷ ▶ → □ ◆ ╮─ insertion & modification24929
-Node: Arrows glyphs ▷ ▶ → ▹ ▸ ↔25646
-Node: Intersection glyphs ■ ◆ ●27218
-Node: Fine tweaking of lines29936
-Node: Rectangular actions31819
-Node: Drawing a rectangle33169
-Node: Filling a rectangle34820
-Node: Moving a rectangular region35588
-Node: Copying killing yanking a rectangular region38159
-Node: Dashed lines and other styles39354
-Node: ASCII to UNICODE43479
-Node: Long range actions contour and flood-fill47162
-Node: Tracing a contour47425
-Node: Flood-fill49339
-Node: Macros51113
-Node: Which fonts?54504
-Node: Recommended fonts54765
-Node: Use case mixing fonts56855
-Node: Hydra or Transient?58852
-Node: Selecting Hydra or Transient59841
-Node: Instantly selecting Hydra or Transient60834
-Node: One-liner menus61800
-Node: The Hydra interface63738
-Node: The Transient interface64411
-Node: Customization64949
-Node: Interface type (obsolete)65800
-Node: Insert key66133
-Node: Maximum steps when drawing a contour66926
-Node: Cursor type67256
-Node: Hint style67581
-Node: Welcome message visibility67928
-Node: Line spacing68309
-Node: Font69775
-Node: How Uniline behaves with its environment?70259
-Node: Language environment70858
-Node: Compatibility with Picture-mode73263
-Node: Compatibility with Artist-mode74210
-Node: Compatibility with Whitespace-mode74729
-Node: Compatibility with Org Mode75629
-Node: Org Mode and LaTex77050
-Node: What about \t tabs?78910
-Node: What about ^L page separation?79711
-Node: Emacs on the Linux console80334
-Node: Emacs on a graphical terminal emulator81294
-Node: Emacs on Windows82224
-Node: Compatibility with ASCIIFlow82905
-Node: Lisp API83861
-Node: Move the cursor84411
-Node: Brush84842
-Node: Example Lisp function to draw a plus sign85711
-Node: Long range actions (contour flood-fill rectangle)87547
-Node: Constants88485
-Node: Macro and text direction88900
-Node: Insert and tweak glyphs89835
-Node: Change to alternate styles90837
-Node: Mouse support91746
-Node: Installation92630
-Node: use-package the straightforward way92874
-Node: Without use-package94829
-Node: Related packages96390
-Node: Author contributors99509
-Node: License101364
+Node: Pure UNICODE text diagrams in Emacs4259
+Node: Document a command4805
+Node: Connect boxes with arrows5335
+Node: Explain decisions trees6652
+Node: Draw lines or blocks8155
+Node: Outline the General Relativity and the Schrödinger's equations9694
+Node: Explain the structure of a sentence in a foreign language12380
+Node: Explain Lisp lists13957
+Node: Draw sketched objects15170
+Node: Pure text17132
+Node: Beware!17861
+Node: A minor mode for drawing18441
+Node: Minor mode18726
+Node: Draw lines by moving the cursor19288
+Node: Brush style20045
+Node: Text direction22642
+Node: The <insert> key23192
+Node: Glyphs ▷ ▶ → □ ◆ ╮─ insertion & modification24193
+Node: Arrows glyphs ▷ ▶ → ▹ ▸ ↔24910
+Node: Intersection glyphs ■ ◆ ●26482
+Node: Fine tweaking of lines29312
+Node: Rectangular actions31195
+Node: Drawing a rectangle32545
+Node: Filling a rectangle34196
+Node: Moving a rectangular region34964
+Node: Copying killing yanking a rectangular region37533
+Node: Dashed lines and other styles38728
+Node: ASCII to UNICODE42853
+Node: Long range actions contour and flood-fill46536
+Node: Tracing a contour46799
+Node: Flood-fill48713
+Node: Macros50487
+Node: Which fonts?53878
+Node: Recommended fonts54139
+Node: Use case mixing fonts56229
+Node: Hydra or Transient?58226
+Node: Selecting Hydra or Transient59215
+Node: Instantly selecting Hydra or Transient60208
+Node: One-liner menus61174
+Node: The Hydra interface63112
+Node: The Transient interface63785
+Node: Customization64323
+Node: Interface type (obsolete)65174
+Node: Insert key65507
+Node: Maximum steps when drawing a contour66300
+Node: Cursor type66630
+Node: Hint style66955
+Node: Welcome message visibility67302
+Node: Line spacing67683
+Node: Font69149
+Node: How Uniline behaves with its environment?69633
+Node: Language environment70232
+Node: Compatibility with Picture-mode72637
+Node: Compatibility with Artist-mode73584
+Node: Compatibility with Whitespace-mode74103
+Node: Compatibility with Org Mode75003
+Node: Org Mode and LaTex76424
+Node: What about \t tabs?78284
+Node: What about ^L page separation?79085
+Node: Emacs on the Linux console79708
+Node: Emacs on a graphical terminal emulator80668
+Node: Emacs on Windows81598
+Node: Compatibility with ASCIIFlow82279
+Node: Lisp API83235
+Node: Move the cursor83785
+Node: Brush84216
+Node: Example Lisp function to draw a plus sign85085
+Node: Long range actions (contour flood-fill rectangle)86921
+Node: Constants87859
+Node: Macro and text direction88274
+Node: Insert and tweak glyphs89209
+Node: Change to alternate styles90322
+Node: Mouse support91231
+Node: Installation92115
+Node: use-package the straightforward way92359
+Node: Without use-package94314
+Node: Related packages95875
+Node: Author contributors98994
+Node: License100849
 
 End Tag Table
 

@@ -189,19 +189,21 @@ for later menu invocation in the same Uniline session."
     ("a" "▷▶→▹▸↔"  uniline-insert-fw-arrow  :transient t)
     ("s" "□■◆◊"    uniline-insert-fw-square :transient t)
     ("o" "·●◦Øø"   uniline-insert-fw-oshape :transient t)
-    ("x" "╳╱╲÷×±¤" uniline-insert-fw-cross  :transient t)]
+    ("x" "╳╱╲÷×±¤" uniline-insert-fw-cross  :transient t)
+    ("SPC" " ░▒▓█" uniline-insert-fw-grey   :transient t)]
    [""
     ("A" "↔▸▹→▶▷"  uniline-insert-bw-arrow  :transient t)
     ("S" "◊◆■□"    uniline-insert-bw-square :transient t)
     ("O" "øØ◦●·"   uniline-insert-bw-oshape :transient t)
-    ("X" "¤±×÷╲╱╳" uniline-insert-bw-cross  :transient t)]
+    ("X" "¤±×÷╲╱╳" uniline-insert-bw-cross  :transient t)
+    ("DEL" "█▓▒░ " uniline-insert-bw-grey   :transient t)]
    [""
-    ("-" "-" uniline--self-insert--     :transient t)
-    ("+" "+" uniline--self-insert-+     :transient t)
-    ("=" "=" self-insert-command :transient t)
-    ("#" "#" self-insert-command :transient t)
-    ("~" "~" self-insert-command :transient t)]
-   ["Rotate & tweak"
+    ("-" "" uniline--self-insert--     :transient t)
+    ("+" "" uniline--self-insert-+     :transient t)
+    ("=" "" self-insert-command :transient t)
+    ("#" "" self-insert-command :transient t)
+    ("~" "" self-insert-command :transient t)]
+   ["Rotate,tweak"
     ("S-<up>"    "↑" uniline-rotate-up↑ :transient t)
     ("S-<right>" "→" uniline-rotate-ri→ :transient t)
     ("S-<down>"  "↓" uniline-rotate-dw↓ :transient t)
@@ -211,13 +213,13 @@ for later menu invocation in the same Uniline session."
     ("C-<right>" "→" uniline-text-direction-ri→ :transient nil)
     ("C-<down>"  "↓" uniline-text-direction-dw↓ :transient nil)
     ("C-<left>"  "←" uniline-text-direction-lf← :transient nil)]
-   ["Contour, Fill"
-    ("c" "Draw  contour" uniline-contour)
-    ("C" "Ovwrt contour" (lambda () (interactive) (uniline-contour t)))
-    ("i" "Fill area"     uniline-fill)]
+   ["Contour,fill"
+    ("c" "Draw  cnt" uniline-contour)
+    ("C" "Ovwrt cnt" (lambda () (interactive) (uniline-contour t)))
+    ("i" "Fill area" uniline-fill)]
    ["Navigation"
-    ("f"  "Choose font" uniline-transient-fonts)
-    ("C-t" "Togg hints" uniline-toggle-transient-hints-suffix)
+    ("f"  "Font"   uniline-transient-fonts)
+    ("C-t" "Hints" uniline-toggle-transient-hints-suffix)
     ("RET" "Quit" (lambda () (interactive)) :transient nil)]]
   (interactive)
   ;; the purpose of this keymap handling is to regain the basic behavior

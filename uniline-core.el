@@ -1073,6 +1073,13 @@ versions of a vertical thin line:
       (x   ?±)      ;; plus-minus sign
       (x   ?¤)      ;; currency sign
 
+      ;; 5 shades of grey
+      (g   ? )
+      (g   ?░)
+      (g   ?▒)
+      (g   ?▓)
+      (g   ?█)
+
       ;; The following commented-out glyphs are possible additions
       ;; when using the DejaVu Sans Mono font
       ;; Other fonts either do not support those glyphs
@@ -2727,7 +2734,8 @@ LETTER is any of
  `a' for arrows
  `s' for squares
  `x' for crosses
- `o' for o-shapes.
+ `o' for o-shapes
+ `g' for shades of grey
 If a glyph of that category is already there under (point),
 it is modified with the next glyph in the same category.
 If not, whatever character under (point) is overwritten
@@ -2800,7 +2808,8 @@ of the same command."
     '( (a . "arrow" )
        (s . "square")
        (o . "oshape")
-       (x . "cross" ))
+       (x . "cross" )
+       (g . "grey"  ))
     do
     (cl-prettyprint
      `(defun ,(intern (format "uniline-insert-%sw-%s" fb (cdr shape))) (repeat)
@@ -2839,6 +2848,12 @@ REPEAT cycles through glyphs list that many times, default to 1.
 See `uniline--insert-glyph'."
   (interactive "P")
   (uniline--insert-glyph 'x nil repeat))
+(defun uniline-insert-fw-grey (repeat)
+  "Insert or modify a glyph of type grey in forward mode.
+REPEAT cycles through glyphs list that many times, default to 1.
+See `uniline--insert-glyph'."
+  (interactive "P")
+  (uniline--insert-glyph 'g nil repeat))
 (defun uniline-insert-bw-arrow (repeat)
   "Insert or modify a glyph of type arrow in backward mode.
 REPEAT cycles through glyphs list that many times, default to 1.
@@ -2863,6 +2878,12 @@ REPEAT cycles through glyphs list that many times, default to 1.
 See `uniline--insert-glyph'."
   (interactive "P")
   (uniline--insert-glyph 'x t repeat))
+(defun uniline-insert-bw-grey (repeat)
+  "Insert or modify a glyph of type grey in backward mode.
+REPEAT cycles through glyphs list that many times, default to 1.
+See `uniline--insert-glyph'."
+  (interactive "P")
+  (uniline--insert-glyph 'g t repeat))
 ;; END -- Automatically generated
 
 (eval-when-compile ; not needed at runtime

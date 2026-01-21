@@ -156,13 +156,13 @@
                 "Text dir────"
                 "Text dir─╴%s(uniline-text-direction-str)╶"
                 "\
-╭^─^─^Insert glyph^^^^^─^─^───╮╭^Rotate arrow^╮╭^─Contour─^╮╭^Text dir────^╮╭^─^─^─^──────────────╮
-│_a_,_A_rrow ▷ ▶ → ▹ ▸ ↔^^^^^^│╭^Tweak glyph─^╮│_c_ contour││_C-<left>_  ← ││_f_    ^^ choose font│
-│_s_,_S_quare  □ ■ ◆ ◊  ^^^^^^││_S-<left>_  ← ││_C_ ovwrt  ││_C-<right>_ → ││_C-t_  ^^ short hint │
-│_o_,_O_-shape · ● ◦ Ø ø^^^^^^││_S-<right>_ → │╰^─────────^╯│_C-<up>_    ↑ ││_?_    ^^ info-mode  │
-│_x_,_X_-cross ╳ ÷ × ± ¤^^^^^^││_S-<up>_    ↑ │╭^─Fill────^╮│_C-<down>_  ↓ ││_q_ _RET_ exit       │
-│_-_ _+_ _=_ _#_ _~_ self-ins ││_S-<down>_  ↓ ││_i_ fill   │╰^─^───────────╯╰^─^─^─^──────────────╯
-╰^─^─^─^─^─^─^─^─^─^──────────╯╰^────────────^╯╰^─────────^╯"))
+╭^─^─^Insert glyph^^^^^─^─^───╮╭─╮╭^Rotate arrow^╮╭^Contour^╮╭^Text dir────^╮╭^─^─^─^────────╮
+│_a_,_A_rrow ▷ ▶ → ▹ ▸ ↔^^^^^^││-│╭^Tweak glyph─^╮│_c_ draw ││_C-<left>_  ← ││_f_    ^^ font │
+│_s_,_S_quare  □ ■ ◆ ◊  ^^^^^^││+││_S-<left>_  ← ││_C_ ovwrt││_C-<right>_ → ││_C-t_  ^^ hints│
+│_o_,_O_-shape · ● ◦ Ø ø^^^^^^││=││_S-<right>_ → │╰^───────^╯│_C-<up>_    ↑ ││_?_    ^^ info │
+│_x_,_X_-cross ╳ ÷ × ± ¤^^^^^^││#││_S-<up>_    ↑ │╭^─Fill──^╮│_C-<down>_  ↓ ││_q_ _RET_ exit │
+│_SPC_,_DEL_ grey  ░▒▓█ ^^^^^^││~││_S-<down>_  ↓ ││_i_ fill │╰^─^───────────╯╰^─^─^─^────────╯
+╰^─^─^─^─^─^─^─^─^─^──────────╯╰─╯╰^────────────^╯╰^───────^╯"))
               ("a" uniline-insert-fw-arrow )
               ("A" uniline-insert-bw-arrow )
               ("s" uniline-insert-fw-square)
@@ -171,6 +171,8 @@
               ("O" uniline-insert-bw-oshape)
               ("x" uniline-insert-fw-cross )
               ("X" uniline-insert-bw-cross )
+              ("SPC" uniline-insert-fw-grey)
+              ("DEL" uniline-insert-bw-grey)
               ("S-<left>"  uniline-rotate-lf←)
               ("S-<right>" uniline-rotate-ri→)
               ("S-<up>"    uniline-rotate-up↑)
@@ -338,7 +340,7 @@ Otherwise, the arrows & shapes hydra is invoked."
           ,uniline-hydra-arrows/hint
         ,(eval-when-compile
            (uniline--color-hint
-            "glyph:^aAsSoOxX-+=#^ arr&tweak:^S-→←↑↓^ text-dir:^C-→←↑↓^ ^c^ontour f^i^ll ^f^onts ^C-t^")))
+            "glyph:^aAsSoOxX SPC DEL-+=#~^ arr&tweak:^S-→←↑↓^ txt-dir:^C-→←↑↓^ ^c^ontour f^i^ll ^f^ont ^C-t^")))
      uniline-hydra-fonts/hint
      `(if (eq uniline-hint-style t)
           ,uniline-hydra-fonts/hint
