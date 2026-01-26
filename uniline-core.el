@@ -2080,34 +2080,6 @@ Then the leakage of the two glyphs fills in E:
     ▙"
     (setq dir (eval dir))
     (let ((odir (uniline--reverse-direction dir)))
-      `(let ((here (or (uniline--char-to-4quadb (uniline--char-after)) 0))
-             (prev    ; char preceding (point) as a 4quadb-bit-pattern
-              (let ((p (uniline--neighbour-point ,odir)))
-                (or
-                 (and p (uniline--char-to-4quadb (uniline--char-after p)))
-                 0))))
-         (setq
-          here (uniline--4quadb-pushed , dir here)
-          prev (uniline--4quadb-pushed ,odir prev))
-         (aref uniline--4quadb-to-char (logior here prev))))))
-
-(eval-when-compile ; not needed at runtime
-  (defmacro uniline--compute-leakage-quadb (dir)
-    "Compute lines leakage from two directions for 4quadb characters.
-When a rectangle moves, it leaves blank chars.
-Those chars are filled with leakage from their two neighbours,
-in DIR direction, and its opposite.
-For instance consider a situation like this:
-    ▌
-     <<< empty space
-    ▙
-A space is leaved empty after translation.
-Then the leakage of the two glyphs fills in E:
-    ▌
-    ▌<<< filled with leakage
-    ▙"
-    (setq dir (eval dir))
-    (let ((odir (uniline--reverse-direction dir)))
       `(let ((leak ;; leak from (point)
               (uniline--4quadb-pushed
                ,dir
