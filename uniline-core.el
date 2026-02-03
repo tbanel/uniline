@@ -2059,7 +2059,7 @@ Then the leakage of the two glyphs fills in E:
            ;; denoting 3 possible actual characters: ┇ ┋ ┃
            ;; in this case, we recover and return the actual character in the bugger
            ;; not the syntetic `leak'
-           (if (and (not (eq leak 0)) (eq leak 4c))
+           (if (and (eq leak 4c) (not (eq 4c 0)))
                cc
              (uniline--4halfs-to-char-aref leak)))))))
 
