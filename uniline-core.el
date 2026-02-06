@@ -488,8 +488,8 @@ type g to refresh                                             │
 ;; the bits manipulation primitives: `logior', `logand', `ash'.
 
 (eval-when-compile ; not needed at runtime
-  (defmacro uniline--shift-4half (4half dir)
-    "Shift 4HALF bits in DIR direction.
+  (defmacro uniline--shift-4half (4half to-dir &optional from-dir)
+    "Shift 4HALF bits in TO-DIR direction.
 4HALF is a number made of 2 bits, in the range [0..3]
   0: no line
   1: thin line
@@ -500,14 +500,38 @@ DIR is 1 of 4 directions:
   1: uniline-direction-ri→
   2: uniline-direction-dw↓
   3: uniline-direction-lf←
-The result is the bit pattern 4HALF << (2*DIR)"
+If FROM-DIR is given, the 4HALF bits pattern is supposed to be
+shifted in the FROM-DIR direction. Otherwise, it is not shifted.
+The result is the bit pattern 4HALF << (2*(TO-DIR - FROM-DIR))"
     (condition-case nil
-        (setq dir (eval dir)) ;; fold if dir is a numerical sexpr
-      (error nil))            ;; otherwise leave dir alone
-    (cond
-     ((eq dir 0)     4half)
-     ((fixnump dir)  `(ash ,4half ,(* 2 dir)))
-     (t              `(ash ,4half (* 2 ,dir)))))
+        (setq to-dir (eval to-dir))     ;; fold if to-dir is a numerical sexpr
+      (error nil))                      ;; otherwise leave dir alone
+    (condition-case nil
+        (setq from-dir (eval from-dir)) ;; fold if to-dir is a numerical sexpr
+      (error nil))                      ;; otherwise leave dir alone
+    (let ((dir
+           (if from-dir
+               (if (and (fixnump to-dir) (fixnump from-dir))
+                   (- to-dir from-dir)
+                 `(- ,to-dir ,from-dir))
+             to-dir)))
+      (cond
+       ((eq dir 0) 4half)
+       ((fixnump dir)
+        (if (fixnump 4half)
+            (ash  4half  (* 2  dir))
+          `( ash ,4half ,(* 2  dir))))
+       (t `( ash ,4half  (* 2 ,dir))))))
+
+  (defmacro uniline--extract-reverse-4half (4half dir)
+    "Extract a 2 bits pattern from the 8 bits pattern 4HALF.
+Extract the 2 bits in reverse direction of DIR,
+and shift them in direction DIR."
+    (let ((odir (uniline--reverse-direction dir)))
+      `(uniline--shift-4half
+        (logand ,4half ,(uniline--shift-4half 3 odir))
+        ,dir
+        ,odir)))
 
   (defun uniline--pack-4halfs (urld)
     "Encode a description of lines into a single number.
@@ -535,10 +559,10 @@ range of [0..256).  It is handy to index vectors rather than
 
   (defun uniline--unpack-4halfs (4halfs)
     (list
-     (logand (uniline--shift-4half 4halfs (- uniline-direction-up↑)) 3)
-     (logand (uniline--shift-4half 4halfs (- uniline-direction-ri→)) 3)
-     (logand (uniline--shift-4half 4halfs (- uniline-direction-dw↓)) 3)
-     (logand (uniline--shift-4half 4halfs (- uniline-direction-lf←)) 3))))
+     (logand (uniline--shift-4half 4halfs 0 uniline-direction-up↑) 3)
+     (logand (uniline--shift-4half 4halfs 0 uniline-direction-ri→) 3)
+     (logand (uniline--shift-4half 4halfs 0 uniline-direction-dw↓) 3)
+     (logand (uniline--shift-4half 4halfs 0 uniline-direction-lf←) 3))))
 
 (eval-when-compile ; not used at runtime
   (defconst uniline--list-of-available-halflines
@@ -2033,35 +2057,26 @@ Then the leakage of the two glyphs fills in E:
     ┗╸"
     (setq dir (eval dir))
     (let ((odir (uniline--reverse-direction dir)))
-      (cl-flet
-          ;; beware! compute-half-leak is kind of a (defmacro)
-          ;; but local within uniline--compute-leakage-4halfs
-          ;; which itself is a (defmacro).
-          ;; its purpose? to avoid writing twice those 3 lines of Lisp.
-          ;; it generate Lisp code to compute the leakage from character 4half
-          ;; in direction OD, which is then rotated to direction DI.
-          ((compute-half-leak (4half di od)
-             `(uniline--shift-4half
-               (logand ,4half ,(uniline--shift-4half 3 od))
-               ,(- di od))))
-        `(let* ((cc (uniline--char-after))
-                (4c (gethash cc uniline--char-to-4halfs 0))
-                (leak ,(compute-half-leak '4c dir odir))
-                (p (uniline--neighbour-point ,odir)))
-           (if p
-               (setq leak
-                     (logior leak
-                             ,(compute-half-leak
-                               '(gethash (uniline--char-after p) uniline--char-to-4halfs 0)
-                               odir dir))))
-           ;; here the case of dotted line is handled:
-           ;; `leak' and `4c' may be the same code, for example 02-00-02-00
-           ;; denoting 3 possible actual characters: ┇ ┋ ┃
-           ;; in this case, we recover and return the actual character in the bugger
-           ;; not the syntetic `leak'
-           (if (and (eq leak 4c) (not (eq 4c 0)))
-               cc
-             (uniline--4halfs-to-char-aref leak)))))))
+      `(let* ((cc (uniline--char-after))
+              (4c (gethash cc uniline--char-to-4halfs 0))
+              (leak (uniline--extract-reverse-4half 4c ,dir))
+              (p (uniline--neighbour-point ,odir)))
+         (if p
+             (setq
+              leak
+              (logior
+               leak
+               (uniline--extract-reverse-4half
+                (gethash (uniline--char-after p) uniline--char-to-4halfs 0)
+                ,odir))))
+         ;; here the case of dotted line is handled:
+         ;; `leak' and `4c' may be the same code, for example 02-00-02-00
+         ;; denoting 3 possible actual characters: ┇ ┋ ┃
+         ;; in this case, we recover and return the actual character in the buffer
+         ;; not the syntetic `leak'
+         (if (and (eq leak 4c) (not (eq 4c 0)))
+             cc
+           (uniline--4halfs-to-char-aref leak))))))
 
 (eval-when-compile ; not needed at runtime
   (defmacro uniline--compute-leakage-quadb (dir)
@@ -2875,8 +2890,8 @@ in the 4 corners of the character, DIR cannot point exactly to a block.
 Instead DIR is twisted 45° from the actual direction of the block."
     (setq dir (eval dir)) ; turn symbol like --direction-dw↓ to number like 2
     (let* ((dir1 (1+ dir))
-           (ash3dir2 (uniline--shift-4half 3 dir))
-           (ash1dir2 (uniline--shift-4half 1 dir))
+           (ash3dir2 (uniline--shift-4half 3 dir)) ;; 3 is a bit-mask
+           (ash1dir2 (uniline--shift-4half 1 dir)) ;; 1 is an increment
            (notash3dir2 (lognot ash3dir2))
            (dir4
             (uniline--4quadb-pushed
@@ -3226,8 +3241,9 @@ a connecting line or glyph."
     (let
         ((isvert (memq dir `(,uniline-direction-up↑ ,uniline-direction-dw↓)))
          (ishorz (memq dir `(,uniline-direction-lf← ,uniline-direction-ri→)))
-         (odir (- (uniline--reverse-direction dir)))
+         ;; 1 is thin   half-line in direction DIR ──▷
          (shift1 (uniline--shift-4half 1 dir))
+         ;; 1 is double half-line in direction DIR ══▷
          (shift3 (uniline--shift-4half 3 dir)))
 
       `(let ((neighbour (uniline--neighbour-point ,dir)))
@@ -3237,9 +3253,7 @@ a connecting line or glyph."
            (let ((b (gethash neighbour uniline--char-to-4halfs)))
              (cond
               (b
-               (uniline--shift-4half
-                (logand 3 (uniline--shift-4half b ,odir))
-                ,dir))
+               (uniline--extract-reverse-4half b ,dir))
               ((memq neighbour '(?+ ?\\ ?/ ?' ?`))
                ,shift1)
               ((eq neighbour ?#)
