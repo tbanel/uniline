@@ -2418,6 +2418,8 @@ Feedback:
 - rumengling on GitHub found and diagnosed the misaligned lines issue
   produced by some "language environments" (see [[#language-environment][Language environment]]).
 
+- tpapp fixed typos.
+
 Contributors:
 
 - JD Smith (jdtsmith on GitHub) rewrote the =:lighter= for added
