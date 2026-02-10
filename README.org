@@ -554,7 +554,7 @@ Why =<insert>=? Because:
   but =Uniline= is already in =overwrite-mode=, and de-activating
   overwrite would break =Uniline=.
 
-So preempting =<insert>= does not sacrifices anything.
+So preempting =<insert>= does not sacrifice anything.
 
 *Customization*
 
@@ -651,7 +651,7 @@ prefix them with =<insert>=. Example: =<insert> -= inserts a =-= and
     ▼        ╭─arrows──────╮     ▼        ╭───╮
     ╰──▶─(a)─┤ ▷ ▶ → ▹ ▸ ↔ │     ╰──▶─(+)─┤ + │
     │        ╰─────────────╯     │        ╰───╯
-    │        ╭─suqares─────╮     │        ╭───╮
+    │        ╭─squares─────╮     │        ╭───╮
     ╰──▶─(s)─┤ □ ■ ▫ ▪ ◆ ◊ │     ╰──▶─(-)─┤ - │
     │        ╰─────────────╯     │        ╰───╯
     │        ╭─circles───────╮   │        ╭───╮
