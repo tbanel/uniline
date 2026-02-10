@@ -2256,6 +2256,23 @@ There is an alias to =uniline-hydra=:
   :bind ("C-<insert>" . uniline-mode))
 #+end_src
 
+If you are using [[https://github.com/radian-software/straight.el][straight.el]] with =use-package=, and have
+=(setq straight-use-package-by-default t)=, you have the following options:
+
+#+begin_src elisp
+;; uniline-hydra using the alias
+(use-package uniline)
+
+;;; uniline-hydra explicitly requested
+(use-package uniline-hydra
+  :straight uniline)
+
+;;; install and load uniline-transient
+(use-package uniline-transient
+  :straight uniline)
+#+end_src
+
+
 ** Without use-package
 :PROPERTIES:
 :CUSTOM_ID: without-use-package
