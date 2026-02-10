@@ -2409,6 +2409,21 @@ central store of third parties packages.  To day, it provides almost
      (use-package uniline
        :bind ("C-<insert>" . uniline-mode))
 
+   If you are using *note straight.el:: with ‘use-package’, and have
+‘(setq straight-use-package-by-default t)’, you have the following
+options:
+
+     ;; uniline-hydra using the alias
+     (use-package uniline)
+
+     ;;; uniline-hydra explicitly requested
+     (use-package uniline-hydra
+       :straight uniline)
+
+     ;;; install and load uniline-transient
+     (use-package uniline-transient
+       :straight uniline)
+
 
 File: uniline.info,  Node: Without use-package,  Prev: use-package the straightforward way,  Up: Installation
 
@@ -2572,7 +2587,8 @@ File: uniline.info,  Node: Author contributors,  Next: License,  Prev: Related p
      produced by some "language environments" (see *note Language
      environment::).
 
-   • tpapp fixed typos.
+   • tpapp documented the installation using Straight, and fixed some
+     typos.
 
    Contributors:
 
@@ -2694,10 +2710,10 @@ Node: Change to alternate styles90417
 Node: Mouse support91326
 Node: Installation92210
 Node: use-package the straightforward way92454
-Node: Without use-package94409
-Node: Related packages95970
-Node: Author contributors99089
-Node: License100971
+Node: Without use-package94839
+Node: Related packages96400
+Node: Author contributors99519
+Node: License101459
 
 End Tag Table
 

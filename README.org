@@ -2272,7 +2272,6 @@ If you are using [[https://github.com/radian-software/straight.el][straight.el]]
   :straight uniline)
 #+end_src
 
-
 ** Without use-package
 :PROPERTIES:
 :CUSTOM_ID: without-use-package
@@ -2435,7 +2434,8 @@ Feedback:
 - rumengling on GitHub found and diagnosed the misaligned lines issue
   produced by some "language environments" (see [[#language-environment][Language environment]]).
 
-- tpapp fixed typos.
+- tpapp documented the installation using Straight, and fixed some
+  typos.
 
 Contributors:
 
