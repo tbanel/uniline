@@ -22,7 +22,7 @@ Uniline
 
 * Getting started in 10 seconds::
 * New::
-* Pure UNICODE text diagrams in Emacs::
+* Gallery pure UNICODE diagrams in Emacs::
 * A minor mode for drawing::
 * The <insert> key::
 * Glyphs ▷ ▶ → □ ◆ ╮─ insertion & modification::
@@ -42,7 +42,7 @@ Uniline
 
 — The Detailed Node Listing —
 
-Pure UNICODE text diagrams in Emacs
+Gallery: pure UNICODE diagrams in Emacs
 
 * Document a command::
 * Connect boxes with arrows::
@@ -158,7 +158,7 @@ File: uniline.info,  Node: Getting started in 10 seconds,  Next: New,  Prev: Top
             ╰────╯
 
 
-File: uniline.info,  Node: New,  Next: Pure UNICODE text diagrams in Emacs,  Prev: Getting started in 10 seconds,  Up: Top
+File: uniline.info,  Node: New,  Next: Gallery pure UNICODE diagrams in Emacs,  Prev: Getting started in 10 seconds,  Up: Top
 
 2 New
 *****
@@ -179,10 +179,10 @@ key-bindings are the same as for filling: space & back-space.
 (see *note Which fonts?::).
 
 
-File: uniline.info,  Node: Pure UNICODE text diagrams in Emacs,  Next: A minor mode for drawing,  Prev: New,  Up: Top
+File: uniline.info,  Node: Gallery pure UNICODE diagrams in Emacs,  Next: A minor mode for drawing,  Prev: New,  Up: Top
 
-3 Pure UNICODE text diagrams in Emacs
-*************************************
+3 Gallery: pure UNICODE diagrams in Emacs
+*****************************************
 
 Draw diagrams like those:
 
@@ -200,7 +200,7 @@ Draw diagrams like those:
 * Beware!::
 
 
-File: uniline.info,  Node: Document a command,  Next: Connect boxes with arrows,  Up: Pure UNICODE text diagrams in Emacs
+File: uniline.info,  Node: Document a command,  Next: Connect boxes with arrows,  Up: Gallery pure UNICODE diagrams in Emacs
 
 3.1 Document a command
 ======================
@@ -215,7 +215,7 @@ File: uniline.info,  Node: Document a command,  Next: Connect boxes with arrows,
      and page 9╶──────────────╯
 
 
-File: uniline.info,  Node: Connect boxes with arrows,  Next: Explain decisions trees,  Prev: Document a command,  Up: Pure UNICODE text diagrams in Emacs
+File: uniline.info,  Node: Connect boxes with arrows,  Next: Explain decisions trees,  Prev: Document a command,  Up: Gallery pure UNICODE diagrams in Emacs
 
 3.2 Connect boxes with arrows
 =============================
@@ -238,7 +238,7 @@ File: uniline.info,  Node: Connect boxes with arrows,  Next: Explain decisions t
              ╰─────────╯
 
 
-File: uniline.info,  Node: Explain decisions trees,  Next: Draw lines or blocks,  Prev: Connect boxes with arrows,  Up: Pure UNICODE text diagrams in Emacs
+File: uniline.info,  Node: Explain decisions trees,  Next: Draw lines or blocks,  Prev: Connect boxes with arrows,  Up: Gallery pure UNICODE diagrams in Emacs
 
 3.3 Explain decisions trees
 ===========================
@@ -269,7 +269,7 @@ File: uniline.info,  Node: Explain decisions trees,  Next: Draw lines or blocks,
              ╰─────╯   ╰═════════╯
 
 
-File: uniline.info,  Node: Draw lines or blocks,  Next: Outline the General Relativity and the Schrödinger's equations,  Prev: Explain decisions trees,  Up: Pure UNICODE text diagrams in Emacs
+File: uniline.info,  Node: Draw lines or blocks,  Next: Outline the General Relativity and the Schrödinger's equations,  Prev: Explain decisions trees,  Up: Gallery pure UNICODE diagrams in Emacs
 
 3.4 Draw lines or blocks
 ========================
@@ -296,7 +296,7 @@ File: uniline.info,  Node: Draw lines or blocks,  Next: Outline the General Rela
 
 
 
-File: uniline.info,  Node: Outline the General Relativity and the Schrödinger's equations,  Next: Explain the structure of a sentence in a foreign language,  Prev: Draw lines or blocks,  Up: Pure UNICODE text diagrams in Emacs
+File: uniline.info,  Node: Outline the General Relativity and the Schrödinger's equations,  Next: Explain the structure of a sentence in a foreign language,  Prev: Draw lines or blocks,  Up: Gallery pure UNICODE diagrams in Emacs
 
 3.5 Outline the General Relativity and the Schrödinger’s equations
 ==================================================================
@@ -337,7 +337,7 @@ File: uniline.info,  Node: Outline the General Relativity and the Schrödinger's
 
 
 
-File: uniline.info,  Node: Explain the structure of a sentence in a foreign language,  Next: Explain Lisp lists,  Prev: Outline the General Relativity and the Schrödinger's equations,  Up: Pure UNICODE text diagrams in Emacs
+File: uniline.info,  Node: Explain the structure of a sentence in a foreign language,  Next: Explain Lisp lists,  Prev: Outline the General Relativity and the Schrödinger's equations,  Up: Gallery pure UNICODE diagrams in Emacs
 
 3.6 Explain the structure of a sentence in a foreign language
 =============================================================
@@ -366,7 +366,7 @@ File: uniline.info,  Node: Explain the structure of a sentence in a foreign lang
 
 
 
-File: uniline.info,  Node: Explain Lisp lists,  Next: Draw sketched objects,  Prev: Explain the structure of a sentence in a foreign language,  Up: Pure UNICODE text diagrams in Emacs
+File: uniline.info,  Node: Explain Lisp lists,  Next: Draw sketched objects,  Prev: Explain the structure of a sentence in a foreign language,  Up: Gallery pure UNICODE diagrams in Emacs
 
 3.7 Explain Lisp lists
 ======================
@@ -389,7 +389,7 @@ File: uniline.info,  Node: Explain Lisp lists,  Next: Draw sketched objects,  Pr
                ╵     ╵           ╵
 
 
-File: uniline.info,  Node: Draw sketched objects,  Next: Pure text,  Prev: Explain Lisp lists,  Up: Pure UNICODE text diagrams in Emacs
+File: uniline.info,  Node: Draw sketched objects,  Next: Pure text,  Prev: Explain Lisp lists,  Up: Gallery pure UNICODE diagrams in Emacs
 
 3.8 Draw sketched objects
 =========================
@@ -424,7 +424,7 @@ File: uniline.info,  Node: Draw sketched objects,  Next: Pure text,  Prev: Expla
      ▝▀▀▀▀▀▀▘        ▝▀▘        ▝▀▘      ▀▀▀▀▀▀▀▀▀▀▀▀▀
 
 
-File: uniline.info,  Node: Pure text,  Next: Beware!,  Prev: Draw sketched objects,  Up: Pure UNICODE text diagrams in Emacs
+File: uniline.info,  Node: Pure text,  Next: Beware!,  Prev: Draw sketched objects,  Up: Gallery pure UNICODE diagrams in Emacs
 
 3.9 Pure text
 =============
@@ -442,7 +442,7 @@ the de-facto standard for text and source code files.
 draw lines while you move the cursor with keyboard arrows.
 
 
-File: uniline.info,  Node: Beware!,  Prev: Pure text,  Up: Pure UNICODE text diagrams in Emacs
+File: uniline.info,  Node: Beware!,  Prev: Pure text,  Up: Gallery pure UNICODE diagrams in Emacs
 
 3.10 Beware!
 ============
@@ -457,7 +457,7 @@ considered twice as wide as normal under some "language environments".
 See the paragraph *note Language environment:: for details.
 
 
-File: uniline.info,  Node: A minor mode for drawing,  Next: The <insert> key,  Prev: Pure UNICODE text diagrams in Emacs,  Up: Top
+File: uniline.info,  Node: A minor mode for drawing,  Next: The <insert> key,  Prev: Gallery pure UNICODE diagrams in Emacs,  Up: Top
 
 4 A minor mode for drawing
 **************************
@@ -2550,6 +2550,10 @@ File: uniline.info,  Node: Related packages,  Next: Author contributors,  Prev: 
 
    • ‘vim drawit ascii diagrams’: in Vim, in ASCII
 
+   • ‘MarkDeep’ (Casual Effects): write in MarkDown, render on the Web
+     on the fly.  Uniline may be used to author part of the MarkDown
+     source.
+
 
 File: uniline.info,  Node: Author contributors,  Next: License,  Prev: Related packages,  Up: Top
 
@@ -2633,87 +2637,87 @@ along with this program.  If not, see <http://www.gnu.org/licenses/>.
 
 Tag Table:
 Node: Top171
-Node: Getting started in 10 seconds3049
-Node: New3655
-Node: Pure UNICODE text diagrams in Emacs4355
-Node: Document a command4901
-Node: Connect boxes with arrows5431
-Node: Explain decisions trees6748
-Node: Draw lines or blocks8251
-Node: Outline the General Relativity and the Schrödinger's equations9790
-Node: Explain the structure of a sentence in a foreign language12476
-Node: Explain Lisp lists14053
-Node: Draw sketched objects15266
-Node: Pure text17228
-Node: Beware!17957
-Node: A minor mode for drawing18537
-Node: Minor mode18822
-Node: Draw lines by moving the cursor19384
-Node: Brush style20141
-Node: Text direction22738
-Node: The <insert> key23288
-Node: Glyphs ▷ ▶ → □ ◆ ╮─ insertion & modification24288
-Node: Arrows glyphs ▷ ▶ → ▹ ▸ ↔25005
-Node: Intersection glyphs ■ ◆ ●26577
-Node: Fine tweaking of lines29407
-Node: Rectangular actions31290
-Node: Drawing a rectangle32640
-Node: Filling a rectangle34291
-Node: Moving a rectangular region35059
-Node: Copying killing yanking a rectangular region37628
-Node: Dashed lines and other styles38823
-Node: ASCII to UNICODE42948
-Node: Long range actions contour and flood-fill46631
-Node: Tracing a contour46894
-Node: Flood-fill48808
-Node: Macros50582
-Node: Which fonts?53973
-Node: Recommended fonts54234
-Node: Use case mixing fonts56324
-Node: Hydra or Transient?58321
-Node: Selecting Hydra or Transient59310
-Node: Instantly selecting Hydra or Transient60303
-Node: One-liner menus61269
-Node: The Hydra interface63207
-Node: The Transient interface63880
-Node: Customization64418
-Node: Interface type (obsolete)65269
-Node: Insert key65602
-Node: Maximum steps when drawing a contour66395
-Node: Cursor type66725
-Node: Hint style67050
-Node: Welcome message visibility67397
-Node: Line spacing67778
-Node: Font69244
-Node: How Uniline behaves with its environment?69728
-Node: Language environment70327
-Node: Compatibility with Picture-mode72732
-Node: Compatibility with Artist-mode73679
-Node: Compatibility with Whitespace-mode74198
-Node: Compatibility with Org Mode75098
-Node: Org Mode and LaTex76519
-Node: What about \t tabs?78379
-Node: What about ^L page separation?79180
-Node: Emacs on the Linux console79803
-Node: Emacs on a graphical terminal emulator80763
-Node: Emacs on Windows81693
-Node: Compatibility with ASCIIFlow82374
-Node: Lisp API83330
-Node: Move the cursor83880
-Node: Brush84311
-Node: Example Lisp function to draw a plus sign85180
-Node: Long range actions (contour flood-fill rectangle)87016
-Node: Constants87954
-Node: Macro and text direction88369
-Node: Insert and tweak glyphs89304
-Node: Change to alternate styles90417
-Node: Mouse support91326
-Node: Installation92210
-Node: use-package the straightforward way92454
-Node: Without use-package94839
-Node: Related packages96400
-Node: Author contributors99519
-Node: License101459
+Node: Getting started in 10 seconds3056
+Node: New3662
+Node: Gallery pure UNICODE diagrams in Emacs4365
+Node: Document a command4922
+Node: Connect boxes with arrows5455
+Node: Explain decisions trees6775
+Node: Draw lines or blocks8281
+Node: Outline the General Relativity and the Schrödinger's equations9823
+Node: Explain the structure of a sentence in a foreign language12512
+Node: Explain Lisp lists14092
+Node: Draw sketched objects15308
+Node: Pure text17273
+Node: Beware!18005
+Node: A minor mode for drawing18588
+Node: Minor mode18876
+Node: Draw lines by moving the cursor19438
+Node: Brush style20195
+Node: Text direction22792
+Node: The <insert> key23342
+Node: Glyphs ▷ ▶ → □ ◆ ╮─ insertion & modification24342
+Node: Arrows glyphs ▷ ▶ → ▹ ▸ ↔25059
+Node: Intersection glyphs ■ ◆ ●26631
+Node: Fine tweaking of lines29461
+Node: Rectangular actions31344
+Node: Drawing a rectangle32694
+Node: Filling a rectangle34345
+Node: Moving a rectangular region35113
+Node: Copying killing yanking a rectangular region37682
+Node: Dashed lines and other styles38877
+Node: ASCII to UNICODE43002
+Node: Long range actions contour and flood-fill46685
+Node: Tracing a contour46948
+Node: Flood-fill48862
+Node: Macros50636
+Node: Which fonts?54027
+Node: Recommended fonts54288
+Node: Use case mixing fonts56378
+Node: Hydra or Transient?58375
+Node: Selecting Hydra or Transient59364
+Node: Instantly selecting Hydra or Transient60357
+Node: One-liner menus61323
+Node: The Hydra interface63261
+Node: The Transient interface63934
+Node: Customization64472
+Node: Interface type (obsolete)65323
+Node: Insert key65656
+Node: Maximum steps when drawing a contour66449
+Node: Cursor type66779
+Node: Hint style67104
+Node: Welcome message visibility67451
+Node: Line spacing67832
+Node: Font69298
+Node: How Uniline behaves with its environment?69782
+Node: Language environment70381
+Node: Compatibility with Picture-mode72786
+Node: Compatibility with Artist-mode73733
+Node: Compatibility with Whitespace-mode74252
+Node: Compatibility with Org Mode75152
+Node: Org Mode and LaTex76573
+Node: What about \t tabs?78433
+Node: What about ^L page separation?79234
+Node: Emacs on the Linux console79857
+Node: Emacs on a graphical terminal emulator80817
+Node: Emacs on Windows81747
+Node: Compatibility with ASCIIFlow82428
+Node: Lisp API83384
+Node: Move the cursor83934
+Node: Brush84365
+Node: Example Lisp function to draw a plus sign85234
+Node: Long range actions (contour flood-fill rectangle)87070
+Node: Constants88008
+Node: Macro and text direction88423
+Node: Insert and tweak glyphs89358
+Node: Change to alternate styles90471
+Node: Mouse support91380
+Node: Installation92264
+Node: use-package the straightforward way92508
+Node: Without use-package94893
+Node: Related packages96454
+Node: Author contributors99733
+Node: License101673
 
 End Tag Table
 

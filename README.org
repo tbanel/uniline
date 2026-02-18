@@ -52,7 +52,7 @@ Those grey characters are well supported by the recommended fonts
 :CONTENTS:
 - [[#getting-started-in-10-seconds][Getting started in 10 seconds]]
 - [[#new][New]]
-- [[#pure-unicode-text-diagrams-in-emacs][Pure UNICODE text diagrams in Emacs]]
+- [[#gallery-pure-unicode-diagrams-in-emacs][Gallery: pure UNICODE diagrams in Emacs]]
   - [[#document-a-command][Document a command]]
   - [[#connect-boxes-with-arrows][Connect boxes with arrows]]
   - [[#explain-decisions-trees][Explain decisions trees]]
@@ -133,9 +133,9 @@ Those grey characters are well supported by the recommended fonts
 - [[#license][License]]
 :END:
 
-* Pure UNICODE text diagrams in Emacs
+* Gallery: pure UNICODE diagrams in Emacs
 :PROPERTIES:
-:CUSTOM_ID: pure-unicode-text-diagrams-in-emacs
+:CUSTOM_ID: gallery-pure-unicode-diagrams-in-emacs
 :END:
 Draw diagrams like those:
 
@@ -465,7 +465,7 @@ Set the current brush with:
 - ~#~ quarter block
   =▙▄▟▀=
 
-- ~~~ toggle dotted lines
+- =~= toggle dotted lines
   =┄┄┄┄=
 
 - ~<delete>~ eraser
@@ -2400,6 +2400,9 @@ launched, rather than deferred until invoked.
 - =make-box.el=: box around part of a buffer
 
 - =vim drawit ascii diagrams=: in Vim, in ASCII
+
+- =MarkDeep= (Casual Effects): write in MarkDown, render on the Web on
+  the fly. Uniline may be used to author part of the MarkDown source.
 
 * Author, contributors
 :PROPERTIES:

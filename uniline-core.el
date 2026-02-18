@@ -1604,7 +1604,10 @@ Blank include:
   (defmacro uniline--blank-neighbour4 (dir)
   "Return non-nil if the quarter point cursor can move in DIR
 while staying on the same (point)."
-  ;; Try typing (disassemble 'uniline--blank-neighbour4)
+  ;; Try evaluating
+  ;;   (macroexpand-all '(uniline--blank-neighbour4 dir))
+  ;; or
+  ;;   (disassemble     '(uniline--blank-neighbour4 dir))
   ;; You will see a short 9 byte-codes function which references
   ;; a constant vector. This is the fastest it can be.
   `(eq
@@ -2150,7 +2153,7 @@ Return the replaced region as a string."
     (insert hand)
     line))
 
-(defun uniline--untabity-rectangle (begy endy)
+(defun uniline--untabify-rectangle (begy endy)
   "Untabify all lines over which the rectangle operates.
 BEGY and ENDY are the line-numbers of the beggining en ending
 of the rectangle.
@@ -2187,7 +2190,7 @@ defaulting to 1.
    repeat (or repeat 1)
    do
    (uniline--operate-on-rectangle
-    (uniline--untabity-rectangle begy endy)
+    (uniline--untabify-rectangle begy endy)
     (setq
      begy (max (1- begy) 0)
      endy (max (1- endy) 0))
@@ -2213,7 +2216,7 @@ defaulting to 1.
    repeat (or repeat 1)
    do
    (uniline--operate-on-rectangle
-    (uniline--untabity-rectangle begy endy)
+    (uniline--untabify-rectangle begy endy)
     (cl-loop
      with hand = (uniline--compute-leakage-on-region
                   uniline-direction-dw↓ begy begx endx)
@@ -2238,7 +2241,7 @@ defaulting to 1.
    repeat (or repeat 1)
    do
    (uniline--operate-on-rectangle
-    (uniline--untabity-rectangle begy endy)
+    (uniline--untabify-rectangle begy endy)
     (cl-loop
      for y from begy below endy
      do
@@ -2266,7 +2269,7 @@ defaulting to 1.
    repeat (or repeat 1)
    do
    (uniline--operate-on-rectangle
-    (uniline--untabity-rectangle begy endy)
+    (uniline--untabify-rectangle begy endy)
     (setq
      begx (max (1- begx) 0)
      endx (max (1- endx) 0))
@@ -3437,7 +3440,7 @@ as well as glyphs (e.g. ■ to □ or ▼ to ▽)."
 
 (defun uniline-change-style-thick ()
   "Change thin lines and glyphs to bold ones.
-This includes plain and dashed lines (e.g. ┻ to ┴, or ┄ to ┅)
+This includes plain and dashed lines (e.g. ┴ to ┻, or ┄ to ┅)
 as well as glyphs (e.g. □ to ■ or ▽ to ▼)."
   (interactive)
   (uniline--record-undo-rectangle-selection)
@@ -3524,7 +3527,7 @@ Or use the '0 standard' style transformer instead.")))
     (and name (string-match name (frame-parameter nil 'font)))))
 
 (defun uniline--font-name-ticked (letter)
-  "Return a the name of the font presented by LETTER,
+  "Return the name of the font presented by LETTER,
 with a tick-glyph ▶ if current."
   (funcall (if (uniline--is-font letter) #'cdr #'car)
            (uniline--switch-with-table letter
@@ -3728,7 +3731,7 @@ its entry in the table is left as is."
 ;; And the (scroll-left 0) function to get the column number
 ;; of this corner.
 ;;
-;; But thinks get even trickier when the window is zoomed with
+;; But things get even trickier when the window is zoomed with
 ;; C-x C-+ C-- and it is scrolled with C-x <. In this case,
 ;; the result of (scroll-left 0) is wrong. It does not
 ;; account for the zoom. So we have to reconstruct the actual
