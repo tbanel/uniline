@@ -205,16 +205,21 @@ It it faster than an equivalent (cond) form."
                  (if lambda
                      (funcall lambda (eval (car c)))
                    (eval (cadr c)))))
-            `(aref ,vec ,dir))
+            (if (fixnump dir)
+                (aref vec dir)
+              `(aref ,vec ,dir)))
         ;; create a plist for versatile lookup
-        `(plist-get
-          ',(cl-loop
-             for c in body
-             collect (eval (car c))
-             collect (if lambda
-                         (funcall lambda (eval (car c)))
-                       (eval (cadr c))))
-          ,dir)))))
+        (let ((plist
+               (cl-loop
+                for c in body
+                collect (eval (car c))
+                collect (if lambda
+                            (funcall lambda (eval (car c)))
+                          (eval (cadr c))))))
+          (if (fixnump dir)
+              (plist-get plist dir)
+            `(plist-get ',plist ,dir))))))
+  )
 
 (eval-when-compile ; not needed at runtime
   (defmacro uniline--reverse-direction (dir)
@@ -1610,6 +1615,9 @@ while staying on the same (point)."
   ;;   (disassemble     '(uniline--blank-neighbour4 dir))
   ;; You will see a short 9 byte-codes function which references
   ;; a constant vector. This is the fastest it can be.
+  (condition-case nil
+      (setq dir (eval dir)) ;; fold if dir is a numerical sexpr
+    (error nil))            ;; otherwise leave dir alone
   `(eq
     (logand
      uniline--which-quadrant
@@ -1736,14 +1744,8 @@ When FORCE is not nil, overwrite characters which are not lines."
            (cl-loop
             repeat ,repeat
             do
-
-            (if (eq
-                 (logand
-                  uniline--which-quadrant
-                  ,(uniline--4quadb-pushed odir (uniline--char-to-4quadb ?█)))
-                 0)
+            (if (uniline--blank-neighbour4 ,odir)
                 (uniline--move-in-direction ,dir))
-
             (setq
              uniline--which-quadrant
              ;; this huge expression is evaluated only at compile time
@@ -1763,7 +1765,6 @@ When FORCE is not nil, overwrite characters which are not lines."
                    ((uniline--char-to-4quadb ?▖) (uniline--char-to-4quadb ?▗))
                    ((uniline--char-to-4quadb ?▗) (uniline--char-to-4quadb ?▖))
                    ((uniline--char-to-4quadb ?▝) (uniline--char-to-4quadb ?▘))))))
-
             (uniline--write-one-4quadb ,force)))
 
           (t
@@ -3095,15 +3096,12 @@ When FORCE is not nil, overwrite whatever is in the buffer.
           ;; until finding a blank (or eolp)) which allows the (point)
           ;; to re-enter the actual buffer.
           (cond
-           ;; bump into le left border
+           ;; bump into the left border
            ((and
              (eq dir (uniline-direction-lf←))
              (uniline--at-border-p uniline-direction-lf←)
              (or (not (eq uniline-brush :block))
-                 (eq
-                  (logand uniline--which-quadrant
-                          (uniline--char-to-4quadb ?▐))
-                  0)))
+                 (uniline--blank-neighbour4 uniline-direction-ri→)))
             (while
                 (and
                  (eq (forward-line -1) 0)
@@ -3118,10 +3116,7 @@ When FORCE is not nil, overwrite whatever is in the buffer.
              (eq dir (uniline-direction-up↑))
              (uniline--at-border-p uniline-direction-up↑)
              (or (not (eq uniline-brush :block))
-                 (eq
-                  (logand uniline--which-quadrant
-                          (uniline--char-to-4quadb ?▄))
-                  0)))
+                 (uniline--blank-neighbour4 uniline-direction-dw↓)))
             (while
                 (progn
                   (forward-char 1)
