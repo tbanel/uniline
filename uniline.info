@@ -50,6 +50,7 @@ Gallery: pure UNICODE diagrams in Emacs
 * Draw lines or blocks::
 * Outline the General Relativity and the Schrödinger's equations::
 * Explain the structure of a sentence in a foreign language::
+* Draw electronic diagrams::
 * Explain Lisp lists::
 * Draw sketched objects::
 * Pure text::
@@ -194,6 +195,7 @@ Draw diagrams like those:
 * Draw lines or blocks::
 * Outline the General Relativity and the Schrödinger's equations::
 * Explain the structure of a sentence in a foreign language::
+* Draw electronic diagrams::
 * Explain Lisp lists::
 * Draw sketched objects::
 * Pure text::
@@ -337,7 +339,7 @@ File: uniline.info,  Node: Outline the General Relativity and the Schrödinger's
 
 
 
-File: uniline.info,  Node: Explain the structure of a sentence in a foreign language,  Next: Explain Lisp lists,  Prev: Outline the General Relativity and the Schrödinger's equations,  Up: Gallery pure UNICODE diagrams in Emacs
+File: uniline.info,  Node: Explain the structure of a sentence in a foreign language,  Next: Draw electronic diagrams,  Prev: Outline the General Relativity and the Schrödinger's equations,  Up: Gallery pure UNICODE diagrams in Emacs
 
 3.6 Explain the structure of a sentence in a foreign language
 =============================================================
@@ -366,9 +368,36 @@ File: uniline.info,  Node: Explain the structure of a sentence in a foreign lang
 
 
 
-File: uniline.info,  Node: Explain Lisp lists,  Next: Draw sketched objects,  Prev: Explain the structure of a sentence in a foreign language,  Up: Gallery pure UNICODE diagrams in Emacs
+File: uniline.info,  Node: Draw electronic diagrams,  Next: Explain Lisp lists,  Prev: Explain the structure of a sentence in a foreign language,  Up: Gallery pure UNICODE diagrams in Emacs
 
-3.7 Explain Lisp lists
+3.7 Draw electronic diagrams
+============================
+
+
+
+
+                   ╭────────╭──────────╮ ┏━━┓
+                   │       ╭┴╮         ╰─┨5V┃
+                  ╭┴╮      │░│           ┗━━┛
+                  │░│      │░│1KΩ
+                  │░│10KΩ  ╰┬╯
+             5μF  ╰┬╯       ├─────────────● →
+              ╷╷   │      ┠─╯           amplified
+      → ●─────┤├───┼──────┨             output
+     input    ╵╵   │      ┠▶╮  500μF    signal
+     signal       ╭┴╮       │   ╷╷
+                  │░│       ├───┤├──╮
+                  │░│1KΩ   ╭┴╮  ╵╵  │
+                  ╰┬╯      │░│      │    ╭────╮
+                   │       │░│470Ω  │    │ ╺━━┷━━╸
+                   │       ╰┬╯      │    │  ╺━━━╸
+                   ╰────────╰───────╰────╯   ╺━╸
+
+
+
+File: uniline.info,  Node: Explain Lisp lists,  Next: Draw sketched objects,  Prev: Draw electronic diagrams,  Up: Gallery pure UNICODE diagrams in Emacs
+
+3.8 Explain Lisp lists
 ======================
 
 
@@ -391,7 +420,7 @@ File: uniline.info,  Node: Explain Lisp lists,  Next: Draw sketched objects,  Pr
 
 File: uniline.info,  Node: Draw sketched objects,  Next: Pure text,  Prev: Explain Lisp lists,  Up: Gallery pure UNICODE diagrams in Emacs
 
-3.8 Draw sketched objects
+3.9 Draw sketched objects
 =========================
 
 
@@ -426,8 +455,8 @@ File: uniline.info,  Node: Draw sketched objects,  Next: Pure text,  Prev: Expla
 
 File: uniline.info,  Node: Pure text,  Next: Beware!,  Prev: Draw sketched objects,  Up: Gallery pure UNICODE diagrams in Emacs
 
-3.9 Pure text
-=============
+3.10 Pure text
+==============
 
 Those diagrams are pure text.  There is nothing graphic.  They are
 achieved using UNICODE characters.  Therefore they can be drawn within
@@ -444,7 +473,7 @@ draw lines while you move the cursor with keyboard arrows.
 
 File: uniline.info,  Node: Beware!,  Prev: Pure text,  Up: Gallery pure UNICODE diagrams in Emacs
 
-3.10 Beware!
+3.11 Beware!
 ============
 
 If you see those diagrams miss-aligned, most likely the font used to
@@ -2637,87 +2666,88 @@ along with this program.  If not, see <http://www.gnu.org/licenses/>.
 
 Tag Table:
 Node: Top171
-Node: Getting started in 10 seconds3056
-Node: New3662
-Node: Gallery pure UNICODE diagrams in Emacs4365
-Node: Document a command4922
-Node: Connect boxes with arrows5455
-Node: Explain decisions trees6775
-Node: Draw lines or blocks8281
-Node: Outline the General Relativity and the Schrödinger's equations9823
-Node: Explain the structure of a sentence in a foreign language12512
-Node: Explain Lisp lists14092
-Node: Draw sketched objects15308
-Node: Pure text17273
-Node: Beware!18005
-Node: A minor mode for drawing18588
-Node: Minor mode18876
-Node: Draw lines by moving the cursor19438
-Node: Brush style20195
-Node: Text direction22792
-Node: The <insert> key23342
-Node: Glyphs ▷ ▶ → □ ◆ ╮─ insertion & modification24342
-Node: Arrows glyphs ▷ ▶ → ▹ ▸ ↔25059
-Node: Intersection glyphs ■ ◆ ●26631
-Node: Fine tweaking of lines29461
-Node: Rectangular actions31344
-Node: Drawing a rectangle32694
-Node: Filling a rectangle34345
-Node: Moving a rectangular region35113
-Node: Copying killing yanking a rectangular region37682
-Node: Dashed lines and other styles38877
-Node: ASCII to UNICODE43002
-Node: Long range actions contour and flood-fill46685
-Node: Tracing a contour46948
-Node: Flood-fill48862
-Node: Macros50636
-Node: Which fonts?54027
-Node: Recommended fonts54288
-Node: Use case mixing fonts56378
-Node: Hydra or Transient?58375
-Node: Selecting Hydra or Transient59364
-Node: Instantly selecting Hydra or Transient60357
-Node: One-liner menus61323
-Node: The Hydra interface63261
-Node: The Transient interface63934
-Node: Customization64472
-Node: Interface type (obsolete)65323
-Node: Insert key65656
-Node: Maximum steps when drawing a contour66449
-Node: Cursor type66779
-Node: Hint style67104
-Node: Welcome message visibility67451
-Node: Line spacing67832
-Node: Font69298
-Node: How Uniline behaves with its environment?69782
-Node: Language environment70381
-Node: Compatibility with Picture-mode72786
-Node: Compatibility with Artist-mode73733
-Node: Compatibility with Whitespace-mode74252
-Node: Compatibility with Org Mode75152
-Node: Org Mode and LaTex76573
-Node: What about \t tabs?78433
-Node: What about ^L page separation?79234
-Node: Emacs on the Linux console79857
-Node: Emacs on a graphical terminal emulator80817
-Node: Emacs on Windows81747
-Node: Compatibility with ASCIIFlow82428
-Node: Lisp API83384
-Node: Move the cursor83934
-Node: Brush84365
-Node: Example Lisp function to draw a plus sign85234
-Node: Long range actions (contour flood-fill rectangle)87070
-Node: Constants88008
-Node: Macro and text direction88423
-Node: Insert and tweak glyphs89358
-Node: Change to alternate styles90471
-Node: Mouse support91380
-Node: Installation92264
-Node: use-package the straightforward way92508
-Node: Without use-package94893
-Node: Related packages96454
-Node: Author contributors99733
-Node: License101673
+Node: Getting started in 10 seconds3085
+Node: New3691
+Node: Gallery pure UNICODE diagrams in Emacs4394
+Node: Document a command4980
+Node: Connect boxes with arrows5513
+Node: Explain decisions trees6833
+Node: Draw lines or blocks8339
+Node: Outline the General Relativity and the Schrödinger's equations9881
+Node: Explain the structure of a sentence in a foreign language12570
+Node: Draw electronic diagrams14156
+Node: Explain Lisp lists15561
+Node: Draw sketched objects16744
+Node: Pure text18709
+Node: Beware!19443
+Node: A minor mode for drawing20026
+Node: Minor mode20314
+Node: Draw lines by moving the cursor20876
+Node: Brush style21633
+Node: Text direction24230
+Node: The <insert> key24780
+Node: Glyphs ▷ ▶ → □ ◆ ╮─ insertion & modification25780
+Node: Arrows glyphs ▷ ▶ → ▹ ▸ ↔26497
+Node: Intersection glyphs ■ ◆ ●28069
+Node: Fine tweaking of lines30899
+Node: Rectangular actions32782
+Node: Drawing a rectangle34132
+Node: Filling a rectangle35783
+Node: Moving a rectangular region36551
+Node: Copying killing yanking a rectangular region39120
+Node: Dashed lines and other styles40315
+Node: ASCII to UNICODE44440
+Node: Long range actions contour and flood-fill48123
+Node: Tracing a contour48386
+Node: Flood-fill50300
+Node: Macros52074
+Node: Which fonts?55465
+Node: Recommended fonts55726
+Node: Use case mixing fonts57816
+Node: Hydra or Transient?59813
+Node: Selecting Hydra or Transient60802
+Node: Instantly selecting Hydra or Transient61795
+Node: One-liner menus62761
+Node: The Hydra interface64699
+Node: The Transient interface65372
+Node: Customization65910
+Node: Interface type (obsolete)66761
+Node: Insert key67094
+Node: Maximum steps when drawing a contour67887
+Node: Cursor type68217
+Node: Hint style68542
+Node: Welcome message visibility68889
+Node: Line spacing69270
+Node: Font70736
+Node: How Uniline behaves with its environment?71220
+Node: Language environment71819
+Node: Compatibility with Picture-mode74224
+Node: Compatibility with Artist-mode75171
+Node: Compatibility with Whitespace-mode75690
+Node: Compatibility with Org Mode76590
+Node: Org Mode and LaTex78011
+Node: What about \t tabs?79871
+Node: What about ^L page separation?80672
+Node: Emacs on the Linux console81295
+Node: Emacs on a graphical terminal emulator82255
+Node: Emacs on Windows83185
+Node: Compatibility with ASCIIFlow83866
+Node: Lisp API84822
+Node: Move the cursor85372
+Node: Brush85803
+Node: Example Lisp function to draw a plus sign86672
+Node: Long range actions (contour flood-fill rectangle)88508
+Node: Constants89446
+Node: Macro and text direction89861
+Node: Insert and tweak glyphs90796
+Node: Change to alternate styles91909
+Node: Mouse support92818
+Node: Installation93702
+Node: use-package the straightforward way93946
+Node: Without use-package96331
+Node: Related packages97892
+Node: Author contributors101171
+Node: License103111
 
 End Tag Table
 

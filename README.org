@@ -59,6 +59,7 @@ Those grey characters are well supported by the recommended fonts
   - [[#draw-lines-or-blocks][Draw lines or blocks]]
   - [[#outline-the-general-relativity-and-the-schrödingers-equations][Outline the General Relativity and the Schrödinger's equations]]
   - [[#explain-the-structure-of-a-sentence-in-a-foreign-language][Explain the structure of a sentence in a foreign language]]
+  - [[#draw-electronic-diagrams][Draw electronic diagrams]]
   - [[#explain-lisp-lists][Explain Lisp lists]]
   - [[#draw-sketched-objects][Draw sketched objects]]
   - [[#pure-text][Pure text]]
@@ -309,6 +310,34 @@ and page 9╶──────────────╯
            ╰──────────────╂╴ a: adjective    ┃
                           ┃  e: adverb       ┃
                           ┗━━━━━━━━━━━━━━━━━━┛
+
+#+end_example
+
+** Draw electronic diagrams
+:PROPERTIES:
+:CUSTOM_ID: draw-electronic-diagrams
+:END:
+
+[[file:images/electronic-circuit.png]]
+
+#+begin_example
+
+               ╭────────╭──────────╮ ┏━━┓
+               │       ╭┴╮         ╰─┨5V┃
+              ╭┴╮      │░│           ┗━━┛
+              │░│      │░│1KΩ
+              │░│10KΩ  ╰┬╯
+         5μF  ╰┬╯       ├─────────────● →
+          ╷╷   │      ┠─╯           amplified
+  → ●─────┤├───┼──────┨             output
+ input    ╵╵   │      ┠▶╮  500μF    signal
+ signal       ╭┴╮       │   ╷╷
+              │░│       ├───┤├──╮
+              │░│1KΩ   ╭┴╮  ╵╵  │
+              ╰┬╯      │░│      │    ╭────╮
+               │       │░│470Ω  │    │ ╺━━┷━━╸
+               │       ╰┬╯      │    │  ╺━━━╸
+               ╰────────╰───────╰────╯   ╺━╸
 
 #+end_example
 
