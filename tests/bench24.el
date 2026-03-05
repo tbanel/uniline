@@ -44,8 +44,8 @@
  5*C-_
  2*<return>"
 "\
- 
- 
+
+
       ╭─────╮
      uuuuuu │
       │uuuuuu▖

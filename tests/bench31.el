@@ -38,7 +38,7 @@
  7*<left> <right> C-SPC 16*<down> 4*<right> <left> <insert>
  <left> ~ <left> ~ <left> <return>"
 "\
- 
+
              
 ●──────────╮ 
 ┏━━━━━━━━━━┙ 

@@ -42,7 +42,7 @@
  <right> <return> M-13 <right> M-6 <up>
  C-SPC <insert> y <return>"
 "\
- 
+
        ╔═════╗       ╔═════╗
        ║ □   ║       ║ □   ║
        ║   ■ ║       ║   ■ ║

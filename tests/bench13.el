@@ -38,7 +38,7 @@
  <return>
  13*<left> 2*<up> <insert> 2*S-<left>"
 "\
- 
+
            □
     ╾───╮──╯──╮
         │     │

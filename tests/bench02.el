@@ -33,7 +33,7 @@
  <return> 3*<down> 2*<up> <right> 3*<down>
  C-SPC 19*<left> 3*<up> <insert>
  <up> 2*<down> c
- <end> C-SPC <insert> y
+ C-a 22*<right> C-SPC <insert> y
  2*<return> 3*<down> 4*<right>
  = <down> 6*<left>
  <insert> s s s
@@ -41,8 +41,8 @@
  <insert> o
  6*<left> <up>"
  "\
-                    ╷ 
-                    │ 
+                    ╷
+                    │
   ╭────────────╮ ╭──╯ ╭────────────╮ ╭──╯
   │initial text│ q    │initial text│ q   
   ││ good      ├─╯    ││ good      ├─╯   

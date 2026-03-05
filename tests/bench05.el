@@ -34,8 +34,8 @@
  C-SPC <down> <down> <down> M-6 <right> <kp-add>
  <insert> C-r = R RET"
 "\
- 
- 
+
+
      aaaa aa╭─────╦╤╤══aaaaaaaa
        aaaa │aaa  ║┏┿━━━┓aaaaaaaa
          aaa│ aaaa║┃│aaa┃║ aaaaaaaa

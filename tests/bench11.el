@@ -27,7 +27,7 @@
  <down> <home> <kp-subtract> 2*<right> 2*<up> 10*<right> 2*<down>
  <insert> s <return>"
 "\
-  ╭─────tabs╮? 
-  │         │   2 tabs         
-╶─╯         □          
+  ╭─────tabs╮?
+  │         │   2 tabs        
+╶─╯         □         
 ")

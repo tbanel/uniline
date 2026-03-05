@@ -45,8 +45,8 @@
  <insert> 2*S-<right> S-<up> S-<down>
  <return>"
 "\
- 
- 
+
+
    █▀▀▀▀▀▛▀▀▀▀▙
    ▌          ▐
    ▌          ▐

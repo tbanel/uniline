@@ -66,7 +66,14 @@ RESULT is a string representing the expected result."
   (uniline-set-brush-1)
   (uniline-set-brush-0dots)
   (execute-kbd-macro (kbd commands))
-  
+
+  (when nil
+    ;; ignore trailing spaces in resulting drawing
+    (goto-char (point-min))
+    (replace-regexp (rx (+ space) eol) "")
+    ;; ignore trailing spaces in expected result
+    (setq result (replace-regexp-in-string (rx (+ space) eol) "" result)))
+
   (setq uniline-bench-result
         (string-equal
          (buffer-substring (point-min) (point-max))

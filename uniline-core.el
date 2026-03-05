@@ -1669,8 +1669,6 @@ DIR is one of the 4 directions.
 When FORCE is not nil, overwrite a possible non-4halfs character.
 4HALFMASK is a bit-mask to erase 4halfs lines found at (point).
 4QUADMASK is a bit-mask to erase 4quads blocks found at (point)."
-  (if (eolp)
-      (uniline--insert-char ? ))
   (if uniline-brush
       (let ((bits
              (gethash (uniline--char-after) uniline--char-to-4halfs)))

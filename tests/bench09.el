@@ -60,11 +60,11 @@
 "\
 ggggggggggg╷  gg  ╷ggggg╷
 ggggggg╭─╮g╰──────╯g╭───╯
-╶────╮g│ │gggggggggg│   
-╶────╯g│ ╰──────────╯   
-ggggggg│pppppp          
-g╶───┬─╯pppppp          
-ggggg│                  
+╶────╮g│ │gggggggggg│  
+╶────╯g│ ╰──────────╯  
+ggggggg│pppppp         
+g╶───┬─╯pppppp         
+ggggg│                 
 ╶─╮gg│
 ╶─╯g╭╯
 gggg│

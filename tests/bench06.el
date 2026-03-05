@@ -53,7 +53,7 @@
  j 2*<down>
  <insert> i SPC"
 "\
- 
+
     ╭───╮
     │mùq╰╮
  ╭──┴─┬╮v╰─╮    jmùq   
