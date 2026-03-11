@@ -1526,8 +1526,6 @@ It adds the quadrant-block described by `uniline--which-quadrant'
 at `point', preserving already present quadrant-blocks.
 When FORCE is not nil, overwrite a possible non quadrant-block
 character at point."
-  (if (eolp)
-      (uniline--insert-char ? ))
   (let ((bits (uniline--char-to-4quadb (uniline--char-after))))
     (cond
      (bits
@@ -1660,38 +1658,36 @@ Blank include:
 This might be 0, 1, 2, 3, as defined by the four constants
 `uniline-direction-up↑', `uniline-direction-lf←', ...")
 
-(defun uniline--write-one-4halfs-impl (dir force 4halfmask 4quadmask)
-    "Draw half a line.
+(defun uniline--write-one-4halfs-impl (brush force 4halfmask 4quadmask)
+  "Draw half a line.
 If there are too few characters on the row where the line
 will be drawn, fill it with blank characters.
 Cursor does not move.
-DIR is one of the 4 directions.
+BRUSH is `uniline-brush' turned in the direction of drawing.
 When FORCE is not nil, overwrite a possible non-4halfs character.
 4HALFMASK is a bit-mask to erase 4halfs lines found at (point).
 4QUADMASK is a bit-mask to erase 4quads blocks found at (point)."
-  (if uniline-brush
-      (let ((bits
-             (gethash (uniline--char-after) uniline--char-to-4halfs)))
-        (cond
-         ;; 1st case: (char-after) is a line-character like ├,
-         ;; or any character if FORCE
-         ;; then change a half-line of this character
-         ;; for example changing it from ├ to ┽
-         (bits
-          (uniline--insert-4halfs
-           (logior
-            (logand bits 4halfmask)
-            (uniline--shift-4half uniline-brush dir))))
-         ;; 2nd case: (char-after) is a block character like ▜,
-         ;; and the brush is the eraser
-         ;; then clear only half of this character
-         ((eq uniline-brush 0)
-          (if (setq bits (uniline--char-to-4quadb (uniline--char-after)))
-              (uniline--insert-4quadb (logand 4quadmask bits))))
-         ;; 3th case: force
-         (force
-          (uniline--insert-4halfs
-           (uniline--shift-4half uniline-brush dir)))))))
+  (let ((bits
+         (gethash (uniline--char-after) uniline--char-to-4halfs)))
+    (cond
+     ;; 1st case: (char-after) is a line-character like ├,
+     ;; or any character if FORCE
+     ;; then change a half-line of this character
+     ;; for example changing it from ├ to ┽
+     (bits
+      (uniline--insert-4halfs
+       (logior
+        (logand bits 4halfmask)
+        brush)))
+     ;; 2nd case: (char-after) is a block character like ▜,
+     ;; and the brush is the eraser
+     ;; then clear only half of this character
+     ((eq uniline-brush 0)
+      (if (setq bits (uniline--char-to-4quadb (uniline--char-after)))
+          (uniline--insert-4quadb (logand 4quadmask bits))))
+     ;; 3th case: force
+     (force
+      (uniline--insert-4halfs brush)))))
 
 (eval-when-compile ; not needed at runtime
   (defmacro uniline--write-one-4halfs (dir force)
@@ -1701,7 +1697,7 @@ will be drawn, fill it with blank characters.
 Cursor does not move.
 When FORCE is not nil, overwrite a possible non-4halfs character."
     `(uniline--write-one-4halfs-impl
-      ,dir
+      (uniline--shift-4half uniline-brush ,dir)
       ,force
       ,(lognot (uniline--shift-4half 3 dir))
       ,(uniline--4quadb-pushed
@@ -1765,14 +1761,17 @@ When FORCE is not nil, overwrite characters which are not lines."
                    ((uniline--char-to-4quadb ?▝) (uniline--char-to-4quadb ?▘))))))
             (uniline--write-one-4quadb ,force)))
 
-          (t
+          (uniline-brush
            ;; draw lines ╰──╮
            (cl-loop
             repeat ,repeat
             do
             (uniline--write-one-4halfs ,dir ,force)
             (uniline--move-in-direction ,dir)
-            (uniline--write-one-4halfs ,odir ,force))))))))
+            (uniline--write-one-4halfs ,odir ,force)))
+          (t
+           ;; brush is nil, just move point
+           (uniline--move-in-direction ,dir ,repeat)))))))
 
 (defun uniline-write-up↑ (repeat &optional force)
   "Move cursor up drawing or erasing glyphs, or extending region.
