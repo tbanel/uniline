@@ -2129,13 +2129,13 @@ The region just below is considered when DIR is ↑,
 the region just above is considered when DIR is ↓.
 Return a string which will be inserted back in the buffer."
     `(cl-loop
-      with s = (make-string (- ,endx ,begx) ? )
+      with s = (make-vector (- ,endx ,begx) ? )
       for x from ,begx below ,endx
       for i from 0
       do
       (uniline-move-to-lin-col ,y x)
       (aset s i (uniline--compute-leakage ,dir))
-      finally return s)))
+      finally return (concat s))))
 
 (defun uniline--exchange-region-string (y begx endx hand)
   "Replace the region BEGX..ENDX x Y..Y with HAND.
