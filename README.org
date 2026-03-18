@@ -28,20 +28,8 @@
 :CUSTOM_ID: new
 :END:
 
-Five shades of grey characters can now be inserted in the same ways as
-arrows, squares, circles, and crosses characters.
-
- =░▒▓█=
-
-See [[#intersection-glyphs---][Intersection glyphs ■ ◆ ●]].
-
-Note that those 5 shades of grey were already available to fill a
-rectangle or an arbitrary shape. They are now also available as
-individual characters, useful for instance as lines intersections. The
-key-bindings are the same as for filling: space & back-space.
-
-Those grey characters are well supported by the recommended fonts
-(see [[#which-fonts][Which fonts?]]).
+The buffer is now infinite ∞ in the upward direction
+(customizable). See [[#infinite--buffer][Infinite ∞ buffer]].
 
 * Table of Contents
 :PROPERTIES:
@@ -67,6 +55,7 @@ Those grey characters are well supported by the recommended fonts
 - [[#a-minor-mode-for-drawing][A minor mode for drawing]]
   - [[#minor-mode][Minor mode]]
   - [[#draw-lines-by-moving-the-cursor][Draw lines by moving the cursor]]
+  - [[#infinite--buffer][Infinite ∞ buffer]]
   - [[#brush-style][Brush style]]
   - [[#text-direction][Text direction]]
 - [[#the-insert-key][The <insert> key]]
@@ -103,6 +92,7 @@ Those grey characters are well supported by the recommended fonts
   - [[#welcome-message-visibility][Welcome message visibility]]
   - [[#line-spacing][Line spacing]]
   - [[#font][Font]]
+  - [[#upward-infiniteness-][Upward infiniteness ∞]]
 - [[#how-uniline-behaves-with-its-environment][How Uniline behaves with its environment?]]
   - [[#language-environment][Language environment]]
   - [[#compatibility-with-picture-mode][Compatibility with Picture-mode]]
@@ -469,12 +459,36 @@ lines. If there is already text, it will not be erased. However, by
 hitting the control-key while moving, lines overwrite whatever there
 is.
 
-The buffer is infinite ∞ in bottom and right directions. Which means
+The usual numeric prefix is available. For instance, to draw a line 12
+characters wide downward, type: =M-12 <down>=
+
+** Infinite ∞ buffer
+:PROPERTIES:
+:CUSTOM_ID: infinite--buffer
+:END:
+
+The buffer is infinite ∞ in the south and east directions. Which means
 that when the cursor ends up outside the buffer, white space
 characters are automatically added.
 
-The usual numeric prefix is available. For instance, to draw a line 12
-characters wide downward, type: =M-12 <down>=
+All algorithms also make use of the infiniteness of the buffer when
+needed. Those algorithms are: moving a rectangle, pasting a rectangle,
+drawing the external border of a rectangular region, or drawing the
+contour of a shape.
+
+The buffer is also infinite ∞ in the upward direction. That is
+customizable through the =uniline-infinite-up↑= variable. If its value
+is =t=, then the buffer is actually infinite ∞ upward. If it is =nil=,
+then the upper border of the buffer is a hard limit. To customize,
+type:
+
+=M-x customize-variable uniline-infinite-up↑=
+
+The buffer can be "narrowed", for instance with the =C-x n n= or =M-x
+narrow-to-region= command. In this case, the limits are those of the
+narrow region. When Uniline needs to bypass the up↑ or down↓ limits,
+it adds empty lines. When widening again the buffer, the region which
+was narrow will have increased.
 
 ** Brush style
 :PROPERTIES:
@@ -1646,6 +1660,19 @@ assist in choosing a good font and customizing the =default= face. See
 Type =<insert> f= to select a font just for the current =Uniline=
 session. Type =*= to enter the =Emacs= customization of the =default= face
 and retain your choice for future sessions.
+
+** Upward infiniteness ∞
+:PROPERTIES:
+:CUSTOM_ID: upward-infiniteness-
+:END:
+If the variable =uniline-infinite-up↑= is:
+
+- =t=, then the buffer grows at the top of the buffer (or at the top of
+  the narrowed region), by adding empty lines as needed.
+
+- =nil=, then the top of the buffer (or the top of the narrowed region)
+  is a non-trespassable limit. This is the default, and the behaviour
+  of previous versions of Uniline.
 
 * How Uniline behaves with its environment?
 :PROPERTIES:

@@ -262,14 +262,26 @@ Move to 0 if target is beyond the left border of buffer."
     (progn    `(move-to-column      (+  (current-column) ,x)    t)))
    (t         `(move-to-column (max (+  (current-column) ,x) 0) t))))
 
-(defmacro uniline--forward-line-force (y p)
+(defcustom uniline-infinite-up↑ nil
+  "Is the buffer infinitely extensible in the upper direction?
+If not, the begining of buffer is a hard limit, as usual in most
+Emacs modes.
+Note that if the buffer is narrowed to a region, for example through
+the use of C-x n n, then the buffer the narrowed region may grow
+in both the upper and lower direction by automatic insertion of
+blank lines."
+  :type 'boolean
+  :group 'uniline)
+
+(defun uniline--forward-line-force (y p c)
   "Helper function to move cursor Y lines.
 Create lines at the end of the buffer if there
 are not enough lines to honor Y.
 Y may be negative.
 Does not preserve current column.
 P may be (point) for a relative Y move,
-or (point-min) for an absolute Y move."
+or (point-min) for an absolute Y move.
+C is the expected column number."
   ;; here we fix a bug in the return of (forward-line):
   ;; when (forward-line) cannot move enough lines
   ;; because it is stuck at the end of buffer,
@@ -279,43 +291,38 @@ or (point-min) for an absolute Y move."
   ;; so here we get out of the corner-case of the
   ;; (forward-line) bug, by ensuring that there is an empty
   ;; line at the end of buffer
-  `(progn
-     (goto-char
-      (prog1 ,p
-        (goto-char (point-max))
-        (or (bolp) (insert ?\n))))
-     (insert-byte ?\n (forward-line ,y))))
+  (goto-char (point-max))
+  (or (bolp) (insert ?\n))
+  (goto-char p)
+  (let ((n (forward-line y)))
+    (if (>= n 0)
+        (insert-byte ?\n n)
+      (when uniline-infinite-up↑
+        (insert-byte ?\n (- n))
+        (forward-line n))))
+  (move-to-column c t))
 
-(defun uniline-move-to-line (y)
+(defmacro uniline-move-to-line (y)
   "Move to line Y, while staying on the same column.
 Create blank lines at the end of the buffer if needed,
 or blank characters at the end of target line.
 Y=0 means first line in buffer."
-  (move-to-column
-   (prog1
-       (current-column)
-     (uniline--forward-line-force y (point-min)))
-   t))
+  `(uniline--forward-line-force ,y (point-min) (current-column)))
 
-(defun uniline-move-to-delta-line (y)
+(defmacro uniline-move-to-delta-line (y)
   "Move Y lines while staying on the same column.
 Create blank lines at the end of the buffer if needed,
 or blank characters at the end of target line.
 Y may be negative to move backward."
-  (move-to-column
-   (prog1
-       (current-column)
-     (uniline--forward-line-force y (point)))
-   t))
+  `(uniline--forward-line-force ,y (point)     (current-column)))
 
-(defun uniline-move-to-lin-col (y x)
+(defmacro uniline-move-to-lin-col (y x)
   "Move to line Y and column X.
 Create blank lines at the end of the buffer if needed,
 or blank characters at the end of target line if needed.
 Y=0 means first line of buffer.
 X=0 means first column of buffer."
-  (uniline--forward-line-force y (point-min))
-  (uniline-move-to-column x))
+  `(uniline--forward-line-force ,y (point-min) ,x))
 
 (eval-when-compile ; not needed at runtime
   (defmacro uniline--move-in-direction (dir &optional nb)
@@ -2189,9 +2196,11 @@ defaulting to 1.
    do
    (uniline--operate-on-rectangle
     (uniline--untabify-rectangle begy endy)
-    (setq
-     begy (max (1- begy) 0)
-     endy (max (1- endy) 0))
+    (if (and (eq begy 0) uniline-infinite-up↑)
+        (save-excursion (uniline-move-to-line -1))
+      (setq
+       begy (max (1- begy) 0)
+       endy      (1- endy)))
     (cl-loop
      with hand = (uniline--compute-leakage-on-region
                   uniline-direction-up↑ endy begx endx)
@@ -2349,13 +2358,11 @@ When FORCE is not nil, overwrite whatever is there."
          (height (- endy begy -1))
          (mark-active nil))             ; otherwise brush is inactive
      (goto-char beg)
-     (if (<= begx 0)                    ; at leftmost side of buffer
-         (setq width (1- width))
+     (if (<= begx 0)
+         (setq width (1- width))         ; at leftmost side of buffer
        (uniline-move-to-delta-column -1))
-     (when (eq begy 0)                  ; at the top of buffer
-       (goto-char (point-min))
-       (insert ?\n))
-     (forward-line -1)
+     (let ((uniline-infinite-up↑ t))         ; forcefully add a line
+       (uniline-move-to-delta-line -1))        ; above the rectangular region
      (if (eq uniline-brush :block)
          (setq
           width  (+ width  width  -1)
@@ -2365,15 +2372,18 @@ When FORCE is not nil, overwrite whatever is there."
      (uniline-write-ri→ width  force)
      (uniline-write-dw↓ height force)
      (uniline-write-lf← width  force)
-     (if (> begx 0)
-         (uniline-write-up↑ height force))
-     (when (eq begy 0)
-       (goto-char (point-min))
-       (delete-line))
-     (setq begx (max (1- begx) 0))
-     (setq begy (max (1- begy) 0))
-     (setq endx      (1+ endx)   )
-     (setq endy      (1+ endy)   ))))
+     (when (> begx 0)
+       (uniline-write-up↑ height force)
+       (setq begx (1- begx)))
+     (setq endx (1+ endx))
+     (if (eq begy 0)                    ; an additional line was needed
+         (if uniline-infinite-up↑
+             (setq endy (+ 2 endy))
+           (setq endy (1+ endy))
+           (goto-char (point-min))
+           (delete-line))
+       (setq begy (1- begy))            ; no additionl line
+       (setq endy (1+ endy))))))
 
 (defun uniline-overwrite-outer-rectangle ()
   "Draws a rectangle outside a rectangular selection.
@@ -3110,6 +3120,7 @@ When FORCE is not nil, overwrite whatever is in the buffer.
                     uniline--which-quadrant (uniline--char-to-4quadb ?▖))))
            ;; bump into the upper border
            ((and
+             (not uniline-infinite-up↑)
              (eq dir (uniline-direction-up↑))
              (uniline--at-border-p uniline-direction-up↑)
              (or (not (eq uniline-brush :block))
@@ -4298,6 +4309,7 @@ with the one used to invoke Uniline-mode."
     ("Customize"
      ["Current session only:" :selected nil]
      ["Large hints sizes" uniline-toggle-hints :keys "C-t or C-h C-t" :style toggle :selected (eq uniline-hint-style t)]
+     ["Infinite up↑" (setq uniline-infinite-up↑ (not uniline-infinite-up↑)) :style toggle :selected uniline-infinite-up↑]
      ["Hydra"     (load-library "uniline-hydra"    )]
      ["Transient" (load-library "uniline-transient")]
      "----"

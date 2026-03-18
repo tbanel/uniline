@@ -19,7 +19,8 @@
 ;; You should have received a copy of the GNU General Public License
 ;; along with this program.  If not, see <http://www.gnu.org/licenses/>.
 
-(uniline-bench
+(let ((uniline-infinite-up↑ nil))
+  (uniline-bench
  "2*a C-q <tab> C-q <tab> a C-q <tab> C-q <tab> a C-q <tab> C-q <tab> C-q <tab> C-q <tab> 4*SPC C-q <tab> C-q <tab> 3*SPC a C-q C-j
  C-p 2*C-k 29*C-y
  M-< 5*<right> <down> 3*<right> <down> 2*<right>
@@ -69,4 +70,4 @@ aa		a	       │a│      			    		   a
 aa		a	       │a│      			    		   a
 aa		a	       │a│      			    		   a
                                ╰─╯
-")
+"))

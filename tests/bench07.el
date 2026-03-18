@@ -19,8 +19,9 @@
 ;; You should have received a copy of the GNU General Public License
 ;; along with this program.  If not, see <http://www.gnu.org/licenses/>.
 
-(uniline-bench
-"a a <return>
+(let ((uniline-infinite-up↑ nil))
+  (uniline-bench
+   "a a <return>
  <right> 2*a
  3*<left> a
  <right> <down> a
@@ -43,7 +44,7 @@
  2*<left> a
  <down> <left> a
  <left> <kp-subtract> <insert> c"
-"\
+   "\
 aaaaa╷  ╷aaaaa╷
 a╭─╮a│  │a╭───╯
 a│ │a╰──╯a│
@@ -55,4 +56,4 @@ aaaa│
 aaaa│
 a╭──╯
 ╶╯
-")
+"))

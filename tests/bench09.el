@@ -19,7 +19,8 @@
 ;; You should have received a copy of the GNU General Public License
 ;; along with this program.  If not, see <http://www.gnu.org/licenses/>.
 
-(uniline-bench
+(let ((uniline-infinite-up↑ nil))
+  (uniline-bench
 "<return> 10*<down> g
  <left> <up> 4*g
  <left> <up> g
@@ -70,4 +71,4 @@ ggggg│
 gggg│
 g╭──╯
 ╶╯
-")
+"))

@@ -60,6 +60,7 @@ A minor mode for drawing
 
 * Minor mode::
 * Draw lines by moving the cursor::
+* Infinite ∞ buffer::
 * Brush style::
 * Text direction::
 
@@ -106,6 +107,7 @@ Customization
 * Welcome message visibility::
 * Line spacing::
 * Font::
+* Upward infiniteness ∞::
 
 How Uniline behaves with its environment?
 
@@ -164,20 +166,8 @@ File: uniline.info,  Node: New,  Next: Gallery pure UNICODE diagrams in Emacs,  
 2 New
 *****
 
-Five shades of grey characters can now be inserted in the same ways as
-arrows, squares, circles, and crosses characters.
-
-   ‘░▒▓█’
-
-   See *note Intersection glyphs ■ ◆ ●::.
-
-   Note that those 5 shades of grey were already available to fill a
-rectangle or an arbitrary shape.  They are now also available as
-individual characters, useful for instance as lines intersections.  The
-key-bindings are the same as for filling: space & back-space.
-
-   Those grey characters are well supported by the recommended fonts
-(see *note Which fonts?::).
+The buffer is now infinite ∞ in the upward direction (customizable).
+See *note Infinite ∞ buffer::.
 
 
 File: uniline.info,  Node: Gallery pure UNICODE diagrams in Emacs,  Next: A minor mode for drawing,  Prev: New,  Up: Top
@@ -495,6 +485,7 @@ File: uniline.info,  Node: A minor mode for drawing,  Next: The <insert> key,  P
 
 * Minor mode::
 * Draw lines by moving the cursor::
+* Infinite ∞ buffer::
 * Brush style::
 * Text direction::
 
@@ -519,7 +510,7 @@ truncation.  Also, a hollow cursor is provided (customizable).  Those
 settings are reset to their previous state when exiting ‘uniline-mode’.
 
 
-File: uniline.info,  Node: Draw lines by moving the cursor,  Next: Brush style,  Prev: Minor mode,  Up: A minor mode for drawing
+File: uniline.info,  Node: Draw lines by moving the cursor,  Next: Infinite ∞ buffer,  Prev: Minor mode,  Up: A minor mode for drawing
 
 4.2 Draw lines by moving the cursor
 ===================================
@@ -530,17 +521,42 @@ Use keyboard arrows to draw lines.
 lines.  If there is already text, it will not be erased.  However, by
 hitting the control-key while moving, lines overwrite whatever there is.
 
-   The buffer is infinite ∞ in bottom and right directions.  Which means
-that when the cursor ends up outside the buffer, white space characters
-are automatically added.
-
    The usual numeric prefix is available.  For instance, to draw a line
 12 characters wide downward, type: ‘M-12 <down>’
 
 
-File: uniline.info,  Node: Brush style,  Next: Text direction,  Prev: Draw lines by moving the cursor,  Up: A minor mode for drawing
+File: uniline.info,  Node: Infinite ∞ buffer,  Next: Brush style,  Prev: Draw lines by moving the cursor,  Up: A minor mode for drawing
 
-4.3 Brush style
+4.3 Infinite ∞ buffer
+=====================
+
+The buffer is infinite ∞ in the south and east directions.  Which means
+that when the cursor ends up outside the buffer, white space characters
+are automatically added.
+
+   All algorithms also make use of the infiniteness of the buffer when
+needed.  Those algorithms are: moving a rectangle, pasting a rectangle,
+drawing the external border of a rectangular region, or drawing the
+contour of a shape.
+
+   The buffer is also infinite ∞ in the upward direction.  That is
+customizable through the ‘uniline-infinite-up↑’ variable.  If its value
+is ‘t’, then the buffer is actually infinite ∞ upward.  If it is ‘nil’,
+then the upper border of the buffer is a hard limit.  To customize,
+type:
+
+   ‘M-x customize-variable uniline-infinite-up↑’
+
+   The buffer can be "narrowed", for instance with the ‘C-x n n’ or ‘M-x
+narrow-to-region’ command.  In this case, the limits are those of the
+narrow region.  When Uniline needs to bypass the up↑ or down↓ limits, it
+adds empty lines.  When widening again the buffer, the region which was
+narrow will have increased.
+
+
+File: uniline.info,  Node: Brush style,  Next: Text direction,  Prev: Infinite ∞ buffer,  Up: A minor mode for drawing
+
+4.4 Brush style
 ===============
 
 Set the current brush with:
@@ -607,7 +623,7 @@ either.
 
 File: uniline.info,  Node: Text direction,  Prev: Brush style,  Up: A minor mode for drawing
 
-4.4 Text direction
+4.5 Text direction
 ==================
 
 Usually, inserting text in a buffer moves the cursor to the right.  (And
@@ -1632,6 +1648,7 @@ The other settings are self-explanatory
 * Welcome message visibility::
 * Line spacing::
 * Font::
+* Upward infiniteness ∞::
 
 
 File: uniline.info,  Node: Interface type (obsolete),  Next: Insert key,  Up: Customization
@@ -1741,7 +1758,7 @@ of choice for everyone.
 
 
 
-File: uniline.info,  Node: Font,  Prev: Line spacing,  Up: Customization
+File: uniline.info,  Node: Font,  Next: Upward infiniteness ∞,  Prev: Line spacing,  Up: Customization
 
 12.8 Font
 =========
@@ -1753,6 +1770,21 @@ assist in choosing a good font and customizing the ‘default’ face.  See
    Type ‘<insert> f’ to select a font just for the current ‘Uniline’
 session.  Type ‘*’ to enter the ‘Emacs’ customization of the ‘default’
 face and retain your choice for future sessions.
+
+
+File: uniline.info,  Node: Upward infiniteness ∞,  Prev: Font,  Up: Customization
+
+12.9 Upward infiniteness ∞
+==========================
+
+If the variable ‘uniline-infinite-up↑’ is:
+
+   • ‘t’, then the buffer grows at the top of the buffer (or at the top
+     of the narrowed region), by adding empty lines as needed.
+
+   • ‘nil’, then the top of the buffer (or the top of the narrowed
+     region) is a non-trespassable limit.  This is the default, and the
+     behaviour of previous versions of Uniline.
 
 
 File: uniline.info,  Node: How Uniline behaves with its environment?,  Next: Lisp API,  Prev: Customization,  Up: Top
@@ -2666,88 +2698,90 @@ along with this program.  If not, see <http://www.gnu.org/licenses/>.
 
 Tag Table:
 Node: Top171
-Node: Getting started in 10 seconds3085
-Node: New3691
-Node: Gallery pure UNICODE diagrams in Emacs4394
-Node: Document a command4980
-Node: Connect boxes with arrows5513
-Node: Explain decisions trees6833
-Node: Draw lines or blocks8339
-Node: Outline the General Relativity and the Schrödinger's equations9881
-Node: Explain the structure of a sentence in a foreign language12570
-Node: Draw electronic diagrams14156
-Node: Explain Lisp lists15561
-Node: Draw sketched objects16744
-Node: Pure text18709
-Node: Beware!19443
-Node: A minor mode for drawing20026
-Node: Minor mode20314
-Node: Draw lines by moving the cursor20876
-Node: Brush style21633
-Node: Text direction24230
-Node: The <insert> key24780
-Node: Glyphs ▷ ▶ → □ ◆ ╮─ insertion & modification25780
-Node: Arrows glyphs ▷ ▶ → ▹ ▸ ↔26497
-Node: Intersection glyphs ■ ◆ ●28069
-Node: Fine tweaking of lines30899
-Node: Rectangular actions32782
-Node: Drawing a rectangle34132
-Node: Filling a rectangle35783
-Node: Moving a rectangular region36551
-Node: Copying killing yanking a rectangular region39120
-Node: Dashed lines and other styles40315
-Node: ASCII to UNICODE44440
-Node: Long range actions contour and flood-fill48123
-Node: Tracing a contour48386
-Node: Flood-fill50300
-Node: Macros52074
-Node: Which fonts?55465
-Node: Recommended fonts55726
-Node: Use case mixing fonts57816
-Node: Hydra or Transient?59813
-Node: Selecting Hydra or Transient60802
-Node: Instantly selecting Hydra or Transient61795
-Node: One-liner menus62761
-Node: The Hydra interface64699
-Node: The Transient interface65372
-Node: Customization65910
-Node: Interface type (obsolete)66761
-Node: Insert key67094
-Node: Maximum steps when drawing a contour67887
-Node: Cursor type68217
-Node: Hint style68542
-Node: Welcome message visibility68889
-Node: Line spacing69270
-Node: Font70736
-Node: How Uniline behaves with its environment?71220
-Node: Language environment71819
-Node: Compatibility with Picture-mode74224
-Node: Compatibility with Artist-mode75171
-Node: Compatibility with Whitespace-mode75690
-Node: Compatibility with Org Mode76590
-Node: Org Mode and LaTex78011
-Node: What about \t tabs?79871
-Node: What about ^L page separation?80672
-Node: Emacs on the Linux console81295
-Node: Emacs on a graphical terminal emulator82255
-Node: Emacs on Windows83185
-Node: Compatibility with ASCIIFlow83866
-Node: Lisp API84822
-Node: Move the cursor85372
-Node: Brush85803
-Node: Example Lisp function to draw a plus sign86672
-Node: Long range actions (contour flood-fill rectangle)88508
-Node: Constants89446
-Node: Macro and text direction89861
-Node: Insert and tweak glyphs90796
-Node: Change to alternate styles91909
-Node: Mouse support92818
-Node: Installation93702
-Node: use-package the straightforward way93946
-Node: Without use-package96331
-Node: Related packages97892
-Node: Author contributors101171
-Node: License103111
+Node: Getting started in 10 seconds3137
+Node: New3743
+Node: Gallery pure UNICODE diagrams in Emacs3990
+Node: Document a command4576
+Node: Connect boxes with arrows5109
+Node: Explain decisions trees6429
+Node: Draw lines or blocks7935
+Node: Outline the General Relativity and the Schrödinger's equations9477
+Node: Explain the structure of a sentence in a foreign language12166
+Node: Draw electronic diagrams13752
+Node: Explain Lisp lists15157
+Node: Draw sketched objects16340
+Node: Pure text18305
+Node: Beware!19039
+Node: A minor mode for drawing19622
+Node: Minor mode19934
+Node: Draw lines by moving the cursor20496
+Node: Infinite ∞ buffer21088
+Node: Brush style22369
+Node: Text direction24954
+Node: The <insert> key25504
+Node: Glyphs ▷ ▶ → □ ◆ ╮─ insertion & modification26504
+Node: Arrows glyphs ▷ ▶ → ▹ ▸ ↔27221
+Node: Intersection glyphs ■ ◆ ●28793
+Node: Fine tweaking of lines31623
+Node: Rectangular actions33506
+Node: Drawing a rectangle34856
+Node: Filling a rectangle36507
+Node: Moving a rectangular region37275
+Node: Copying killing yanking a rectangular region39844
+Node: Dashed lines and other styles41039
+Node: ASCII to UNICODE45164
+Node: Long range actions contour and flood-fill48847
+Node: Tracing a contour49110
+Node: Flood-fill51024
+Node: Macros52798
+Node: Which fonts?56189
+Node: Recommended fonts56450
+Node: Use case mixing fonts58540
+Node: Hydra or Transient?60537
+Node: Selecting Hydra or Transient61526
+Node: Instantly selecting Hydra or Transient62519
+Node: One-liner menus63485
+Node: The Hydra interface65423
+Node: The Transient interface66096
+Node: Customization66634
+Node: Interface type (obsolete)67513
+Node: Insert key67846
+Node: Maximum steps when drawing a contour68639
+Node: Cursor type68969
+Node: Hint style69294
+Node: Welcome message visibility69641
+Node: Line spacing70022
+Node: Font71488
+Node: Upward infiniteness ∞72004
+Node: How Uniline behaves with its environment?72534
+Node: Language environment73133
+Node: Compatibility with Picture-mode75538
+Node: Compatibility with Artist-mode76485
+Node: Compatibility with Whitespace-mode77004
+Node: Compatibility with Org Mode77904
+Node: Org Mode and LaTex79325
+Node: What about \t tabs?81185
+Node: What about ^L page separation?81986
+Node: Emacs on the Linux console82609
+Node: Emacs on a graphical terminal emulator83569
+Node: Emacs on Windows84499
+Node: Compatibility with ASCIIFlow85180
+Node: Lisp API86136
+Node: Move the cursor86686
+Node: Brush87117
+Node: Example Lisp function to draw a plus sign87986
+Node: Long range actions (contour flood-fill rectangle)89822
+Node: Constants90760
+Node: Macro and text direction91175
+Node: Insert and tweak glyphs92110
+Node: Change to alternate styles93223
+Node: Mouse support94132
+Node: Installation95016
+Node: use-package the straightforward way95260
+Node: Without use-package97645
+Node: Related packages99206
+Node: Author contributors102485
+Node: License104425
 
 End Tag Table
 

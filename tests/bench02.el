@@ -19,8 +19,9 @@
 ;; You should have received a copy of the GNU General Public License
 ;; along with this program.  If not, see <http://www.gnu.org/licenses/>.
 
-(uniline-bench
- "C-c C-c i n i t i a l SPC t e x t e <backspace> <return> SPC SPC g o o d <return> C-a M-x u n i l i n e - m o d e RET
+(let ((uniline-infinite-up↑ nil))
+  (uniline-bench
+   "C-c C-c initial SPC texte <backspace> <return> SPC SPC good <return> C-a M-x uniline-mode RET
  2*<up> C-SPC <down> 12*<right> <insert>
  2*<down> 3*<right> R
  <end> <return>
@@ -40,7 +41,7 @@
  5*<left>
  <insert> o
  6*<left> <up>"
- "\
+   "\
                     ╷
                     │
   ╭────────────╮ ╭──╯ ╭────────────╮ ╭──╯
@@ -48,4 +49,4 @@
   ││ good      ├─╯    ││ good      ├─╯   
   ╰──────╥─────╯      ╰───╥────────╯     
          ╚═════·════▫═════╝
-")
+"))

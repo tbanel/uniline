@@ -19,8 +19,9 @@
 ;; You should have received a copy of the GNU General Public License
 ;; along with this program.  If not, see <http://www.gnu.org/licenses/>.
 
-(uniline-bench
- "b RET c
+(let ((uniline-infinite-up↑ nil))
+  (uniline-bench
+   "b RET c
  - 3*<right> <down> 5*<left> <up>
  C-SPC <down> 6*<right> <insert> <down> 11*<right> 2*RET
  <down> 2*<right>
@@ -31,10 +32,10 @@
  8*<left>
  RET 2*<up> 14*<right>
  - 3*<up>"
-
- "\
+   
+   "\
               │
            bc╶┴─╮
            ╰─┰──╯
 ━━━━━━△━━◀━━━┛
-")
+"))
