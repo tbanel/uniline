@@ -3837,6 +3837,41 @@ It adds blank characters if necessary."
   (uniline--intercept-mouse-1 (event-end event))
   (mouse-set-point event promote-to-region))
 
+;;;╭──────────────╮
+;;;│Customizations│
+;;;╰──────────────╯
+
+(defun uniline-customize-hydra-or-transient (type)
+  "Attempt to tweak .emacs to setup the type of interface.
+TYPE is \"hydra\" or \"transient\"."
+  (interactive)
+  (let ((message))
+    (find-file user-init-file)
+    (goto-char (point-min))
+    (if (re-search-forward
+         (rx bol (* (not ";")) "uniline-" (group (+ word)))
+         nil
+         t)
+        (let ((current (match-string 1)))
+          (beginning-of-line)
+          (cond
+           ((string= current type)
+            (setq message (format "Already configured as uniline-%s" type)))
+           ((or (string= current "hydra") (string= current "transient"))
+            (setq message "It seems your current configuration is here."))
+           (t
+            (setq message
+                  (format "It seems your current configuration is the unknown uniline-%s"
+                          current)))))
+      (setq message "It seems that nothing is currently configured in .emacs.")
+      (goto-char (point-max)))
+    (kill-new
+     (format
+      "(use-package uniline-%s\n  :bind (\"C-<insert>\" . uniline-mode))\n"
+      type))
+    (message "%s\nType C-y to insert the suggested new configuration."
+             message)))
+
 ;;;╭──────────────────╮
 ;;;│Uniline minor mode│
 ;;;╰──────────────────╯
@@ -4215,6 +4250,10 @@ with the one used to invoke Uniline-mode."
             ""))
     (message "Uniline %s, https://github.com/tbanel/uniline" path)))
 
+(defvar uniline--current-interface nil
+  "Remember whether Hydra or Transient is loaded.
+Its value is ?h or ?t")
+
 (easy-menu-define
   uniline-menu
   uniline-mode-map
@@ -4305,17 +4344,19 @@ with the one used to invoke Uniline-mode."
      ["Unifont"                  (set-frame-font "Unifont"                 ) :keys "INS f u" :style radio :selected (uniline--is-font ?u)]
      ["Agave"                    (set-frame-font "Agave"                   ) :keys "INS f a" :style radio :selected (uniline--is-font ?a)]
      ["Configure permanently"    uniline-customize-face                      :keys "INS f *"])
-    ["Info" (info "uniline") :keys "M-: (info \"uniline\")"]
     ("Customize"
      ["Current session only:" :selected nil]
      ["Large hints sizes" uniline-toggle-hints :keys "C-t or C-h C-t" :style toggle :selected (eq uniline-hint-style t)]
-     ["Infinite up↑" (setq uniline-infinite-up↑ (not uniline-infinite-up↑)) :style toggle :selected uniline-infinite-up↑]
-     ["Hydra"     (load-library "uniline-hydra"    )]
-     ["Transient" (load-library "uniline-transient")]
+     ["Hydra"     (load-library "uniline-hydra"    ) :style radio :selected (eq uniline--current-interface ?h)]
+     ["Transient" (load-library "uniline-transient") :style radio :selected (eq uniline--current-interface ?t)]
      "----"
      ["Future sessions:" :selected nil]
      ["Uniline Group" (customize-group 'uniline)]
-     ["Hydra or Transient (change .emacs)" (info "(uniline) Installation")])
+     ["Hydra     (change .emacs)" (uniline-customize-hydra-or-transient 'hydra    ) ]
+     ["Transient (change .emacs)" (uniline-customize-hydra-or-transient 'transient) ]
+     ["Line spacing" (customize-variable 'line-spacing)]
+     )
+    ["Info" (info "uniline") :keys "M-: (info \"uniline\")"]
     ["Quit Uniline Mode" uniline-mode t]
     ["About" uniline-about t]))
 

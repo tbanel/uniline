@@ -4,7 +4,7 @@
 
 ;; Author: Thierry Banel tbanelwebmin at free dot fr
 ;; Version: 1.0
-;; Package-Requires: ((emacs "29.1"))
+;; Package-Requires: ((emacs "29.1") (transient 0.12.0))
 ;; Keywords: convenience, text
 ;; URL: https://github.com/tbanel/uniline
 
@@ -99,9 +99,19 @@
   (interactive)
   (self-insert-command N))
 
+(eval-and-compile
+  (declare-function uniline-customize-hydra-or-transient (type)))
+
+(eval-and-compile
+  ;; a kludge so that Uniline works both with transient 0.13.0
+  ;; or earlier, without generating warnings
+  (if (and (boundp 'transient-show-popup)
+           (not (boundp 'transient-show-menu)))
+      (defvaralias 'transient-show-menu 'transient-show-popup)))
+
 ;; make this transient setting buffer local, so that Uniline can
 ;; tweak it without touching other usages like Magit for instance
-(make-variable-buffer-local 'transient-show-popup)
+(make-variable-buffer-local 'transient-show-menu)
 
 (defun uniline-toggle-hints (&optional notoggle)
   "Toggle between styles of transient hints.
@@ -109,22 +119,22 @@ When NOTOGGLE is t, do not toggle `uniline-hint-style',
 just put everything in sync."
   (interactive)
   (unless notoggle
-    (setq transient-show-popup
+    (setq transient-show-menu
           (cond
-           ((eq transient-show-popup   t) nil)
-           ((eq transient-show-popup nil)   t)
-           ((numberp transient-show-popup)  t))))
+           ((eq transient-show-menu   t) nil)
+           ((eq transient-show-menu nil)   t)
+           ((numberp transient-show-menu)  t))))
   (setq uniline-hint-style
         (cond
-         ((eq transient-show-popup   t)   t)
-         ((eq transient-show-popup nil)   1)
-         ((numberp transient-show-popup)  1))))
+         ((eq transient-show-menu   t)   t)
+         ((eq transient-show-menu nil)   1)
+         ((numberp transient-show-menu)  1))))
 
 (transient-define-suffix uniline-toggle-transient-hints-suffix ()
   "Toggle between full and one-liner menus.
 Associated with C-t, which does half the work natively in Transient:
 one-liner → full menu.
-Additionally, modify transient-show-popup so that the choice is remembered
+Additionally, modify transient-show-menu so that the choice is remembered
 for later menu invocation in the same Uniline session."
   :transient 'transient--do-exit
   (interactive)
@@ -132,7 +142,7 @@ for later menu invocation in the same Uniline session."
   (setq transient--showp nil)
   (eval-when-compile ;; suppress compilation warning "slot :command unknown"
     (put :command 'slot-name t))
-  (transient-setup (eieio-oref (transient-prefix-object) :command)))
+  (transient-setup (eieio-oref (transient-prefix-object) 'command )))
 
 ;; Define common command classes to control state transitions
 
@@ -145,6 +155,36 @@ for later menu invocation in the same Uniline session."
 (transient-define-suffix uniline--exit-command ()
   "Base class for commands that should exit the transient state."
   :transient nil)
+
+(transient-define-prefix uniline-transient-customize ()
+  "Preferences."
+  :info-manual "(uniline) Customization"
+  :transient-non-suffix 'transient-quit-one
+  [:class
+   transient-columns
+   :pad-keys t
+   ["Current session"
+    ("f" "choose font" uniline-transient-fonts :transient nil)
+    ("h" "Hydra"
+     (lambda () (interactive)
+       (load-library "uniline-hydra")
+       (declare-function uniline-hydra-customize/body "uniline-hydra" ())
+       (uniline-hydra-customize/body))
+     :transient nil)
+    ("C-t" "large hints" uniline-toggle-transient-hints-suffix)
+    ]
+   ["Future sessions"
+    ("g" "uniline group" (lambda () (interactive) (customize-group 'uniline)))
+    ("H" "Hydra     (change .emacs)"
+     (lambda () (interactive) (uniline-customize-hydra-or-transient "hydra"    ))
+     :transient nil)
+    ("T" "Transient (change .emacs)"
+     (lambda () (interactive) (uniline-customize-hydra-or-transient "transient"))
+     :transient nil)
+    ("l" "line spacing" (lambda () (interactive) (customize-variable 'line-spacing)))
+    ]]
+  (interactive)
+  (transient-setup 'uniline-transient-customize))
 
 (transient-define-prefix uniline-transient-fonts ()
   "Font selection menu."
@@ -218,6 +258,7 @@ for later menu invocation in the same Uniline session."
     ("C" "Ovwrt cnt" (lambda () (interactive) (uniline-contour t)))
     ("i" "Fill area" uniline-fill)]
    ["Navigation"
+    ("*"  "Customize" uniline-transient-customize)
     ("f"  "Font"   uniline-transient-fonts)
     ("C-t" "Hints" uniline-toggle-transient-hints-suffix)
     ("RET" "Quit" (lambda () (interactive)) :transient nil)]]
@@ -369,6 +410,9 @@ for later menu invocation in the same Uniline session."
   (if (region-active-p)
       (uniline-transient-moverect)
     (uniline-transient-arrows)))
+
+(defvar uniline--current-interface)
+(setq uniline--current-interface ?t)
 
 (provide 'uniline-transient)
 ;;; uniline-transient.el ends here

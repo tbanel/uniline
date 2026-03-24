@@ -28,8 +28,10 @@
 :CUSTOM_ID: new
 :END:
 
-The buffer is now infinite ∞ in the upward direction
-(customizable). See [[#infinite--buffer][Infinite ∞ buffer]].
+Customization & settings now consistently available from the
+application menu, from Hydra, and from Transient.
+
+Type =<INS> *=.
 
 * Table of Contents
 :PROPERTIES:
@@ -84,7 +86,7 @@ The buffer is now infinite ∞ in the upward direction
   - [[#the-hydra-interface][The Hydra interface]]
   - [[#the-transient-interface][The Transient interface]]
 - [[#customization][Customization]]
-  - [[#interface-type-obsolete][Interface type (obsolete)]]
+  - [[#interface-type][Interface type]]
   - [[#insert-key][Insert key]]
   - [[#maximum-steps-when-drawing-a-contour][Maximum steps when drawing a contour]]
   - [[#cursor-type][Cursor type]]
@@ -1423,6 +1425,10 @@ or:
   :bind ("C-<insert>" . uniline-mode))
 #+end_src
 
+The following key sequences can assist in modifying the =.emacs= file:
+- =<INS> * H=
+- =<INS> * T=
+
 Note: there used to be a customizable setting to switch between the
 two interfaces. This had many issues. One of them is that the
 native-compiler is blind to all user-customized settings.
@@ -1549,14 +1555,19 @@ unrelated to =Uniline=).
 Two settings are special: interface type (obsolete) & the insert
 key. The other settings are self-explanatory
 
-** Interface type (obsolete)
+** Interface type
 :PROPERTIES:
-:CUSTOM_ID: interface-type-obsolete
+:CUSTOM_ID: interface-type
 :END:
 
-This switch is *obsolete*. Choosing between =Hydra= or =Transient= interface
-is done by loading one or the other sub-package. See [[#installation][Installation]] for
-details.
+The =uniline-interface= variable is *obsolete*. Choosing between =Hydra= or
+=Transient= interface is done by loading one or the other
+sub-package. This is best done in the =.emacs= initialization file. See
+[[#installation][Installation]] for details.
+
+Typing either of the following key sequences can assist in modifying the =.emacs= file:
+- =<INS> * H=
+- =<INS> * T=
 
 ** Insert key
 :PROPERTIES:
