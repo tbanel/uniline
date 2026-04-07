@@ -2556,6 +2556,9 @@ Feedback:
 - tpapp documented the installation using Straight, and fixed some
   typos.
 
+- tskinner-oppfi (GitHub) repoted Elpaca packaging break due to a bad
+  version number.
+
 Contributors:
 
 - JD Smith (jdtsmith on GitHub) rewrote the =:lighter= for added

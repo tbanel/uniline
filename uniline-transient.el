@@ -4,7 +4,7 @@
 
 ;; Author: Thierry Banel tbanelwebmin at free dot fr
 ;; Version: 1.0
-;; Package-Requires: ((emacs "29.1") (transient 0.12.0))
+;; Package-Requires: ((emacs "29.1") (transient "0.12.0"))
 ;; Keywords: convenience, text
 ;; URL: https://github.com/tbanel/uniline
 

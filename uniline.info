@@ -2718,6 +2718,9 @@ File: uniline.info,  Node: Author contributors,  Next: License,  Prev: Related p
    • tpapp documented the installation using Straight, and fixed some
      typos.
 
+   • tskinner-oppfi (GitHub) repoted Elpaca packaging break due to a bad
+     version number.
+
    Contributors:
 
    • JD Smith (jdtsmith on GitHub) rewrote the ‘:lighter’ for added
@@ -2844,7 +2847,7 @@ Node: use-package the straightforward way95576
 Node: Without use-package97961
 Node: Related packages99522
 Node: Author contributors104585
-Node: License106525
+Node: License106622
 
 End Tag Table
 
