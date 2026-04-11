@@ -3919,25 +3919,21 @@ Those values are loosely in sync with those defined by the
   :group 'uniline)
 
 (eval-and-compile
-  (defun uniline--color-hint (hint)
+  (defun uniline--color-hint (face hint)
     "Return a colored message mimicking the Hydra way.
 HINT is the message string. It  contains pairs of ^xxx^
 carets which are to be removed from the message, while the
-text within will be colored."
+text within will be colored.
+FACE is the face used to color text."
     (interactive)
-    (let ((face
-           (cond
-            ((facep 'hydra-face-red     ) 'hydra-face-red     )
-            ((facep 'transient-key-stack) 'transient-key-stack)
-            (t                            'error              ))))
-      (replace-regexp-in-string
-       "\\^.*?\\^"
-       (lambda (x)
-         (setq x (substring x 1 (1- (length x))))
-         (add-face-text-property 0 (length x) face nil x)
-         x)
-       hint
-       t))))
+    (replace-regexp-in-string
+     "\\^.*?\\^"
+     (lambda (x)
+       (setq x (substring x 1 (1- (length x))))
+       (add-face-text-property 0 (length x) face nil x)
+       x)
+     hint
+     t)))
 
 (defcustom uniline-show-welcome-message t
   "Whether to show the welcome message upon activating uniline-mode."
@@ -3957,6 +3953,7 @@ text within will be colored."
       ((eq uniline-hint-style t)
        (eval-when-compile
          (uniline--color-hint
+          'error
           "\
  ╭─^^────────────╴Uniline╶╴mode╶─────────────────────────────╮
  │^(Ctrl) → ↓ ← ↑^  (overwrite)/draw lines with current brush│
@@ -3971,6 +3968,7 @@ text within will be colored."
       ((eq uniline-hint-style 1)
        (eval-when-compile
          (uniline--color-hint
+          'error
           "trace: ^←→↑↓^  ovwr: ^C-←→↑↓^  selec: ^C-←→↑↓^  brush: ^-+=# DEL RET^  menu: (sel)^INS^  hint: ^C-h TAB^")))
       (t nil)))))
 

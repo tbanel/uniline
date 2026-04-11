@@ -364,36 +364,42 @@ Otherwise, the arrows & shapes hydra is invoked."
           ,uniline-hydra-arrows/hint
         ,(eval-when-compile
            (uniline--color-hint
+            'hydra-face-red
             "glyph:^aAsSoOxX SPC DEL-+=#~^ arr&tweak:^S-→←↑↓^ txt-dir:^C-→←↑↓^ ^c^ontour f^i^ll ^f^ont ^*^ ^C-t^")))
      uniline-hydra-fonts/hint
      `(if (eq uniline-hint-style t)
           ,uniline-hydra-fonts/hint
         ,(eval-when-compile
            (uniline--color-hint
+            'hydra-face-red
             "font:^dhcjbfsiIpPua^ config:^*^ hint:^C-t^")))
      uniline-hydra-customize/hint
      `(if (eq uniline-hint-style t)
           ,uniline-hydra-customize/hint
         ,(eval-when-compile
            (uniline--color-hint
+            'hydra-face-red
             "customize: ^t^ransient uniline-^g^roup .emacs:^H^ydra-^T^ransient ^l^ine-spc ^f^ont ^C-t^")))
      uniline-hydra-moverect/hint
      `(if (eq uniline-hint-style t)
           ,uniline-hydra-moverect/hint
         ,(eval-when-compile
            (uniline--color-hint
+            'hydra-face-red
             "move:^→←↑↓^ trace:^rR C-rR^ copy-paste:^cky^ f^i^ll brush:^-+=# DEL^ ^s^tyle ^f^onts ^C-t^")))
      uniline-hydra-macro-exec/hint
      `(if (eq uniline-hint-style t)
           ,uniline-hydra-macro-exec/hint
         ,(eval-when-compile
            (uniline--color-hint
+            'hydra-face-red
             "macro exec, usual:^e^ directional:^→←↑↓^ hint:^C-t^")))
      uniline-hydra-alt-styles/hint
      `(if (eq uniline-hint-style t)
           ,uniline-hydra-alt-styles/hint
         ,(eval-when-compile
            (uniline--color-hint
+            'hydra-face-red
             "alt styles, thick:^-+=^ dashed:^34^ corners:^h^ standard:^0^ ^a^a2u ^C-t^"))))
 
     (defun uniline-toggle-hints (&optional notoggle)
