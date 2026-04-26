@@ -20,6 +20,7 @@
 ;; along with this program.  If not, see <http://www.gnu.org/licenses/>.
 
 (uniline-bench
+ ""
  "<return>
  2*<down> 5*<right>
  M-x p i c t u r e - m o d e <return>

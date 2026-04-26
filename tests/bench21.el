@@ -22,6 +22,7 @@
 ;; Test rectangle tracing & moving
 
 (uniline-bench
+ ""
  "<return>
  5*<down> 11*<right>
  15*S-<down> 31*S-<right> 2*S-<left>

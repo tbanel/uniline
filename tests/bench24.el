@@ -22,12 +22,14 @@
 ;; Test undo
 
 (uniline-bench
- "<return>
- 3*<down> M-5 <right>
- 6*u
- <down> 4*<left>
- 6*u
- #
+ "\
+
+
+
+     uuuuuu
+       uuuuuu"
+
+ "M-> #
  2*<down> 2*<left> <down> 7*<left> <up> 3*<left>
  6*C-_
  2*<down>

@@ -22,6 +22,7 @@
 ;; Test glyph insertion
 
 (uniline-bench
+ ""
  "<kp-subtract> <return>
  2*<down> 4*<right>
  <kp-subtract> 4*<right> 2*<down>

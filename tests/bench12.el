@@ -22,6 +22,7 @@
 ;; Test rectangle fill
 
 (uniline-bench
+ ""
  "<return> 3*<down> 5*<right>
  6*S-<down> 11*S-<right> <insert> i SPC
  <return> 3*<down> 7*<right> <down> 6*S-<down> 8*S-<right> <insert> i y

@@ -20,6 +20,15 @@
 ;; along with this program.  If not, see <http://www.gnu.org/licenses/>.
 
 (uniline-bench
+ "\
+
+
+                                            aaaaaa
+                                             aaaaaaaa
+                                               aaaa aaaa
+                                                     aaa
+                                                     aa"
+
  "<return> 2*<down> 3*<right>
  - 2*<right>
  ~ 3*<right> 2*<up> 2*<right> 3*<down> 5*<left> <down> 2*<right> <up> 2*<right> <down> 3*<right>
@@ -29,12 +38,10 @@
  ~ 5*<left> 2*<down> 4*<right> <up> <left> 2*<up> 8*<right>
  <return> 3*<right> 3*<up>
  C-SPC 2*<down> 6*<right> <insert> r
- <kp-subtract> r
- <return>
- <end> <right>
- <return> <left> 4*SPC
- 6*a <down> 5*<left> 8*a <down> 6*<left> 4*a <right> 4*a <down> 3*<left> 3*a <down> 3*<left> 2*a
- <left> <kp-add> <insert> c"
+ <kp-subtract> r <return>
+ <return> <end> <left> <kp-add>
+ <insert> c"
+
 "\
         ╭┄╮
         ┆ ┆                                ┏┅┅┅┅┅┅┓

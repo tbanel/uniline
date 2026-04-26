@@ -21,8 +21,11 @@
 
 (let ((uniline-infinite-up↑ nil))
   (uniline-bench
-   "C-c C-c initial SPC texte <backspace> <return> SPC SPC good <return> C-a M-x uniline-mode RET
- 2*<up> C-SPC <down> 12*<right> <insert>
+   "\
+initial text
+  good
+"
+   "C-SPC <down> 12*<right> <insert>
  2*<down> 3*<right> R
  <end> <return>
  <down>
@@ -46,7 +49,7 @@
                     │
   ╭────────────╮ ╭──╯ ╭────────────╮ ╭──╯
   │initial text│ q    │initial text│ q   
-  ││ good      ├─╯    ││ good      ├─╯   
+  │  good      ├─╯    │  good      ├─╯   
   ╰──────╥─────╯      ╰───╥────────╯     
          ╚═════·════▫═════╝
 "))

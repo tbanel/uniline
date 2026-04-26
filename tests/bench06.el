@@ -20,38 +20,32 @@
 ;; along with this program.  If not, see <http://www.gnu.org/licenses/>.
 
 (uniline-bench
- "<return> 2*<down> 5*<right>
- m ù q <down>
- v <down>
- h u <down> <left>
- u <down> <left>
- u <down> <left>
- u 2*<left>
- u 2*<left>
- u 2*<left>
- u <down> <left>
- u 2*<left>
- u 2*<left>
- u 2*<left>
- u <up> <left>
- u 2*<left>
- a <up> <left>
- é <up> 2*<left>
- 1 <up> <left>
- 2 2*i <down> <up>
- i 2*<up> 4*<left>
- C-SPC 6*<down> 9*<right>
- <insert> c <return>
- M-3 <right> M-5 <up>
- C-SPC <insert> y <return>
- 6*<left>
- <insert> <return>
- <kp-subtract>
- <insert> c <return>
- 7*<right>
- j <down> <left>
- j 2*<down>
- <insert> i SPC"
+ "\
+
+
+     mùq
+        v
+  2iii   hu
+  1       u
+   é      u
+   au  uuuu
+    uuuu
+"
+
+ "<return> 2*<down> 2*<right>
+  C-SPC 6*<down> 9*<right>
+  <insert> c <return>
+  M-3 <right> M-5 <up>
+  C-SPC <insert> y <return>
+  6*<left>
+  <insert> <return>
+  <kp-subtract>
+  <insert> c <return>
+  7*<right>
+  j <down> <left>
+  j 2*<down>
+  <insert> i SPC"
+ 
 "\
 
     ╭───╮

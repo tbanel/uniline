@@ -47,14 +47,17 @@
 t if the bench ran as expected.
 nil if there was an error.")
 
-(defun uniline-bench (commands result)
+(defun uniline-bench (initial commands result)
   "Run a bench.
 COMMANDS is a string describing a sequence of keyboard strokes,
 supposed to draw a sketch using uniline minor-mode.
 Its format is the one used to store keyboard macros.
-RESULT is a string representing the expected result."
+RESULT is a string representing the expected result.
+INITIAL is the initial content of the buffer"
   (ignore-errors (kill-buffer "*uniline-interactive*"))
   (switch-to-buffer "*uniline-interactive*")
+  (insert initial)
+  (goto-char (point-min))
   ;; (set-default 'uniline-hint-style 1)
   (let ((uniline-show-welcome-message nil))
     (uniline-mode 1))
@@ -101,6 +104,12 @@ Save it in a *.el file along with other benches."
   (interactive)
   (ignore-errors (kill-buffer "*uniline-interactive*"))
   (switch-to-buffer "*uniline-interactive*")
+  (local-set-key "$" (lambda () (interactive) (throw 'exit nil)))
+  (message "draw the initial state of buffer, prior to invoking Uniline, type $ when done")
+  (recursive-edit)
+  (setq uniline-initial-text
+        (buffer-substring-no-properties (point-min) (point-max)))
+  (goto-char (point-min))
   (uniline-mode)
   (local-set-key "$" 'uniline-bench-collect)
   (message "draw a sketch, type $ whend done")
@@ -113,9 +122,9 @@ Do not call it directly."
   (kmacro-end-macro 1)
   (ignore-errors (kill-buffer "b.el"))
   (switch-to-buffer "b.el")
-  (insert "(uniline-bench\n\"")
+  (insert "(uniline-bench\n\"\\\n" uniline-initial-text "\"\n\n\"")
   (insert (key-description (kmacro--keys (kmacro last-kbd-macro))))
-  (insert "\"\n\"\\\n")
+  (insert "\"\n\n\"\\\n")
   (insert-buffer-substring "*uniline-interactive*")
   (insert "\")\n")
   (lisp-mode))

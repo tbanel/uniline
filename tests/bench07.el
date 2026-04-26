@@ -21,29 +21,20 @@
 
 (let ((uniline-infinite-up↑ nil))
   (uniline-bench
-   "a a <return>
- <right> 2*a
- 3*<left> a
- <right> <down> a
- <down> <left> a
- <down> <left> 6*a
- <up> <left> a
- <up> <left> a
- <up> <left> 5*a
- <down> 2*<left>
- <home> <down> <up> a
- <down> <left> a
- <down> <left> a
- <down> <left> a
- <down> <left> 4*a
- <down> <left> a
- <down> <left> a
- <down> <left> a
- 2*<left> a
- 2*<left> a
- 2*<left> a
- <down> <left> a
- <left> <kp-subtract> <insert> c"
+   "\
+aaaaa    aaaaa
+a   a    a    
+a   a    a
+a   aaaaaa
+a
+aaaa
+   a
+   a
+aaaa
+a"
+
+   " <left> <kp-subtract> <insert> c"
+
    "\
 aaaaa╷  ╷aaaaa╷
 a╭─╮a│  │a╭───╯

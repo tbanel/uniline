@@ -23,6 +23,7 @@
 ;; plain, 3-dotted, 4-dotted, thin and thick, double, block
 
 (uniline-bench
+ ""
  "<return> 2*<down> 5*<right>
  <insert> s <return>
  <kp-subtract> 6*<right> 5*<down>

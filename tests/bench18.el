@@ -22,6 +22,7 @@
 ;; Check # blocks contour
 
 (uniline-bench
+ ""
  "<return>
  <down> 3*<right> 6*t
  <down> 3*<left> 2*y

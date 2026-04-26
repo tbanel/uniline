@@ -21,64 +21,38 @@
 
 (let ((uniline-infinite-up↑ nil))
   (uniline-bench
-   "<return> a
- <left> <down> a
- <left> <down> a
- <left> 2*<up> <right> 3*a
- <left> <kp-add> <insert> c
- <return> 6*<right> 4*h
- <left> <down> h
- 2*<left> h
- <left> <down> 9*h
- <left> <up> h
- <left> <up> 4*h
- 3*<left> <down> h
- <left> <down> h
- <left>
- + <insert> c
- <return> <home> 5*<down> 4*g
- <left> <down> g
- <left> <down> g
- <left> <down> g
- <left> <down> g
- <left> <down> g
- 2*<left> g
- 2*<left> g
- 2*<left> g
- <left> <down> 4*g
- <left> <down> g
- <left> <down> g
- <left> <down> g
- <left> <down> g
- 2*<left> g
- 2*<left> g
- 2*<left> g
- <left> <kp-subtract> <insert> c
- <return> 10*<up> 8*<right> 8*o
- <left> <down> <right> o
- <left> <down> o
- <left> <down> o
- <left> <down> o
- <left> <down> o
- <left> <down> o
- <left> <down> o
- <left> <down> o
- 2*<left> <down> o
- 2*<left> o
- 2*<left> o
- 2*<left> o
- 2*<left> o
- <left> <up> <left> o
- <left> <up> <left> o
- <left> <up> <left> o
- <left> <up> <left> o
- <left> <up> o
- <left> <up> o
- <left> <up> o
- <left> <up> o
- <left> <kp-subtract> <insert> c
- <return> <down> 2*<right> <insert> i *
- <return> 2*<up> <kp-subtract> <insert> c"
+   "\
+aaaa      hhhh      hhhh
+a           hh      hh
+a           hhhhhhhhhh
+
+
+
+
+gggg        oooooooo
+   g       o        o
+   g       o        o
+   g       o        o
+   g       o        o
+gggg       o        o
+gggg        o       o
+   g         o      o
+   g          o     o
+   g           ooooo
+gggg
+"
+
+   "<kp-add> <insert> c
+    <return> 8*<right>
+    + <insert> c
+    <return>
+    M-< 7*<down> 2*<right>
+    <kp-subtract> <insert> c
+    <return> 8*<right> <down>
+    <kp-subtract> <insert> c
+    <return> <down> <right> <insert> i *
+    <return> 2*<up> <kp-subtract> <insert> c"
+
    "\
 aaaa╻    ╻hhhh╻    ╻hhhh╻
 a┏━━┛    ┗━┓hh┗━━━━┛hh┏━┛

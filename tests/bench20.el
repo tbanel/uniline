@@ -22,6 +22,7 @@
 ;; Test fine tweaking
 
 (uniline-bench
+ ""
  "<return>
  2*<down> 2*<right>
  <kp-subtract> 4*<right> <down> 3*<right>

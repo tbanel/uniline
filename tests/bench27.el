@@ -26,6 +26,7 @@
 ;; in the uniline--char-to-4halfs hash-table
 
 (uniline-bench
+ ""
  "<escape> 3 0 <right>
  <escape> 2 0 <down>
  <return> 16*<up> 8*<left>

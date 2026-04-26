@@ -22,12 +22,17 @@
 ;; Check if TABs are converted to SPC when drawing on them
 
 (uniline-bench
- "C-q <tab> t a b s SPC ?
- <return> <down> C-a C-q <tab> C-q <tab> 2 SPC t a b s
- <down> <home> <kp-subtract> 2*<right> 2*<up> 10*<right> 2*<down>
- <insert> s <return>"
+ "\
+	tabs ?
+		2 tabs	"
+
+ "<return> M-> <left> <right> <down> M-<
+  <return> 2*<down> <home>
+  <kp-subtract> 2*<right> 2*<up> 10*<right> 2*<down>
+  <insert> s <return>"
+
 "\
   ╭─────tabs╮?
-  │         │   2 tabs        
-╶─╯         □         
+  │         │   2 tabs  
+╶─╯         □           
 ")

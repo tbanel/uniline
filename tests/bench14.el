@@ -20,6 +20,7 @@
 ;; along with this program.  If not, see <http://www.gnu.org/licenses/>.
 
 (uniline-bench
+ ""
  "<return> <return>
  2*<down> 3*<right> 12*S-<right> 6*S-<down> # <insert> r
  <return> <insert> S-<down>

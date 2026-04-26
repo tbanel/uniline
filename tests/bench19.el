@@ -21,29 +21,31 @@
 
 (let ((uniline-infinite-up↑ nil))
   (uniline-bench
-   "<return>
- 3*<right> <insert> C-<down> 4*t
- <insert> C-<right> 6*y
- <insert> C-<up> 5*h
- <insert> C-<right> 4*g
- <insert> C-<down> 8*a
- <insert> C-<left> 14*b
- <insert> C-<up> 2*f
- <insert> C-<right> 4*f
- <home> 5*<down> 6*d
- <home> <down> 5*g
- <down> <home> 4*SPC 3*h
- <down> <home> 5*SPC 4*i
- <down> <home> 2*h
- <down> <left> 6*h
- <up> <left> h
- <home> M-< 19*<right> 2*i
- <down> <left> 2*i
- <down> <left> 2*i
- <down> <left> 4*i
- <up> <left> 2*i
- <up> <left> 2*i
- <up> <left> 2*i
+   ""
+   "<return> 3*<right>
+ <insert> C-<down>   tttt
+ <insert> C-<right>  yyyyyy
+ <insert> C-<up>     hhhhh
+ <insert> C-<right>  gggg
+ <insert> C-<down>   aaaaaaaa
+ <insert> C-<left>   bbbbbbbbbbbbbb
+ <insert> C-<up>     ff
+ <insert> C-<right>  ffff
+ <home> 5*<down> dddddd
+ <home>   <down> ggggg
+ <down>   <home> 4*SPC hhh
+ <down>   <home> 5*SPC iiii
+ <down>   <home> hh
+ <down>   <left> hhhhhh
+ <up>     <left> h
+ <home>
+ M-<   19*<right> ii
+ <down>   <left>  ii
+ <down>   <left>  ii
+ <down>   <left>  iiii
+ <up>     <left>  ii
+ <up>     <left>  ii
+ <up>     <left>  ii
  # <insert> c
  M-< <return> 3*<right> # <insert> c
  <return> <home> 12*<down> <end> C-a M-f <insert> c

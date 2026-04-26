@@ -24,7 +24,22 @@
 
 (let ((uniline-infinite-up↑ t))
   (uniline-bench
-   "<insert> s <right> <kp-add> <right> <right> <down> <right> <right> <right> <up> <up> <up> <right> <right> <right> <down> <down> # <right> <right> <right> <right> <right> <right> <up> <up> <right> <right> <right> <up> <up> <up> <up> <right> <right> <right> <right> <right> <down> <right> <right> <right> <right> <down> <down> <down> <down> <right> <right> <return> <right> <right> <right> <right> a a a <up> <left> <left> a a a a a a <up> <left> <left> <left> <left> a a a a a a SPC SPC SPC SPC a a a a <down> <left> <left> <left> a a <down> <left> <left> <left> <right> <insert> C-<left> a a a a a a a a a <right> <kp-subtract> <insert> c <return> <right> <right> <right> <right> <right> <right> <right> <right> <up> <up> r r r r <down> <right> <right> <right> <right> <right> <left> r r r r C-SPC <right> <right> <right> <right> <right> <up> <insert> <right> <right> <right> <up> <up> <right> <right> <right> <insert> R <kp-subtract> r <return> <down> <down> <down> <right> <right> <right> <right> <right> <right> <right> <right> <right> <right> <right> <right> <return> <right> <insert> C-<up> y y y y y <insert> C-<right> y y y"
+   ""
+   "<insert> s <right>
+ <kp-add> 2*<right> <down> 3*<right> 3*<up> 3*<right> 2*<down>
+ # 6*<right> 2*<up> 3*<right> 4*<up> 5*<right> <down> 4*<right> 4*<down> 2*<right>
+ <return> 4*<right> 3*a <up> 2*<left> 6*a <up> 4*<left> 6*a 4*SPC 4*a <down> 3*<left> 2*a <down> 3*<left> <right>
+ <insert> C-<left> 9*a <right>
+ <kp-subtract> <insert> c
+ <return> 8*<right> 2*<up> 4*r <down> 5*<right> <left> 4*r
+ C-SPC 5*<right> <up>
+ <insert> 3*<right> 2*<up> 3*<right>
+ <insert> R
+ <kp-subtract> r
+ <return> 3*<down> 12*<right>
+ <return> <right>
+ <insert> C-<up> 5*y
+ <insert> C-<right> 3*y"
    "\
                                                             yyy
                                                             y

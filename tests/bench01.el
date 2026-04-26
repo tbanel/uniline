@@ -21,6 +21,7 @@
 
 (let ((uniline-infinite-up↑ nil))
   (uniline-bench
+   ""
    "b RET c
  - 3*<right> <down> 5*<left> <up>
  C-SPC <down> 6*<right> <insert> <down> 11*<right> 2*RET

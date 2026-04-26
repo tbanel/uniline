@@ -20,6 +20,7 @@
 ;; along with this program.  If not, see <http://www.gnu.org/licenses/>.
 
 (uniline-bench
+ ""
  "<return> 3*<down> 10*<right>
  <kp-subtract>
  2*<up> 3*<right> <insert> a

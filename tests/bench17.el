@@ -20,6 +20,7 @@
 ;; along with this program.  If not, see <http://www.gnu.org/licenses/>.
 
 (uniline-bench
+ ""
  "3*<right> a b c
  C-SPC 3*C-b <insert>
  2*<left> <return>

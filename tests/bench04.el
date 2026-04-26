@@ -20,6 +20,7 @@
 ;; along with this program.  If not, see <http://www.gnu.org/licenses/>.
 
 (uniline-bench
+ ""
  "<return> <down> 4*<right> 2*<down> 4*<right> <down> <left>
  M
  <left>

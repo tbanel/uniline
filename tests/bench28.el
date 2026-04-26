@@ -21,8 +21,9 @@
 
 (let ((uniline-infinite-up↑ nil))
   (uniline-bench
- "2*a C-q <tab> C-q <tab> a C-q <tab> C-q <tab> a C-q <tab> C-q <tab> C-q <tab> C-q <tab> 4*SPC C-q <tab> C-q <tab> 3*SPC a C-q C-j
- C-p 2*C-k 29*C-y
+   "aa\t\ta\t\ta\t\t\t\t    \t\t   a
+"
+ "2*C-k 29*C-y
  M-< 5*<right> <down> 3*<right> <down> 2*<right>
  7*<right> 2*<down> 9*<left> <up> 16*<right> 2*<up> 12*<right> 3*<down> 10*<left>
  5*C-n 14*r <return>
