@@ -34,7 +34,6 @@ Uniline
 * Customization::
 * How Uniline behaves with its environment?::
 * Lisp API::
-* Mouse support::
 * Installation::
 * Related packages::
 * Author, contributors: Author contributors.
@@ -53,6 +52,9 @@ Gallery: pure UNICODE diagrams in Emacs
 * Draw electronic diagrams::
 * Explain Lisp lists::
 * Draw sketched objects::
+* Replace words with simple sketches::
+* Visualize floating point layouts::
+* Illustrate proportions::
 * Pure text::
 * Beware!::
 
@@ -112,6 +114,7 @@ Customization
 How Uniline behaves with its environment?
 
 * Language environment::
+* Mouse support::
 * Compatibility with Picture-mode::
 * Compatibility with Artist-mode::
 * Compatibility with Whitespace-mode::
@@ -139,6 +142,11 @@ Installation
 
 * use-package, the straightforward way: use-package the straightforward way.
 * Without use-package::
+
+Related packages
+
+* Emacs::
+* Non Emacs::
 
 
 
@@ -190,6 +198,9 @@ Draw diagrams like those:
 * Draw electronic diagrams::
 * Explain Lisp lists::
 * Draw sketched objects::
+* Replace words with simple sketches::
+* Visualize floating point layouts::
+* Illustrate proportions::
 * Pure text::
 * Beware!::
 
@@ -410,7 +421,7 @@ File: uniline.info,  Node: Explain Lisp lists,  Next: Draw sketched objects,  Pr
                ╵     ╵           ╵
 
 
-File: uniline.info,  Node: Draw sketched objects,  Next: Pure text,  Prev: Explain Lisp lists,  Up: Gallery pure UNICODE diagrams in Emacs
+File: uniline.info,  Node: Draw sketched objects,  Next: Replace words with simple sketches,  Prev: Explain Lisp lists,  Up: Gallery pure UNICODE diagrams in Emacs
 
 3.9 Draw sketched objects
 =========================
@@ -445,9 +456,77 @@ File: uniline.info,  Node: Draw sketched objects,  Next: Pure text,  Prev: Expla
      ▝▀▀▀▀▀▀▘        ▝▀▘        ▝▀▘      ▀▀▀▀▀▀▀▀▀▀▀▀▀
 
 
-File: uniline.info,  Node: Pure text,  Next: Beware!,  Prev: Draw sketched objects,  Up: Gallery pure UNICODE diagrams in Emacs
+File: uniline.info,  Node: Replace words with simple sketches,  Next: Visualize floating point layouts,  Prev: Draw sketched objects,  Up: Gallery pure UNICODE diagrams in Emacs
 
-3.10 Pure text
+3.10 Replace words with simple sketches
+=======================================
+
+
+
+
+     ╭──────────────────────╮
+     │01:23╺━━━━●─────╴04:56│
+     │■□□□    ◁▐ ▌▷    ■■■□□│
+     ╰──────────────────────╯
+
+
+
+File: uniline.info,  Node: Visualize floating point layouts,  Next: Illustrate proportions,  Prev: Replace words with simple sketches,  Up: Gallery pure UNICODE diagrams in Emacs
+
+3.11 Visualize floating point layouts
+=====================================
+
+
+
+
+        ╭────8 bits╶────╮╭─────────────────23 bits╶────────────────────╮
+     ╭─╮╭─┬─┬─┬─┬─┬─┬─┬─╮╭─┬─┬─┬─┬─┬─┬─┬─┬─┬─┬─┬─┬─┬─┬─┬─┬─┬─┬─┬─┬─┬─┬─╮
+     │s││e│e│e│e│e│e│e│e││f│f│f│f│f│f│f│f│f│f│f│f│f│f│f│f│f│f│f│f│f│f│f│
+     ╰─╯╰─┴─┴─┴─┴─┴─┴─┴─╯╰─┴─┴─┴─┴─┴─┴─┴─┴─┴─┴─┴─┴─┴─┴─┴─┴─┴─┴─┴─┴─┴─┴─╯
+      │ ╰──╮exponent╭───╯╰────────────────╮fraction╭───────────────────╯
+      │    ╰────────╯                     ╰────────╯
+      ╰─╮sign╭╴
+        ╰────╯           IEEE 754-2008 32 bits floating point
+                         ╺━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━╸
+
+        ╭─4bits─╮╭3bits╮
+     ╭─╮╭─┬─┬─┬─╮╭─┬─┬─╮
+     │s││e│e│e│e││f│f│f│
+     ╰─╯╰─┴─┴─┴─╯╰─┴─┴─╯
+      │ ╰╮expo╭─╯╰╮frc╭╯
+      │  ╰────╯   ╰───╯
+      ╰─╮sign╭╴           One byte floating point
+        ╰────╯            ╺━━━━━━━━━━━━━━━━━━━━━╸
+
+
+
+File: uniline.info,  Node: Illustrate proportions,  Next: Pure text,  Prev: Visualize floating point layouts,  Up: Gallery pure UNICODE diagrams in Emacs
+
+3.12 Illustrate proportions
+===========================
+
+
+
+
+         0         1         2         3         4         5
+         │    ╷    │    ╷    │    ╷    │    ╷    │    ╷    │
+     5───╬╧╧╧╧╧╧╧╧╧╧╧╧╧╧╧╧╧╧╧╧╧╧╧╧╧╧╧╧╧╧╧╧╧╧╧╧╧╧╧╧╧╧╧╧╧╧╧╧╧╧╧
+        ╶╢
+     4───╢        ╭───────╮              2.4 units
+        ╶╢        │░░░░░░░│      ╭┄┄┄┄┄┄┄┄┄┄┄┄┄┄┄┄┄┄┄┄┄┄┄╮
+     3───╢        │░░░░░░░│
+        ╶╢        ╰───────╯      ╭───────────────────────╮
+     2───╢                       │░░░░░░░░░░░░░░░░░░░░░░░│
+        ╶╢        ╰┄┄┄┄┄┄┄╯      │░░░░░░░░░░░░░░░░░░░░░░░│
+     1───╢        0.8 units      │░░░░░░░░░░░░░░░░░░░░░░░│
+        ╶╢                       ╰───────────────────────╯
+     0───╜
+
+
+
+File: uniline.info,  Node: Pure text,  Next: Beware!,  Prev: Illustrate proportions,  Up: Gallery pure UNICODE diagrams in Emacs
+
+3.13 Pure text
 ==============
 
 Those diagrams are pure text.  There is nothing graphic.  They are
@@ -465,7 +544,7 @@ draw lines while you move the cursor with keyboard arrows.
 
 File: uniline.info,  Node: Beware!,  Prev: Pure text,  Up: Gallery pure UNICODE diagrams in Emacs
 
-3.11 Beware!
+3.14 Beware!
 ============
 
 If you see those diagrams miss-aligned, most likely the font used to
@@ -1808,6 +1887,7 @@ File: uniline.info,  Node: How Uniline behaves with its environment?,  Next: Lis
 * Menu:
 
 * Language environment::
+* Mouse support::
 * Compatibility with Picture-mode::
 * Compatibility with Artist-mode::
 * Compatibility with Whitespace-mode::
@@ -1821,7 +1901,7 @@ File: uniline.info,  Node: How Uniline behaves with its environment?,  Next: Lis
 * Compatibility with ASCIIFlow::
 
 
-File: uniline.info,  Node: Language environment,  Next: Compatibility with Picture-mode,  Up: How Uniline behaves with its environment?
+File: uniline.info,  Node: Language environment,  Next: Mouse support,  Up: How Uniline behaves with its environment?
 
 13.1 Language environment
 =========================
@@ -1883,9 +1963,30 @@ intractable.
 value cancels the patch to ‘char-width-table’ by Uniline.
 
 
-File: uniline.info,  Node: Compatibility with Picture-mode,  Next: Compatibility with Artist-mode,  Prev: Language environment,  Up: How Uniline behaves with its environment?
+File: uniline.info,  Node: Mouse support,  Next: Compatibility with Picture-mode,  Prev: Language environment,  Up: How Uniline behaves with its environment?
 
-13.2 Compatibility with Picture-mode
+13.2 Mouse support
+==================
+
+The out-of-the-box mouse support of ‘Emacs’ works perfectly.  Except
+when the mouse clicks on a position outside the buffer.  This happens
+when clicking past the end of a too short line, or past the end of the
+buffer.
+
+   To handle those cases, a few standard ‘Emacs’ functions have been
+extended to add blank characters or blank lines.  Doing so, the
+mouse-click now falls on a valid part of the buffer.  Of course, those
+extensions are only active on ‘uniline-mode’ activated buffers.
+
+   Beware that when the window is at the same time zoomed with ‘C-x C-+
+C--’ AND horizontally scrolled with ‘C-x <’, the cursor positioning is
+not accurate.  This is due to ‘Emacs’ limitations and bugs.  Just click
+twice to fix the inaccuracy.
+
+
+File: uniline.info,  Node: Compatibility with Picture-mode,  Next: Compatibility with Artist-mode,  Prev: Mouse support,  Up: How Uniline behaves with its environment?
+
+13.3 Compatibility with Picture-mode
 ====================================
 
 ‘Picture-mode’ and ‘uniline-mode’ are compatible.  Their features
@@ -1905,7 +2006,7 @@ overlap somehow:
 
 File: uniline.info,  Node: Compatibility with Artist-mode,  Next: Compatibility with Whitespace-mode,  Prev: Compatibility with Picture-mode,  Up: How Uniline behaves with its environment?
 
-13.3 Compatibility with Artist-mode
+13.4 Compatibility with Artist-mode
 ===================================
 
 ‘Artist-mode’ and ‘uniline-mode’ are mostly incompatible.  This is
@@ -1917,7 +2018,7 @@ large part of ‘uniline-mode’ features.
 
 File: uniline.info,  Node: Compatibility with Whitespace-mode,  Next: Compatibility with Org Mode,  Prev: Compatibility with Artist-mode,  Up: How Uniline behaves with its environment?
 
-13.4 Compatibility with Whitespace-mode
+13.5 Compatibility with Whitespace-mode
 =======================================
 
 ‘Whitespace-mode’ and ‘uniline-mode’ are mostly compatible.
@@ -1939,7 +2040,7 @@ attached to newlines.  And ‘uniline-mode’ makes heavy use of
 
 File: uniline.info,  Node: Compatibility with Org Mode,  Next: Org Mode and LaTex,  Prev: Compatibility with Whitespace-mode,  Up: How Uniline behaves with its environment?
 
-13.5 Compatibility with Org Mode
+13.6 Compatibility with Org Mode
 ================================
 
 You may want to customize the shift extension mode in ‘Org Mode’.  This
@@ -1976,7 +2077,7 @@ If a source block is created with the ‘Uniline’ language (‘Uniline’ is
 
 File: uniline.info,  Node: Org Mode and LaTex,  Next: What about \t tabs?,  Prev: Compatibility with Org Mode,  Up: How Uniline behaves with its environment?
 
-13.6 Org Mode and LaTex
+13.7 Org Mode and LaTex
 =======================
 
 Use the ‘pmboxdraw’ LaTex module.  This gives limited support for "box
@@ -2038,7 +2139,7 @@ for rounded corners.
 
 File: uniline.info,  Node: What about \t tabs?,  Next: What about ^L page separation?,  Prev: Org Mode and LaTex,  Up: How Uniline behaves with its environment?
 
-13.7 What about ‘\t’ tabs?
+13.8 What about ‘\t’ tabs?
 ==========================
 
 Some files may contain tabs (the character ‘\t’).  Those include
@@ -2058,7 +2159,7 @@ moving them.  This avoids some rare instances of misalignment.
 
 File: uniline.info,  Node: What about ^L page separation?,  Next: Emacs on the Linux console,  Prev: What about \t tabs?,  Up: How Uniline behaves with its environment?
 
-13.8 What about ‘^L’ page separation?
+13.9 What about ‘^L’ page separation?
 =====================================
 
 ‘Uniline’ does not work well with ‘^L’ (page separation) character.  Nor
@@ -2072,8 +2173,8 @@ characters occupy twice the width of a normal character.
 
 File: uniline.info,  Node: Emacs on the Linux console,  Next: Emacs on a graphical terminal emulator,  Prev: What about ^L page separation?,  Up: How Uniline behaves with its environment?
 
-13.9 Emacs on the Linux console
-===============================
+13.10 Emacs on the Linux console
+================================
 
 Linux consoles are the 7 non-graphic screens which can be accessed
 usually typing ‘C-M-F1’, ‘C-M-F2’, and so on.  Such a screen is also
@@ -2093,7 +2194,7 @@ solution can be found here:
 
 File: uniline.info,  Node: Emacs on a graphical terminal emulator,  Next: Emacs on Windows,  Prev: Emacs on the Linux console,  Up: How Uniline behaves with its environment?
 
-13.10 Emacs on a graphical terminal emulator
+13.11 Emacs on a graphical terminal emulator
 ============================================
 
 This is the ‘Emacs’ launched from a terminal typing ‘emacs -nw’.  In
@@ -2114,7 +2215,7 @@ file:
 
 File: uniline.info,  Node: Emacs on Windows,  Next: Compatibility with ASCIIFlow,  Prev: Emacs on a graphical terminal emulator,  Up: How Uniline behaves with its environment?
 
-13.11 Emacs on Windows
+13.12 Emacs on Windows
 ======================
 
 On Windows the only native mono-spaced fonts are ‘Lucida Console’ and
@@ -2131,7 +2232,7 @@ unaligned result though.  They should be avoided under ‘Consolas’:
 
 File: uniline.info,  Node: Compatibility with ASCIIFlow,  Prev: Emacs on Windows,  Up: How Uniline behaves with its environment?
 
-13.12 Compatibility with ASCIIFlow
+13.13 Compatibility with ASCIIFlow
 ==================================
 
 ASCIIFlow is a ASCII-UNICODE diagram drawing tool (as Uniline).  It
@@ -2154,7 +2255,7 @@ ASCIIFlow:
    • Edit with ASCIIFlow
 
 
-File: uniline.info,  Node: Lisp API,  Next: Mouse support,  Prev: How Uniline behaves with its environment?,  Up: Top
+File: uniline.info,  Node: Lisp API,  Next: Installation,  Prev: How Uniline behaves with its environment?,  Up: Top
 
 14 Lisp API
 ***********
@@ -2399,30 +2500,9 @@ A drawing in a rectangular selection may have its style changed:
    The above functions require a region to be marked.
 
 
-File: uniline.info,  Node: Mouse support,  Next: Installation,  Prev: Lisp API,  Up: Top
+File: uniline.info,  Node: Installation,  Next: Related packages,  Prev: Lisp API,  Up: Top
 
-15 Mouse support
-****************
-
-The out-of-the-box mouse support of ‘Emacs’ works perfectly.  Except
-when the mouse clicks on a position outside the buffer.  This happens
-when clicking past the end of a too short line, or past the end of the
-buffer.
-
-   To handle those cases, a few standard ‘Emacs’ functions have been
-extended to add blank characters or blank lines.  Doing so, the
-mouse-click now falls on a valid part of the buffer.  Of course, those
-extensions are only active on ‘uniline-mode’ activated buffers.
-
-   Beware that when the window is at the same time zoomed with ‘C-x C-+
-C--’ AND horizontally scrolled with ‘C-x <’, the cursor positioning is
-not accurate.  This is due to ‘Emacs’ limitations and bugs.  Just click
-twice to fix the inaccuracy.
-
-
-File: uniline.info,  Node: Installation,  Next: Related packages,  Prev: Mouse support,  Up: Top
-
-16 Installation
+15 Installation
 ***************
 
 * Menu:
@@ -2433,7 +2513,7 @@ File: uniline.info,  Node: Installation,  Next: Related packages,  Prev: Mouse s
 
 File: uniline.info,  Node: use-package the straightforward way,  Next: Without use-package,  Up: Installation
 
-16.1 use-package, the straightforward way
+15.1 use-package, the straightforward way
 =========================================
 
 The ‘use-package’ library became the de-facto standard to manage
@@ -2501,7 +2581,7 @@ options:
 
 File: uniline.info,  Node: Without use-package,  Prev: use-package the straightforward way,  Up: Installation
 
-16.2 Without use-package
+15.2 Without use-package
 ========================
 
 Download the package from Melpa:
@@ -2544,13 +2624,21 @@ launched, rather than deferred until invoked.
 
 File: uniline.info,  Node: Related packages,  Next: Author contributors,  Prev: Installation,  Up: Top
 
-17 Related packages
+16 Related packages
 *******************
 
-   • ‘artist-mode’: the ASCII art mode built into ‘Emacs’.
+* Menu:
 
-   • ‘ascii-art-to-unicode’: as the name suggest, converts ASCII
-     drawings to UNICODE, giving results similar to those of ‘Uniline’.
+* Emacs::
+* Non Emacs::
+
+
+File: uniline.info,  Node: Emacs,  Next: Non Emacs,  Up: Related packages
+
+16.1 Emacs
+==========
+
+   • ‘artist-mode’: the ASCII art mode built into ‘Emacs’.
 
    • ‘picture-mode’: as in ‘Uniline’, the buffer is infinite in east &
      south directions.
@@ -2565,21 +2653,22 @@ File: uniline.info,  Node: Related packages,  Next: Author contributors,  Prev: 
      characters (actually they are still in ASCII).
 
    • ‘boxes’: draws artistic boxes around text, with nice looking
-     unicorns, flowers, parchments, all in ASCII art.
+     unicorns, flowers, parchments, all in ASCII art.  Melpa.  Interface
+     to external utility.
 
    • ‘org-drawio’: a bridge between the Draw.Io editor and ‘Emacs’,
      producing drawing similar to those of ‘Uniline’, but in ‘.svg’.
 
-   • ‘syntree’: draws ASCII trees on-the-fly from description.
+   • ‘syntree’: draws ASCII trees on-the-fly from description.  Melpa.
 
    • ‘unicode-enbox’: create a UNICODE box around a text; input and
-     output are strings.
+     output are strings.  Melpa.
 
    • ‘unicode-fonts’: in ‘Emacs’, helps alleviate the lack of full
      UNICODE coverage of most fonts.
 
    • ‘org-superstar’: prettify headings and plain lists in Org Mode,
-     using UNICODE glyphs.
+     using UNICODE glyphs.  Melpa.
 
    • ‘charmap’: UNICODE table viewer for ‘Emacs’.
 
@@ -2587,36 +2676,26 @@ File: uniline.info,  Node: Related packages,  Next: Author contributors,  Prev: 
      completion prompt.
 
    • ‘list-unicode-display’: list all UNICODE characters, or a selection
-     of them.
+     of them.  Melpa.
 
-   • ‘show-font’: show font features in a buffer.
+   • ‘show-font’: show font features in a buffer.  Elpa.
 
    • ‘ob-svgbob’: convert your ascii diagram scribbles into happy little
-     SVG
+     SVG.  Melpa.
 
-   • ‘el-easydraw’: a full featured SVG editor right inside your ‘Emacs’
-
-   • ‘asciiflow’: (not ‘Emacs’) draw on the web, then copy-paste your
-     UNICODE text
+   • ‘el-easydraw’: a full featured SVG editor right inside your
+     ‘Emacs’.  Impressive!  GitHub.
 
    • ‘ascii-draw’: like ‘asciiflow’ with Unicodes.
 
-   • ‘dot-to-ascii.ggerganov.com:’ (not ‘Emacs’) describe your schema in
-     the Graphviz language, and copy-past your UNICODE text.
-
-   • ‘monosketch’: (not ‘Emacs’) draw on the web, then copy-paste your
-     UNICODE text.
-
    • ‘ibm-box-drawing-hydra.el’: keyboard interface to insert UNICODE
-     box-drawing characters one at a time.
-
-   • ‘excalidraw.com’: inline drawing, but not in Unicode or Ascii.
+     box-drawing characters one at a time.  GitHub Gist.
 
    • ‘org-excalidraw’: integrate SVG images generated by excalidraw into
      Org Mode.
 
    • ‘rcd-box’: create tables surrounded by box-drawing characters from
-     Lisp descriptions.
+     Lisp descriptions.  At hyperscope.link.
 
    • ‘ob-diagram’: generate various diagrams using diagrams backend.
 
@@ -2626,16 +2705,47 @@ File: uniline.info,  Node: Related packages,  Next: Author contributors,  Prev: 
 
    • ‘make-box.el’: box around part of a buffer.
 
-   • ‘vim drawit ascii diagrams’: in Vim, in ASCII.
-
-   • ‘MarkDeep’: (Casual Effects): write in Markdown, render on the Web
-     on the fly.  Uniline may be used to author part of the Markdown
-     source.
-
    • ‘org-utf-to-xetex’: export Org-Mode utf-8 documents to various
      formats preserving smileys and other Unicode characters.
 
-   • ‘image-to-ascii’: turns a photo into ASCII.
+   • ‘dag-draw.el’: in Emacs program diagrams using Lisp, the output is
+     Unicode.
+
+   • ‘https://mbork.pl/2025-11-10_ASCII_art_timeline_diagrams’: not a
+     package, just an example of how easy is to draw time-series in
+     Ascii with Emacs.
+
+   • ‘ob-pikchr.el’: integration of the excellent ‘pikchr’ in Emacs
+     Org-Mode.
+
+   • ‘figlet’: makes large letters out of ordinary text, in text.  There
+     is an Emacs integration by J.  Kotta.
+
+
+File: uniline.info,  Node: Non Emacs,  Prev: Emacs,  Up: Related packages
+
+16.2 Non Emacs
+==============
+
+   • ‘asciiflow’: (not ‘Emacs’) draw on the web, then copy-paste your
+     UNICODE text.
+
+   • ‘dot-to-ascii.ggerganov.com:’ (not ‘Emacs’) describe your schema in
+     the Graphviz language, and copy-past your UNICODE text.
+
+   • ‘monosketch’: (not ‘Emacs’) draw on the web, then copy-paste your
+     UNICODE text.
+
+   • ‘excalidraw.com’: inline drawing, but not in Unicode or Ascii.  Web
+     interface.
+
+   • ‘vim drawit ascii diagrams’: in Vim, in ASCII.
+
+   • ‘MarkDeep’: (Casual Effects): write in Markdown, render on the Web
+     on the fly.  Impressive!  Uniline may be used to author part of the
+     Markdown source.
+
+   • ‘image-to-ascii’: turns a photo into ASCII.  At www.asciiart.eu.
 
    • ‘ascii-maze-generator’: web-inline generator of mazes, with the
      same lines drawn by Uniline.
@@ -2655,17 +2765,9 @@ File: uniline.info,  Node: Related packages,  Next: Author contributors,  Prev: 
    • ‘d2’, ‘ob-d2’: think of Mermaid to convert diagram textual
      descriptions to SVG.
 
-   • ‘dag-draw.el’: in Emacs program diagrams using Lisp, the output is
-     Unicode.
-
-   • ‘https://mbork.pl/2025-11-10_ASCII_art_timeline_diagrams’: not a
-     package, just an example of how easy is to draw time-series in
-     Ascii with Emacs.
-
    • ‘pikchr’: describe objects and their relationship in Markdown,
-     render in Unicode.
-
-   • ‘ob-pikchr.el’: integration of ‘pikchr’ in Emacs Org-Mode.
+     render in Unicode.  Very precise textual description of graphic
+     obbjects layout.
 
    • ‘GoAT’: Go-based Text-Art to SVG refinement.
 
@@ -2675,13 +2777,10 @@ File: uniline.info,  Node: Related packages,  Next: Author contributors,  Prev: 
    • ‘Durdraw’: an Ascii, Unicode and Ansi art editor for Unix-like
      systems.  With colors.
 
-   • ‘figlet’: makes large letters out of ordinary text, in text.  There
-     is an Emacs integration by J.  Kotta.
-
 
 File: uniline.info,  Node: Author contributors,  Next: License,  Prev: Related packages,  Up: Top
 
-18 Author, contributors
+17 Author, contributors
 ***********************
 
    • Thierry Banel, author
@@ -2742,7 +2841,7 @@ File: uniline.info,  Node: Author contributors,  Next: License,  Prev: Related p
 
 File: uniline.info,  Node: License,  Prev: Author contributors,  Up: Top
 
-19 License
+18 License
 **********
 
 Copyright (C) 2024-2026 Thierry Banel
@@ -2764,90 +2863,95 @@ along with this program.  If not, see <http://www.gnu.org/licenses/>.
 
 Tag Table:
 Node: Top171
-Node: Getting started in 10 seconds3126
-Node: New3732
-Node: Gallery pure UNICODE diagrams in Emacs4010
-Node: Document a command4596
-Node: Connect boxes with arrows5129
-Node: Explain decisions trees6449
-Node: Draw lines or blocks7955
-Node: Outline the General Relativity and the Schrödinger's equations9497
-Node: Explain the structure of a sentence in a foreign language12186
-Node: Draw electronic diagrams13772
-Node: Explain Lisp lists15177
-Node: Draw sketched objects16360
-Node: Pure text18325
-Node: Beware!19059
-Node: A minor mode for drawing19642
-Node: Minor mode19954
-Node: Draw lines by moving the cursor20516
-Node: Infinite ∞ buffer21108
-Node: Brush style22389
-Node: Text direction24974
-Node: The <insert> key25524
-Node: Glyphs ▷ ▶ → □ ◆ ╮─ insertion & modification26524
-Node: Arrows glyphs ▷ ▶ → ▹ ▸ ↔27241
-Node: Intersection glyphs ■ ◆ ●28813
-Node: Fine tweaking of lines31643
-Node: Rectangular actions33526
-Node: Drawing a rectangle34876
-Node: Filling a rectangle36527
-Node: Moving a rectangular region37295
-Node: Copying killing yanking a rectangular region39864
-Node: Dashed lines and other styles41059
-Node: ASCII to UNICODE45184
-Node: Long range actions contour and flood-fill48867
-Node: Tracing a contour49130
-Node: Flood-fill51044
-Node: Macros52818
-Node: Which fonts?56209
-Node: Recommended fonts56470
-Node: Use case mixing fonts58560
-Node: Hydra or Transient?60557
-Node: Selecting Hydra or Transient61546
-Node: Instantly selecting Hydra or Transient62664
-Node: One-liner menus63630
-Node: The Hydra interface65568
-Node: The Transient interface66241
-Node: Customization66779
-Node: Interface type67647
-Node: Insert key68173
-Node: Maximum steps when drawing a contour68955
-Node: Cursor type69285
-Node: Hint style69610
-Node: Welcome message visibility69957
-Node: Line spacing70338
-Node: Font71804
-Node: Upward infiniteness ∞72320
-Node: How Uniline behaves with its environment?72850
-Node: Language environment73449
-Node: Compatibility with Picture-mode75854
-Node: Compatibility with Artist-mode76801
-Node: Compatibility with Whitespace-mode77320
-Node: Compatibility with Org Mode78220
-Node: Org Mode and LaTex79641
-Node: What about \t tabs?81501
-Node: What about ^L page separation?82302
-Node: Emacs on the Linux console82925
-Node: Emacs on a graphical terminal emulator83885
-Node: Emacs on Windows84815
-Node: Compatibility with ASCIIFlow85496
-Node: Lisp API86452
-Node: Move the cursor87002
-Node: Brush87433
-Node: Example Lisp function to draw a plus sign88302
-Node: Long range actions (contour flood-fill rectangle)90138
-Node: Constants91076
-Node: Macro and text direction91491
-Node: Insert and tweak glyphs92426
-Node: Change to alternate styles93539
-Node: Mouse support94448
-Node: Installation95332
-Node: use-package the straightforward way95576
-Node: Without use-package97961
-Node: Related packages99522
-Node: Author contributors104585
-Node: License106622
+Node: Getting started in 10 seconds3272
+Node: New3878
+Node: Gallery pure UNICODE diagrams in Emacs4156
+Node: Document a command4845
+Node: Connect boxes with arrows5378
+Node: Explain decisions trees6698
+Node: Draw lines or blocks8204
+Node: Outline the General Relativity and the Schrödinger's equations9746
+Node: Explain the structure of a sentence in a foreign language12435
+Node: Draw electronic diagrams14021
+Node: Explain Lisp lists15426
+Node: Draw sketched objects16609
+Node: Replace words with simple sketches18599
+Node: Visualize floating point layouts19182
+Node: Illustrate proportions21201
+Node: Pure text22677
+Node: Beware!23412
+Node: A minor mode for drawing23995
+Node: Minor mode24307
+Node: Draw lines by moving the cursor24869
+Node: Infinite ∞ buffer25461
+Node: Brush style26742
+Node: Text direction29327
+Node: The <insert> key29877
+Node: Glyphs ▷ ▶ → □ ◆ ╮─ insertion & modification30877
+Node: Arrows glyphs ▷ ▶ → ▹ ▸ ↔31594
+Node: Intersection glyphs ■ ◆ ●33166
+Node: Fine tweaking of lines35996
+Node: Rectangular actions37879
+Node: Drawing a rectangle39229
+Node: Filling a rectangle40880
+Node: Moving a rectangular region41648
+Node: Copying killing yanking a rectangular region44217
+Node: Dashed lines and other styles45412
+Node: ASCII to UNICODE49537
+Node: Long range actions contour and flood-fill53220
+Node: Tracing a contour53483
+Node: Flood-fill55397
+Node: Macros57171
+Node: Which fonts?60562
+Node: Recommended fonts60823
+Node: Use case mixing fonts62913
+Node: Hydra or Transient?64910
+Node: Selecting Hydra or Transient65899
+Node: Instantly selecting Hydra or Transient67017
+Node: One-liner menus67983
+Node: The Hydra interface69921
+Node: The Transient interface70594
+Node: Customization71132
+Node: Interface type72000
+Node: Insert key72526
+Node: Maximum steps when drawing a contour73308
+Node: Cursor type73638
+Node: Hint style73963
+Node: Welcome message visibility74310
+Node: Line spacing74691
+Node: Font76157
+Node: Upward infiniteness ∞76673
+Node: How Uniline behaves with its environment?77203
+Node: Language environment77820
+Node: Mouse support80207
+Node: Compatibility with Picture-mode81164
+Node: Compatibility with Artist-mode82104
+Node: Compatibility with Whitespace-mode82623
+Node: Compatibility with Org Mode83523
+Node: Org Mode and LaTex84944
+Node: What about \t tabs?86804
+Node: What about ^L page separation?87605
+Node: Emacs on the Linux console88228
+Node: Emacs on a graphical terminal emulator89190
+Node: Emacs on Windows90120
+Node: Compatibility with ASCIIFlow90801
+Node: Lisp API91757
+Node: Move the cursor92306
+Node: Brush92737
+Node: Example Lisp function to draw a plus sign93606
+Node: Long range actions (contour flood-fill rectangle)95442
+Node: Constants96380
+Node: Macro and text direction96795
+Node: Insert and tweak glyphs97730
+Node: Change to alternate styles98843
+Node: Installation99752
+Node: use-package the straightforward way99991
+Node: Without use-package102376
+Node: Related packages103937
+Node: Emacs104118
+Node: Non Emacs107480
+Node: Author contributors109392
+Node: License111429
 
 End Tag Table
 

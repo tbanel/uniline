@@ -52,6 +52,9 @@ Type =<INS> *=.
   - [[#draw-electronic-diagrams][Draw electronic diagrams]]
   - [[#explain-lisp-lists][Explain Lisp lists]]
   - [[#draw-sketched-objects][Draw sketched objects]]
+  - [[#replace-words-with-simple-sketches][Replace words with simple sketches]]
+  - [[#visualize-floating-point-layouts][Visualize floating point layouts]]
+  - [[#illustrate-proportions][Illustrate proportions]]
   - [[#pure-text][Pure text]]
   - [[#beware][Beware!]]
 - [[#a-minor-mode-for-drawing][A minor mode for drawing]]
@@ -97,6 +100,7 @@ Type =<INS> *=.
   - [[#upward-infiniteness-][Upward infiniteness ∞]]
 - [[#how-uniline-behaves-with-its-environment][How Uniline behaves with its environment?]]
   - [[#language-environment][Language environment]]
+  - [[#mouse-support][Mouse support]]
   - [[#compatibility-with-picture-mode][Compatibility with Picture-mode]]
   - [[#compatibility-with-artist-mode][Compatibility with Artist-mode]]
   - [[#compatibility-with-whitespace-mode][Compatibility with Whitespace-mode]]
@@ -117,11 +121,12 @@ Type =<INS> *=.
   - [[#macro-and-text-direction][Macro and text direction]]
   - [[#insert-and-tweak-glyphs][Insert and tweak glyphs]]
   - [[#change-to-alternate-styles][Change to alternate styles]]
-- [[#mouse-support][Mouse support]]
 - [[#installation][Installation]]
   - [[#use-package-the-straightforward-way][use-package, the straightforward way]]
   - [[#without-use-package][Without use-package]]
 - [[#related-packages][Related packages]]
+  - [[#emacs][Emacs]]
+  - [[#non-emacs][Non Emacs]]
 - [[#author-contributors][Author, contributors]]
 - [[#license][License]]
 :END:
@@ -393,6 +398,77 @@ and page 9╶──────────────╯
   ┃┃               ┃┃        ┃┃       │▒▒▒▒▒▒▒▒▒▒▒│
   ┃┃               ┃┃        ┃┃       ╰───────────╯
   ▝▀▀▀▀▀▀▘        ▝▀▘        ▝▀▘      ▀▀▀▀▀▀▀▀▀▀▀▀▀
+#+end_example
+
+** Replace words with simple sketches
+:PROPERTIES:
+:CUSTOM_ID: replace-words-with-simple-sketches
+:END:
+
+[[file:images/music-player.png]]
+
+#+begin_example
+
+   ╭──────────────────────╮
+   │01:23╺━━━━●─────╴04:56│
+   │■□□□    ◁▐ ▌▷    ■■■□□│
+   ╰──────────────────────╯
+
+#+end_example
+
+** Visualize floating point layouts
+:PROPERTIES:
+:CUSTOM_ID: visualize-floating-point-layouts
+:END:
+
+[[file:images/floating-point-layout.png]]
+
+#+begin_example
+
+     ╭────8 bits╶────╮╭─────────────────23 bits╶────────────────────╮
+  ╭─╮╭─┬─┬─┬─┬─┬─┬─┬─╮╭─┬─┬─┬─┬─┬─┬─┬─┬─┬─┬─┬─┬─┬─┬─┬─┬─┬─┬─┬─┬─┬─┬─╮
+  │s││e│e│e│e│e│e│e│e││f│f│f│f│f│f│f│f│f│f│f│f│f│f│f│f│f│f│f│f│f│f│f│
+  ╰─╯╰─┴─┴─┴─┴─┴─┴─┴─╯╰─┴─┴─┴─┴─┴─┴─┴─┴─┴─┴─┴─┴─┴─┴─┴─┴─┴─┴─┴─┴─┴─┴─╯
+   │ ╰──╮exponent╭───╯╰────────────────╮fraction╭───────────────────╯
+   │    ╰────────╯                     ╰────────╯
+   ╰─╮sign╭╴
+     ╰────╯           IEEE 754-2008 32 bits floating point
+                      ╺━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━╸
+
+     ╭─4bits─╮╭3bits╮
+  ╭─╮╭─┬─┬─┬─╮╭─┬─┬─╮
+  │s││e│e│e│e││f│f│f│
+  ╰─╯╰─┴─┴─┴─╯╰─┴─┴─╯
+   │ ╰╮expo╭─╯╰╮frc╭╯
+   │  ╰────╯   ╰───╯
+   ╰─╮sign╭╴           One byte floating point
+     ╰────╯            ╺━━━━━━━━━━━━━━━━━━━━━╸
+
+#+end_example
+
+** Illustrate proportions
+:PROPERTIES:
+:CUSTOM_ID: illustrate-proportions
+:END:
+
+[[file:images/rulers.png]]
+
+#+begin_example
+
+       0         1         2         3         4         5
+       │    ╷    │    ╷    │    ╷    │    ╷    │    ╷    │
+   5───╬╧╧╧╧╧╧╧╧╧╧╧╧╧╧╧╧╧╧╧╧╧╧╧╧╧╧╧╧╧╧╧╧╧╧╧╧╧╧╧╧╧╧╧╧╧╧╧╧╧╧╧
+      ╶╢
+   4───╢        ╭───────╮              2.4 units
+      ╶╢        │░░░░░░░│      ╭┄┄┄┄┄┄┄┄┄┄┄┄┄┄┄┄┄┄┄┄┄┄┄╮
+   3───╢        │░░░░░░░│
+      ╶╢        ╰───────╯      ╭───────────────────────╮
+   2───╢                       │░░░░░░░░░░░░░░░░░░░░░░░│
+      ╶╢        ╰┄┄┄┄┄┄┄╯      │░░░░░░░░░░░░░░░░░░░░░░░│
+   1───╢        0.8 units      │░░░░░░░░░░░░░░░░░░░░░░░│
+      ╶╢                       ╰───────────────────────╯
+   0───╜
+
 #+end_example
 
 ** Pure text
@@ -1753,6 +1829,24 @@ environment is intractable.
 In case of something, re-setting the language environment to its same
 value cancels the patch to =char-width-table= by Uniline.
 
+** Mouse support
+:PROPERTIES:
+:CUSTOM_ID: mouse-support
+:END:
+The out-of-the-box mouse support of =Emacs= works perfectly. Except when
+the mouse clicks on a position outside the buffer. This happens when
+clicking past the end of a too short line, or past the end of the buffer.
+
+To handle those cases, a few standard =Emacs= functions have been
+extended to add blank characters or blank lines. Doing so, the
+mouse-click now falls on a valid part of the buffer. Of course, those
+extensions are only active on =uniline-mode= activated buffers.
+
+Beware that when the window is at the same time zoomed with =C-x C-+
+C--= AND horizontally scrolled with =C-x <=, the cursor positioning is
+not accurate. This is due to =Emacs= limitations and bugs. Just click
+twice to fix the inaccuracy.
+
 ** Compatibility with Picture-mode
 :PROPERTIES:
 :CUSTOM_ID: compatibility-with-picture-mode
@@ -2239,24 +2333,6 @@ A drawing in a rectangular selection may have its style changed:
 
 The above functions require a region to be marked.
 
-* Mouse support
-:PROPERTIES:
-:CUSTOM_ID: mouse-support
-:END:
-The out-of-the-box mouse support of =Emacs= works perfectly. Except when
-the mouse clicks on a position outside the buffer. This happens when
-clicking past the end of a too short line, or past the end of the buffer.
-
-To handle those cases, a few standard =Emacs= functions have been
-extended to add blank characters or blank lines. Doing so, the
-mouse-click now falls on a valid part of the buffer. Of course, those
-extensions are only active on =uniline-mode= activated buffers.
-
-Beware that when the window is at the same time zoomed with =C-x C-+
-C--= AND horizontally scrolled with =C-x <=, the cursor positioning is
-not accurate. This is due to =Emacs= limitations and bugs. Just click
-twice to fix the inaccuracy.
-
 * Installation
 :PROPERTIES:
 :CUSTOM_ID: installation
@@ -2393,10 +2469,12 @@ launched, rather than deferred until invoked.
 :CUSTOM_ID: related-packages
 :END:
 
-- =artist-mode=: the ASCII art mode built into =Emacs=.
+** Emacs
+:PROPERTIES:
+:CUSTOM_ID: emacs
+:END:
 
-- =ascii-art-to-unicode=: as the name suggest, converts ASCII drawings
-  to UNICODE, giving results similar to those of =Uniline=.
+- =artist-mode=: the ASCII art mode built into =Emacs=.
 
 - =picture-mode=: as in =Uniline=, the buffer is infinite in east & south
   directions.
@@ -2411,21 +2489,22 @@ launched, rather than deferred until invoked.
   characters (actually they are still in ASCII).
 
 - =boxes=: draws artistic boxes around text, with nice looking unicorns,
-  flowers, parchments, all in ASCII art.
+  flowers, parchments, all in ASCII art. Melpa. Interface to external
+  utility.
 
 - =org-drawio=: a bridge between the Draw.Io editor and =Emacs=, producing
   drawing similar to those of =Uniline=, but in =.svg=.
 
-- =syntree=: draws ASCII trees on-the-fly from description.
+- =syntree=: draws ASCII trees on-the-fly from description. Melpa.
 
 - =unicode-enbox=: create a UNICODE box around a text; input and output
-  are strings.
+  are strings. Melpa.
 
 - =unicode-fonts=: in =Emacs=, helps alleviate the lack of full UNICODE
   coverage of most fonts.
 
 - =org-superstar=: prettify headings and plain lists in Org Mode, using
-  UNICODE glyphs.
+  UNICODE glyphs. Melpa.
 
 - =charmap=: UNICODE table viewer for =Emacs=.
 
@@ -2433,34 +2512,26 @@ launched, rather than deferred until invoked.
   completion prompt.
 
 - =list-unicode-display=: list all UNICODE characters, or a selection of
-  them.
+  them. Melpa.
 
-- =show-font=: show font features in a buffer.
+- =show-font=: show font features in a buffer. Elpa.
 
 - =ob-svgbob=: convert your ascii diagram scribbles into happy little
-  SVG
+  SVG. Melpa.
 
-- =el-easydraw=: a full featured SVG editor right inside your =Emacs=
-
-- =asciiflow=: (not =Emacs=) draw on the web, then copy-paste your UNICODE text
+- =el-easydraw=: a full featured SVG editor right inside your
+  =Emacs=. Impressive! GitHub.
 
 - =ascii-draw=: like =asciiflow= with Unicodes.
 
-- =dot-to-ascii.ggerganov.com:= (not =Emacs=) describe your schema in the
-  Graphviz language, and copy-past your UNICODE text.
-
-- =monosketch=: (not =Emacs=) draw on the web, then copy-paste your UNICODE text.
-
 - =ibm-box-drawing-hydra.el=: keyboard interface to insert UNICODE
-  box-drawing characters one at a time.
-
-- =excalidraw.com=: inline drawing, but not in Unicode or Ascii.
+  box-drawing characters one at a time. GitHub Gist.
 
 - =org-excalidraw=: integrate SVG images generated by excalidraw into
   Org Mode.
 
 - =rcd-box=: create tables surrounded by box-drawing characters from
-  Lisp descriptions.
+  Lisp descriptions. At hyperscope.link.
 
 - =ob-diagram=: generate various diagrams using diagrams backend.
 
@@ -2470,15 +2541,45 @@ launched, rather than deferred until invoked.
 
 - =make-box.el=: box around part of a buffer.
 
-- =vim drawit ascii diagrams=: in Vim, in ASCII.
-
-- =MarkDeep=: (Casual Effects): write in Markdown, render on the Web on
-  the fly. Uniline may be used to author part of the Markdown source.
-
 - =org-utf-to-xetex=: export Org-Mode utf-8 documents to various formats
   preserving smileys and other Unicode characters.
 
-- =image-to-ascii=: turns a photo into ASCII.
+- =dag-draw.el=: in Emacs program diagrams using Lisp, the output is
+  Unicode.
+
+- =https://mbork.pl/2025-11-10_ASCII_art_timeline_diagrams=: not a
+  package, just an example of how easy is to draw time-series in Ascii
+  with Emacs.
+
+- =ob-pikchr.el=: integration of the excellent =pikchr= in Emacs Org-Mode.
+
+- =figlet=: makes large letters out of ordinary text, in text. There is
+  an Emacs integration by J. Kotta.
+
+** Non Emacs
+:PROPERTIES:
+:CUSTOM_ID: non-emacs
+:END:
+
+- =asciiflow=: (not =Emacs=) draw on the web, then copy-paste your UNICODE
+  text.
+
+- =dot-to-ascii.ggerganov.com:= (not =Emacs=) describe your schema in the
+  Graphviz language, and copy-past your UNICODE text.
+
+- =monosketch=: (not =Emacs=) draw on the web, then copy-paste your
+  UNICODE text.
+
+- =excalidraw.com=: inline drawing, but not in Unicode or Ascii. Web
+  interface.
+
+- =vim drawit ascii diagrams=: in Vim, in ASCII.
+
+- =MarkDeep=: (Casual Effects): write in Markdown, render on the Web on
+  the fly. Impressive! Uniline may be used to author part of the
+  Markdown source.
+
+- =image-to-ascii=: turns a photo into ASCII. At www.asciiart.eu.
 
 - =ascii-maze-generator=: web-inline generator of mazes, with the same
   lines drawn by Uniline.
@@ -2497,17 +2598,9 @@ launched, rather than deferred until invoked.
 - =d2=, =ob-d2=: think of Mermaid to convert diagram textual descriptions
   to SVG.
 
-- =dag-draw.el=: in Emacs program diagrams using Lisp, the output is
-  Unicode.
-
-- =https://mbork.pl/2025-11-10_ASCII_art_timeline_diagrams=: not a
-  package, just an example of how easy is to draw time-series in Ascii
-  with Emacs.
-
 - =pikchr=: describe objects and their relationship in Markdown, render
-  in Unicode.
-
-- =ob-pikchr.el=: integration of =pikchr= in Emacs Org-Mode.
+  in Unicode. Very precise textual description of graphic obbjects
+  layout.
 
 - =GoAT=: Go-based Text-Art to SVG refinement.
 
@@ -2516,9 +2609,6 @@ launched, rather than deferred until invoked.
 
 - =Durdraw=: an Ascii, Unicode and Ansi art editor for Unix-like
   systems. With colors.
-
-- =figlet=: makes large letters out of ordinary text, in text. There is
-  an Emacs integration by J. Kotta.
 
 * Author, contributors
 :PROPERTIES:
