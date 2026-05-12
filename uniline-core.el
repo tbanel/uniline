@@ -158,6 +158,10 @@
 ;;   constant 2╶───────────────────────────────────╯   │
 ;;   varref uniline-direction-dw↓╶─────────────────────╯
 
+;;;╭──────────────────────╮
+;;;│Small helper functions│
+;;;╰──────────────────────╯
+
 (eval-when-compile ; not needed at runtime
 
   (defmacro uniline--switch-with-cond (dir &rest body)
@@ -267,7 +271,7 @@ Move to 0 if target is beyond the left border of buffer."
 If not, the begining of buffer is a hard limit, as usual in most
 Emacs modes.
 Note that if the buffer is narrowed to a region, for example through
-the use of C-x n n, then the buffer the narrowed region may grow
+the use of C-x n n, then the narrowed region may grow
 in both the upper and lower direction by automatic insertion of
 blank lines."
   :type 'boolean
@@ -278,19 +282,22 @@ blank lines."
 Create lines at the end of the buffer if there
 are not enough lines to honor Y.
 Y may be negative.
-Does not preserve current column.
+Also create lines at the begining of the buffer
+if Y is too negative,
+and if uniline-infinite-up↑ is not nil.
+Does not preserve current column,
+instead leave cursor at column C.
 P may be (point) for a relative Y move,
-or (point-min) for an absolute Y move.
-C is the expected column number."
+or (point-min) for an absolute Y move."
   ;; here we fix a bug in the return of (forward-line):
   ;; when (forward-line) cannot move enough lines
   ;; because it is stuck at the end of buffer,
   ;; it erroneously returns one less missing forwards
   ;; but the bug does not appears if the end-of-buffer
   ;; is at the beginning-of-line
-  ;; so here we get out of the corner-case of the
-  ;; (forward-line) bug, by ensuring that there is an empty
-  ;; line at the end of buffer
+  ;; so here we get out of the corner-case of the bug,
+  ;; by ensuring that there is an empty
+  ;; line at the end of buffer.
   (goto-char (point-max))
   (or (bolp) (insert ?\n))
   (goto-char p)
@@ -306,27 +313,32 @@ C is the expected column number."
   "Move to line Y, while staying on the same column.
 Create blank lines at the end of the buffer if needed,
 or blank characters at the end of target line.
-Y=0 means first line in buffer."
+Y=0 means first line in buffer.
+Y negative means to create that many lines at the
+beginning of the buff, if permitted by uniline-infinite-up↑"
   `(uniline--forward-line-force ,y (point-min) (current-column)))
 
 (defmacro uniline-move-to-delta-line (y)
   "Move Y lines while staying on the same column.
 Create blank lines at the end of the buffer if needed,
 or blank characters at the end of target line.
-Y may be negative to move backward."
+Y may be negative to move backward.
+In this case, blank lines may be added at the beginning
+of buffer, if permitted by uniline-infinite-up↑"
   `(uniline--forward-line-force ,y (point)     (current-column)))
 
 (defmacro uniline-move-to-lin-col (y x)
   "Move to line Y and column X.
-Create blank lines at the end of the buffer if needed,
-or blank characters at the end of target line if needed.
+Create blank lines at the end or the beginning of
+the buffer if needed, or blank characters at the
+end of target line if needed.
 Y=0 means first line of buffer.
 X=0 means first column of buffer."
   `(uniline--forward-line-force ,y (point-min) ,x))
 
 (eval-when-compile ; not needed at runtime
   (defmacro uniline--move-in-direction (dir &optional nb)
-    "Move NB char in direction DIR.
+    "Move NB characters in direction DIR.
 NB defaults to 1.
 This is a macro, therefore it is as if writing
 directly (uniline-move-to-delta-line -1) and such,
@@ -495,6 +507,16 @@ type g to refresh                                             │
 ;; thin   (─)  □■
 ;; thick  (━)  ■□
 ;; double (═)  ■■
+;;
+;; Example, the character ┖ is made of
+;; - half a thick line in the north direction:
+;;   value 2 shifted by 0 positions╶──────────╮
+;; - half a thin line in the east direction:  │
+;;   value 1 shifted by 2 positions╶╮         │
+;;                             ╭┬───╯         │
+;;                             ││╭┬───────────╯
+;; therefore its bit-code is 0b0110 = 6
+;;
 ;; So a `4halfs' number goes from 0 to 4x4x4x4 = 256.
 ;; This representation is great because it is easily handled by
 ;; the bits manipulation primitives: `logior', `logand', `ash'.
@@ -514,7 +536,9 @@ DIR is 1 of 4 directions:
   3: uniline-direction-lf←
 If FROM-DIR is given, the 4HALF bits pattern is supposed to be
 shifted in the FROM-DIR direction. Otherwise, it is not shifted.
-The result is the bit pattern 4HALF << (2*(TO-DIR - FROM-DIR))"
+The result is the bit pattern 4HALF << (2*(TO-DIR - FROM-DIR)).
+This macros handles the cases where any of its parameter is numeric,
+to fold the result as much as possible, often yielding to just a number."
     (condition-case nil
         (setq to-dir (eval to-dir))     ;; fold if to-dir is a numerical sexpr
       (error nil))                      ;; otherwise leave dir alone
@@ -570,6 +594,7 @@ range of [0..256).  It is handy to index vectors rather than
      (uniline--shift-4half (cadddr urld) uniline-direction-lf←)))
 
   (defun uniline--unpack-4halfs (4halfs)
+    "Inverse of `uniline--pack-4halfs'."
     (list
      (logand (uniline--shift-4half 4halfs 0 uniline-direction-up↑) 3)
      (logand (uniline--shift-4half 4halfs 0 uniline-direction-ri→) 3)
@@ -714,6 +739,9 @@ range of [0..256).  It is handy to index vectors rather than
       ( ?╚ 3 3 0 0 ))))
 
 (eval-when-compile ; not used at runtime
+  ;; the UNICODE standard does not define all combinations of
+  ;; double lines with thin or thick lines,
+  ;; therefore Uniline falls back to the nearest available UNICODE
   (defconst uniline--list-of-double-halflines
     '(;;   ╭─missing ╭─┬─replacement
       ;;   │         │ ╰───────╮
@@ -908,7 +936,7 @@ range of [0..256).  It is handy to index vectors rather than
          (if (numberp c) (aset table i (setq c (vector c nil nil))))
          (aset c 2 (car x)))
         table))
-    "Convert a 4halfs description to a UNICODE character.
+    "Convert a 4halfs bits description to a UNICODE character.
 The 4halfs description is (UP RI DW LF)
 packed into a single integer.
 As there are no UNICODE character for every combination,
@@ -919,7 +947,12 @@ So for instance
   dw=0 (blank down),
   lf=0 (blank left),
 is encoded into up +4*ri +16*dw +64*lf = 9,
-which in turn is converted to ┕."))
+which in turn is converted to ┕.
+All entries in this vector are integers, each repesenting a UNICODE,
+except 4 of them:
+they are vectors of length 3 containing the 3 variants of vertical
+and horizontal lines, thin or thick, those variants being plain,
+three dots, four dots."))
 
 (eval-and-compile
   (uniline--defconst-hash-table uniline--char-to-4halfs
@@ -937,7 +970,7 @@ which in turn is converted to ┕."))
 The UNICODE character is supposed to represent
 a combination of half lines in 4 directions
 and in 4 brush styles.
-The retrieved value is a 4halfs description is (UP RI DW LF)
+The retrieved value is the 4halfs description (UP RI DW LF)
 packed into a single integer.
 If the UNICODE character is not a box-drawing one, nil
 is returned.
@@ -949,9 +982,12 @@ meaning:
   1 = thin left
 Values (2 1 0 1) are encoded into 2 + 4*1 + 0*16 + 1*64 = 70
 This table is the reverse of `uniline--4halfs-to-char'
-without the fall-back characters."))
+without the fall-back characters.
+There are entries for the 8 dotted lines: ┆ ┇ ┄ ┅ ┊ ┋ ┈ ┉ "))
 
 (eval-and-compile
+  ;; the brushes are local variableq, meaning that several Uniline
+  ;; session in the same Emacs have different brushes.
   (defvar-local uniline-brush 1
     "Controls the style of line.
 Possible values are as follows:
@@ -982,6 +1018,10 @@ versions of a vertical thin line:
         c)))
 
 )
+
+;;;╭───────────────────────────────────────╮
+;;;│Generate fallbacks for missing UNICODEs│
+;;;╰───────────────────────────────────────╯
 
 (when nil
 
@@ -1071,6 +1111,10 @@ versions of a vertical thin line:
   (defconst uniline--glyphs-tmp
     '(
       ;; arrows
+      ;; they are directional,
+      ;; so each entry define the four directions characters╶╮
+      ;;    ╭──┬──┬──┬───────────────────────────────────────╯
+      ;;    ╵  ╵  ╵  ╵
       (a   ?△ ?▷ ?▽ ?◁)      ;; white *-pointing triangle
       (a   ?▲ ?▶ ?▼ ?◀)      ;; black *-pointing triangle
       (a   ?↑ ?→ ?↓ ?←)      ;; *wards arrow
@@ -1083,6 +1127,10 @@ versions of a vertical thin line:
       ;;(a   ?‹ ?› ?› ?‹)      ;; single *-pointing angle quotation mark
 
       ;; squares
+      ;; those glyphs are not directional,
+      ;; hence each entry has a single character╶╮
+      ;;    ╭────────────────────────────────────╯
+      ;;    ╵
       (s   ?□)      ;; white square
       (s   ?■)      ;; black square
       (s   ?▫)      ;; white small square
@@ -1339,12 +1387,14 @@ LIST is `uniline--glyphs-fbw'."
 ;; Therfore `4quadb' is a number from 0 to 2x2x2x2 = 16.
 ;; Hereafter, the arbitrary choosen bits allocation is as follow:
 ;;
-;;  2^1: here──→───╮
-;;               ╭─┴╮
-;;  2^0: here──→─┤▘▝│
-;;  2^2: here──→─┤▖▗│
-;;               ╰─┬╯
-;;  2^3: here──→───╯
+;;  2^0╶╮       ╭╴2^1
+;;      ╰┲╾╮ ╭╼┱╯
+;;       ╿▘│ │▝╿
+;;       ╰─╯ ╰─╯
+;;       ╭─╮ ╭─╮
+;;       ╽▖│ │▗╽
+;;      ╭┺╾╯ ╰╼┹╮
+;;  2^2╶╯       ╰─2^3
 ;;
 ;; For instance, the character ▚ is made of two quarter blocks
 ;;  - one in the up-left corner           → constant 2^0
@@ -1665,6 +1715,18 @@ Blank include:
 This might be 0, 1, 2, 3, as defined by the four constants
 `uniline-direction-up↑', `uniline-direction-lf←', ...")
 
+;; `uniline--write-one-4halfs-impl' and `uniline--write-one-4halfs'
+;; work togheter. Why not a single defun or defmacro?
+;; Because the macro `uniline--write-one-4halfs' turns
+;; its parameter DIR into bits-masks, which makes sense:
+;; - on each call, DIR is a known constant like 2
+;; - creating the bits-masks out of DIR is done at compile-time
+;;   yielding to integers.
+;; `uniline--write-one-4halfs-impl' groups the fraction of the algorithm
+;; which cannot benefit from compile-time computations, thus
+;; it is a defun. This avoids duplicating 4 times (in the 4 directions)
+;; the same algorithm.
+
 (defun uniline--write-one-4halfs-impl (brush force 4halfmask 4quadmask)
   "Draw half a line.
 If there are too few characters on the row where the line
@@ -1710,6 +1772,11 @@ When FORCE is not nil, overwrite a possible non-4halfs character."
       ,(uniline--4quadb-pushed
         (uniline--reverse-direction dir)
         (uniline--char-to-4quadb ?█))))) ; this is constant 15 = 0b1111
+
+;; The `uniline--write-impl' function is a macro (instead of a defun)
+;; because there is room to make a lot of computations at compile-time.
+;; The macro will be called 4 times (with DIR being each of the
+;; 4 directions).
 
 (eval-when-compile ; not needed at runtime
   (defmacro uniline--write-impl (dir repeat force)
@@ -1909,6 +1976,13 @@ Some values of the input character are replaced by computed values:
           ?█))
      (t char))))
 
+;; A naive version of `uniline-fill' would be recursive.
+;; Instead, this version is flattened. It manages a stack
+;; of points (locations in the buffer), which wait to be
+;; drawn upon.
+;; The flattened version does not risk overloading the List stack,
+;; and is very fast because it avoid function-calls.
+
 (defun uniline-fill (&optional char)
   "Fill a hollow shape with character CHAR.
 CHAR is optional, if not given, user is queried.
@@ -2056,12 +2130,12 @@ Those chars are filled with leakage from their two neighbours,
 in DIR direction, and its opposite.
 For instance consider a situation like this:
    ╶┬╴
-     <<< empty space
+     ← empty space
     ┗╸
 A space is leaved empty after translation.
-Then the leakage of the two glyphs fills in E:
+Then the leakage of the two glyphs fills in the gap:
    ╶┬╴
-    ╽<<< filled with leakage
+    ╽← filled with leakage
     ┗╸"
     (setq dir (eval dir))
     (let ((odir (uniline--reverse-direction dir)))
@@ -2094,12 +2168,12 @@ Those chars are filled with leakage from their two neighbours,
 in DIR direction, and its opposite.
 For instance consider a situation like this:
     ▌
-     <<< empty space
+     ← empty space
     ▙
 A space is leaved empty after translation.
 Then the leakage of the two glyphs fills in E:
     ▌
-    ▌<<< filled with leakage
+    ▌← filled with leakage
     ▙"
     (setq dir (eval dir))
     (let ((odir (uniline--reverse-direction dir)))
@@ -2160,7 +2234,7 @@ Return the replaced region as a string."
 
 (defun uniline--untabify-rectangle (begy endy)
   "Untabify all lines over which the rectangle operates.
-BEGY and ENDY are the line-numbers of the beggining en ending
+BEGY and ENDY are the line-numbers of the beggining and ending
 of the rectangle.
 The costly `untabify' function is called only if there are
 TAB characters in the region."
@@ -2181,7 +2255,8 @@ TAB characters in the region."
 
 (defun uniline-move-rect-up↑ (repeat)
   "Move the rectangle marked by selection one line upper.
-Truncate the selection if it touches the upper side of the buffer.
+Truncate the selection if it touches the upper side of the buffer,
+and if `uniline-infinite-up↑' is nil.
 REPEAT tells how many characters the rectangle should move,
 defaulting to 1.
     ↑ ↑ ↑ ↑
@@ -2413,7 +2488,8 @@ in that it leaves a rectangle of space characters."
 (defun uniline-yank-rectangle ()
   "Insert a previously cut rectangle.
 It differs from the standard Emacs `yank-rectangle'
-in that it overwrites the rectangle."
+in that it overwrites the rectangle.
+Only non blank characters are copied."
   (interactive)
   (uniline--record-undo-rectangle-selection)
   (uniline--operate-on-rectangle
@@ -2669,25 +2745,27 @@ It means that cursor movements do not trace anything."
   "Change the current style of line to the eraser.
 It means that moving the cursor horizontally erase horizontal
 lines, and moving vertically erase vertical lines.  Characters
-other than lines or arrows are not touched."
+other than lines or blocks are not touched. As there is no clear
+horizontal or vertical lines for block characters, they are
+erased unconditionally."
   (interactive)
   (setq uniline-brush 0)
   (uniline--update-mode-line))
 
 (defun uniline-set-brush-0dots ()
-  "Change the current style of line plain."
+  "Change the current style of line to plain."
   (interactive)
   (setq uniline-brush-dots 0)
   (uniline--update-mode-line))
 
 (defun uniline-set-brush-3dots ()
-  "Change the current style of line 3 dots vertical, 2 dots horizontal."
+  "Change the current style of line to 3 dots vertical, 2 dots horizontal."
   (interactive)
   (setq uniline-brush-dots 1)
   (uniline--update-mode-line))
 
 (defun uniline-set-brush-4dots ()
-  "Change the current style of line 4 dots vertical & horizontal."
+  "Change the current style of line to 4 dots vertical & horizontal."
   (interactive)
   (setq uniline-brush-dots 2)
   (uniline--update-mode-line))
@@ -2699,19 +2777,19 @@ other than lines or arrows are not touched."
   (uniline--update-mode-line))
 
 (defun uniline-set-brush-1 ()
-  "Change the current style of line to a single thin line╶─╴."
+  "Change the current style of line to a single thin line ──."
   (interactive)
   (setq uniline-brush 1)
   (uniline--update-mode-line))
 
 (defun uniline-set-brush-2 ()
-  "Change the current style of line to a single thick line╺━╸."
+  "Change the current style of line to a single thick line ━━."
   (interactive)
   (setq uniline-brush 2)
   (uniline--update-mode-line))
 
 (defun uniline-set-brush-3 ()
-  "Change the current style of line to a double line╺═╸."
+  "Change the current style of line to a double line ══."
   (interactive)
   (setq uniline-brush 3)
   (uniline--update-mode-line))
@@ -2958,39 +3036,50 @@ Instead DIR is twisted 45° from the actual direction of the block."
         ,(format "Rotate an arrow or tweak 4halfs.
 If character under point is an arrow, turn it %s.
 If character under point is a combination of 4halfs lines,
-then change the 4half segment pointing %s."
+then change the 4half segment pointing %s.
+If character under point is a block, flip one corner of
+the block on & off."
                  dir dir)
         (interactive)
         (uniline--rotate-arrow (,(intern (format "uniline-direction-%s" dir)))))))
   (insert "\n;; END -- Automatically generated\n"))
+
 ;; BEGIN -- Automatically generated
 
 (defun uniline-rotate-up↑ nil
   "Rotate an arrow or tweak 4halfs.
 If character under point is an arrow, turn it up↑.
 If character under point is a combination of 4halfs lines,
-then change the 4half segment pointing up↑."
+then change the 4half segment pointing up↑.
+If character under point is a block, flip one corner of
+the block on & off."
   (interactive)
   (uniline--rotate-arrow (uniline-direction-up↑)))
 (defun uniline-rotate-ri→ nil
   "Rotate an arrow or tweak 4halfs.
 If character under point is an arrow, turn it ri→.
 If character under point is a combination of 4halfs lines,
-then change the 4half segment pointing ri→."
+then change the 4half segment pointing ri→.
+If character under point is a block, flip one corner of
+the block on & off."
   (interactive)
   (uniline--rotate-arrow (uniline-direction-ri→)))
 (defun uniline-rotate-dw↓ nil
   "Rotate an arrow or tweak 4halfs.
 If character under point is an arrow, turn it dw↓.
 If character under point is a combination of 4halfs lines,
-then change the 4half segment pointing dw↓."
+then change the 4half segment pointing dw↓.
+If character under point is a block, flip one corner of
+the block on & off."
   (interactive)
   (uniline--rotate-arrow (uniline-direction-dw↓)))
 (defun uniline-rotate-lf← nil
   "Rotate an arrow or tweak 4halfs.
 If character under point is an arrow, turn it lf←.
 If character under point is a combination of 4halfs lines,
-then change the 4half segment pointing lf←."
+then change the 4half segment pointing lf←.
+If character under point is a block, flip one corner of
+the block on & off."
   (interactive)
   (uniline--rotate-arrow (uniline-direction-lf←)))
 ;; END -- Automatically generated
@@ -3012,7 +3101,7 @@ algorithm may be started again for an additional 10000 steps."
   "Draw a contour arround a block of characters.
 A block of characters is a contiguous set of non-blank characters.
 For the sake of the contour, a non-blank character is any character
-not in the 4halfs set.
+not in the 4halfs set or in the 4quadb set.
 The style of the contour is determined by the current brush.
 This includes possibly the eraser, which erases an actual contour.
 When FORCE is not nil, overwrite whatever is in the buffer.
@@ -3755,10 +3844,10 @@ its entry in the table is left as is."
 ;; events do not have the information that blanks have been
 ;; added. We do not want to adjust the point if the buffer
 ;; have not received additional blanks, because in this case
-;; the point store in the event is right and accurate. We do
+;; the point stored in the event is right and accurate. We do
 ;; not want to ruin it with an unreliable approximation.
 ;; Therefore we put in place a variable used by the 1st event
-;; to communicate information the the 2nd and 3th events.
+;; to communicate information to the 2nd and 3th events.
 ;;
 ;; The Uniline intercepting functions are attached to the
 ;; uniline-mode keymap. Therefore they are active only in
@@ -3783,7 +3872,7 @@ its entry in the table is left as is."
 (defun uniline--scroll-horiz ()
   "Compute the actual horizontal scroll.
 There is a bug in Emacs that this function tries to fix.
-The scroll is returned by Emacs as a number of character,
+The scroll is returned by Emacs as a number of characters,
 which is fine. But Emacs assumes that the window is not
 zoomed. When it is, the result is wrong. Here the scroll
 is zoomed back. Unfortunately, this is not reliable no matter
@@ -3881,6 +3970,16 @@ TYPE is \"hydra\" or \"transient\"."
   :group 'text
   :link '(url-link :tag "GitHub" "https://github.com/tbanel/uniline"))
 
+(defun uniline--propagate-cursor-type (_symbol value)
+  "When customizing the cursor type, this function propagate
+the new value to all buffers where uniline minor mode is active."
+  (cl-loop
+   for buff being buffers
+   if (memq 'uniline-mode (assq 'local-minor-modes (buffer-local-variables buff)))
+   do
+   (with-current-buffer buff
+     (setq cursor-type value))))
+
 (defcustom uniline-cursor-type 'hollow
   "The suggested cursor in Uniline is a the hollow one,
 because it has no prefered direction (up, down, right, left),
@@ -3900,10 +3999,23 @@ so any possible choice is available."
           (cons  :tag "Horizontal bar with specified width"
                  (const hbar) integer)
           (const :tag "None "nil))
+  :set 'uniline--propagate-cursor-type
   :local t
   :group 'uniline)
 
 ;; toggle between normal hydra hints, and one-liners
+
+(defun uniline--propagate-hint-style (symbol value)
+  "When customizing the cursor type, this function propagate
+the new value to all buffers where uniline minor mode is active."
+  (message "symbol = %S" symbol)
+  (cl-loop
+   for buff being buffers
+   if (memq 'uniline-mode (assq 'local-minor-modes (buffer-local-variables buff)))
+   do
+   (with-current-buffer buff
+     (set symbol value))))
+
 (defcustom uniline-hint-style t
   "Which kind of hint message should the Hydras menus display?
 t: large and detailed menus
@@ -3915,6 +4027,7 @@ Those values are loosely in sync with those defined by the
           (const :tag "full fledged hints" t)
           (const :tag "one liner hints"    1)
           (const :tag "no hint"            0))
+  :set 'uniline--propagate-hint-style
   :local t
   :group 'uniline)
 
@@ -3972,6 +4085,9 @@ FACE is the face used to color text."
           "trace: ^←→↑↓^  ovwr: ^C-←→↑↓^  selec: ^C-←→↑↓^  brush: ^-+=# DEL RET^  menu: (sel)^INS^  hint: ^C-h TAB^")))
       (t nil)))))
 
+;; The uniline-toggle-hints is defined in uniline-hydra.el & uniline-transient.el
+;; with different implementation in each file.
+;; It is declared here so that the compiler does not frown upon.
 (declare-function uniline-toggle-hints "" (&optional notoggle))
 
 (defun uniline-toggle-hints-welcome ()
