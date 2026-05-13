@@ -4008,7 +4008,6 @@ so any possible choice is available."
 (defun uniline--propagate-hint-style (symbol value)
   "When customizing the cursor type, this function propagate
 the new value to all buffers where uniline minor mode is active."
-  (message "symbol = %S" symbol)
   (cl-loop
    for buff being buffers
    if (memq 'uniline-mode (assq 'local-minor-modes (buffer-local-variables buff)))

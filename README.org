@@ -2649,6 +2649,8 @@ Feedback:
 - tskinner-oppfi (GitHub) repoted Elpaca packaging break due to a bad
   version number.
 
+- λ.ςζ szkl (GitHub) instantly pinpointed a debug log left-over.
+
 Contributors:
 
 - JD Smith (jdtsmith on GitHub) rewrote the =:lighter= for added

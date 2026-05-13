@@ -2820,6 +2820,8 @@ File: uniline.info,  Node: Author contributors,  Next: License,  Prev: Related p
    • tskinner-oppfi (GitHub) repoted Elpaca packaging break due to a bad
      version number.
 
+   • λ.ςζ szkl (GitHub) instantly pinpointed a debug log left-over.
+
    Contributors:
 
    • JD Smith (jdtsmith on GitHub) rewrote the ‘:lighter’ for added
@@ -2951,7 +2953,7 @@ Node: Related packages103937
 Node: Emacs104118
 Node: Non Emacs107480
 Node: Author contributors109392
-Node: License111429
+Node: License111503
 
 End Tag Table
 
