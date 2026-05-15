@@ -3973,6 +3973,7 @@ TYPE is \"hydra\" or \"transient\"."
 (defun uniline--propagate-cursor-type (_symbol value)
   "When customizing the cursor type, this function propagate
 the new value to all buffers where uniline minor mode is active."
+  (setq uniline-cursor-type value)
   (cl-loop
    for buff being buffers
    if (memq 'uniline-mode (assq 'local-minor-modes (buffer-local-variables buff)))
@@ -4008,6 +4009,7 @@ so any possible choice is available."
 (defun uniline--propagate-hint-style (symbol value)
   "When customizing the cursor type, this function propagate
 the new value to all buffers where uniline minor mode is active."
+  (setq uniline-hint-style value)
   (cl-loop
    for buff being buffers
    if (memq 'uniline-mode (assq 'local-minor-modes (buffer-local-variables buff)))
