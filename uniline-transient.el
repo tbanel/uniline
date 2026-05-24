@@ -292,6 +292,7 @@ for later menu invocation in the same Uniline session."
     ("="      "double" uniline-change-style-double       :transient t)]
    ["Base style"
     ("0"    "standard" uniline-change-style-standard     :transient t)
+    ("A"    "to ASCII" uniline-change-style-ascii        :transient t)
     ("a"        "aa2u" uniline-aa2u-rectangle            :transient t)]
    ;;["Move rectangle"
    ;; ("<right>" "→" uniline-move-rect-ri→ :transient t)

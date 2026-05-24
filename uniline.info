@@ -80,6 +80,7 @@ Rectangular actions
 * Copying, killing, yanking a rectangular region: Copying killing yanking a rectangular region.
 * Dashed lines and other styles::
 * ASCII to UNICODE::
+* UNICODE to ASCII::
 
 Long range actions: contour and flood-fill
 
@@ -174,10 +175,9 @@ File: uniline.info,  Node: New,  Next: Gallery pure UNICODE diagrams in Emacs,  
 2 New
 *****
 
-Customization & settings now consistently available from the application
-menu, from Hydra, and from Transient.
+A new style filter for converting UNICODE to ASCII is available.
 
-   Type ‘<INS> *’.
+   Select a rectangle, then ‘INS’ ‘s’ ‘A’.
 
 
 File: uniline.info,  Node: Gallery pure UNICODE diagrams in Emacs,  Next: A minor mode for drawing,  Prev: New,  Up: Top
@@ -939,6 +939,7 @@ if it was not.  You are offered a menu of possible actions.
 * Copying, killing, yanking a rectangular region: Copying killing yanking a rectangular region.
 * Dashed lines and other styles::
 * ASCII to UNICODE::
+* UNICODE to ASCII::
 
 
 File: uniline.info,  Node: Drawing a rectangle,  Next: Filling a rectangle,  Up: Rectangular actions
@@ -1165,7 +1166,7 @@ nice looking sketches.
 
 
 
-File: uniline.info,  Node: ASCII to UNICODE,  Prev: Dashed lines and other styles,  Up: Rectangular actions
+File: uniline.info,  Node: ASCII to UNICODE,  Next: UNICODE to ASCII,  Prev: Dashed lines and other styles,  Up: Rectangular actions
 
 7.6 ASCII to UNICODE
 ====================
@@ -1238,6 +1239,22 @@ conversion by ‘INS s 0’:
      ╰▷──╮   │      │      ╰───╯        │    │    ║
          ▽   ╘══◁═══╛   a=b 1=2 a-to-b  ╰────╯ ◁══╝  ▷─▷
 
+
+
+File: uniline.info,  Node: UNICODE to ASCII,  Prev: ASCII to UNICODE,  Up: Rectangular actions
+
+7.7 UNICODE to ASCII
+====================
+
+After drawing a diagram with Uniline, it is possible to convert it to
+ASCII.
+
+   Select a rectangle, then type ‘INS s A’.
+
+   The diagram can be converted back to UNICODE by pressing ‘0’ or ‘a’.
+However this is a lossy transformation, because ASCII was never intended
+to draw diagrams.  The ASCII → UNICODE filter makes good guesses
+thought.
 
 
 File: uniline.info,  Node: Long range actions contour and flood-fill,  Next: Macros,  Prev: Rectangular actions,  Up: Top
@@ -2865,95 +2882,96 @@ along with this program.  If not, see <http://www.gnu.org/licenses/>.
 
 Tag Table:
 Node: Top171
-Node: Getting started in 10 seconds3272
-Node: New3878
-Node: Gallery pure UNICODE diagrams in Emacs4156
-Node: Document a command4845
-Node: Connect boxes with arrows5378
-Node: Explain decisions trees6698
-Node: Draw lines or blocks8204
-Node: Outline the General Relativity and the Schrödinger's equations9746
-Node: Explain the structure of a sentence in a foreign language12435
-Node: Draw electronic diagrams14021
-Node: Explain Lisp lists15426
-Node: Draw sketched objects16609
-Node: Replace words with simple sketches18599
-Node: Visualize floating point layouts19182
-Node: Illustrate proportions21201
-Node: Pure text22677
-Node: Beware!23412
-Node: A minor mode for drawing23995
-Node: Minor mode24307
-Node: Draw lines by moving the cursor24869
-Node: Infinite ∞ buffer25461
-Node: Brush style26742
-Node: Text direction29327
-Node: The <insert> key29877
-Node: Glyphs ▷ ▶ → □ ◆ ╮─ insertion & modification30877
-Node: Arrows glyphs ▷ ▶ → ▹ ▸ ↔31594
-Node: Intersection glyphs ■ ◆ ●33166
-Node: Fine tweaking of lines35996
-Node: Rectangular actions37879
-Node: Drawing a rectangle39229
-Node: Filling a rectangle40880
-Node: Moving a rectangular region41648
-Node: Copying killing yanking a rectangular region44217
-Node: Dashed lines and other styles45412
-Node: ASCII to UNICODE49537
-Node: Long range actions contour and flood-fill53220
-Node: Tracing a contour53483
-Node: Flood-fill55397
-Node: Macros57171
-Node: Which fonts?60562
-Node: Recommended fonts60823
-Node: Use case mixing fonts62913
-Node: Hydra or Transient?64910
-Node: Selecting Hydra or Transient65899
-Node: Instantly selecting Hydra or Transient67017
-Node: One-liner menus67983
-Node: The Hydra interface69921
-Node: The Transient interface70594
-Node: Customization71132
-Node: Interface type72000
-Node: Insert key72526
-Node: Maximum steps when drawing a contour73308
-Node: Cursor type73638
-Node: Hint style73963
-Node: Welcome message visibility74310
-Node: Line spacing74691
-Node: Font76157
-Node: Upward infiniteness ∞76673
-Node: How Uniline behaves with its environment?77203
-Node: Language environment77820
-Node: Mouse support80207
-Node: Compatibility with Picture-mode81164
-Node: Compatibility with Artist-mode82104
-Node: Compatibility with Whitespace-mode82623
-Node: Compatibility with Org Mode83523
-Node: Org Mode and LaTex84944
-Node: What about \t tabs?86804
-Node: What about ^L page separation?87605
-Node: Emacs on the Linux console88228
-Node: Emacs on a graphical terminal emulator89190
-Node: Emacs on Windows90120
-Node: Compatibility with ASCIIFlow90801
-Node: Lisp API91757
-Node: Move the cursor92306
-Node: Brush92737
-Node: Example Lisp function to draw a plus sign93606
-Node: Long range actions (contour flood-fill rectangle)95442
-Node: Constants96380
-Node: Macro and text direction96795
-Node: Insert and tweak glyphs97730
-Node: Change to alternate styles98843
-Node: Installation99752
-Node: use-package the straightforward way99991
-Node: Without use-package102376
-Node: Related packages103937
-Node: Emacs104118
-Node: Non Emacs107480
-Node: Author contributors109392
-Node: License111503
+Node: Getting started in 10 seconds3293
+Node: New3899
+Node: Gallery pure UNICODE diagrams in Emacs4163
+Node: Document a command4852
+Node: Connect boxes with arrows5385
+Node: Explain decisions trees6705
+Node: Draw lines or blocks8211
+Node: Outline the General Relativity and the Schrödinger's equations9753
+Node: Explain the structure of a sentence in a foreign language12442
+Node: Draw electronic diagrams14028
+Node: Explain Lisp lists15433
+Node: Draw sketched objects16616
+Node: Replace words with simple sketches18606
+Node: Visualize floating point layouts19189
+Node: Illustrate proportions21208
+Node: Pure text22684
+Node: Beware!23419
+Node: A minor mode for drawing24002
+Node: Minor mode24314
+Node: Draw lines by moving the cursor24876
+Node: Infinite ∞ buffer25468
+Node: Brush style26749
+Node: Text direction29334
+Node: The <insert> key29884
+Node: Glyphs ▷ ▶ → □ ◆ ╮─ insertion & modification30884
+Node: Arrows glyphs ▷ ▶ → ▹ ▸ ↔31601
+Node: Intersection glyphs ■ ◆ ●33173
+Node: Fine tweaking of lines36003
+Node: Rectangular actions37886
+Node: Drawing a rectangle39257
+Node: Filling a rectangle40908
+Node: Moving a rectangular region41676
+Node: Copying killing yanking a rectangular region44245
+Node: Dashed lines and other styles45440
+Node: ASCII to UNICODE49565
+Node: UNICODE to ASCII53273
+Node: Long range actions contour and flood-fill53771
+Node: Tracing a contour54034
+Node: Flood-fill55948
+Node: Macros57722
+Node: Which fonts?61113
+Node: Recommended fonts61374
+Node: Use case mixing fonts63464
+Node: Hydra or Transient?65461
+Node: Selecting Hydra or Transient66450
+Node: Instantly selecting Hydra or Transient67568
+Node: One-liner menus68534
+Node: The Hydra interface70472
+Node: The Transient interface71145
+Node: Customization71683
+Node: Interface type72551
+Node: Insert key73077
+Node: Maximum steps when drawing a contour73859
+Node: Cursor type74189
+Node: Hint style74514
+Node: Welcome message visibility74861
+Node: Line spacing75242
+Node: Font76708
+Node: Upward infiniteness ∞77224
+Node: How Uniline behaves with its environment?77754
+Node: Language environment78371
+Node: Mouse support80758
+Node: Compatibility with Picture-mode81715
+Node: Compatibility with Artist-mode82655
+Node: Compatibility with Whitespace-mode83174
+Node: Compatibility with Org Mode84074
+Node: Org Mode and LaTex85495
+Node: What about \t tabs?87355
+Node: What about ^L page separation?88156
+Node: Emacs on the Linux console88779
+Node: Emacs on a graphical terminal emulator89741
+Node: Emacs on Windows90671
+Node: Compatibility with ASCIIFlow91352
+Node: Lisp API92308
+Node: Move the cursor92857
+Node: Brush93288
+Node: Example Lisp function to draw a plus sign94157
+Node: Long range actions (contour flood-fill rectangle)95993
+Node: Constants96931
+Node: Macro and text direction97346
+Node: Insert and tweak glyphs98281
+Node: Change to alternate styles99394
+Node: Installation100303
+Node: use-package the straightforward way100542
+Node: Without use-package102927
+Node: Related packages104488
+Node: Emacs104669
+Node: Non Emacs108031
+Node: Author contributors109943
+Node: License112054
 
 End Tag Table
 

@@ -230,8 +230,8 @@
 ╭^Thickness^╮╭^─Alt styles^──╮╭^Base style^╮╭^─^─^─^──────────────╮
 │_-_ thin   ││_3_ 3x2 dots   ││_0_ standard││_f_    ^^ choose font│
 │_+_ thick  ││_4_ 4x4 dots   ││_a_ aa2u    ││_C-t_  ^^ short hint │
-│_=_ double ││_h_ hard corner│╰─^─^────────╯│_?_    ^^ info-mode  │
-╰^─^────────╯╰^─^────────────╯ ^ ^          │_q_ _RET_ exit       │
+│_=_ double ││_h_ hard corner││_A_ to ASCII││_?_    ^^ info-mode  │
+╰^─^────────╯╰^─^────────────╯╰─^─^────────╯│_q_ _RET_ exit       │
  ^ ^          ^ ^              ^ ^          ╰^─^─^─^──────────────╯"
       ("3"             uniline-change-style-dot-3-2)
       ("<kp-3>"        uniline-change-style-dot-3-2)
@@ -245,6 +245,7 @@
       ("+"             uniline-change-style-thick)
       ("<kp-add>"      uniline-change-style-thick)
       ("="             uniline-change-style-double)
+      ("A"             uniline-change-style-ascii)
       ("a"             uniline-aa2u-rectangle)
       ;; copy here the bindings for handling rectangles
       ("<right>" uniline-move-rect-ri→)
@@ -400,7 +401,7 @@ Otherwise, the arrows & shapes hydra is invoked."
         ,(eval-when-compile
            (uniline--color-hint
             'hydra-face-red
-            "alt styles, thick:^-+=^ dashed:^34^ corners:^h^ standard:^0^ ^a^a2u ^C-t^"))))
+            "alt styles, thick:^-+=^ dashed:^34^ corners:^h^ standard:^0^ ^a^a2u ascii:^A ^C-t^"))))
 
     (defun uniline-toggle-hints (&optional notoggle)
       "Toggle between styles of hydra hints.

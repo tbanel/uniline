@@ -28,10 +28,9 @@
 :CUSTOM_ID: new
 :END:
 
-Customization & settings now consistently available from the
-application menu, from Hydra, and from Transient.
+A new style filter for converting UNICODE to ASCII is available.
 
-Type =<INS> *=.
+Select a rectangle, then =INS= =s= =A=.
 
 * Table of Contents
 :PROPERTIES:
@@ -75,6 +74,7 @@ Type =<INS> *=.
   - [[#copying-killing-yanking-a-rectangular-region][Copying, killing, yanking a rectangular region]]
   - [[#dashed-lines-and-other-styles][Dashed lines and other styles]]
   - [[#ascii-to-unicode][ASCII to UNICODE]]
+  - [[#unicode-to-ascii][UNICODE to ASCII]]
 - [[#long-range-actions-contour-and-flood-fill][Long range actions: contour and flood-fill]]
   - [[#tracing-a-contour][Tracing a contour]]
   - [[#flood-fill][Flood-fill]]
@@ -1162,6 +1162,20 @@ conversion by =INS s 0=:
       ▽   ╘══◁═══╛   a=b 1=2 a-to-b  ╰────╯ ◁══╝  ▷─▷
 
 #+end_example
+
+** UNICODE to ASCII
+:PROPERTIES:
+:CUSTOM_ID: unicode-to-ascii
+:END:
+
+After drawing a diagram with Uniline, it is possible to convert it to ASCII.
+
+Select a rectangle, then type =INS s A=.
+
+The diagram can be converted back to UNICODE by pressing =0= or
+=a=. However this is a lossy transformation, because ASCII was never
+intended to draw diagrams. The ASCII → UNICODE filter makes good
+guesses thought.
 
 * Long range actions: contour and flood-fill
 :PROPERTIES:
