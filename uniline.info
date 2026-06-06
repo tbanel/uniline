@@ -104,6 +104,7 @@ Customization
 
 * Interface type::
 * Insert key::
+* Keyboard bindings::
 * Maximum steps when drawing a contour::
 * Cursor type::
 * Hint style::
@@ -126,6 +127,7 @@ How Uniline behaves with its environment?
 * Emacs on the Linux console::
 * Emacs on a graphical terminal emulator::
 * Emacs on Windows::
+* Emacs on MacOS::
 * Compatibility with ASCIIFlow::
 
 Lisp API
@@ -1745,6 +1747,7 @@ The other settings are self-explanatory
 
 * Interface type::
 * Insert key::
+* Keyboard bindings::
 * Maximum steps when drawing a contour::
 * Cursor type::
 * Hint style::
@@ -1770,7 +1773,7 @@ the ‘.emacs’ file:
    • ‘<INS> * T’
 
 
-File: uniline.info,  Node: Insert key,  Next: Maximum steps when drawing a contour,  Prev: Interface type,  Up: Customization
+File: uniline.info,  Node: Insert key,  Next: Keyboard bindings,  Prev: Interface type,  Up: Customization
 
 12.2 Insert key
 ===============
@@ -1790,9 +1793,61 @@ both events as the ‘INS’ key.
    Variable ‘uniline-key-insert’.
 
 
-File: uniline.info,  Node: Maximum steps when drawing a contour,  Next: Cursor type,  Prev: Insert key,  Up: Customization
+File: uniline.info,  Node: Keyboard bindings,  Next: Maximum steps when drawing a contour,  Prev: Insert key,  Up: Customization
 
-12.3 Maximum steps when drawing a contour
+12.3 Keyboard bindings
+======================
+
+Suppose you want to change the tilde key to some other key.  Uniline
+binds the ‘~’ tilde key to the ‘uniline-set-brush-dot-toggle’ function.
+(This function toggles the brush to 3 styles of lines: coarse dots, fine
+dots, plain lines, and again.)
+
+   On MacOs, ‘~’ is not always readily available.  So, you may want to
+use ‘M-n’ instead (which happens to sometime insert a tilde on MacOs,
+but not always).  To do so, the ‘bind-key’ or ‘keymap-set’ functions are
+handy:
+
+     ;; do this:
+     (bind-key "M-n" 'uniline-set-brush-dot-toggle uniline-mode-map)
+     ;; or that:
+     (keymap-set uniline-mode-map "M-n" 'uniline-set-brush-dot-toggle)
+
+   One of those instructions can be written in your ‘.emacs’ file.  But
+beware that Uniline must already have been loaded for ‘uniline-mode-map’
+to be defined.
+
+   One way is to delay those instructions until Uniline is loaded.
+Example:
+
+     (eval-after-load 'uniline-core
+       '(bind-key "M-n" 'uniline-set-brush-dot-toggle uniline-mode-map))
+
+   Another way is to delegate time dependencies to ‘use-package’.  Here
+are two variants, ‘:config’ and ‘:bind :map’:
+
+     ;; first option:
+     (use-package uniline-hydra
+       :defer 12
+       :config
+       ;; do this:
+       (bind-key "M-n" 'uniline-set-brush-dot-toggle uniline-mode-map)
+       ;; or that:
+       (keymap-set uniline-mode-map "M-n" 'uniline-set-brush-dot-toggle))
+
+     ;; second option:
+     (use-package uniline-hydra
+       :defer 12
+       :bind (:map uniline-mode-map
+                   ("M-n" . uniline-set-brush-dot-toggle)))))
+
+   Look at the ‘uniline-mode-map’ variable to see the top-level
+key-bindings that Uniline defines (locally and while in ‘uniline-mode’).
+
+
+File: uniline.info,  Node: Maximum steps when drawing a contour,  Next: Cursor type,  Prev: Keyboard bindings,  Up: Customization
+
+12.4 Maximum steps when drawing a contour
 =========================================
 
 Defaults to ‘10000’.  To avoid an infinite loop in some rare cases.
@@ -1802,7 +1857,7 @@ Defaults to ‘10000’.  To avoid an infinite loop in some rare cases.
 
 File: uniline.info,  Node: Cursor type,  Next: Hint style,  Prev: Maximum steps when drawing a contour,  Up: Customization
 
-12.4 Cursor type
+12.5 Cursor type
 ================
 
 Hollow by default, so that what is under the cursor remains visible.
@@ -1814,7 +1869,7 @@ Hollow by default, so that what is under the cursor remains visible.
 
 File: uniline.info,  Node: Hint style,  Next: Welcome message visibility,  Prev: Cursor type,  Up: Customization
 
-12.5 Hint style
+12.6 Hint style
 ===============
 
 Currently only applicable to the ‘Hydra’.  It defaults to "full fledged
@@ -1827,7 +1882,7 @@ menus".
 
 File: uniline.info,  Node: Welcome message visibility,  Next: Line spacing,  Prev: Hint style,  Up: Customization
 
-12.6 Welcome message visibility
+12.7 Welcome message visibility
 ===============================
 
 Default is "on".  Turn it "off" for less distraction.
@@ -1840,7 +1895,7 @@ pressing ‘C-h TAB’.
 
 File: uniline.info,  Node: Line spacing,  Next: Font,  Prev: Welcome message visibility,  Up: Customization
 
-12.7 Line spacing
+12.8 Line spacing
 =================
 
 The ‘line-spacing’ setting in ‘Emacs’ can change the display of a
@@ -1869,7 +1924,7 @@ of choice for everyone.
 
 File: uniline.info,  Node: Font,  Next: Upward infiniteness ∞,  Prev: Line spacing,  Up: Customization
 
-12.8 Font
+12.9 Font
 =========
 
 Face customization is unrelated to ‘Uniline’.  However, ‘Uniline’ can
@@ -1883,8 +1938,8 @@ face and retain your choice for future sessions.
 
 File: uniline.info,  Node: Upward infiniteness ∞,  Prev: Font,  Up: Customization
 
-12.9 Upward infiniteness ∞
-==========================
+12.10 Upward infiniteness ∞
+===========================
 
 If the variable ‘uniline-infinite-up↑’ is:
 
@@ -1915,6 +1970,7 @@ File: uniline.info,  Node: How Uniline behaves with its environment?,  Next: Lis
 * Emacs on the Linux console::
 * Emacs on a graphical terminal emulator::
 * Emacs on Windows::
+* Emacs on MacOS::
 * Compatibility with ASCIIFlow::
 
 
@@ -2230,7 +2286,7 @@ file:
        :bind ("C-<insertchar>" . uniline-mode))
 
 
-File: uniline.info,  Node: Emacs on Windows,  Next: Compatibility with ASCIIFlow,  Prev: Emacs on a graphical terminal emulator,  Up: How Uniline behaves with its environment?
+File: uniline.info,  Node: Emacs on Windows,  Next: Emacs on MacOS,  Prev: Emacs on a graphical terminal emulator,  Up: How Uniline behaves with its environment?
 
 13.12 Emacs on Windows
 ======================
@@ -2247,9 +2303,35 @@ unaligned result though.  They should be avoided under ‘Consolas’:
    Of course, other fonts may be installed.  It is quite easy.
 
 
-File: uniline.info,  Node: Compatibility with ASCIIFlow,  Prev: Emacs on Windows,  Up: How Uniline behaves with its environment?
+File: uniline.info,  Node: Emacs on MacOS,  Next: Compatibility with ASCIIFlow,  Prev: Emacs on Windows,  Up: How Uniline behaves with its environment?
 
-13.13 Compatibility with ASCIIFlow
+13.13 Emacs on MacOS
+====================
+
+The MacOS keyboards are different from the Linux or Windows ones.
+Particularly they are missing the insert and the tilde keys.
+
+   The insert key is used for launching sub-menus, implemented in Hydra
+or Transient.  The key to launch those sub-menus is customizable.  See
+*note Insert key::.
+
+   The control insert key (‘C-INS’) is also the recommended binding to
+‘uniline-mode’ for entering and exiting Uniline.  See *note
+Installation::.  If you, instead, want to bind ‘uniline-mode’ to ‘C-£’
+(Pound sterling, not so used nowadays), then put that in your ‘.emacs’
+file:
+
+     (use-package uniline-hydra
+       :bind ("C-£" . uniline-mode))
+
+   The tilde ‘~’ character is not always easy to type under MacOs.
+Sometimes it is bound to ‘M-n’, but not always.  See *note Keyboard
+bindings:: for how to bind tilde ‘~’ and other keys.
+
+
+File: uniline.info,  Node: Compatibility with ASCIIFlow,  Prev: Emacs on MacOS,  Up: How Uniline behaves with its environment?
+
+13.14 Compatibility with ASCIIFlow
 ==================================
 
 ASCIIFlow is a ASCII-UNICODE diagram drawing tool (as Uniline).  It
@@ -2882,96 +2964,98 @@ along with this program.  If not, see <http://www.gnu.org/licenses/>.
 
 Tag Table:
 Node: Top171
-Node: Getting started in 10 seconds3293
-Node: New3899
-Node: Gallery pure UNICODE diagrams in Emacs4163
-Node: Document a command4852
-Node: Connect boxes with arrows5385
-Node: Explain decisions trees6705
-Node: Draw lines or blocks8211
-Node: Outline the General Relativity and the Schrödinger's equations9753
-Node: Explain the structure of a sentence in a foreign language12442
-Node: Draw electronic diagrams14028
-Node: Explain Lisp lists15433
-Node: Draw sketched objects16616
-Node: Replace words with simple sketches18606
-Node: Visualize floating point layouts19189
-Node: Illustrate proportions21208
-Node: Pure text22684
-Node: Beware!23419
-Node: A minor mode for drawing24002
-Node: Minor mode24314
-Node: Draw lines by moving the cursor24876
-Node: Infinite ∞ buffer25468
-Node: Brush style26749
-Node: Text direction29334
-Node: The <insert> key29884
-Node: Glyphs ▷ ▶ → □ ◆ ╮─ insertion & modification30884
-Node: Arrows glyphs ▷ ▶ → ▹ ▸ ↔31601
-Node: Intersection glyphs ■ ◆ ●33173
-Node: Fine tweaking of lines36003
-Node: Rectangular actions37886
-Node: Drawing a rectangle39257
-Node: Filling a rectangle40908
-Node: Moving a rectangular region41676
-Node: Copying killing yanking a rectangular region44245
-Node: Dashed lines and other styles45440
-Node: ASCII to UNICODE49565
-Node: UNICODE to ASCII53273
-Node: Long range actions contour and flood-fill53771
-Node: Tracing a contour54034
-Node: Flood-fill55948
-Node: Macros57722
-Node: Which fonts?61113
-Node: Recommended fonts61374
-Node: Use case mixing fonts63464
-Node: Hydra or Transient?65461
-Node: Selecting Hydra or Transient66450
-Node: Instantly selecting Hydra or Transient67568
-Node: One-liner menus68534
-Node: The Hydra interface70472
-Node: The Transient interface71145
-Node: Customization71683
-Node: Interface type72551
-Node: Insert key73077
-Node: Maximum steps when drawing a contour73859
-Node: Cursor type74189
-Node: Hint style74514
-Node: Welcome message visibility74861
-Node: Line spacing75242
-Node: Font76708
-Node: Upward infiniteness ∞77224
-Node: How Uniline behaves with its environment?77754
-Node: Language environment78371
-Node: Mouse support80758
-Node: Compatibility with Picture-mode81715
-Node: Compatibility with Artist-mode82655
-Node: Compatibility with Whitespace-mode83174
-Node: Compatibility with Org Mode84074
-Node: Org Mode and LaTex85495
-Node: What about \t tabs?87355
-Node: What about ^L page separation?88156
-Node: Emacs on the Linux console88779
-Node: Emacs on a graphical terminal emulator89741
-Node: Emacs on Windows90671
-Node: Compatibility with ASCIIFlow91352
-Node: Lisp API92308
-Node: Move the cursor92857
-Node: Brush93288
-Node: Example Lisp function to draw a plus sign94157
-Node: Long range actions (contour flood-fill rectangle)95993
-Node: Constants96931
-Node: Macro and text direction97346
-Node: Insert and tweak glyphs98281
-Node: Change to alternate styles99394
-Node: Installation100303
-Node: use-package the straightforward way100542
-Node: Without use-package102927
-Node: Related packages104488
-Node: Emacs104669
-Node: Non Emacs108031
-Node: Author contributors109943
-Node: License112054
+Node: Getting started in 10 seconds3334
+Node: New3940
+Node: Gallery pure UNICODE diagrams in Emacs4204
+Node: Document a command4893
+Node: Connect boxes with arrows5426
+Node: Explain decisions trees6746
+Node: Draw lines or blocks8252
+Node: Outline the General Relativity and the Schrödinger's equations9794
+Node: Explain the structure of a sentence in a foreign language12483
+Node: Draw electronic diagrams14069
+Node: Explain Lisp lists15474
+Node: Draw sketched objects16657
+Node: Replace words with simple sketches18647
+Node: Visualize floating point layouts19230
+Node: Illustrate proportions21249
+Node: Pure text22725
+Node: Beware!23460
+Node: A minor mode for drawing24043
+Node: Minor mode24355
+Node: Draw lines by moving the cursor24917
+Node: Infinite ∞ buffer25509
+Node: Brush style26790
+Node: Text direction29375
+Node: The <insert> key29925
+Node: Glyphs ▷ ▶ → □ ◆ ╮─ insertion & modification30925
+Node: Arrows glyphs ▷ ▶ → ▹ ▸ ↔31642
+Node: Intersection glyphs ■ ◆ ●33214
+Node: Fine tweaking of lines36044
+Node: Rectangular actions37927
+Node: Drawing a rectangle39298
+Node: Filling a rectangle40949
+Node: Moving a rectangular region41717
+Node: Copying killing yanking a rectangular region44286
+Node: Dashed lines and other styles45481
+Node: ASCII to UNICODE49606
+Node: UNICODE to ASCII53314
+Node: Long range actions contour and flood-fill53812
+Node: Tracing a contour54075
+Node: Flood-fill55989
+Node: Macros57763
+Node: Which fonts?61154
+Node: Recommended fonts61415
+Node: Use case mixing fonts63505
+Node: Hydra or Transient?65502
+Node: Selecting Hydra or Transient66491
+Node: Instantly selecting Hydra or Transient67609
+Node: One-liner menus68575
+Node: The Hydra interface70513
+Node: The Transient interface71186
+Node: Customization71724
+Node: Interface type72614
+Node: Insert key73140
+Node: Keyboard bindings73903
+Node: Maximum steps when drawing a contour75823
+Node: Cursor type76160
+Node: Hint style76485
+Node: Welcome message visibility76832
+Node: Line spacing77213
+Node: Font78679
+Node: Upward infiniteness ∞79195
+Node: How Uniline behaves with its environment?79727
+Node: Language environment80363
+Node: Mouse support82750
+Node: Compatibility with Picture-mode83707
+Node: Compatibility with Artist-mode84647
+Node: Compatibility with Whitespace-mode85166
+Node: Compatibility with Org Mode86066
+Node: Org Mode and LaTex87487
+Node: What about \t tabs?89347
+Node: What about ^L page separation?90148
+Node: Emacs on the Linux console90771
+Node: Emacs on a graphical terminal emulator91733
+Node: Emacs on Windows92663
+Node: Emacs on MacOS93330
+Node: Compatibility with ASCIIFlow94393
+Node: Lisp API95347
+Node: Move the cursor95896
+Node: Brush96327
+Node: Example Lisp function to draw a plus sign97196
+Node: Long range actions (contour flood-fill rectangle)99032
+Node: Constants99970
+Node: Macro and text direction100385
+Node: Insert and tweak glyphs101320
+Node: Change to alternate styles102433
+Node: Installation103342
+Node: use-package the straightforward way103581
+Node: Without use-package105966
+Node: Related packages107527
+Node: Emacs107708
+Node: Non Emacs111070
+Node: Author contributors112982
+Node: License115093
 
 End Tag Table
 

@@ -91,6 +91,7 @@ Select a rectangle, then =INS= =s= =A=.
 - [[#customization][Customization]]
   - [[#interface-type][Interface type]]
   - [[#insert-key][Insert key]]
+  - [[#keyboard-bindings][Keyboard bindings]]
   - [[#maximum-steps-when-drawing-a-contour][Maximum steps when drawing a contour]]
   - [[#cursor-type][Cursor type]]
   - [[#hint-style][Hint style]]
@@ -111,6 +112,7 @@ Select a rectangle, then =INS= =s= =A=.
   - [[#emacs-on-the-linux-console][Emacs on the Linux console]]
   - [[#emacs-on-a-graphical-terminal-emulator][Emacs on a graphical terminal emulator]]
   - [[#emacs-on-windows][Emacs on Windows]]
+  - [[#emacs-on-macos][Emacs on MacOS]]
   - [[#compatibility-with-asciiflow][Compatibility with ASCIIFlow]]
 - [[#lisp-api][Lisp API]]
   - [[#move-the-cursor][Move the cursor]]
@@ -1678,6 +1680,61 @@ events as the =INS= key.
 
 Variable =uniline-key-insert=.
 
+** Keyboard bindings
+:PROPERTIES:
+:CUSTOM_ID: keyboard-bindings
+:END:
+Suppose you want to change the tilde key to some other key. Uniline
+binds the =~= tilde key to the =uniline-set-brush-dot-toggle=
+function. (This function toggles the brush to 3 styles of lines:
+coarse dots, fine dots, plain lines, and again.)
+
+On MacOs, =~= is not always readily available. So, you may want to use
+=M-n= instead (which happens to sometime insert a tilde on MacOs, but
+not always). To do so, the =bind-key= or =keymap-set= functions are
+handy:
+
+#+begin_src elisp
+;; do this:
+(bind-key "M-n" 'uniline-set-brush-dot-toggle uniline-mode-map)
+;; or that:
+(keymap-set uniline-mode-map "M-n" 'uniline-set-brush-dot-toggle)
+#+end_src
+
+One of those instructions can be written in your =.emacs= file. But
+beware that Uniline must already have been loaded for =uniline-mode-map=
+to be defined.
+
+One way is to delay those instructions until Uniline is loaded. Example:
+
+#+begin_src elisp
+(eval-after-load 'uniline-core
+  '(bind-key "M-n" 'uniline-set-brush-dot-toggle uniline-mode-map))
+#+end_src
+
+Another way is to delegate time dependencies to =use-package=. Here are
+two variants, =:config= and =:bind :map=:
+
+#+begin_src elisp
+;; first option:
+(use-package uniline-hydra
+  :defer 12
+  :config
+  ;; do this:
+  (bind-key "M-n" 'uniline-set-brush-dot-toggle uniline-mode-map)
+  ;; or that:
+  (keymap-set uniline-mode-map "M-n" 'uniline-set-brush-dot-toggle))
+
+;; second option:
+(use-package uniline-hydra
+  :defer 12
+  :bind (:map uniline-mode-map
+              ("M-n" . uniline-set-brush-dot-toggle)))))
+#+end_src
+
+Look at the =uniline-mode-map= variable to see the top-level key-bindings that
+Uniline defines (locally and while in =uniline-mode=).
+
 ** Maximum steps when drawing a contour
 :PROPERTIES:
 :CUSTOM_ID: maximum-steps-when-drawing-a-contour
@@ -2093,6 +2150,31 @@ the required Unicodes to draw lines. A few glyphs produce unaligned
 result though. They should be avoided under =Consolas=: =△▶▹◆=
 
 Of course, other fonts may be installed. It is quite easy.
+
+** Emacs on MacOS
+:PROPERTIES:
+:CUSTOM_ID: emacs-on-macos
+:END:
+The MacOS keyboards are different from the Linux or Windows
+ones. Particularly they are missing the insert and the tilde keys.
+
+The insert key is used for launching sub-menus, implemented in Hydra
+or Transient. The key to launch those sub-menus is customizable. See
+[[#insert-key][Insert key]].
+
+The control insert key (=C-INS=) is also the recommended binding to
+=uniline-mode= for entering and exiting Uniline. See [[#installation][Installation]]. If
+you, instead, want to bind =uniline-mode= to =C-£= (Pound sterling,
+not so used nowadays), then put that in your =.emacs= file:
+
+#+begin_src elisp
+(use-package uniline-hydra
+  :bind ("C-£" . uniline-mode))
+#+end_src
+
+The tilde =~= character is not always easy to type under
+MacOs. Sometimes it is bound to =M-n=, but not always.
+See [[#keyboard-bindings][Keyboard bindings]] for how to bind tilde =~= and other keys.
 
 ** Compatibility with ASCIIFlow
 :PROPERTIES:
