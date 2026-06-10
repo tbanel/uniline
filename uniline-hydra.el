@@ -99,6 +99,13 @@
 
 (require 'hydra nil t)
 
+(eval-when-compile
+  ;; The `hydra--doc' function is responsible for a bloated
+  ;; uniline-hydra.elc compiled file.
+  ;; Let us de-activate it during Uniline compilation
+  (defalias 'hydra--doc-saved (symbol-function 'hydra--doc))
+  (defalias 'hydra--doc (lambda (_body-key _body-name _heads) "")))
+
 (unless (featurep 'hydra)
   (eval-and-compile
     (defun uniline-launch-interface ()
@@ -427,6 +434,11 @@ just put everything in sync."
 
 (defvar uniline--current-interface)
 (setq uniline--current-interface ?h)
+
+(eval-when-compile
+  ;; As Uniline compilation is done, let us restore `hydra--doc'
+  ;; to its original definition.
+  (defalias 'hydra--doc (symbol-function 'hydra--doc-saved)))
 
 (provide 'uniline-hydra)
 ;;; uniline-hydra.el ends here
