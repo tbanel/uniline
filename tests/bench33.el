@@ -22,10 +22,10 @@
 ;; Test leakage when moving a rectangle down, from all styles of lines:
 ;; plain, 3-dotted, 4-dotted, thin and thick, double, block
 
-(let ((uniline-infinite-up↑ t))
-  (uniline-bench
-   ""
-   "<insert> s <right>
+(uniline-bench
+ ""
+
+ "<insert> s <right>
  <kp-add> 2*<right> <down> 3*<right> 3*<up> 3*<right> 2*<down>
  # 6*<right> 2*<up> 3*<right> 4*<up> 5*<right> <down> 4*<right> 4*<down> 2*<right>
  <return> 4*<right> 3*a <up> 2*<left> 6*a <up> 4*<left> 6*a 4*SPC 4*a <down> 3*<left> 2*a <down> 3*<left> <right>
@@ -40,7 +40,8 @@
  <return> <right>
  <insert> C-<up> 5*y
  <insert> C-<right> 3*y"
-   "\
+
+ "\
                                                             yyy
                                                             y
                                                ╭─────╮      y
@@ -51,4 +52,6 @@
       ┃  ┃  ▛▀    ▙▖  │aaa╭─╮aaaaaaaaa╭╯      
 □╼━┓  ┃  ╹▀▀▘         ╰───╯ ╰─────────╯
    ┗━━┛
-"))
+"
+
+ 'uniline-infinite-up↑ t)

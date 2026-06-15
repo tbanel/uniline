@@ -19,10 +19,10 @@
 ;; You should have received a copy of the GNU General Public License
 ;; along with this program.  If not, see <http://www.gnu.org/licenses/>.
 
-(let ((uniline-infinite-up↑ nil))
-  (uniline-bench
-   ""
-   "<return> 3*<right>
+(uniline-bench
+ ""
+
+ "<return> 3*<right>
  <insert> C-<down>   tttt
  <insert> C-<right>  yyyyyy
  <insert> C-<up>     hhhhh
@@ -50,7 +50,8 @@
  M-< <return> 3*<right> # <insert> c
  <return> <home> 12*<down> <end> C-a M-f <insert> c
  # <insert> c"
-   "\
+
+ "\
   ▐t▖   ▐gggga▖   ▐ii▄▖  ▗▟ii▖
   ▐t▌   ▐h▛▀▜a▌   ▝▜ii▙▖▗▟ii▛▘
   ▐t▌   ▐h▌ ▐a▌    ▝▜ii▙▟ii▛▘
@@ -69,4 +70,7 @@ ggggg█▙▖
 hh▙▄▟█h▛▀▘
 ▜hhhhhh▌
 ▝▀▀▀▀▀▀▘
-"))
+"
+
+ 'uniline-infinite-up↑ nil)
+

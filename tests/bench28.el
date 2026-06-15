@@ -19,10 +19,10 @@
 ;; You should have received a copy of the GNU General Public License
 ;; along with this program.  If not, see <http://www.gnu.org/licenses/>.
 
-(let ((uniline-infinite-up↑ nil))
-  (uniline-bench
-   "aa\t\ta\t\ta\t\t\t\t    \t\t   a
+(uniline-bench
+ "aa\t\ta\t\ta\t\t\t\t    \t\t   a
 "
+
  "2*C-k 29*C-y
  M-< 5*<right> <down> 3*<right> <down> 2*<right>
  7*<right> 2*<down> 9*<left> <up> 16*<right> 2*<up> 12*<right> 3*<down> 10*<left>
@@ -40,7 +40,8 @@
  <return> 4*<right> 6*<down> 10*<left>
  C-SPC <insert> y
  <down> <right> <return>"
-"\
+
+ "\
 aa───╮  	a	       ╷a╷      			    		   a
 aa   ╰──╮       a	╭──────┼a┼──╮   			    		   a
 aa	╰───────a╮      │      │a│  │   			    		   a
@@ -71,4 +72,7 @@ aa		a	       │a│      			    		   a
 aa		a	       │a│      			    		   a
 aa		a	       │a│      			    		   a
                                ╰─╯
-"))
+"
+
+'uniline-infinite-up↑ nil)
+

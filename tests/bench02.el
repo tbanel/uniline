@@ -19,13 +19,13 @@
 ;; You should have received a copy of the GNU General Public License
 ;; along with this program.  If not, see <http://www.gnu.org/licenses/>.
 
-(let ((uniline-infinite-up↑ nil))
-  (uniline-bench
-   "\
+(uniline-bench
+ "\
 initial text
   good
 "
-   "C-SPC <down> 12*<right> <insert>
+
+ "C-SPC <down> 12*<right> <insert>
  2*<down> 3*<right> R
  <end> <return>
  <down>
@@ -44,7 +44,8 @@ initial text
  5*<left>
  <insert> o
  6*<left> <up>"
-   "\
+
+ "\
                     ╷
                     │
   ╭────────────╮ ╭──╯ ╭────────────╮ ╭──╯
@@ -52,4 +53,6 @@ initial text
   │  good      ├─╯    │  good      ├─╯   
   ╰──────╥─────╯      ╰───╥────────╯     
          ╚═════·════▫═════╝
-"))
+"
+
+ 'uniline-infinite-up↑ nil)

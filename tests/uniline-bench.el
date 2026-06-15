@@ -47,13 +47,54 @@
 t if the bench ran as expected.
 nil if there was an error.")
 
-(defun uniline-bench (initial commands result)
+(defvar uniline-bench-all-custom-variables
+  '(uniline-contour-max-steps
+    uniline-cursor-type
+    uniline-hint-style
+    uniline-infinite-up↑
+    uniline-key-insert
+    uniline-prefix-for-setting-brush
+    uniline-show-welcome-message))
+
+(defun uniline-bench-set-settings (custom)
+  (let ((settings (list 'a 'a)))
+    (cl-loop
+     for var in uniline-bench-all-custom-variables
+     do
+     (plist-put
+      settings
+      var
+      (eval (car (get var 'standard-value)))))
+    (cl-loop
+     for setting on custom
+     do
+     (plist-put settings (car setting) (cadr setting))
+     (setq setting (cdr setting)))
+    (cl-loop
+     for var in uniline-bench-all-custom-variables
+     for val = (plist-get settings var)
+     unless (equal (eval var) val)
+     do (setopt--set var val))
+    settings))
+
+(defun uniline-bench-record-settings ()
+  (let ((current
+         (cl-loop
+          for var in uniline-bench-all-custom-variables
+          collect var
+          collect (eval var))))
+    current))
+
+(defun uniline-bench (initial commands result &rest settings)
   "Run a bench.
 COMMANDS is a string describing a sequence of keyboard strokes,
 supposed to draw a sketch using uniline minor-mode.
 Its format is the one used to store keyboard macros.
 RESULT is a string representing the expected result.
-INITIAL is the initial content of the buffer"
+INITIAL is the initial content of the buffer.
+SETTINGS is a plist of desired values for uniline custom variables,
+it can be empty. After bench completion, all custom variables
+recover their previous values."
   (ignore-errors (kill-buffer "*uniline-interactive*"))
   (switch-to-buffer "*uniline-interactive*")
   (insert initial)
@@ -68,7 +109,12 @@ INITIAL is the initial content of the buffer"
   (setq uniline--which-quadrant (uniline--char-to-4quadb ?▘))
   (uniline-set-brush-1)
   (uniline-set-brush-0dots)
-  (execute-kbd-macro (kbd commands))
+  (let ((old-settings (uniline-bench-record-settings)))
+    (uniline-bench-set-settings (append '(uniline-show-welcome-message nil) settings))
+    (condition-case err
+        (execute-kbd-macro (kbd commands))
+      (error (message "error handled: %S" err)))
+    (uniline-bench-set-settings old-settings))
 
   (when nil
     ;; ignore trailing spaces in resulting drawing

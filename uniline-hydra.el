@@ -106,20 +106,23 @@
   (defalias 'hydra--doc-saved (symbol-function 'hydra--doc))
   (defalias 'hydra--doc (lambda (_body-key _body-name _heads) "")))
 
-(unless (featurep 'hydra)
-  (eval-and-compile
-    (defun uniline-launch-interface ()
-      "Fake function only when Hydra requested but not installed"
-      (interactive)
-      (warn "Uniline-Hydra requested, but Hydra is not installed."))))
+(static-if (featurep 'hydra)
+    (progn)
+  (defun uniline-launch-interface ()
+    "Fake function only when Hydra requested but not installed"
+    (interactive)
+    (warn "Uniline-Hydra requested, but Hydra is not installed."))
+  (defun uniline-toggle-hints (&optional _notoggle)
+    "Fake function only when Hydra requested but not installed"
+    (interactive)))
 
 (eval-and-compile
   (declare-function uniline-transient-customize nil ())
   (put 'uniline-transient-customize 'interactive-only nil) ;; to avoid a warning
   (declare-function uniline-customize-hydra-or-transient (type)))
 
-(when (featurep 'hydra)
-  (eval-and-compile
+(static-if (featurep 'hydra)
+  (progn
 
     (defun uniline--is-font-str (letter)
       "Return a tick-glyph ▶ if current font is the one presented by LETTER."
@@ -133,12 +136,12 @@
         "_\\([dhcjbfsiIuapP]\\)_ "
         "_\\1_%s(uniline--is-font-str ?\\1)"
         "\
-╭^─Try a font^──^─^───────────^─^───────────────────╮╭^─^───^─^──────╮
-│_d_ DejaVu     _b_ JetBrains _i_ Iosevka Comfy     ││_*_ ^^configure│
-│_h_ Hack       _f_ FreeMono  _I_ Iosevka Comfy Wide││_C-t_^^ tg hint│
-│_c_ Cascadia   _a_ Agave     _p_ Aporetic Sans     ││_?_ ^^info-mode│
-│_j_ JuliaMono  _u_ Unifont   _P_ Aporetic Serif    ││_RET_ _q_  exit│
-│_s_ Source Code Pro^^╭───────^─^───────────────────╯╰^─^───^─^──────╯
+╭^─Try a font^──^─^───────────^─^───────────────────╮╭^─^───^─^──────────╮
+│_d_ DejaVu     _b_ JetBrains _i_ Iosevka Comfy     ││_*_ ^^configure    │
+│_h_ Hack       _f_ FreeMono  _I_ Iosevka Comfy Wide││_C-t_^^ tg hint    │
+│_c_ Cascadia   _a_ Agave     _p_ Aporetic Sans     ││_?_ ^^info-mode    │
+│_j_ JuliaMono  _u_ Unifont   _P_ Aporetic Serif    ││_<return>_ _q_ exit│
+│_s_ Source Code Pro^^╭───────^─^───────────────────╯╰^─^───^─^──────────╯
 ╰^─^────────────^─^───╯"))
       ("d" uniline--set-font-d)
       ("u" uniline--set-font-u)
@@ -157,8 +160,8 @@
       ("C-t" uniline-toggle-hints)
       ("TAB" uniline-toggle-hints)
       ("?"  (info "(uniline) Which fonts?"))
-      ("q"   () :exit t)
-      ("RET" () :exit t))
+      ("q"        () :exit t)
+      ("<return>" () :exit t))
 
     (defhydra uniline-hydra-customize
       (:hint nil :exit t)
@@ -179,7 +182,7 @@
       ("T" (uniline-customize-hydra-or-transient "transient"))
       ("l" (customize-variable (intern "line-spacing")))) ;; intern to avoid a quote
 
-    (defhydra uniline-hydra-arrows
+    (defhydra uniline-hydra-arrows-classic
       (:hint nil :exit nil)
       ;; Docstring MUST begin with an empty line to benefit from substitutions
       (concat
@@ -187,13 +190,13 @@
         "Text dir────"
         "Text dir─╴%s(uniline-text-direction-str)╶"
         "\
-╭^─^─^Insert glyph^^^^^─^─^───╮╭─╮╭^Rotate arrow^╮╭^Contour^╮╭^Text dir────^╮╭^─^─^─^─────────╮
-│_a_,_A_rrow ▷ ▶ → ▹ ▸ ↔^^^^^^││-│╭^Tweak glyph─^╮│_c_ draw ││_C-<left>_  ← ││_*_^^ customize │
-│_s_,_S_quare  □ ■ ◆ ◊  ^^^^^^││+││_S-<left>_  ← ││_C_ ovwrt││_C-<right>_ → ││_f_^^      font │
-│_o_,_O_-shape · ● ◦ Ø ø^^^^^^││=││_S-<right>_ → │╰^───────^╯│_C-<up>_    ↑ ││_?_^^      info │
-│_x_,_X_-cross ╳ ÷ × ± ¤^^^^^^││#││_S-<up>_    ↑ │╭^─Fill──^╮│_C-<down>_  ↓ ││_q_ _RET_  exit │
-│_SPC_,_DEL_ grey  ░▒▓█ ^^^^^^││~││_S-<down>_  ↓ ││_i_ fill │╰^─^───────────╯╰^─^─^─^─────────╯
-╰^─^─^─^─^─^─^─^─^─^──────────╯╰─╯╰^────────────^╯╰^───────^╯"))
+╭^─^─^Insert glyph^^^^^─^─^───╮╭^^self╮╭^Rotate arrow^╮╭^Contour^╮╭^Text dir───^╮╭^─^───────╮         
+│_a_,_A_rrow ▷ ▶ → ▹ ▸ ↔^^^^^^││_-_ - │╭^Tweak glyph─^╮│_c_ draw ││_C-<left>_  ←││_*_ custom│         
+│_s_,_S_quare  □ ■ ◆ ◊  ^^^^^^││_+_ + ││_S-<left>_  ← ││_C_ ovwrt││_C-<right>_ →││_f_   font│         
+│_o_,_O_-shape · ● ◦ Ø ø^^^^^^││_=_ = ││_S-<right>_ → │╭^─Fill──^╮│_C-<up>_    ↑││_?_   info│         
+│_x_,_X_-cross ╳ ÷ × ± ¤^^^^^^││_#_ # ││_S-<up>_    ↑ ││_i_ fill ││_C-<down>_  ↓││_q_   exit│         
+│_SPC_,_DEL_ grey  ░▒▓█ ^^^^^^││_~_ ~ ││_S-<down>_  ↓ │╰^───────^╯╰^─^──────────╯╰^─^───────╯         
+╰^─^─^─^─^─^─^─^─^─^──────────╯╰^^────╯╰^────────────^╯"))
       ("a" uniline-insert-fw-arrow )
       ("A" uniline-insert-bw-arrow )
       ("s" uniline-insert-fw-square)
@@ -228,7 +231,60 @@
       ("*" uniline-hydra-customize/body :exit t)
       ("?"  (info "uniline") :exit t)
       ("q"   ()              :exit t)
-      ("RET" ()              :exit t))
+      ("<return>" ()         :exit t))
+
+    (defhydra uniline-hydra-arrows-brush
+      (:hint nil :exit nil)
+      ;; Docstring MUST begin with an empty line to benefit from substitutions
+      (concat
+       (string-replace
+        "Text dir────"
+        "Text dir─╴%s(uniline-text-direction-str)╶"
+            "\
+╭^─^─^Insert glyph^^^^^─^─^───╮╭^^brush───────^^───╮╭^Rotate arrow^╮╭^Contour^╮╭^Text dir───^╮╭^─^───────╮       
+│_a_,_A_rrow ▷ ▶ → ▹ ▸ ↔^^^^^^││_-_ light  _+_ bold│╭^Tweak glyph─^╮│_c_ draw ││_C-<left>_  ←││_*_ custom│       
+│_s_,_S_quare  □ ■ ◆ ◊  ^^^^^^││_=_ double _#_ quad││_S-<left>_  ← ││_C_ ovwrt││_C-<right>_ →││_f_   font│       
+│_o_,_O_-shape · ● ◦ Ø ø^^^^^^││_~_ dotted       ^^││_S-<right>_ → │╭^─Fill──^╮│_C-<up>_    ↑││_?_   info│       
+│_x_,_X_-cross ╳ ÷ × ± ¤^^^^^^││_<return>_ none  ^^││_S-<up>_    ↑ ││_i_ fill ││_C-<down>_  ↓││_q_   exit│       
+│_SPC_,_DEL_ grey  ░▒▓█ ^^^^^^││_<delete>_ erase ^^││_S-<down>_  ↓ │╰^───────^╯╰^─^──────────╯╰^─^───────╯       
+╰^─^─^─^─^─^─^─^─^─^──────────╯╰^^───────────^^────╯╰^────────────^╯"))
+      ("a" uniline-insert-fw-arrow )
+      ("A" uniline-insert-bw-arrow )
+      ("s" uniline-insert-fw-square)
+      ("S" uniline-insert-bw-square)
+      ("o" uniline-insert-fw-oshape)
+      ("O" uniline-insert-bw-oshape)
+      ("x" uniline-insert-fw-cross )
+      ("X" uniline-insert-bw-cross )
+      ("SPC" uniline-insert-fw-grey)
+      ("DEL" uniline-insert-bw-grey)
+      ("S-<left>"  uniline-rotate-lf←)
+      ("S-<right>" uniline-rotate-ri→)
+      ("S-<up>"    uniline-rotate-up↑)
+      ("S-<down>"  uniline-rotate-dw↓)
+      ("C-<right>" uniline-text-direction-ri→ :exit t)
+      ("C-<left>"  uniline-text-direction-lf← :exit t)
+      ("C-<up>"    uniline-text-direction-up↑ :exit t)
+      ("C-<down>"  uniline-text-direction-dw↓ :exit t)
+      ("<return>"      uniline-set-brush-nil        :exit t)
+      ("<delete>"      uniline-set-brush-0          :exit t)
+      ("<deletechar>"  uniline-set-brush-0          :exit t)
+      ("<kp-subtract>" uniline-set-brush-1          :exit t)
+      ("<kp-add>"      uniline-set-brush-2          :exit t)
+      ("-"             uniline-set-brush-1          :exit t)
+      ("+"             uniline-set-brush-2          :exit t)
+      ("="             uniline-set-brush-3          :exit t)
+      ("#"             uniline-set-brush-block      :exit t)
+      ("~"             uniline-set-brush-dot-toggle :exit t)
+      ("f" uniline-hydra-fonts/body :exit t)
+      ("c" uniline-contour          :exit t)
+      ("C" (uniline-contour t)      :exit t)
+      ("i" uniline-fill             :exit t)
+      ("C-t" uniline-toggle-hints)
+      ("TAB" uniline-toggle-hints)
+      ("*" uniline-hydra-customize/body :exit t)
+      ("?"  (info "uniline") :exit t)
+      ("q"   ()              :exit t))    
 
     (defhydra uniline-hydra-alt-styles
       (:pre (rectangle-mark-mode 1) :hint nil :exit nil)
@@ -238,7 +294,7 @@
 │_-_ thin   ││_3_ 3x2 dots   ││_0_ standard││_f_    ^^ choose font│
 │_+_ thick  ││_4_ 4x4 dots   ││_a_ aa2u    ││_C-t_  ^^ short hint │
 │_=_ double ││_h_ hard corner││_A_ to ASCII││_?_    ^^ info-mode  │
-╰^─^────────╯╰^─^────────────╯╰─^─^────────╯│_q_ _RET_ exit       │
+╰^─^────────╯╰^─^────────────╯╰─^─^────────╯│_q_ _<return>_ exit  │
  ^ ^          ^ ^              ^ ^          ╰^─^─^─^──────────────╯"
       ("3"             uniline-change-style-dot-3-2)
       ("<kp-3>"        uniline-change-style-dot-3-2)
@@ -271,8 +327,8 @@
       ("C-t"     uniline-toggle-hints)
       ("TAB"     uniline-toggle-hints)
       ("?"      (info "(uniline) Rectangular actions"))
-      ("q"       uniline--rect-quit :exit t)
-      ("RET"     uniline--rect-quit :exit t))
+      ("q"        uniline--rect-quit :exit t)
+      ("<return>" uniline--rect-quit :exit t))
 
     (defhydra uniline-hydra-moverect
       (:pre (rectangle-mark-mode 1) :hint nil :exit nil)
@@ -283,7 +339,7 @@
 │_<left>_  ←││_R_     trace outer││_k_ kill││_+_ ┏━┛││_f_   choose font│
 │_<up>_    ↑││_C-r_   ovewr inner││_y_ yank││_=_ ╔═╝││_C-t_ short hints│
 │_<down>_  ↓││_C-S-R_ ovewr outer│╰^^──────╯│_#_ ▄▄▟││_?_   info       │
-╰^─────^────╯│_i_     fill       │ ^^╭──────╯_~_ ┄┄┄││_RET_ exit       │
+╰^─────^────╯│_i_     fill       │ ^^╭──────╯_~_ ┄┄┄││_<return>_ exit  │
  ^     ^     ╰^────^─────────────╯ ^^│_<delete>_ DEL│╰^───^────────────╯
  ^     ^      ^    ^               ^^╰^────────^────╯"
       ("<right>" uniline-move-rect-ri→)
@@ -319,7 +375,7 @@
       ("f"     uniline-hydra-fonts/body      :exit t)
       ("s"     uniline-hydra-alt-styles/body :exit t)
       ("C-x C-x" rectangle-exchange-point-and-mark)
-      ("RET"   uniline--rect-quit :exit t))
+      ("<return>" uniline--rect-quit :exit t))
 
     (defun uniline-launch-interface ()
       "Choose between two Hydras based on selection.
@@ -331,17 +387,20 @@ Otherwise, the arrows & shapes hydra is invoked."
       (let ((message-log-max))       ; avoid hint copied in *Messages*
         (if (region-active-p)
             (uniline-hydra-moverect/body)
-          (uniline-hydra-arrows/body))))
+          (defvar uniline-prefix-for-setting-brush)
+          (if uniline-prefix-for-setting-brush
+              (uniline-hydra-arrows-brush/body)
+            (uniline-hydra-arrows-classic/body)))))
 
     (defhydra uniline-hydra-macro-exec
       (:hint nil :exit nil)
       ;; Docstring MUST begin with an empty line to benefit from substitutions
       "
-╭^╴Call macro╶^───╮╭^^^^──────────────╮
-│_e_ usual call   ││_C-t_^^ short hint│
-│_<right>_ call → ││_?_ ^^  info-mode │
-│_<left>_  call ← ││_q_ _RET_ exit    │
-│_<up>_    call ↑ │╰^─^─^───^─────────╯
+╭^╴Call macro╶^───╮╭^^^^───────────────╮
+│_e_ usual call   ││_C-t_^^ short hint │
+│_<right>_ call → ││_?_ ^^  info-mode  │
+│_<left>_  call ← ││_q_ _<return>_ exit│
+│_<up>_    call ↑ │╰^─^─^───^──────────╯
 │_<down>_  call ↓ │
 ╰^^───────────────╯"
       ("e"       (kmacro-end-and-call-macro 1))
@@ -352,8 +411,8 @@ Otherwise, the arrows & shapes hydra is invoked."
       ("C-t" uniline-toggle-hints)
       ("TAB" uniline-toggle-hints)
       ("?"  (info "(uniline) Macros"))
-      ("q"   () :exit t)
-      ("RET" () :exit t))
+      ("q"        () :exit t)
+      ("<return>" () :exit t))
 
     (defun uniline-macro-exec ()
       (interactive)
@@ -366,10 +425,18 @@ Otherwise, the arrows & shapes hydra is invoked."
     ;; Pack 2 hints in the usual uniline-hydra-*/hint variables
     ;; one is the standard hint created by `defhydra'
     ;; the other is a one-liner
+    (defvar uniline-hint-style)
     (setq
-     uniline-hydra-arrows/hint
+     uniline-hydra-arrows-classic/hint
      `(if (eq uniline-hint-style t)
-          ,uniline-hydra-arrows/hint
+          ,uniline-hydra-arrows-classic/hint
+        ,(eval-when-compile
+           (uniline--color-hint
+            'hydra-face-red
+            "glyph:^aAsSoOxX SPC DEL-+=#~^ arr&tweak:^S-→←↑↓^ txt-dir:^C-→←↑↓^ ^c^ontour f^i^ll ^f^ont ^*^ ^C-t^")))
+     uniline-hydra-arrows-brush/hint
+     `(if (eq uniline-hint-style t)
+          ,uniline-hydra-arrows-brush/hint
         ,(eval-when-compile
            (uniline--color-hint
             'hydra-face-red
@@ -415,12 +482,14 @@ Otherwise, the arrows & shapes hydra is invoked."
 When NOTOGGLE is t, do not toggle `uniline-hint-style',
 just put everything in sync."
       (interactive)
+      (defvar uniline-hint-style)
       (unless notoggle
         (setq uniline-hint-style
               (if (eq uniline-hint-style t) 1 t)))
       (cl-loop
        for hydra in
-       '(uniline-hydra-arrows
+       '(uniline-hydra-arrows-classic
+         uniline-hydra-arrows-brush
          uniline-hydra-fonts
          uniline-hydra-customize
          uniline-hydra-moverect

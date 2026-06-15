@@ -4183,6 +4183,7 @@ TYPE is \"hydra\" or \"transient\"."
 (defun uniline--propagate-cursor-type (_symbol value)
   "When customizing the cursor type, this function propagate
 the new value to all buffers where uniline minor mode is active."
+  (defvar uniline-cursor-type)
   (setq uniline-cursor-type value)
   (cl-loop
    for buff being buffers
@@ -4219,6 +4220,7 @@ so any possible choice is available."
 (defun uniline--propagate-hint-style (symbol value)
   "When customizing the cursor type, this function propagate
 the new value to all buffers where uniline minor mode is active."
+  (defvar uniline-hint-style value)
   (setq uniline-hint-style value)
   (cl-loop
    for buff being buffers
@@ -4497,18 +4499,8 @@ And backup previous settings."
   ;;         ╭───╴without that, mouse-1 on mode-line does not display the menu
   ;;         ▽
   :lighter (:eval (format " %sUniline%s" uniline--mode-line-dir uniline--mode-line-brush))
-  :keymap  ;; defines uniline-mode-map
-  '(([right]   . uniline-write-ri→)
-    ([left ]   . uniline-write-lf←)
-    ([up   ]   . uniline-write-up↑)
-    ([down ]   . uniline-write-dw↓)
-    ([C-right] . uniline-overwrite-ri→)
-    ([C-left ] . uniline-overwrite-lf←)
-    ([C-up   ] . uniline-overwrite-up↑)
-    ([C-down ] . uniline-overwrite-dw↓)
-    ([insert]      . uniline-launch-interface)
-    ([insertchar]  . uniline-launch-interface)
-    ([?\r]           . uniline-set-brush-nil)
+  :keymap ;; defines uniline-mode-map
+  '(([?\r]           . uniline-set-brush-nil)
     ([delete]        . uniline-set-brush-0)
     ([deletechar]    . uniline-set-brush-0)
     ("-"             . uniline-set-brush-1)
@@ -4518,6 +4510,16 @@ And backup previous settings."
     ("="             . uniline-set-brush-3)
     ("#"             . uniline-set-brush-block)
     ("~"             . uniline-set-brush-dot-toggle)
+    ([right]   . uniline-write-ri→)
+    ([left ]   . uniline-write-lf←)
+    ([up   ]   . uniline-write-up↑)
+    ([down ]   . uniline-write-dw↓)
+    ([C-right] . uniline-overwrite-ri→)
+    ([C-left ] . uniline-overwrite-lf←)
+    ([C-up   ] . uniline-overwrite-up↑)
+    ([C-down ] . uniline-overwrite-dw↓)
+    ([insert]      . uniline-launch-interface)
+    ([insertchar]  . uniline-launch-interface)
     ([?\C-x ?e]      . uniline-macro-exec)
     ([?\C-h ?\t]        . uniline-toggle-hints-welcome)
     ([?\C-h delete]     . uniline-dismiss-welcome-message)
@@ -4525,6 +4527,38 @@ And backup previous settings."
     ([mouse-1] . uniline-mouse-set-point  )
     ([?\C-c ?\C-c] . uniline-mode))
   :after-hook (if uniline-mode (uniline--mode-pre) (uniline--mode-post)))
+
+(defun uniline--set-key-bindings-brush (set)
+  (cl-loop
+   for key in
+   '(("<return>"       . uniline-set-brush-nil)
+     ("<delete>"       . uniline-set-brush-0)
+     ("<deletechar>"   . uniline-set-brush-0)
+     ("-"              . uniline-set-brush-1)
+     ("<kp-subtract>"  . uniline-set-brush-1)
+     ("+"              . uniline-set-brush-2)
+     ("<kp-add>"       . uniline-set-brush-2)
+     ("="              . uniline-set-brush-3)
+     ("#"              . uniline-set-brush-block)
+     ("~"              . uniline-set-brush-dot-toggle))
+   do (if set
+          (keymap-set uniline-mode-map (car key) (cdr key))
+        (keymap-unset uniline-mode-map (car key) t))))
+
+(defcustom uniline-prefix-for-setting-brush nil
+  "Where are the -,+,=,#,~,DEL,RET keys bound?
+- If nil, those keys are bound to uniline functions at the top-level
+of the uniline-mode. For instance, = is bound to `uniline-set-brush-3'
+which set the bush to double-lines.
+- If not nil, those keys keeps the meaning they had before entering
+uniline-mode. To access the uniline meaning, precede them with INS.
+So for instance to set the brush to double-line type INS ="
+  :type 'boolean
+  :group 'uniline
+  :set (lambda (symbol value)
+         (uniline--set-key-bindings-brush (not value))
+         (set-default-toplevel-value symbol value))
+  )
 
 (defun uniline--keymap-remove-launch-interface (keymap)
   "Remove key-bindings in KEYMAP whose action is `uniline-launch-interface'.
