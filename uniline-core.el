@@ -4367,8 +4367,8 @@ And backup previous settings."
     ╰───┬──╯   ╰─────╢ double ║
         ╰───────▷────╢ box    ║
                      ╚════════╝
-     here╶──────────────╮
-                        ↓
+    ╷here╭──────────────╮
+    ╰────╯              ↓
      △ ╭────────╮ ┏━━━━━┷━━━━━┓
    A │ │ A+X    │ ┃ A+Y       ┃
      │ │        │ ┃           ┃
@@ -4378,123 +4378,172 @@ And backup previous settings."
      ▽ ╰────────╯ ╰───────────╯
        ◀━━━━━━━━▶◀━━━━━━━━━━━━▶
            X           Y
+    v
+    a △      ▗▖         ▗
+    l │   ▗▟▄▟██▖   ▗▄▄▟█
+    u │ ▐▄███████▄ ▟█████▙ ▄▖
+    e ╰╴▝▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀
+        ╰───time────────────▷
 
-    v △      ▗▖         ▗
-    a │   ▗▟▄▟██▖   ▗▄▄▟█
-    l │ ▐▄███████▄ ▟█████▙ ▄▖
-    u─┴╴▝▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀
-    e   ├───time────────────▷
-
-╭─Keyboard arrows────────────╴
+ ╭─────────────────╮
+╭╯ Keyboard arrows ╰──────────────────────────────╴
+│   \\`<right>'   \\`<down>'   \\`<left>'   \\`<up>'
 │ Use keyboard arrows to draw lines ╭─┲━╦═╗
+│ \\`C-<right>' \\`C-<down>' \\`C-<left>' \\`C-<up>'
 │ Use control-arrows to overwrite whatever was there
+│ \\`S-<right>' \\`S-<down>' \\`S-<left>' \\`S-<up>'
 │ Use shift-arrows to extend the selection (or start a selection)
-╰────────────────────────────╴
-╭─Brush style────────────────╴\\<uniline-mode-map>
-│ \\[uniline-set-brush-1]	for thin   lines	╭─┬─╮
-│ \\[uniline-set-brush-2]	for thick  lines	┏━┳━┓
-│ \\[uniline-set-brush-3]	for double lines	╔═╦═╗
-│ \\[uniline-set-brush-block]	for blocks		▙▄▟▀
-│ \\[uniline-set-brush-0]	to erase lines
-│ \\[uniline-set-brush-nil]	to move cursor without drawing
-╰────────────────────────────╴
-╭─Glyphs (region inactive)───╴
-│ \\[uniline-launch-interface] when there is NO region highlighted,
+╰─────────────────────────────────────────────────╴
+ ╭─────────────╮
+╭╯ Brush style ╰──────────────────────────────────╴
+│ \\`<insert> -'         for thin   lines ╰─┴─╯
+│ \\`<insert> +'         for thick  lines ┗━┻━┛
+│ \\`<insert> ='         for double lines ╚═╩═╝
+│ \\`<insert> #'         for blocks       ▙▄▟▛▜
+│ \\`<insert> ~'         to switch between dotted and plain lines
+│ \\`<insert> <delete>'  to erase lines
+│ \\`<insert> <return>'  to move cursor without drawing
+│ depending on the value of `uniline-prefix-for-setting-brush',
+│ the \\`<insert>' prefix can be avoided.
+╰─────────────────────────────────────────────────╴
+ ╭──────────────────────────╮
+╭╯ Glyphs (region inactive) ╰─────────────────────╴
+│ \\`<insert>' when there is NO region highlighted,
 │ enter a sub-mode to draw a single character glyph,
 │ and change its orientation.
-├─Intersection glyphs────────╴
-│ \\`a' or \\`A' arrows ▷ ▶ → ▹ ▸ ↔
-│ \\`s' or \\`S' squares  □ ■ ◆ ◊
-│ \\`o' or \\`O' circles  · ● ◦ Ø ø
-│ \\`x' or \\`X' crosses  ╳ ╱ ╲ ÷ × ± ¤
+│ The \\`<insert>' key can be change to another one by customization.
+│
+├──Intersection glyphs────────────────────────────╴
+│ \\`<insert> a' or \\`<insert> A' arrows   ▷ ▶ → ▹ ▸ ↔
+│ \\`<insert> s' or \\`<insert> S' squares  □ ■ ◆ ◊
+│ \\`<insert> o' or \\`<insert> O' circles  · ● ◦ Ø ø
+│ \\`<insert> x' or \\`<insert> X' crosses  ╳ ╱ ╲ ÷ × ± ¤
 │ Shifting the key cycles backward
-├─Arrow direction────────────╴
-│ \\`S-<right>' point arrow → right
-│ \\`S-<left>'  point arrow ← left
-│ \\`S-<up>'    point arrow ↑ up
-│ \\`S-<down>'  point arrow ↓ down
-├─Tweak 1/4 line─────────────╴
-│ \\`S-<right>' change ¼ line → right
-│ \\`S-<left>'  change ¼ line ← left
-│ \\`S-<up>'    change ¼ line ↑ up
-│ \\`S-<down>'  change ¼ line ↓ down
-├─Text direction─────────────╴
+│
+├──Arrow direction────────────────────────────────╴
+│ When an arrow ▷ ▶ → ▹ ▸ ↔ is under point:
+│ \\`<insert> S-<right>' point arrow → right
+│ \\`<insert> S-<left>'  point arrow ← left
+│ \\`<insert> S-<up>'    point arrow ↑ up
+│ \\`<insert> S-<down>'  point arrow ↓ down
+│
+├──Tweak 1/4 line─────────────────────────────────╴
+│ When thin, thick or double lines are under point:
+│ \\`<insert> S-<right>' cycles the ¼ line in the → right direction
+│ \\`<insert> S-<left>'  cycles the ¼ line in the ← left  direction
+│ \\`<insert> S-<up>'    cycles the ¼ line in the ↑ up    direction
+│ \\`<insert> S-<down>'  cycles the ¼ line in the ↓ down  direction
+│
+├──Text direction─────────────────────────────────╴
 │ Usually when typing text, cursor moves to the right.
-│ \\`C-<right>' text goes right→
-│ \\`C-<left>'  text goes left ←
-│ \\`C-<up>'    text goes up   ↑
-│ \\`C-<down>'  text goes down ↓
-├─Insert characters──────────╴
-│ In this sub-mode, the keys \\`-' \\`+' \\`=' \\`#' recover their
-│ basic meaning, which is to insert this character.
-├─Other──────────────────────╴
-│ \\`f' enter the fonts sub-menu
-│ \\`RET' or \\`q' exits the sub-mode
+│ \\`<insert> C-<right>' text goes right→
+│ \\`<insert> C-<left>'  text goes left ←
+│ \\`<insert> C-<up>'    text goes up   ↑
+│ \\`<insert> C-<down>'  text goes down ↓
+│
+├──Insert characters──────────────────────────────╴
+│ In this sub-mode, the keys \\`-' \\`+' \\`=' \\`#' \\`~'
+│ recover their basic meaning, which is to insert this character.
+│ But that depends on the customizable variable
+│ `uniline-prefix-for-setting-brush'
+│
+├──Other──────────────────────────────────────────╴
+│ \\`<insert> f' enter the fonts sub-menu.
+│ \\`q' exits the sub-mode.
 │ Any other key exits the sub-mode and do whatever they
 │ are intended for.
-╰────────────────────────────╴
-╭─Rectangles (region active)─╴
-│ \\[uniline-launch-interface] when region IS highlighted,
+╰─────────────────────────────────────────────────╴
+ ╭────────────────────────────╮
+╭╯ Rectangles (region active) ╰───────────────────╴
+│ \\`<insert>' when region IS highlighted,
 │ enter a sub-mode to handle rectangles,
 │ marked by the highlighted region.
-├─Move rectangle─────────────╴
-│ \\`S-<right>' move rectangle → right
-│ \\`S-<left>'  move rectangle ← left
-│ \\`S-<up>'    move rectangle ↑ up
-│ \\`S-<down>'  move rectangle ↓ down
-├─Draw rectangle─────────────╴
-│ \\`r'     draw      an inner rectangle
-│ \\`R'     draw      an outer rectangle
-│ \\`C-r'   overwrite an inner rectangle
-│ \\`C-S-R' overwrite an outer rectangle
-├─Fill───────────────────────╴
-│ \\`i'	fill region with a character
-├─Other──────────────────────╴
-│ \\`C-_', \\`C-/', \\`C-x u' undo works outside selection
-│ \\`RET', \\`q' exit the rectangle sub-mode
+│
+├─Move rectangle──────────────────────────────────╴
+│ \\`<insert> <right>' move rectangle → right
+│ \\`<insert> <left>'  move rectangle ← left
+│ \\`<insert> <up>'    move rectangle ↑ up
+│ \\`<insert> <down>'  move rectangle ↓ down
+│
+├─Draw rectangle──────────────────────────────────╴
+│ \\`<insert> r'     draw      an inner rectangle
+│ \\`<insert> R'     draw      an outer rectangle
+│ \\`<insert> C-r'   overwrite an inner rectangle
+│ \\`<insert> C-S-R' overwrite an outer rectangle
+│
+├─Copy-paste──────────────────────────────────────╴
+│ \\`<insert> c'     copy rectangle
+│ \\`<insert> k'     kill rectangle
+│ \\`<insert> y'     yank rectangle
+│
+├─Other───────────────────────────────────────────╴
+│ \\`<insert> i'     fill rectangle with a character
+│ \\`q' exit the rectangle sub-mode
 │ Any other key exits the sub-mode and do whatever they
 │ are intended for.
-╰────────────────────────────╴
-╭╴Macros─────────────────────╴
-│ Usual Emacs macros recording works as usual
-│ Last keybord macro can be twisted in any of the 4 directions
-│ \\[uniline-macro-exec] then \\`→' \\`←' \\`↑' \\`↓': directional call of last keyboard macro
-╰────────────────────────────╴
-╭╴Alternate styles───────────╴
-│ Highlight a region (a rectangle) then \\[uniline-launch-interface] \\`s'
+╰─────────────────────────────────────────────────╴
+ ╭──────╮
+╭╯ Undo ╰─────────────────────────────────────────╴
+│ Usually, when a selection is highlighted, the undo command
+│   \\`C-_', \\`C-/', \\`C-x u'
+│ only works inside the selection. In the Uniline rectangle case,
+│ undo also works outside the selected rectangle, and the
+│ highlighting is preserved.
+╰─────────────────────────────────────────────────╴
+ ╭──────────────────╮
+╭╯ Alternate styles ╰─────────────────────────────╴
+│ Highlight a region (a rectangle) then \\`<insert> s'
 │ This enters a menu where alternative styles are applied
-│ to the rectangular selection
-│ \\`3' make 3 dots vertical, 2 dots horizontal lines
-│ \\`4' make 4 dots vertical and horizontal lines
-│ \\`h' convert round corners to hard ones
-│ \\`-' make thin lines
-│ \\`+' make thick lines
-│ \\`=' make double lines
-│ \\`0' come back to standard base line style, including from ASCII art
-│ \\`a' apply external package aa2u conversion from ASCII art to UNICODE
-│ \\`A' convert to closest ASCII
-╰────────────────────────────╴
-╭─Fonts──────────────────────╴
+│ to the rectangular selection.
+│ \\`3'  make 3 dots vertical, 2 dots horizontal lines
+│ \\`4'  make 4 dots vertical and horizontal lines
+│ \\`h'  convert round corners to hard ones
+│ \\`-'  make thin lines
+│ \\`+'  make thick lines
+│ \\`='  make double lines
+│ \\`0'  come back to standard base line style, including from ASCII art
+│ \\`a'  apply external package aa2u conversion from ASCII art to UNICODE
+│ \\`A'  convert to closest ASCII
+╰─────────────────────────────────────────────────╴
+ ╭────────╮
+╭╯ Macros ╰───────────────────────────────────────╴
+│ Usual Emacs macros recording works as usual.
+│ Last keyboard macro can be twisted in any of the 4 directions
+│ \\`C-x e' then \\`→' \\`←' \\`↑' \\`↓': directional call of last keyboard macro.
+╰─────────────────────────────────────────────────╴
+ ╭───────╮
+╭╯ Fonts ╰────────────────────────────────────────╴
 │ Try out some mono-spaced fonts with support for the
 │ required UNICODE characters.
-│ \\[uniline-launch-interface] \\`f' enters a sub-menu to change the font
-│ type the first letter of the font name.
+│ \\`<insert> f' enters a sub-menu to change the font.
+│ Type the first letter of the font name.
 │ This setting is just for the current Emacs session.
 │ \\`*' customize default font for future sessions.
-╰────────────────────────────╴
-╭─Toggle hint sizes──────────╴
-│ This is for changing the height of Hydra menus,
-│ between multiline to single-line and back,
-│ \\[uniline-toggle-hints-welcome] in base Uniline mode
-│ \\`TAB' in a \\[uniline-launch-interface]-activated menu
-╰────────────────────────────╴
-╭─Quit───────────────────────╴\\<uniline-mode-map>
-│ \\[uniline-mode] quit the Uniline minor mode.
+╰─────────────────────────────────────────────────╴
+ ╭───────────────╮
+╭╯ Customization ╰────────────────────────────────╴
+│ Type \\`<insert> *' to enter the customization menu.
+│ There are session-only customizations (forgotten after you exit Emacs)
+│ and future-sessions ones.
+│
+├─Toggle hint sizes───────────────────────────────╴
+│ Change the height of Hydra & Transient menus,
+│ between multi-line to single-line and back.
+│ Type \\`C-h TAB' or \\`C-t' (in a Hydra or Transient menu)
+╰─────────────────────────────────────────────────╴
+ ╭──────╮
+╭╯ Quit ╰─────────────────────────────────────────╴
+│ \\`C-c C-c' quit the Uniline minor mode.
 │ The state of the buffer (ex: `overwrite-mode' and cursor shape)
 │ will return to what it was prior to entering `uniline-mode'
-╰────────────────────────────╴
-
- Documentation here: (info \"uniline\")"
+╰─────────────────────────────────────────────────╴
+ ╭───────────────╮
+╭╯ Documentation ╰────────────────────────────────╴
+│ type `(info \"uniline\")'
+│ visit `https://github.com/tbanel/uniline'
+│ install and upgrade from `https://melpa.org'
+│ license Gnu Public License version 3
+╰─────────────────────────────────────────────────╴"
   :init-value nil
   ;;         ╭───╴without that, mouse-1 on mode-line does not display the menu
   ;;         ▽
@@ -4608,7 +4657,7 @@ with the one used to invoke Uniline-mode."
           (if (listp path)
               (car path)
             ""))
-    (message "Uniline %s, https://github.com/tbanel/uniline" path)))
+    (message "Uniline %s, GPL-3 license, https://github.com/tbanel/uniline, https://melpa.org" path)))
 
 (defvar uniline--current-interface nil
   "Remember whether Hydra or Transient is loaded.
@@ -4640,21 +4689,28 @@ Its value is ?h or ?t")
     ["▞ blocks brush"   uniline-set-brush-block :style radio :selected (eq uniline-brush :block)]
     ["eraser brush"     uniline-set-brush-0     :style radio :selected (eq uniline-brush 0     )]
     ["inactive brush"   uniline-set-brush-nil   :style radio :selected (eq uniline-brush nil   )]
-    "----"
-    ["┄ 3-2 dots brush" uniline-set-brush-3dots :style radio :selected (eq uniline-brush-dots 1) :keys "~"  ]
-    ["┄ 4-4 dots brush" uniline-set-brush-4dots :style radio :selected (eq uniline-brush-dots 2) :keys "~~" ]
-    ["┄ no dots brush"  uniline-set-brush-0dots :style radio :selected (eq uniline-brush-dots 0) :keys "~~~"]
+    ("┄ dotted brush"
+     ["┄ 3-2 dots brush" uniline-set-brush-3dots :style radio :selected (eq uniline-brush-dots 1) :keys "~"  ]
+     ["┈ 4-4 dots brush" uniline-set-brush-4dots :style radio :selected (eq uniline-brush-dots 2) :keys "~~" ]
+     ["─ no dots brush"  uniline-set-brush-0dots :style radio :selected (eq uniline-brush-dots 0) :keys "~~~"])
     "----"
     ("Insert glyph"
      ["Insert arrow ▷ ▶ → ▹ ▸ ↔"   uniline-insert-fw-arrow  :keys "INS a"]
      ["Insert square □ ■ ◆ ◊"      uniline-insert-fw-square :keys "INS s"]
      ["Insert oshape · ● ◦ Ø ø"    uniline-insert-fw-oshape :keys "INS o"]
-     ["Insert cross ╳ ╱ ╲ ÷ × ± ¤" uniline-insert-fw-cross  :keys "INS x"])
+     ["Insert cross ╳ ╱ ╲ ÷ × ± ¤" uniline-insert-fw-cross  :keys "INS x"]
+     ["Insert shades of grey ░▒▓█" uniline-insert-fw-grey   :keys "INS x"])
     ("Rotate arrow, tweak ¼ line"
      ["Rotate arrow, tweak ¼ line → right" uniline-rotate-ri→ :keys "INS S-<right>"]
      ["Rotate arrow, tweak ¼ line ← left"  uniline-rotate-lf← :keys "INS S-<left>" ]
      ["Rotate arrow, tweak ¼ line ↑ up"    uniline-rotate-up↑ :keys "INS S-<up>"   ]
      ["Rotate arrow, tweak ¼ line ↓ down"  uniline-rotate-dw↓ :keys "INS S-<down>" ])
+    ("Text insertion direction"
+     ["→ right" uniline-text-direction-ri→ :keys "INS C-<right>" :style radio :selected (eq uniline-text-direction (uniline-direction-ri→))]
+     ["← left"  uniline-text-direction-lf← :keys "INS C-<left> " :style radio :selected (eq uniline-text-direction (uniline-direction-lf←))]
+     ["↑ up"    uniline-text-direction-up↑ :keys "INS C-<up>   " :style radio :selected (eq uniline-text-direction (uniline-direction-up↑))]
+     ["↓ down"  uniline-text-direction-dw↓ :keys "INS C-<down> " :style radio :selected (eq uniline-text-direction (uniline-direction-dw↓))])
+    "----"
     ("Rectangular region" :active (region-active-p)
      ["Move selection right" uniline-move-rect-ri→ :keys "INS <right>"]
      ["Move selection left"  uniline-move-rect-lf← :keys "INS <left>" ]
@@ -4678,16 +4734,12 @@ Its value is ?h or ?t")
      ["┈ 4 dots vert & horiz" uniline-change-style-dot-4-4  :keys "INS s 4"]
      ["┌ hard corners"    uniline-change-style-hard-corners :keys "INS s h"]
      ["╭ back to standard"    uniline-change-style-standard :keys "INS s 0"]
-     ["aa2u (ext. package)" uniline-aa2u-rectangle        :keys "INS s a"])
+     ["aa2u (ext. package)"   uniline-aa2u-rectangle        :keys "INS s a"]
+     ["to Ascii"              uniline-change-style-ascii    :keys "INS s A"])
     ("Fill & contour"
-     ["Contour"        uniline-contour    :keys "INS c"]
-     ["Contour overw" (uniline-contour t) :keys "INS C"]
-     ["Fill"           uniline-fill       :keys "INS i"])
-    ("Text insertion direction"
-     ["→ right" uniline-text-direction-ri→ :keys "INS C-<right>" :style radio :selected (eq uniline-text-direction (uniline-direction-ri→))]
-     ["← left"  uniline-text-direction-lf← :keys "INS C-<left> " :style radio :selected (eq uniline-text-direction (uniline-direction-lf←))]
-     ["↑ up"    uniline-text-direction-up↑ :keys "INS C-<up>   " :style radio :selected (eq uniline-text-direction (uniline-direction-up↑))]
-     ["↓ down"  uniline-text-direction-dw↓ :keys "INS C-<down> " :style radio :selected (eq uniline-text-direction (uniline-direction-dw↓))])
+     ["Contour"            uniline-contour    :keys "INS c"]
+     ["Contour overwrite" (uniline-contour t) :keys "INS C"]
+     ["Fill"               uniline-fill       :keys "INS i"])
     "----"
     ("Font"
      ["DejaVu Sans Mono"         (set-frame-font "DejaVu Sans Mono"        ) :keys "INS f d" :style radio :selected (uniline--is-font ?d)]
