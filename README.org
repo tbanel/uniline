@@ -133,6 +133,7 @@ See [[#brush-style][Brush style]].
 - [[#installation][Installation]]
   - [[#use-package-the-straightforward-way][use-package, the straightforward way]]
   - [[#without-use-package][Without use-package]]
+  - [[#autoloading][Autoloading?]]
 - [[#related-packages][Related packages]]
   - [[#emacs][Emacs]]
   - [[#non-emacs][Non Emacs]]
@@ -2586,6 +2587,36 @@ without =use-package= is to add those lines to your initialization file
 
 The downside is that =Uniline= will be loaded as soon as =Emacs= is
 launched, rather than deferred until invoked.
+
+** Autoloading?
+:PROPERTIES:
+:CUSTOM_ID: autoloading
+:END:
+
+Many packages declare their entry-point as "autoload":
+
+#+begin_src elisp
+;;;###autoload
+(define-minor-mode minautorus …)
+
+;; minautorus-mode is now an autoloaded function
+#+end_src
+
+Uniline cannot do that. If it did, invoking =uniline-mode= would load
+=uniline-core.elc= and nothing else (because =uniline-mode= is defined in
+the =uniline-code.el= file). To properly function, uniline need one of
+the two interfaces to be loaded: =uniline-hydra.elc= or
+=uniline-transient.elc=.
+
+Actually, this is what =use-package= does behind the scene:
+
+=(use-package uniline-hydra …)=
+
+is translated to:
+
+=(autoload 'uniline-mode "uniline-hydra" nil t)=
+
+You can do that manually in your =.emacs= initialization file.
 
 * Related packages
 :PROPERTIES:

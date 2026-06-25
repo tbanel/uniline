@@ -1435,7 +1435,7 @@ of this table."))
     "Convert a UNICODE character to a quadrant bitmap.
 Reverse of `uniline--4quadb-to-char'"))
 
-(eval-and-compile
+(eval-when-compile
   (defmacro uniline--char-to-4quadb (char)
     "Return a bit pattern (a 4quadb).
 It represents a UNICODE character like ?▙ in CHAR.
@@ -1484,8 +1484,9 @@ Return nil if CHAR is not a 4quadb character."
 when pushed half-a-char-width in all 4 directions.
 For instance [▞] pushed right→ becomes [▗], pushed up↑ becomes [▘]
 Access it with this snippet:
-(uniline--4quadb-pushed dir 4quadb)")
+(uniline--4quadb-pushed dir 4quadb)"))
 
+(eval-when-compile                      ;; not need at runtime
   (defmacro uniline--4quadb-pushed (dir 4quadb)
     "Accessor to the `uniline--4quadb-pushed' array.
 Folds to a single number if DIR & 4QUADB are themselves numbers."
@@ -4244,7 +4245,7 @@ Those values are loosely in sync with those defined by the
   :local t
   :group 'uniline)
 
-(eval-and-compile
+(eval-when-compile
   (defun uniline--color-hint (face hint)
     "Return a colored message mimicking the Hydra way.
 HINT is the message string. It  contains pairs of ^xxx^
@@ -4356,6 +4357,11 @@ And backup previous settings."
 ;; to ensure that M-x eval-buffer reloads 100% of the Lisp code
 ;; (unintern 'uniline-mode-map nil)
 
+;; Do no add an #-#-#-autoload cookie!
+;; otherwise it could seem enough to just load uniline-core.el
+;; but either uniline-hydra.el or uniline-transient.el are needed.
+;; Actually, (use-package uniline-hydra) or (use-package uniline-transient)
+;; declare the right autoload.
 (define-minor-mode uniline-mode
   "Minor mode to draw lines, boxes, & arrows using UNICODE characters.
 

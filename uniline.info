@@ -146,6 +146,7 @@ Installation
 
 * use-package, the straightforward way: use-package the straightforward way.
 * Without use-package::
+* Autoloading?::
 
 Related packages
 
@@ -2638,6 +2639,7 @@ File: uniline.info,  Node: Installation,  Next: Related packages,  Prev: Lisp AP
 
 * use-package, the straightforward way: use-package the straightforward way.
 * Without use-package::
+* Autoloading?::
 
 
 File: uniline.info,  Node: use-package the straightforward way,  Next: Without use-package,  Up: Installation
@@ -2708,7 +2710,7 @@ options:
        :straight uniline)
 
 
-File: uniline.info,  Node: Without use-package,  Prev: use-package the straightforward way,  Up: Installation
+File: uniline.info,  Node: Without use-package,  Next: Autoloading?,  Prev: use-package the straightforward way,  Up: Installation
 
 15.2 Without use-package
 ========================
@@ -2749,6 +2751,35 @@ without ‘use-package’ is to add those lines to your initialization file
 
    The downside is that ‘Uniline’ will be loaded as soon as ‘Emacs’ is
 launched, rather than deferred until invoked.
+
+
+File: uniline.info,  Node: Autoloading?,  Prev: Without use-package,  Up: Installation
+
+15.3 Autoloading?
+=================
+
+Many packages declare their entry-point as "autoload":
+
+     ;;;###autoload
+     (define-minor-mode minautorus …)
+
+     ;; minautorus-mode is now an autoloaded function
+
+   Uniline cannot do that.  If it did, invoking ‘uniline-mode’ would
+load ‘uniline-core.elc’ and nothing else (because ‘uniline-mode’ is
+defined in the ‘uniline-code.el’ file).  To properly function, uniline
+need one of the two interfaces to be loaded: ‘uniline-hydra.elc’ or
+‘uniline-transient.elc’.
+
+   Actually, this is what ‘use-package’ does behind the scene:
+
+   ‘(use-package uniline-hydra …)’
+
+   is translated to:
+
+   ‘(autoload 'uniline-mode "uniline-hydra" nil t)’
+
+   You can do that manually in your ‘.emacs’ initialization file.
 
 
 File: uniline.info,  Node: Related packages,  Next: Author contributors,  Prev: Installation,  Up: Top
@@ -2994,99 +3025,100 @@ along with this program.  If not, see <http://www.gnu.org/licenses/>.
 
 Tag Table:
 Node: Top171
-Node: Getting started in 10 seconds3369
-Node: New3975
-Node: Gallery pure UNICODE diagrams in Emacs4459
-Node: Document a command5148
-Node: Connect boxes with arrows5681
-Node: Explain decisions trees7001
-Node: Draw lines or blocks8507
-Node: Outline the General Relativity and the Schrödinger's equations10049
-Node: Explain the structure of a sentence in a foreign language12738
-Node: Draw electronic diagrams14324
-Node: Explain Lisp lists15729
-Node: Draw sketched objects16912
-Node: Replace words with simple sketches18902
-Node: Visualize floating point layouts19485
-Node: Illustrate proportions21504
-Node: Pure text22980
-Node: Beware!23715
-Node: A minor mode for drawing24298
-Node: Minor mode24610
-Node: Draw lines by moving the cursor25172
-Node: Infinite ∞ buffer25764
-Node: Brush style27045
-Node: Text direction29878
-Node: The <insert> key30428
-Node: Glyphs ▷ ▶ → □ ◆ ╮─ insertion & modification31428
-Node: Arrows glyphs ▷ ▶ → ▹ ▸ ↔32145
-Node: Intersection glyphs ■ ◆ ●33717
-Node: Fine tweaking of lines36547
-Node: Rectangular actions38430
-Node: Drawing a rectangle39801
-Node: Filling a rectangle41452
-Node: Moving a rectangular region42220
-Node: Copying killing yanking a rectangular region44789
-Node: Dashed lines and other styles45984
-Node: ASCII to UNICODE50109
-Node: UNICODE to ASCII53817
-Node: Long range actions contour and flood-fill54315
-Node: Tracing a contour54578
-Node: Flood-fill56492
-Node: Macros58266
-Node: Which fonts?61657
-Node: Recommended fonts61918
-Node: Use case mixing fonts64008
-Node: Hydra or Transient?66005
-Node: Selecting Hydra or Transient66994
-Node: Instantly selecting Hydra or Transient68112
-Node: One-liner menus69078
-Node: The Hydra interface71016
-Node: The Transient interface71689
-Node: Customization72227
-Node: Interface type73152
-Node: Insert key73678
-Node: Prefix brush settings with INS74454
-Node: Keyboard bindings75127
-Node: Maximum steps when drawing a contour77067
-Node: Cursor type77404
-Node: Hint style77729
-Node: Welcome message visibility78076
-Node: Line spacing78457
-Node: Font79923
-Node: Upward infiniteness ∞80441
-Node: How Uniline behaves with its environment?80973
-Node: Language environment81609
-Node: Mouse support83996
-Node: Compatibility with Picture-mode84953
-Node: Compatibility with Artist-mode85893
-Node: Compatibility with Whitespace-mode86412
-Node: Compatibility with Org Mode87312
-Node: Org Mode and LaTex88733
-Node: What about \t tabs?90593
-Node: What about ^L page separation?91394
-Node: Emacs on the Linux console92017
-Node: Emacs on a graphical terminal emulator92979
-Node: Emacs on Windows93909
-Node: Emacs on MacOS94576
-Node: Compatibility with ASCIIFlow95639
-Node: Lisp API96593
-Node: Move the cursor97142
-Node: Brush97573
-Node: Example Lisp function to draw a plus sign98442
-Node: Long range actions (contour flood-fill rectangle)100278
-Node: Constants101216
-Node: Macro and text direction101631
-Node: Insert and tweak glyphs102566
-Node: Change to alternate styles103679
-Node: Installation104588
-Node: use-package the straightforward way104827
-Node: Without use-package107212
-Node: Related packages108773
-Node: Emacs108954
-Node: Non Emacs112316
-Node: Author contributors114228
-Node: License116339
+Node: Getting started in 10 seconds3386
+Node: New3992
+Node: Gallery pure UNICODE diagrams in Emacs4476
+Node: Document a command5165
+Node: Connect boxes with arrows5698
+Node: Explain decisions trees7018
+Node: Draw lines or blocks8524
+Node: Outline the General Relativity and the Schrödinger's equations10066
+Node: Explain the structure of a sentence in a foreign language12755
+Node: Draw electronic diagrams14341
+Node: Explain Lisp lists15746
+Node: Draw sketched objects16929
+Node: Replace words with simple sketches18919
+Node: Visualize floating point layouts19502
+Node: Illustrate proportions21521
+Node: Pure text22997
+Node: Beware!23732
+Node: A minor mode for drawing24315
+Node: Minor mode24627
+Node: Draw lines by moving the cursor25189
+Node: Infinite ∞ buffer25781
+Node: Brush style27062
+Node: Text direction29895
+Node: The <insert> key30445
+Node: Glyphs ▷ ▶ → □ ◆ ╮─ insertion & modification31445
+Node: Arrows glyphs ▷ ▶ → ▹ ▸ ↔32162
+Node: Intersection glyphs ■ ◆ ●33734
+Node: Fine tweaking of lines36564
+Node: Rectangular actions38447
+Node: Drawing a rectangle39818
+Node: Filling a rectangle41469
+Node: Moving a rectangular region42237
+Node: Copying killing yanking a rectangular region44806
+Node: Dashed lines and other styles46001
+Node: ASCII to UNICODE50126
+Node: UNICODE to ASCII53834
+Node: Long range actions contour and flood-fill54332
+Node: Tracing a contour54595
+Node: Flood-fill56509
+Node: Macros58283
+Node: Which fonts?61674
+Node: Recommended fonts61935
+Node: Use case mixing fonts64025
+Node: Hydra or Transient?66022
+Node: Selecting Hydra or Transient67011
+Node: Instantly selecting Hydra or Transient68129
+Node: One-liner menus69095
+Node: The Hydra interface71033
+Node: The Transient interface71706
+Node: Customization72244
+Node: Interface type73169
+Node: Insert key73695
+Node: Prefix brush settings with INS74471
+Node: Keyboard bindings75144
+Node: Maximum steps when drawing a contour77084
+Node: Cursor type77421
+Node: Hint style77746
+Node: Welcome message visibility78093
+Node: Line spacing78474
+Node: Font79940
+Node: Upward infiniteness ∞80458
+Node: How Uniline behaves with its environment?80990
+Node: Language environment81626
+Node: Mouse support84013
+Node: Compatibility with Picture-mode84970
+Node: Compatibility with Artist-mode85910
+Node: Compatibility with Whitespace-mode86429
+Node: Compatibility with Org Mode87329
+Node: Org Mode and LaTex88750
+Node: What about \t tabs?90610
+Node: What about ^L page separation?91411
+Node: Emacs on the Linux console92034
+Node: Emacs on a graphical terminal emulator92996
+Node: Emacs on Windows93926
+Node: Emacs on MacOS94593
+Node: Compatibility with ASCIIFlow95656
+Node: Lisp API96610
+Node: Move the cursor97159
+Node: Brush97590
+Node: Example Lisp function to draw a plus sign98459
+Node: Long range actions (contour flood-fill rectangle)100295
+Node: Constants101233
+Node: Macro and text direction101648
+Node: Insert and tweak glyphs102583
+Node: Change to alternate styles103696
+Node: Installation104605
+Node: use-package the straightforward way104861
+Node: Without use-package107246
+Node: Autoloading?108828
+Node: Related packages109713
+Node: Emacs109894
+Node: Non Emacs113256
+Node: Author contributors115168
+Node: License117279
 
 End Tag Table
 

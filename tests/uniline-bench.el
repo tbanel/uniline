@@ -100,13 +100,15 @@ recover their previous values."
   (insert initial)
   (goto-char (point-min))
   ;; (set-default 'uniline-hint-style 1)
+  (defvar uniline-show-welcome-message)
   (let ((uniline-show-welcome-message nil))
     (uniline-mode 1))
   (if (fboundp 'hydra-keyboard-quit)
       (hydra-keyboard-quit)) ;; clear any left-over from previous bench
   (if (fboundp 'transient-quit-all)
       (transient-quit-all))  ;; clear any left-over from previous bench
-  (setq uniline--which-quadrant (uniline--char-to-4quadb ?▘))
+  (if (functionp 'uniline--char-to-4quadb)
+      (setq uniline--which-quadrant (uniline--char-to-4quadb ?▘)))
   (uniline-set-brush-1)
   (uniline-set-brush-0dots)
   (let ((old-settings (uniline-bench-record-settings)))
