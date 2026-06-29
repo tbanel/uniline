@@ -15,12 +15,14 @@
 [[file:images/first-drawing.png]]
 
 #+begin_example
+
  ╷   ╭─────────╮
- ╰───┤my first ├─╮
-     │drawing  │ ╰───╮
+ ╰───┤ my 1st  ├─╮
+     │ drawing │ ╰───╮
      ╰─────────╯     │
         ╭────┬───────╯
         ╰────╯
+
 #+end_example
 
 * New
@@ -87,7 +89,7 @@ See [[#brush-style][Brush style]].
 - [[#macros][Macros]]
 - [[#which-fonts][Which fonts?]]
   - [[#recommended-fonts][Recommended fonts]]
-  - [[#use-case-mixing-fonts][Use case: mixing fonts]]
+  - [[#use-case---mixing-fonts][Use case - mixing fonts]]
 - [[#hydra-or-transient][Hydra or Transient?]]
   - [[#selecting-hydra-or-transient][Selecting Hydra or Transient]]
   - [[#instantly-selecting-hydra-or-transient][Instantly selecting Hydra or Transient]]
@@ -106,6 +108,7 @@ See [[#brush-style][Brush style]].
   - [[#line-spacing][Line spacing]]
   - [[#font][Font]]
   - [[#upward-infiniteness-][Upward infiniteness ∞]]
+  - [[#lisp-hooks][Lisp Hooks]]
 - [[#how-uniline-behaves-with-its-environment][How Uniline behaves with its environment?]]
   - [[#language-environment][Language environment]]
   - [[#mouse-support][Mouse support]]
@@ -155,12 +158,14 @@ Draw diagrams like those:
 [[file:images/document-command.png]]
 
 #+begin_example
-   pdfjam source.pdf 3-5,9
-  ╶─────▲────▲────────▲──▲╴
-command╶╯    │        │  │
-input file╶──╯        │  │
-select pages 3,4,5╶───╯  │
-and page 9╶──────────────╯
+
+      pdfjam source.pdf 3-5,19
+      ╰───┬╯ ╰───┬────╯ ╰┬╯ ├╯
+  command╶╯      │       │  │
+  input╶─────────╯       │  │
+  select pages 3,4,5╶────╯  │
+  and page 19╶──────────────╯
+
 #+end_example
 
 ** Connect boxes with arrows
@@ -1423,9 +1428,9 @@ To know which font =Emacs= has chosen for a given character, type:
 Note that none of those commands downloads a font from the Web.
 The font should already be available.
 
-** Use case: mixing fonts
+** Use case - mixing fonts
 :PROPERTIES:
-:CUSTOM_ID: use-case-mixing-fonts
+:CUSTOM_ID: use-case---mixing-fonts
 :END:
 
 A user on GitHub, dmullis, exposed his use-case. A source-code base is
@@ -1860,6 +1865,42 @@ If the variable =uniline-infinite-up↑= is:
   is a non-trespassable limit. This is the default, and the behaviour
   of previous versions of Uniline.
 
+** Lisp Hooks
+:PROPERTIES:
+:CUSTOM_ID: lisp-hooks
+:END:
+
+Entering and exiting Uniline invokes so-called "hooks":
+
+- =uniline-mode-hook= ran whenever the command =uniline-mode= is called.
+- =uniline-mode-on-hook= ran whenever entering =uniline-mode=.
+- =uniline-mode-off-hook= ran whenever exiting =uniline-mode=.
+
+Some users may want to always have =picture-mode= along with
+=uniline-mode=. This makes sense to benefit from the best of both
+packages. They just add this line to their =.emacs= file:
+
+#+begin_src elisp
+(add-hook 'uniline-mode-hook 'picture-mode)
+#+end_src
+
+Other users may want to set the variable =line-spacing= to zero when
+operating under =uniline-mode=. This makes sense, as drawings are
+visually more pleasant with this setting. They write this in their
+=.emacs= file:
+
+#+begin_src elisp
+(defun no-line-spacing ()
+  (setq-local line-spacing 0.0))
+(add-hook 'uniline-mode-on-hook 'no-line-spacing)
+#+end_src
+
+Note: defining the =no-line-spacing= function may be avoided using a
+=lambda=. But the =add-hook= function recommends a =defun=.
+
+Look here [[#use-case-mixing-fonts][Use case - mixing fonts]] for a more advanced use of hooks,
+suggested by a Uniline user.
+
 * How Uniline behaves with its environment?
 :PROPERTIES:
 :CUSTOM_ID: how-uniline-behaves-with-its-environment
@@ -2235,7 +2276,7 @@ ASCIIFlow:
 Could =Uniline= be programmed (versus used interactively)?
 Yes!
 
-The API is usable programmatically:
+The API is usable programmatically.
 
 ** Move the cursor
 :PROPERTIES:
@@ -2362,6 +2403,10 @@ active prior to calling them:
 - =uniline-kill-rectangle=
 - =uniline-yank-rectangle=
 - =uniline-fill-rectangle=
+- =uniline-draw-inner-rectangle=
+- =uniline-draw-outer-rectangle=
+- =uniline-overwrite-inner-rectangle=
+- =uniline-overwrite-outer-rectangle=
 - =uniline-move-rect-up↑=
 - =uniline-move-rect-ri→=
 - =uniline-move-rect-dw↓=
