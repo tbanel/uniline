@@ -3028,7 +3028,7 @@ File: uniline.info,  Node: Author contributors,  Next: License,  Prev: Related p
 
    • Thierry Banel, author
 
-   Feedback:
+   Feedback & contributions:
 
    • Chris Rayner (@riscy), gave recommendations prior to insertion in
      MELPA
@@ -3055,7 +3055,7 @@ File: uniline.info,  Node: Author contributors,  Next: License,  Prev: Related p
 
    • rumengling on GitHub found and diagnosed the misaligned lines issue
      produced by some "language environments" (see *note Language
-     environment::).
+     environment::)
 
    • tpapp documented the installation using Straight, and fixed some
      typos.
@@ -3065,8 +3065,6 @@ File: uniline.info,  Node: Author contributors,  Next: License,  Prev: Related p
 
    • λ.ςζ szkl (GitHub) instantly pinpointed a debug log left-over.
 
-   Contributors:
-
    • JD Smith (jdtsmith on GitHub) rewrote the ‘:lighter’ for added
      flexibility (the information in the mode-line about the state of
      ‘Uniline’)
@@ -3074,6 +3072,9 @@ File: uniline.info,  Node: Author contributors,  Next: License,  Prev: Related p
    • JD Smith also pointed to ‘#+begin_src uniline’ Org Mode block
      suprising behavior (editing its content automatically switches to
      ‘uniline-mode’)
+
+   • jian-lin (on GitHub) diagnosed and fixed the ‘uniline--color-hint’
+     compilation problem
 
    Utilities:
 
@@ -3202,7 +3203,7 @@ Node: Related packages113100
 Node: Emacs113281
 Node: Non Emacs116643
 Node: Author contributors118555
-Node: License120666
+Node: License120767
 
 End Tag Table
 

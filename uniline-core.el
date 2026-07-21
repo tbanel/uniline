@@ -4246,13 +4246,12 @@ Those values are loosely in sync with those defined by the
   :group 'uniline)
 
 (eval-when-compile
-  (defun uniline--color-hint (face hint)
+  (defmacro uniline--color-hint (face hint)
     "Return a colored message mimicking the Hydra way.
-HINT is the message string. It  contains pairs of ^xxx^
+HINT is the message string. It contains pairs of ^xxx^
 carets which are to be removed from the message, while the
 text within will be colored.
 FACE is the face used to color text."
-    (interactive)
     (replace-regexp-in-string
      "\\^.*?\\^"
      (lambda (x)
@@ -4278,10 +4277,9 @@ FACE is the face used to color text."
     (message
      (cond
       ((eq uniline-hint-style t)
-       (eval-when-compile
-         (uniline--color-hint
-          'error
-          "\
+       (uniline--color-hint
+        error
+        "\
  ╭─^^────────────╴Uniline╶╴mode╶─────────────────────────────╮
  │^(Ctrl) → ↓ ← ↑^  (overwrite)/draw lines with current brush│
  │^Shift  → ↓ ← ↑^         extend selection                  │
@@ -4291,12 +4289,11 @@ FACE is the face used to color text."
  │^C-h TAB^                switch small/large hints          │
  │^C-h DEL^                dismiss this message in the future│
  │^C-c C-c^                quit uniline                      │
- ╰─^^────────────────────────────────────────────────────────╯")))
+ ╰─^^────────────────────────────────────────────────────────╯"))
       ((eq uniline-hint-style 1)
-       (eval-when-compile
-         (uniline--color-hint
-          'error
-          "trace: ^←→↑↓^  ovwr: ^C-←→↑↓^  selec: ^C-←→↑↓^  brush: ^-+=# DEL RET^  menu: (sel)^INS^  hint: ^C-h TAB^")))
+       (uniline--color-hint
+        'error
+        "trace: ^←→↑↓^  ovwr: ^C-←→↑↓^  selec: ^C-←→↑↓^  brush: ^-+=# DEL RET^  menu: (sel)^INS^  hint: ^C-h TAB^"))
       (t nil)))))
 
 ;; The uniline-toggle-hints is defined in uniline-hydra.el & uniline-transient.el

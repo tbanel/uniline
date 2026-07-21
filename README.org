@@ -2855,7 +2855,7 @@ You can do that manually in your =.emacs= initialization file.
 :END:
 - Thierry Banel, author
 
-Feedback:
+Feedback & contributions:
 
 - Chris Rayner (@riscy), gave recommendations prior to insertion in
   MELPA
@@ -2880,7 +2880,7 @@ Feedback:
   added to the =Uniline= supported fonts
 
 - rumengling on GitHub found and diagnosed the misaligned lines issue
-  produced by some "language environments" (see [[#language-environment][Language environment]]).
+  produced by some "language environments" (see [[#language-environment][Language environment]])
 
 - tpapp documented the installation using Straight, and fixed some
   typos.
@@ -2890,8 +2890,6 @@ Feedback:
 
 - λ.ςζ szkl (GitHub) instantly pinpointed a debug log left-over.
 
-Contributors:
-
 - JD Smith (jdtsmith on GitHub) rewrote the =:lighter= for added
    flexibility (the information in the mode-line about the state of
    =Uniline=)
@@ -2899,6 +2897,9 @@ Contributors:
 - JD Smith also pointed to =#+begin_src uniline= Org Mode block
   suprising behavior (editing its content automatically switches to
   =uniline-mode=)
+
+- jian-lin (on GitHub) diagnosed and fixed the =uniline--color-hint=
+  compilation problem
 
 Utilities:
 

@@ -421,6 +421,22 @@ Otherwise, the arrows & shapes hydra is invoked."
 ;;;│Smaller hydra hints│
 ;;;╰───────────────────╯
 
+    (eval-when-compile
+      (defmacro uniline--color-hint (face hint)
+        "Return a colored message mimicking the Hydra way.
+HINT is the message string. It contains pairs of ^xxx^
+carets which are to be removed from the message, while the
+text within will be colored.
+FACE is the face used to color text."
+        (replace-regexp-in-string
+         "\\^.*?\\^"
+         (lambda (x)
+           (setq x (substring x 1 (1- (length x))))
+           (add-face-text-property 0 (length x) face nil x)
+           x)
+         hint
+         t)))
+
     ;; Pack 2 hints in the usual uniline-hydra-*/hint variables
     ;; one is the standard hint created by `defhydra'
     ;; the other is a one-liner
@@ -429,52 +445,45 @@ Otherwise, the arrows & shapes hydra is invoked."
      uniline-hydra-arrows-classic/hint
      `(if (eq uniline-hint-style t)
           ,uniline-hydra-arrows-classic/hint
-        ,(eval-when-compile
-           (uniline--color-hint
-            'hydra-face-red
-            "glyph:^aAsSoOxX SPC DEL-+=#~^ arr&tweak:^S-→←↑↓^ txt-dir:^C-→←↑↓^ ^c^ontour f^i^ll ^f^ont ^*^ ^C-t^")))
+        ,(uniline--color-hint
+          hydra-face-red
+          "glyph:^aAsSoOxX SPC DEL-+=#~^ arr&tweak:^S-→←↑↓^ txt-dir:^C-→←↑↓^ ^c^ontour f^i^ll ^f^ont ^*^ ^C-t^"))
      uniline-hydra-arrows-brush/hint
      `(if (eq uniline-hint-style t)
           ,uniline-hydra-arrows-brush/hint
-        ,(eval-when-compile
-           (uniline--color-hint
-            'hydra-face-red
-            "glyph:^aAsSoOxX SPC DEL-+=#~^ arr&tweak:^S-→←↑↓^ txt-dir:^C-→←↑↓^ ^c^ontour f^i^ll ^f^ont ^*^ ^C-t^")))
+        ,(uniline--color-hint
+          hydra-face-red
+          "glyph:^aAsSoOxX SPC DEL-+=#~^ arr&tweak:^S-→←↑↓^ txt-dir:^C-→←↑↓^ ^c^ontour f^i^ll ^f^ont ^*^ ^C-t^"))
      uniline-hydra-fonts/hint
      `(if (eq uniline-hint-style t)
           ,uniline-hydra-fonts/hint
-        ,(eval-when-compile
-           (uniline--color-hint
-            'hydra-face-red
-            "font:^dhcjbfsiIpPua^ config:^*^ hint:^C-t^")))
+        ,(uniline--color-hint
+          hydra-face-red
+          "font:^dhcjbfsiIpPua^ config:^*^ hint:^C-t^"))
      uniline-hydra-customize/hint
      `(if (eq uniline-hint-style t)
           ,uniline-hydra-customize/hint
-        ,(eval-when-compile
-           (uniline--color-hint
-            'hydra-face-red
-            "customize: ^t^ransient uniline-^g^roup .emacs:^H^ydra-^T^ransient ^l^ine-spc ^f^ont ^C-t^")))
+        ,(uniline--color-hint
+          hydra-face-red
+          "customize: ^t^ransient uniline-^g^roup .emacs:^H^ydra-^T^ransient ^l^ine-spc ^f^ont ^C-t^"))
      uniline-hydra-moverect/hint
      `(if (eq uniline-hint-style t)
           ,uniline-hydra-moverect/hint
-        ,(eval-when-compile
-           (uniline--color-hint
-            'hydra-face-red
-            "move:^→←↑↓^ trace:^rR C-rR^ copy-paste:^cky^ f^i^ll brush:^-+=# DEL^ ^s^tyle ^f^onts ^C-t^")))
+        ,(uniline--color-hint
+          hydra-face-red
+          "move:^→←↑↓^ trace:^rR C-rR^ copy-paste:^cky^ f^i^ll brush:^-+=# DEL^ ^s^tyle ^f^onts ^C-t^"))
      uniline-hydra-macro-exec/hint
      `(if (eq uniline-hint-style t)
           ,uniline-hydra-macro-exec/hint
-        ,(eval-when-compile
-           (uniline--color-hint
-            'hydra-face-red
-            "macro exec, usual:^e^ directional:^→←↑↓^ hint:^C-t^")))
+        ,(uniline--color-hint
+          hydra-face-red
+          "macro exec, usual:^e^ directional:^→←↑↓^ hint:^C-t^"))
      uniline-hydra-alt-styles/hint
      `(if (eq uniline-hint-style t)
           ,uniline-hydra-alt-styles/hint
-        ,(eval-when-compile
-           (uniline--color-hint
-            'hydra-face-red
-            "alt styles, thick:^-+=^ dashed:^34^ corners:^h^ standard:^0^ ^a^a2u ascii:^A ^C-t^"))))
+        ,(uniline--color-hint
+          hydra-face-red
+          "alt styles, thick:^-+=^ dashed:^34^ corners:^h^ standard:^0^ ^a^a2u ascii:^A ^C-t^")))
 
     (defun uniline-toggle-hints (&optional notoggle)
       "Toggle between styles of hydra hints.
