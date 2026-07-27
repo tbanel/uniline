@@ -2420,9 +2420,25 @@ file:
      (use-package uniline-hydra
        :bind ("C-£" . uniline-mode))
 
-   The tilde ‘~’ character is not always easy to type under MacOs.
-Sometimes it is bound to ‘M-n’, but not always.  See *note Keyboard
-bindings:: for how to bind tilde ‘~’ and other keys.
+   The tilde ‘~’ character is not always easy to type under MacOs.  It
+is usually entered by typing ‘Alt-n SPC’.  (Typing ‘Alt-n n’ gives ‘ñ’,
+typing ‘Alt-n o’ gives ‘õ’ and so on).
+
+   However, under Emacs the ‘Alt’ keys are usually interpreted as
+‘Meta’, which defeats the tilde typing.  One way to circumvent that, is
+to give back the ‘Alt’ key at the right to MacOS, and keep the Emacs
+meaning (ie.  ‘Meta’) for the ‘Alt’ key at the left.
+
+   To do so:
+
+     M-x customize-variable ns-right-alternate-modifier
+
+   and set this variable to ‘nil’ (by default it is set to ‘left’).
+
+   Then enter tilde with the right ‘Alt’ key.
+
+   You may also look at *note Keyboard bindings:: for a way to bind
+tilde ‘~’ and other keys.
 
    The default monospaced font on MacOS used to be ‘Menlo’.  It was
 superseded by ‘SF-Mono’.  Uniline cannot support those fonts, as their
@@ -2470,8 +2486,9 @@ File: uniline.info,  Node: Lisp API,  Next: Installation,  Prev: How Uniline beh
 
 Could ‘Uniline’ be programmed (versus used interactively)?  Yes!
 
-   The API is usable programmatically.  The Uniline functions work even
-when the buffer is not in ‘uniline-mode’.
+   The API is usable programmatically.  The API is usable
+programmatically.  The Uniline functions work even when the buffer is
+not in ‘uniline-mode’.
 
 * Menu:
 
@@ -3185,25 +3202,25 @@ Node: Emacs on the Linux console94625
 Node: Emacs on a graphical terminal emulator95587
 Node: Emacs on Windows96517
 Node: Emacs on MacOS97184
-Node: Compatibility with ASCIIFlow98786
-Node: Lisp API99740
-Node: Move the cursor100368
-Node: Brush100799
-Node: Example Lisp function to draw a plus sign101668
-Node: Long range actions (contour flood-fill rectangle)103504
-Node: Constants104620
-Node: Macro and text direction105035
-Node: Insert and tweak glyphs105970
-Node: Change to alternate styles107083
-Node: Installation107992
-Node: use-package the straightforward way108248
-Node: Without use-package110633
-Node: Autoloading?112215
-Node: Related packages113100
-Node: Emacs113281
-Node: Non Emacs116643
-Node: Author contributors118555
-Node: License120767
+Node: Compatibility with ASCIIFlow99373
+Node: Lisp API100327
+Node: Move the cursor100992
+Node: Brush101423
+Node: Example Lisp function to draw a plus sign102292
+Node: Long range actions (contour flood-fill rectangle)104128
+Node: Constants105244
+Node: Macro and text direction105659
+Node: Insert and tweak glyphs106594
+Node: Change to alternate styles107707
+Node: Installation108616
+Node: use-package the straightforward way108872
+Node: Without use-package111257
+Node: Autoloading?112839
+Node: Related packages113724
+Node: Emacs113905
+Node: Non Emacs117267
+Node: Author contributors119179
+Node: License121391
 
 End Tag Table
 

@@ -2266,8 +2266,26 @@ not so used nowadays), then put that in your =.emacs= file:
 #+end_src
 
 The tilde =~= character is not always easy to type under
-MacOs. Sometimes it is bound to =M-n=, but not always.
-See [[#keyboard-bindings][Keyboard bindings]] for how to bind tilde =~= and other keys.
+MacOs. It is usually entered by typing =Alt-n SPC=. (Typing
+=Alt-n n= gives =ñ=, typing =Alt-n o= gives =õ= and so on).
+
+However, under Emacs the =Alt= keys are usually interpreted as =Meta=,
+which defeats the tilde typing. One way to circumvent that, is to give
+back the =Alt= key at the right to MacOS, and keep the Emacs meaning
+(ie. =Meta=) for the =Alt= key at the left.
+
+To do so:
+
+#+begin_src example
+M-x customize-variable ns-right-alternate-modifier
+#+end_src
+
+and set this variable to =nil= (by default it is set to =left=).
+
+Then enter tilde with the right =Alt= key.
+
+You may also look at [[#keyboard-bindings][Keyboard bindings]] for a way to bind tilde =~= and
+other keys.
 
 The default monospaced font on MacOS used to be =Menlo=. It was
 superseded by =SF-Mono=. Uniline cannot support those fonts, as their
@@ -2315,6 +2333,7 @@ ASCIIFlow:
 Could =Uniline= be programmed (versus used interactively)?
 Yes!
 
+The API is usable programmatically.
 The API is usable programmatically. The Uniline functions work even
 when the buffer is not in =uniline-mode=.
 
