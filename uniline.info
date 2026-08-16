@@ -55,6 +55,8 @@ Gallery: pure UNICODE diagrams in Emacs
 * Replace words with simple sketches::
 * Visualize floating point layouts::
 * Illustrate proportions::
+* 3D illusions::
+* Phylogeny hierarchy::
 * Pure text::
 * Beware!::
 
@@ -63,7 +65,8 @@ A minor mode for drawing
 * Minor mode::
 * Draw lines by moving the cursor::
 * Infinite ∞ buffer::
-* Brush style::
+* Basic brushes::
+* 3D brushes::
 * Text direction::
 
 Glyphs ‘▷ ▶ → □ ◆ ╮─’ insertion & modification
@@ -182,15 +185,17 @@ File: uniline.info,  Node: New,  Next: Gallery pure UNICODE diagrams in Emacs,  
 2 New
 *****
 
-The keys for changing the brush (‘-,+,#,~,<return>,<delete>’) can now be
-prefixed by the ‘INS’ key, like any other uniline functions.
+Additional brushes are available.  They give a 3D aspect to boxes.
 
-   Those keys can keep the meaning they had before entering uniline-mode
-(usually self insertion).
+     ╭─────╮    ╭────────╮   ╭───────╮
+     │  a  ▐  ╭▷┤ with   ║   │shadows▐
+     │ box ▐──╯ ╰════╤═══╝   ╰▄▄▄▄▄▄▄▟
+     ╰▄▄▄▄▄▟         ╰──────▷────╯
 
-   Also, the compilation is more robust when Hydra is not installed.
+   3D brushes are experimental.  They are available only with the Hydra
+interface.  Transient coming soon.
 
-   See *note Brush style::.
+   See *note 3D brushes::.
 
 
 File: uniline.info,  Node: Gallery pure UNICODE diagrams in Emacs,  Next: A minor mode for drawing,  Prev: New,  Up: Top
@@ -214,6 +219,8 @@ Draw diagrams like those:
 * Replace words with simple sketches::
 * Visualize floating point layouts::
 * Illustrate proportions::
+* 3D illusions::
+* Phylogeny hierarchy::
 * Pure text::
 * Beware!::
 
@@ -519,7 +526,7 @@ File: uniline.info,  Node: Visualize floating point layouts,  Next: Illustrate p
 
 
 
-File: uniline.info,  Node: Illustrate proportions,  Next: Pure text,  Prev: Visualize floating point layouts,  Up: Gallery pure UNICODE diagrams in Emacs
+File: uniline.info,  Node: Illustrate proportions,  Next: 3D illusions,  Prev: Visualize floating point layouts,  Up: Gallery pure UNICODE diagrams in Emacs
 
 3.12 Illustrate proportions
 ===========================
@@ -543,9 +550,98 @@ File: uniline.info,  Node: Illustrate proportions,  Next: Pure text,  Prev: Visu
 
 
 
-File: uniline.info,  Node: Pure text,  Next: Beware!,  Prev: Illustrate proportions,  Up: Gallery pure UNICODE diagrams in Emacs
+File: uniline.info,  Node: 3D illusions,  Next: Phylogeny hierarchy,  Prev: Illustrate proportions,  Up: Gallery pure UNICODE diagrams in Emacs
 
-3.13 Pure text
+3.13 3D illusions
+=================
+
+The 3D brushes give the illusion of a light casting shadows.  Depending
+on whether the shape is drawn clock-wise or anti-clock-wise, it gives
+the illusion it is etched out or hollow.
+
+
+
+     ╭──────────────────────────╮     ╭──────────────────────────╮
+     │                          ║     │                          ▐
+     │   ╔══════════════════╕   ║     │   ▗▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▖   ▐
+     │   ║//////////////////│   ║     │   ▐\\\\\\\\\\\\\\\\\\│   ▐
+     │   ║//╭────╮//╭────╮//│   ║     │   ▐\\╭────╮\\╭────╮\\│   ▐
+     │   ║//╰═╕  ║//│  ╔═╝//│   ║     │   ▐\\╰▄▖  ▐\\│  ▗▄▟\\│   ▐
+     │   ║////│  ║//│  ║////│   ║     │   ▐\\\\│  ▐\\│  ▐\\\\│   ▐
+     │   ║//╭─╯  ║//│  ╙─╮//│   ║     │   ▐\\╭─╯  ▐\\│  ▝─╮\\│   ▐
+     │   ║//╰════╝//╰════╝//│   ║     │   ▐\\╰▄▄▄▄▟\\╰▄▄▄▄▟\\│   ▐
+     │   ║//////////////////│   ║     │   ▐\\\\\\\\\\\\\\\\\\│   ▐
+     │   ║//╭────────────╮//│   ║     │   ▐\\╭────────────╮\\│   ▐
+     │   ║//│   ╔════╕   ║//│   ║     │   ▐\\│   ▗▄▄▄▄▖   ▐\\│   ▐
+     │   ║//╰═══╝////╰═══╝//│   ║     │   ▐\\╰▄▄▄▟\\\\╰▄▄▄▟\\│   ▐
+     │   ║//////////////////│   ║     │   ▐\\\\\\\\\\\\\\\\\\│   ▐
+     │   ║//╭───╮////╭───╮//│   ║     │   ▐\\╭───╮\\\\\╭──╮\\│   ▐
+     │   ║//│   ╙────╯   ║//│   ║     │   ▐\\│   ▝─────╯  ▐\\│   ▐
+     │   ║//╰════════════╝//│   ║     │   ▐\\╰▄▄▄▄▄▄▄▄▄▄▄▄▟\\│   ▐
+     │   ║//////////////////│   ║     │   ▐\\\\\\\\\\\\\\\\\\│   ▐
+     │   ╙──────────────────╯   ║     │   ▝──────────────────╯   ▐
+     │                          ║     │                          ▐
+     ╰══════════════════════════╝     ╰▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▟
+
+
+
+
+     ╭───────╮       ╭───────┒          ╭───────╮       ╭───────╮
+     │ unua  ┃   ╭──▶│ mikso ┃          │ unua  ▐   ╭──▶│ mikso ▐
+     │       ┠───╯   ┕━━┑    ┖─╮        │       ▐───╯   ╰▄▄▖    ▝─╮
+     ╰━━┯━━━━┛          │      ┠────□   ╰▄▄▄▄▄▄▄▟          │      ▐────□
+        │               │      ┃──╮        │               │      ▐──╮
+        │ ╭─────╮       │    ┏━┛  ╰─■      │ ╭─────╮       │    ▗▄▟  ╰─■
+        ╰─▶ dua ┃    ╭──╯    ┃             ╰─▶ dua ▐    ╭──╯    ▐
+          │     ┠───▶│       ┃               │     ▐───▶│       ▐
+          ╰━━━━━┛    ╰━━━━━━━┛               ╰▄▄▄▄▄▟    ╰▄▄▄▄▄▄▄▟
+
+
+
+File: uniline.info,  Node: Phylogeny hierarchy,  Next: Pure text,  Prev: 3D illusions,  Up: Gallery pure UNICODE diagrams in Emacs
+
+3.14 Phylogeny hierarchy
+========================
+
+
+
+
+                                                    ╭────────────────╮
+                                   ╭───────────────▷┤crocodiles & co.║
+                                   │                ╰════════════════╝
+     ╭──────────╮                  │                ╭──────────╮
+     │archosaurs▐──────────────────╯  ╭────────────▷┤pterosaurs║
+     ╰▄▄▄▄▄▄▄▄▄▄▟                     │             ╰══════════╝
+           ╰───╮                      │             ╭────────────────╮
+               ▽                      │       ╭────▷┤horned dinosaurs║
+        ╭──────┴──────╮               │       │     ╰════════════════╝
+        │ornithodirans▐───────────────╯       │     ╭─────────╮
+        ╰▄▄▄▄▄▄▄▄▄▄▄▄▄▟                       ╭────▷┤dome-head║
+             │                                │     ╰═════════╝
+             ╰───╮                            │     ╭─────────╮
+                 │        ╭──────────────╮    ╭────▷┤duckbills║
+                 │     ╭─▷┤ornithischians▐────┤     ╰═════════╝
+                 ▽     │  ╰▄▄▄▄▄▄▄▄▄▄▄▄▄▄▟    │     ╭─────────────────╮
+           ╭─────┴───╮ │                      ╰────▷┤armored dinosaurs║
+           │dinosaurs▐─╯                            ╰═════════════════╝
+           ╰▄▄▄▄▄▄▄▄▄▟─╮                            ╭─────────╮
+                       │  ╭────────────╮      ╭────▷┤sauropods║
+                       ╰─▷┤saurischians▐──────┤     ╰═════════╝
+                          ╰▄▄▄▄▄▄▄▄▄▄▄▄▟      │     ╭────────────╮
+                                  ╰──╮        ╰────▷┤prosauropods║
+                                     ▽              ╰════════════╝
+                                ╭────┴────╮         ╭──────────╮
+                                │theropods▐───┬────▷┤non avians║
+                                ╰▄▄▄▄▄▄▄▄▄▟   │     ╰══════════╝
+                                              │     ╭─────╮
+                                              ╰────▷┤birds║
+                                                    ╰═════╝
+
+
+
+File: uniline.info,  Node: Pure text,  Next: Beware!,  Prev: Phylogeny hierarchy,  Up: Gallery pure UNICODE diagrams in Emacs
+
+3.15 Pure text
 ==============
 
 Those diagrams are pure text.  There is nothing graphic.  They are
@@ -563,7 +659,7 @@ draw lines while you move the cursor with keyboard arrows.
 
 File: uniline.info,  Node: Beware!,  Prev: Pure text,  Up: Gallery pure UNICODE diagrams in Emacs
 
-3.14 Beware!
+3.16 Beware!
 ============
 
 If you see those diagrams miss-aligned, most likely the font used to
@@ -586,7 +682,8 @@ File: uniline.info,  Node: A minor mode for drawing,  Next: The <insert> key,  P
 * Minor mode::
 * Draw lines by moving the cursor::
 * Infinite ∞ buffer::
-* Brush style::
+* Basic brushes::
+* 3D brushes::
 * Text direction::
 
 
@@ -625,7 +722,7 @@ hitting the control-key while moving, lines overwrite whatever there is.
 12 characters wide downward, type: ‘M-12 <down>’
 
 
-File: uniline.info,  Node: Infinite ∞ buffer,  Next: Brush style,  Prev: Draw lines by moving the cursor,  Up: A minor mode for drawing
+File: uniline.info,  Node: Infinite ∞ buffer,  Next: Basic brushes,  Prev: Draw lines by moving the cursor,  Up: A minor mode for drawing
 
 4.3 Infinite ∞ buffer
 =====================
@@ -654,10 +751,10 @@ adds empty lines.  When widening again the buffer, the region which was
 narrow will have increased.
 
 
-File: uniline.info,  Node: Brush style,  Next: Text direction,  Prev: Infinite ∞ buffer,  Up: A minor mode for drawing
+File: uniline.info,  Node: Basic brushes,  Next: 3D brushes,  Prev: Infinite ∞ buffer,  Up: A minor mode for drawing
 
-4.4 Brush style
-===============
+4.4 Basic brushes
+=================
 
 Set the current brush with:
 
@@ -688,11 +785,11 @@ direction::) are reflected in the mode-line (at the bottom of the
 
 
 
-      current text                  current
-         direction╶────╮       ╭───╴brush
-                       ▼       ▼
-     ══════════════════╧═══════╧══════════════
-     U:** buff    (... →Uniline┼ ...)
+      current text                   current
+         direction╶────╮        ╭───╴brush
+                       ▼        ▼
+     ══════════════════╧════════╧═════════════
+     U:** buff    (... →Uniline(┼) ...)
      ═════════════════════════════════════════
 
 
@@ -727,9 +824,83 @@ preserving thickness).  There is no dotted versions of double lines
 either.
 
 
-File: uniline.info,  Node: Text direction,  Prev: Brush style,  Up: A minor mode for drawing
+File: uniline.info,  Node: 3D brushes,  Next: Text direction,  Prev: Basic brushes,  Up: A minor mode for drawing
 
-4.5 Text direction
+4.5 3D brushes
+==============
+
+12 composite brushes are available.  (They are composite in the sense
+that they combine elementary brushes).  They are called 3D, aka 3
+dimensions, because they give the illusion of a foreground shape which
+casts its shadow on the background.  In the litterature they are usually
+refered to as 2.5 dimensions.
+
+   Currently, they are only accessible through the Hydra interface.
+Transient coming soon.  Type:
+
+   ‘<insert> b’, then one of the 12 shortcut letters.
+
+   The selected brush is displayed in the lighter, at the bottom of the
+Emacs screen.
+
+   The "light" can be choosen to come
+   • from upper left and cast "shadows" to lower right,
+   • or from upper right and cast "shadows" to lower left.
+
+   Here they are:
+
+
+     ╭─╴short shadow
+     │             large shadow╶╮
+     ╰─────╮         ╭──────────╯
+         ╭─┴──╮    ╭─┴──╮
+     ┏━━━▽━━━━▽━━━━▽━━━━▽━━┓
+     ┃ ╭──╮╭──╮  ▖──╮╭──▗  ┃
+     ┃ ▌a ││b ▐  ▌A ││B ▐  ◁─╴block shadow
+     ┃ ▙▄▄╯╰▄▄▟  ▙▄▄▖▗▄▄▟  ┃
+     ┃                     ┃
+     ┃ ╭──╮╭──╮  ╓──╮╭──╖  ┃
+     ┃ ║c ││d ║  ║C ││D ║  ◁─╴double shadow
+     ┃ ╚══╯╰══╝  ╚══╛╘══╝  ┃
+     ┃                     ┃
+     ┃ ╭──╮╭──╮  ┎──╮╭──┒  ┃
+     ┃ ┃e ││f ┃  ┃E ││F ┃  ◁─╴thick shadow
+     ┃ ┗━━╯╰╼━┛  ┗━━┙┕━━┛  ┃
+     ┗━━━△━━━━△━━━━△━━━━△━━┛
+         │    │    │    │
+         │    ╰────├────╰──╴light comes
+         │         │        from north west
+         │         │
+         ╰─────────╰────────light comes
+                            from north east
+
+
+   When a shape is drawn in the clock-wise direction, it appears
+etched-out, as if it was on the foreground.
+
+   When drawn anti-clockwise, it appears as a hole.
+
+   Both rotation directions can be combined for interesting effects.
+
+
+     ╭─────────────────╮
+     │/////////////////▐
+     │////▗▄▄▄▄▄▄▄▄▖///▝─────╮
+     │////▐        │/////////▐
+     │////▐ a hole │/////////▐
+     │////▐        │/////////▐
+     │////▝────────╯/////////▐
+     │///////////////////////▐
+     ╰▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▟
+
+
+   The rectangle drawing and the contour tracing operate clock-wise,
+thus creating etched out shapes.
+
+
+File: uniline.info,  Node: Text direction,  Prev: 3D brushes,  Up: A minor mode for drawing
+
+4.6 Text direction
 ==================
 
 Usually, inserting text in a buffer moves the cursor to the right.  (And
@@ -3126,101 +3297,104 @@ along with this program.  If not, see <http://www.gnu.org/licenses/>.
 
 Tag Table:
 Node: Top171
-Node: Getting started in 10 seconds3403
-Node: New4011
-Node: Gallery pure UNICODE diagrams in Emacs4495
-Node: Document a command5184
-Node: Connect boxes with arrows5734
-Node: Explain decisions trees7054
-Node: Draw lines or blocks8560
-Node: Outline the General Relativity and the Schrödinger's equations10102
-Node: Explain the structure of a sentence in a foreign language13001
-Node: Draw electronic diagrams14587
-Node: Explain Lisp lists15992
-Node: Draw sketched objects17175
-Node: Replace words with simple sketches19165
-Node: Visualize floating point layouts19748
-Node: Illustrate proportions21767
-Node: Pure text23243
-Node: Beware!23978
-Node: A minor mode for drawing24561
-Node: Minor mode24873
-Node: Draw lines by moving the cursor25435
-Node: Infinite ∞ buffer26027
-Node: Brush style27308
-Node: Text direction30202
-Node: The <insert> key30828
-Node: Glyphs ▷ ▶ → □ ◆ ╮─ insertion & modification32323
-Node: Arrows glyphs ▷ ▶ → ▹ ▸ ↔33040
-Node: Intersection glyphs ■ ◆ ●34684
-Node: Fine tweaking of lines37514
-Node: Rectangular actions39464
-Node: Drawing a rectangle40835
-Node: Filling a rectangle42486
-Node: Moving a rectangular region43254
-Node: Copying killing yanking a rectangular region45823
-Node: Dashed lines and other styles47071
-Node: ASCII to UNICODE51304
-Node: UNICODE to ASCII55012
-Node: Long range actions contour and flood-fill55510
-Node: Tracing a contour55773
-Node: Flood-fill57757
-Node: Macros59531
-Node: Which fonts?62922
-Node: Recommended fonts63185
-Node: Use case - mixing fonts65277
-Node: Hydra or Transient?67278
-Node: Selecting Hydra or Transient68267
-Node: Instantly selecting Hydra or Transient69385
-Node: One-liner menus70351
-Node: The Hydra interface72289
-Node: The Transient interface72962
-Node: Customization73500
-Node: Interface type74440
-Node: Insert key74966
-Node: Prefix brush settings with INS75742
-Node: Keyboard bindings76415
-Node: Maximum steps when drawing a contour78355
-Node: Cursor type78692
-Node: Hint style79017
-Node: Welcome message visibility79364
-Node: Line spacing79745
-Node: Font81211
-Node: Upward infiniteness ∞81729
-Node: Lisp Hooks82280
-Node: How Uniline behaves with its environment?83581
-Node: Language environment84217
-Node: Mouse support86604
-Node: Compatibility with Picture-mode87561
-Node: Compatibility with Artist-mode88501
-Node: Compatibility with Whitespace-mode89020
-Node: Compatibility with Org Mode89920
-Node: Org Mode and LaTex91341
-Node: What about \t tabs?93201
-Node: What about ^L page separation?94002
-Node: Emacs on the Linux console94625
-Node: Emacs on a graphical terminal emulator95587
-Node: Emacs on Windows96517
-Node: Emacs on MacOS97184
-Node: Compatibility with ASCIIFlow99373
-Node: Lisp API100327
-Node: Move the cursor100992
-Node: Brush101423
-Node: Example Lisp function to draw a plus sign102292
-Node: Long range actions (contour flood-fill rectangle)104128
-Node: Constants105244
-Node: Macro and text direction105659
-Node: Insert and tweak glyphs106594
-Node: Change to alternate styles107707
-Node: Installation108616
-Node: use-package the straightforward way108872
-Node: Without use-package111257
-Node: Autoloading?112839
-Node: Related packages113724
-Node: Emacs113905
-Node: Non Emacs117267
-Node: Author contributors119179
-Node: License121391
+Node: Getting started in 10 seconds3461
+Node: New4069
+Node: Gallery pure UNICODE diagrams in Emacs4724
+Node: Document a command5454
+Node: Connect boxes with arrows6004
+Node: Explain decisions trees7324
+Node: Draw lines or blocks8830
+Node: Outline the General Relativity and the Schrödinger's equations10372
+Node: Explain the structure of a sentence in a foreign language13271
+Node: Draw electronic diagrams14857
+Node: Explain Lisp lists16262
+Node: Draw sketched objects17445
+Node: Replace words with simple sketches19435
+Node: Visualize floating point layouts20018
+Node: Illustrate proportions22037
+Node: 3D illusions23516
+Node: Phylogeny hierarchy27529
+Node: Pure text31011
+Node: Beware!31743
+Node: A minor mode for drawing32326
+Node: Minor mode32655
+Node: Draw lines by moving the cursor33217
+Node: Infinite ∞ buffer33809
+Node: Basic brushes35092
+Node: 3D brushes37993
+Node: Text direction40959
+Node: The <insert> key41584
+Node: Glyphs ▷ ▶ → □ ◆ ╮─ insertion & modification43079
+Node: Arrows glyphs ▷ ▶ → ▹ ▸ ↔43796
+Node: Intersection glyphs ■ ◆ ●45440
+Node: Fine tweaking of lines48270
+Node: Rectangular actions50220
+Node: Drawing a rectangle51591
+Node: Filling a rectangle53242
+Node: Moving a rectangular region54010
+Node: Copying killing yanking a rectangular region56579
+Node: Dashed lines and other styles57827
+Node: ASCII to UNICODE62060
+Node: UNICODE to ASCII65768
+Node: Long range actions contour and flood-fill66266
+Node: Tracing a contour66529
+Node: Flood-fill68513
+Node: Macros70287
+Node: Which fonts?73678
+Node: Recommended fonts73941
+Node: Use case - mixing fonts76033
+Node: Hydra or Transient?78034
+Node: Selecting Hydra or Transient79023
+Node: Instantly selecting Hydra or Transient80141
+Node: One-liner menus81107
+Node: The Hydra interface83045
+Node: The Transient interface83718
+Node: Customization84256
+Node: Interface type85196
+Node: Insert key85722
+Node: Prefix brush settings with INS86498
+Node: Keyboard bindings87171
+Node: Maximum steps when drawing a contour89111
+Node: Cursor type89448
+Node: Hint style89773
+Node: Welcome message visibility90120
+Node: Line spacing90501
+Node: Font91967
+Node: Upward infiniteness ∞92485
+Node: Lisp Hooks93036
+Node: How Uniline behaves with its environment?94337
+Node: Language environment94973
+Node: Mouse support97360
+Node: Compatibility with Picture-mode98317
+Node: Compatibility with Artist-mode99257
+Node: Compatibility with Whitespace-mode99776
+Node: Compatibility with Org Mode100676
+Node: Org Mode and LaTex102097
+Node: What about \t tabs?103957
+Node: What about ^L page separation?104758
+Node: Emacs on the Linux console105381
+Node: Emacs on a graphical terminal emulator106343
+Node: Emacs on Windows107273
+Node: Emacs on MacOS107940
+Node: Compatibility with ASCIIFlow110129
+Node: Lisp API111083
+Node: Move the cursor111748
+Node: Brush112179
+Node: Example Lisp function to draw a plus sign113048
+Node: Long range actions (contour flood-fill rectangle)114884
+Node: Constants116000
+Node: Macro and text direction116415
+Node: Insert and tweak glyphs117350
+Node: Change to alternate styles118463
+Node: Installation119372
+Node: use-package the straightforward way119628
+Node: Without use-package122013
+Node: Autoloading?123595
+Node: Related packages124480
+Node: Emacs124661
+Node: Non Emacs128023
+Node: Author contributors129935
+Node: License132147
 
 End Tag Table
 

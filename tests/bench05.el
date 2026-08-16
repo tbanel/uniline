@@ -33,7 +33,7 @@
   C-SPC <down> <down> <down> M-9 <right> <kp-subtract> <insert>
   C-r <return> M-7 <right> <down>
   C-SPC <down> <down> <down> M-6 <right> <kp-add>
-  <insert> C-r = R RET"
+  <insert> C-r = R <return> <return>"
 
 "\
 

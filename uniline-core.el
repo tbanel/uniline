@@ -1799,15 +1799,8 @@ When FORCE is not nil, overwrite characters which are not lines."
     (let* ((dir (eval dir)) ;; to convert 'uniline-direction-dw↓ into 2
            (odir (uniline--reverse-direction dir)))
       `(progn
-         (unless ,repeat (setq ,repeat 1))
          (setq uniline--arrow-direction ,dir)
-         (handle-shift-selection)
          (cond
-          ((region-active-p)
-           ;; region is marked, continue extending it
-           (uniline--move-in-direction ,dir ,repeat)
-           (setq deactivate-mark nil))
-
           ((eq uniline-brush :block)
            ;; draw quadrant-blocks ▝▙▄▌
            (uniline--store-undo-quadrant-cursor)
@@ -1849,6 +1842,157 @@ When FORCE is not nil, overwrite characters which are not lines."
            ;; brush is nil, just move point
            (uniline--move-in-direction ,dir ,repeat)))))))
 
+(eval-when-compile ; not needed at runtime
+  (defconst uniline--2.5D-brush-samples-boxes
+    '(
+      (:block-small-se-▟                ; b
+       "╭─╮ ▗▄▖"
+       "│ ▐ ▐ │"
+       "╰▄▟ ▝─╯")
+      (:block-small-sw-▙                ; a
+       "╭─╮ ▗▄▖"
+       "▌ │ │ ▌"
+       "▙▄╯ ╰─▘")
+      (:block-large-se-▟                ; B
+       "╭─▗ ▗▄▖"
+       "│ ▐ ▐ │"
+       "▗▄▟ ▝─╯")
+      (:block-large-sw-▙                ; A
+       "▖─╮ ▗▄▖"
+       "▌ │ │ ▌"
+       "▙▄▖ ╰─▘")
+      (:double-small-se-╝               ; d
+       "╭─╮ ╔═╕"
+       "│ ║ ║ │"
+       "╰═╝ ╙─╯")
+      (:double-small-sw-╚               ; c
+       "╭─╮ ╒═╗"
+       "║ │ │ ║"
+       "╚═╯ ╰─╜")
+      (:double-large-se-╝               ; D
+       "╭─╖ ╔═╕"
+       "│ ║ ║ │"
+       "╘═╝ ╙─╯")
+      (:double-large-sw-╚               ; C
+       "╓─╮ ╒═╗"
+       "║ │ │ ║"
+       "╚═╛ ╰─╜")
+      (:thick-small-se-┛                ; t
+       "╭─╮ ┏━┑"
+       "│ ┃ ┃ │"
+       "╰━┛ ┖─╯")
+      (:thick-small-sw-┗                ; s
+       "╭─╮ ┍━┓"
+       "┃ │ │ ┃"
+       "┗━╯ ╰─┚")
+      (:thick-large-se-┛                ; T
+       "╭─┒ ┏━┑"
+       "│ ┃ ┃ │"
+       "┕━┛ ┖─╯")
+      (:thick-large-sw-┗                ; S
+       "┎─╮ ┍━┓"
+       "┃ │ │ ┃"
+       "┗━┙ ╰─┚")
+      )
+    "An a-list of examples of 2.5D boxes.
+The keys are names of brushes.
+The values are 3x3 drawings of boxes resulting from using this brush.
+The first box is drawn clock-wise, the second anti-clock-wise.
+A 3x3 sample is enough, because it gives what must be drawn on the
+4 sides, and on the 4 corners.
+This data is compiled into smart code by the following macros,
+and discarded after compilation.")
+
+  (defun uniline--pair-brush-angles (carre dir)
+    "Create a pair brush - angles.
+CARRE is the name of a 2.5D brush.
+DIR is the direction in which the cursor moves.
+The returned BRUSH is a 2D brush to actually draw with.
+The returned ANGLES are the glyphs to put on the corner
+depending on the direction the cursor moved before
+turning to DIR."
+    (let ((vv (make-vector 4 ?.))
+          (br))
+      (cond
+       ((eq (uniline-direction-up↑) dir)
+        (aset vv 3 (aref (nth 2 carre) 0))
+        (aset vv 1 (aref (nth 2 carre) 6))
+        (setq br (aref (nth 1 carre) 0)))
+       ((eq (uniline-direction-ri→) dir)
+        (aset vv 0 (aref (nth 0 carre) 0))
+        (aset vv 2 (aref (nth 2 carre) 4))
+        (setq br (aref (nth 0 carre) 1)))
+       ((eq (uniline-direction-dw↓) dir)
+        (aset vv 1 (aref (nth 0 carre) 2))
+        (aset vv 3 (aref (nth 0 carre) 4))
+        (setq br (aref (nth 1 carre) 2)))
+       ((eq (uniline-direction-lf←) dir)
+        (aset vv 2 (aref (nth 2 carre) 2))
+        (aset vv 0 (aref (nth 0 carre) 6))
+        (setq br (aref (nth 2 carre) 1))))
+      (cons
+       (cond
+        ((memq br '(?│ ?─)) 1)
+        ((memq br '(?┃ ?━)) 2)
+        ((memq br '(?║ ?═)) 3)
+        (t br))
+       (concat vv))))
+
+  (defmacro uniline--write-dir (dir repeat force)
+    "Create code to downcase 2.5D brushes to mere 2D brushes.
+It sets the 2D brush depending on DIR, which is the direction
+where the cursor is moving, and depending on the 2.5D brush.
+It also adjust the corner in case the cursor changes direction.
+Then it calls the uniline--write-impl function
+to actually draw 2D lines.
+If region is already active, just extend it without drawing.
+REPEAT and FORCE are just the parameters of the embedding
+function `uniline-write-xxx'."
+    (setq dir (eval dir))
+    `(progn
+       (unless ,repeat (setq ,repeat 1))
+       (handle-shift-selection)
+       (if (region-active-p)
+           ;; region is marked, continue extending it
+           (progn
+             (rectangle-mark-mode 1)
+             (uniline--move-in-direction ,dir ,repeat)
+             (setq deactivate-mark nil))
+         (let ((uniline-brush uniline-brush)
+               (lin (line-number-at-pos))
+               (col (current-column))
+               (corner)
+               (baq ;; is a structure (brush2D [angles…] . quadrant)
+                (cond
+                 ,@(cl-loop
+                    for sample in uniline--2.5D-brush-samples-boxes
+                    for brush-angles = (uniline--pair-brush-angles (cdr sample) dir)
+                    for brush  = (car brush-angles)
+                    for angles = (cdr brush-angles)
+                    for brush2.5D = (car sample)
+                    collect
+                    `((eq uniline-brush ,brush2.5D)
+                      '(
+                        ,(if (> brush 3) :block brush)
+                        ,angles
+                        .
+                        ,(if (> brush 3)
+                             (uniline--4quadb-pushed
+                              (uniline--reverse-direction dir)
+                              (uniline--char-to-4quadb brush)))))))))
+           (when baq
+             (if (eq (setq uniline-brush (car baq)) :block)
+                 (setq
+                  repeat (* ,repeat 2)
+                  uniline--which-quadrant (cddr baq)))
+             (setq corner (aref (cadr baq) uniline--arrow-direction)))
+           (uniline--write-impl ,dir ,repeat ,force)
+           (if (and corner (not (eq corner ?.)))
+             (save-excursion
+               (uniline-move-to-lin-col (1- lin) col)
+               (uniline--insert-char corner)))))))
+)
+
 (defun uniline-write-up↑ (repeat &optional force)
   "Move cursor up drawing or erasing glyphs, or extending region.
 - If region is already active, just extend it without drawing.
@@ -1862,7 +2006,7 @@ or the length to extend region.
 REPEAT defaults to 1.
 When FORCE is not nil, overwrite characters which are not lines."
   (interactive "P")
-  (uniline--write-impl uniline-direction-up↑ repeat force))
+  (uniline--write-dir uniline-direction-up↑ repeat force))
 
 (defun uniline-write-ri→ (repeat &optional force)
   "Move cursor right drawing or erasing glyphs, or extending region.
@@ -1877,7 +2021,7 @@ or the length to extend region.
 REPEAT defaults to 1.
 When FORCE is not nil, overwrite characters which are not lines."
   (interactive "P")
-  (uniline--write-impl uniline-direction-ri→ repeat force))
+  (uniline--write-dir uniline-direction-ri→ repeat force))
 
 (defun uniline-write-dw↓ (repeat &optional force)
   "Move cursor down drawing or erasing glyphs, or extending region.
@@ -1892,7 +2036,7 @@ or the length to extend region.
 REPEAT defaults to 1.
 When FORCE is not nil, overwrite characters which are not lines."
   (interactive "P")
-  (uniline--write-impl uniline-direction-dw↓ repeat force))
+  (uniline--write-dir uniline-direction-dw↓ repeat force))
 
 (defun uniline-write-lf← (repeat &optional force)
   "Move cursor left drawing or erasing glyphs, or extending region.
@@ -1907,7 +2051,7 @@ or the length to extend region.
 REPEAT defaults to 1.
 When FORCE is not nil, overwrite characters which are not lines."
   (interactive "P")
-  (uniline--write-impl uniline-direction-lf← repeat force))
+  (uniline--write-dir uniline-direction-lf← repeat force))
 
 (defun uniline-overwrite-up↑ (repeat)
   "Like `uniline-write-up↑' but overwriting.
@@ -2533,13 +2677,13 @@ the natural cursor movement upon insertion.")
 (defun uniline--update-mode-line ()
   "Computes the string which appears in the mode-line."
   (setq uniline--mode-line-dir
-	(uniline--switch-with-table uniline-text-direction
-	  (nil                   " ")
-	  (uniline-direction-up↑ "↑")
-	  (uniline-direction-ri→ "→")
-	  (uniline-direction-dw↓ "↓")
-	  (uniline-direction-lf← "←"))
-        uniline--mode-line-brush
+        (uniline--switch-with-table uniline-text-direction
+          (nil                   " ")
+          (uniline-direction-up↑ "↑")
+          (uniline-direction-ri→ "→")
+          (uniline-direction-dw↓ "↓")
+          (uniline-direction-lf← "←")))
+  (setq uniline--mode-line-brush
 	(uniline--switch-with-cond uniline-brush
 	  (nil    " ")
 	  (0      "/")
@@ -2554,7 +2698,19 @@ the natural cursor movement upon insertion.")
              (1   "┇")
              (2   "┋")))
 	  (3      "╬")
-	  (:block "▞")))
+	  (:block "▞")
+          (:block-small-se-▟  "▟")
+          (:block-small-sw-▙  "▙")
+          (:block-large-se-▟  "▟")
+          (:block-large-sw-▙  "▙")
+          (:double-small-se-╝ "╝")
+          (:double-small-sw-╚ "╚")
+          (:double-large-se-╝ "╝")
+          (:double-large-sw-╚ "╚")
+          (:thick-small-se-┛  "┛")
+          (:thick-small-sw-┗  "┗")
+          (:thick-large-se-┛  "┛")
+          (:thick-large-sw-┗  "┗")))
   (force-mode-line-update))
 
 (defun uniline--post-self-insert ()
@@ -2735,6 +2891,13 @@ it is already present in the `uniline--directional-macros' cache"
 ;;;╭───────────────────────────╮
 ;;;│High level brush management│
 ;;;╰───────────────────────────╯
+
+(defun uniline-set-brush (brush)
+  "Change the current style of line.
+Updates the ligher."
+  (interactive)
+  (setq uniline-brush brush)
+  (uniline--update-mode-line))
 
 (defun uniline-set-brush-nil ()
   "Change the current style of line to nothing.
@@ -4406,6 +4569,7 @@ And backup previous settings."
 │ \\`<insert> ~'         to switch between dotted and plain lines
 │ \\`<insert> <delete>'  to erase lines
 │ \\`<insert> <return>'  to move cursor without drawing
+│ \\`<insert> b'         brings a menu with a choice of 3D brushes
 │ Depending on the value of `uniline-prefix-for-setting-brush',
 │ the \\`<insert>' prefix can be avoided.
 ╰─────────────────────────────────────────────────╴
@@ -4571,7 +4735,7 @@ And backup previous settings."
   :init-value nil
   ;;         ╭───╴without that, mouse-1 on mode-line does not display the menu
   ;;         ▽
-  :lighter (:eval (format " %sUniline%s" uniline--mode-line-dir uniline--mode-line-brush))
+  :lighter (:eval (format " %sUniline(%s)" uniline--mode-line-dir uniline--mode-line-brush))
   :keymap ;; defines uniline-mode-map
   '(([?\r]           . uniline-set-brush-nil)
     ([delete]        . uniline-set-brush-0)
@@ -4717,6 +4881,19 @@ Its value is ?h or ?t")
      ["┄ 3-2 dots brush" uniline-set-brush-3dots :style radio :selected (eq uniline-brush-dots 1) :keys "~"  ]
      ["┈ 4-4 dots brush" uniline-set-brush-4dots :style radio :selected (eq uniline-brush-dots 2) :keys "~~" ]
      ["─ no dots brush"  uniline-set-brush-0dots :style radio :selected (eq uniline-brush-dots 0) :keys "~~~"])
+    ("3D brushes"
+      ["▟" (uniline-set-brush :block-small-se-▟ ) :keys "INS b b"]
+      ["▙" (uniline-set-brush :block-small-sw-▙ ) :keys "INS b a"]
+      ["▟" (uniline-set-brush :block-large-se-▟ ) :keys "INS b B"]
+      ["▙" (uniline-set-brush :block-large-sw-▙ ) :keys "INS b A"]
+      ["╝" (uniline-set-brush :double-small-se-╝) :keys "INS b d"]
+      ["╚" (uniline-set-brush :double-small-sw-╚) :keys "INS b c"]
+      ["╝" (uniline-set-brush :double-large-se-╝) :keys "INS b D"]
+      ["╚" (uniline-set-brush :double-large-sw-╚) :keys "INS b C"]
+      ["┛" (uniline-set-brush :thick-small-se-┛ ) :keys "INS b t"]
+      ["┗" (uniline-set-brush :thick-small-sw-┗ ) :keys "INS b s"]
+      ["┛" (uniline-set-brush :thick-large-se-┛ ) :keys "INS b T"]
+      ["┗" (uniline-set-brush :thick-large-sw-┗ ) :keys "INS b S"])
     "----"
     ("Insert glyph"
      ["Insert arrow ▷ ▶ → ▹ ▸ ↔"   uniline-insert-fw-arrow  :keys "INS a"]

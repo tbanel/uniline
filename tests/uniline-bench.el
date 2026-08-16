@@ -77,6 +77,16 @@ nil if there was an error.")
      do (setopt--set var val))
     settings))
 
+(defun uniline-bench-plist-non-standard-settings ()
+  "Create a plist of currently non standard setting"
+  (cl-loop
+   for var in uniline-bench-all-custom-variables
+   for std = (eval (car (get var 'standard-value)))
+   unless (equal std (eval var))
+   collect var
+   and
+   collect (eval var)))
+
 (defun uniline-bench-record-settings ()
   (let ((current
          (cl-loop
@@ -173,7 +183,9 @@ Do not call it directly."
   (insert (key-description (kmacro--keys (kmacro last-kbd-macro))))
   (insert "\"\n\n\"\\\n")
   (insert-buffer-substring "*uniline-interactive*")
-  (insert "\")\n")
+  (insert "\"\n")
+  (insert (format "%s" (uniline-bench-plist-non-standard-settings)))
+  (insert ")\n")
   (lisp-mode))
 
 (defmacro uniline-bench-numcompact-n (n)
@@ -255,24 +267,38 @@ If there are no errors, a summary is presented."
     (switch-to-buffer buf)
     (message "%s PASSED / %s FAILED %s" nbpassed nbfailed failed)))
 
-(pcase 0
-  (0
-   (uniline-bench-run))
-  (1
-   (garbage-collect)
-   (profiler-start 'cpu+mem)
-   (uniline-bench-run)
-   (profiler-stop)
-   (profiler-report))
-  (2
+(defun uniline-bench-run-simple ()
+  (garbage-collect)
+  (let* ((cct (current-cpu-time))
+         (messg (uniline-bench-run))
+         (cpu
+          (/ (- (car (current-cpu-time)) (car cct))
+             (float (cdr cct)))))
+    (setq messg (format "%s CPU=%s" messg cpu))
+    (message messg)
+    messg))
+
+(defun uniline-bench-run-profiler ()
+  (garbage-collect)
+  (profiler-start 'cpu+mem)
+  (uniline-bench-run)
+  (profiler-stop)
+  (profiler-report))
+
+(defun uniline-bench-run-instrument ()
    (garbage-collect)
    (elp-instrument-package "uniline")
+   (elp-instrument-package "hydra")
+   (elp-instrument-package "transient")
    (uniline-bench-run)
    (elp-results)
-   (elp-restore-all)))
+   (elp-restore-all))
 
 (if nil
-    (uniline-bench-run "bench26.el" "bench27.el"))
+    (uniline-bench-run-simple))
+
+(if nil
+    (uniline-bench-run "bench05.el" "bench06.el"))
 
 (provide 'uniline-bench)
 ;;; uniline-bench.el ends here

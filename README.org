@@ -30,15 +30,19 @@
 :CUSTOM_ID: new
 :END:
 
-The keys for changing the brush (=-,+,#,~,<return>,<delete>=) can now be
-prefixed by the =INS= key, like any other uniline functions.
+Additional brushes are available. They give a 3D aspect to boxes.
 
-Those keys can keep the meaning they had before entering uniline-mode
-(usually self insertion).
+#+begin_example
+ ╭─────╮    ╭────────╮   ╭───────╮
+ │  a  ▐  ╭▷┤ with   ║   │shadows▐
+ │ box ▐──╯ ╰════╤═══╝   ╰▄▄▄▄▄▄▄▟
+ ╰▄▄▄▄▄▟         ╰──────▷────╯
+#+end_example
 
-Also, the compilation is more robust when Hydra is not installed.
+3D brushes are experimental. They are available only with the Hydra
+interface. Transient coming soon.
 
-See [[#brush-style][Brush style]].
+See [[#25d-brushes][3D brushes]].
 
 * Table of Contents
 :PROPERTIES:
@@ -62,13 +66,16 @@ See [[#brush-style][Brush style]].
   - [[#replace-words-with-simple-sketches][Replace words with simple sketches]]
   - [[#visualize-floating-point-layouts][Visualize floating point layouts]]
   - [[#illustrate-proportions][Illustrate proportions]]
+  - [[#3d-illusions][3D illusions]]
+  - [[#phylogeny-hierarchy][Phylogeny hierarchy]]
   - [[#pure-text][Pure text]]
   - [[#beware][Beware!]]
 - [[#a-minor-mode-for-drawing][A minor mode for drawing]]
   - [[#minor-mode][Minor mode]]
   - [[#draw-lines-by-moving-the-cursor][Draw lines by moving the cursor]]
   - [[#infinite--buffer][Infinite ∞ buffer]]
-  - [[#brush-style][Brush style]]
+  - [[#basic-brushes][Basic brushes]]
+  - [[#3d-brushes][3D brushes]]
   - [[#text-direction][Text direction]]
 - [[#the-insert-key][The <insert> key]]
 - [[#glyphs-------insertion--modification][Glyphs ▷ ▶ → □ ◆ ╮─ insertion & modification]]
@@ -490,6 +497,99 @@ rebuild it from scratch: https://www.youtube.com/watch?v=3QU-_PSbKlo
 
 #+end_example
 
+** 3D illusions
+:PROPERTIES:
+:CUSTOM_ID: 3d-illusions
+:END:
+
+The 3D brushes give the illusion of a light casting shadows. Depending
+on whether the shape is drawn clock-wise or anti-clock-wise, it gives
+the illusion it is etched out or hollow.
+
+[[file:images/etched-in-out.png]]
+
+#+begin_example
+  ╭──────────────────────────╮     ╭──────────────────────────╮
+  │                          ║     │                          ▐
+  │   ╔══════════════════╕   ║     │   ▗▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▖   ▐
+  │   ║//////////////////│   ║     │   ▐\\\\\\\\\\\\\\\\\\│   ▐
+  │   ║//╭────╮//╭────╮//│   ║     │   ▐\\╭────╮\\╭────╮\\│   ▐
+  │   ║//╰═╕  ║//│  ╔═╝//│   ║     │   ▐\\╰▄▖  ▐\\│  ▗▄▟\\│   ▐
+  │   ║////│  ║//│  ║////│   ║     │   ▐\\\\│  ▐\\│  ▐\\\\│   ▐
+  │   ║//╭─╯  ║//│  ╙─╮//│   ║     │   ▐\\╭─╯  ▐\\│  ▝─╮\\│   ▐
+  │   ║//╰════╝//╰════╝//│   ║     │   ▐\\╰▄▄▄▄▟\\╰▄▄▄▄▟\\│   ▐
+  │   ║//////////////////│   ║     │   ▐\\\\\\\\\\\\\\\\\\│   ▐
+  │   ║//╭────────────╮//│   ║     │   ▐\\╭────────────╮\\│   ▐
+  │   ║//│   ╔════╕   ║//│   ║     │   ▐\\│   ▗▄▄▄▄▖   ▐\\│   ▐
+  │   ║//╰═══╝////╰═══╝//│   ║     │   ▐\\╰▄▄▄▟\\\\╰▄▄▄▟\\│   ▐
+  │   ║//////////////////│   ║     │   ▐\\\\\\\\\\\\\\\\\\│   ▐
+  │   ║//╭───╮////╭───╮//│   ║     │   ▐\\╭───╮\\\\\╭──╮\\│   ▐
+  │   ║//│   ╙────╯   ║//│   ║     │   ▐\\│   ▝─────╯  ▐\\│   ▐
+  │   ║//╰════════════╝//│   ║     │   ▐\\╰▄▄▄▄▄▄▄▄▄▄▄▄▟\\│   ▐
+  │   ║//////////////////│   ║     │   ▐\\\\\\\\\\\\\\\\\\│   ▐
+  │   ╙──────────────────╯   ║     │   ▝──────────────────╯   ▐
+  │                          ║     │                          ▐
+  ╰══════════════════════════╝     ╰▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▟
+
+#+end_example
+
+[[file:images/connected-3D-boxes.png]]
+
+#+begin_example
+ ╭───────╮       ╭───────┒          ╭───────╮       ╭───────╮
+ │ unua  ┃   ╭──▶│ mikso ┃          │ unua  ▐   ╭──▶│ mikso ▐
+ │       ┠───╯   ┕━━┑    ┖─╮        │       ▐───╯   ╰▄▄▖    ▝─╮
+ ╰━━┯━━━━┛          │      ┠────□   ╰▄▄▄▄▄▄▄▟          │      ▐────□
+    │               │      ┃──╮        │               │      ▐──╮
+    │ ╭─────╮       │    ┏━┛  ╰─■      │ ╭─────╮       │    ▗▄▟  ╰─■
+    ╰─▶ dua ┃    ╭──╯    ┃             ╰─▶ dua ▐    ╭──╯    ▐
+      │     ┠───▶│       ┃               │     ▐───▶│       ▐
+      ╰━━━━━┛    ╰━━━━━━━┛               ╰▄▄▄▄▄▟    ╰▄▄▄▄▄▄▄▟
+
+#+end_example
+
+** Phylogeny hierarchy
+:PROPERTIES:
+:CUSTOM_ID: phylogeny-hierarchy
+:END:
+
+[[file:images/phylogeny.png]]
+
+#+begin_example
+
+                                                ╭────────────────╮
+                               ╭───────────────▷┤crocodiles & co.║
+                               │                ╰════════════════╝
+ ╭──────────╮                  │                ╭──────────╮
+ │archosaurs▐──────────────────╯  ╭────────────▷┤pterosaurs║
+ ╰▄▄▄▄▄▄▄▄▄▄▟                     │             ╰══════════╝
+       ╰───╮                      │             ╭────────────────╮
+           ▽                      │       ╭────▷┤horned dinosaurs║
+    ╭──────┴──────╮               │       │     ╰════════════════╝
+    │ornithodirans▐───────────────╯       │     ╭─────────╮
+    ╰▄▄▄▄▄▄▄▄▄▄▄▄▄▟                       ╭────▷┤dome-head║
+         │                                │     ╰═════════╝
+         ╰───╮                            │     ╭─────────╮
+             │        ╭──────────────╮    ╭────▷┤duckbills║
+             │     ╭─▷┤ornithischians▐────┤     ╰═════════╝
+             ▽     │  ╰▄▄▄▄▄▄▄▄▄▄▄▄▄▄▟    │     ╭─────────────────╮
+       ╭─────┴───╮ │                      ╰────▷┤armored dinosaurs║
+       │dinosaurs▐─╯                            ╰═════════════════╝
+       ╰▄▄▄▄▄▄▄▄▄▟─╮                            ╭─────────╮
+                   │  ╭────────────╮      ╭────▷┤sauropods║
+                   ╰─▷┤saurischians▐──────┤     ╰═════════╝
+                      ╰▄▄▄▄▄▄▄▄▄▄▄▄▟      │     ╭────────────╮
+                              ╰──╮        ╰────▷┤prosauropods║
+                                 ▽              ╰════════════╝
+                            ╭────┴────╮         ╭──────────╮
+                            │theropods▐───┬────▷┤non avians║
+                            ╰▄▄▄▄▄▄▄▄▄▟   │     ╰══════════╝
+                                          │     ╭─────╮
+                                          ╰────▷┤birds║
+                                                ╰═════╝
+
+#+end_example
+
 ** Pure text
 :PROPERTIES:
 :CUSTOM_ID: pure-text
@@ -587,10 +687,11 @@ narrow region. When Uniline needs to bypass the up↑ or down↓ limits,
 it adds empty lines. When widening again the buffer, the region which
 was narrow will have increased.
 
-** Brush style
+** Basic brushes
 :PROPERTIES:
-:CUSTOM_ID: brush-style
+:CUSTOM_ID: basic-brushes
 :END:
+
 Set the current brush with:
 
 - ~-~ single thin line
@@ -626,11 +727,11 @@ looks like this:
 
 #+begin_example
 
-  current text                  current
-     direction╶────╮       ╭───╴brush
-                   ▼       ▼
- ══════════════════╧═══════╧══════════════
- U:** buff    (... →Uniline┼ ...)
+  current text                   current
+     direction╶────╮        ╭───╴brush
+                   ▼        ▼
+ ══════════════════╧════════╧═════════════
+ U:** buff    (... →Uniline(┼) ...)
  ═════════════════════════════════════════
 
 #+end_example
@@ -666,6 +767,83 @@ crossing of line is possible. In case a line crosses a dotted line,
 Uniline falls back to a plain line crossing character (but still
 preserving thickness). There is no dotted versions of double lines
 either.
+
+** 3D brushes
+:PROPERTIES:
+:CUSTOM_ID: 3d-brushes
+:END:
+
+12 composite brushes are available. (They are composite in the sense
+that they combine elementary brushes). They are called 3D, aka 3
+dimensions, because they give the illusion of a foreground shape which
+casts its shadow on the background. In the litterature they are
+usually refered to as 2.5 dimensions.
+
+Currently, they are only accessible through the Hydra
+interface. Transient coming soon. Type:
+
+~<insert> b~, then one of the 12 shortcut letters.
+
+The selected brush is displayed in the lighter, at the bottom of the
+Emacs screen.
+
+The "light" can be choosen to come
+- from upper left and cast "shadows" to lower right,
+- or from upper right and cast "shadows" to lower left.
+
+Here they are:
+
+#+begin_example
+
+   ╭─╴short shadow
+   │             large shadow╶╮
+   ╰─────╮         ╭──────────╯
+       ╭─┴──╮    ╭─┴──╮
+   ┏━━━▽━━━━▽━━━━▽━━━━▽━━┓
+   ┃ ╭──╮╭──╮  ▖──╮╭──▗  ┃
+   ┃ ▌a ││b ▐  ▌A ││B ▐  ◁─╴block shadow
+   ┃ ▙▄▄╯╰▄▄▟  ▙▄▄▖▗▄▄▟  ┃
+   ┃                     ┃
+   ┃ ╭──╮╭──╮  ╓──╮╭──╖  ┃
+   ┃ ║c ││d ║  ║C ││D ║  ◁─╴double shadow
+   ┃ ╚══╯╰══╝  ╚══╛╘══╝  ┃
+   ┃                     ┃
+   ┃ ╭──╮╭──╮  ┎──╮╭──┒  ┃
+   ┃ ┃e ││f ┃  ┃E ││F ┃  ◁─╴thick shadow
+   ┃ ┗━━╯╰╼━┛  ┗━━┙┕━━┛  ┃
+   ┗━━━△━━━━△━━━━△━━━━△━━┛
+       │    │    │    │
+       │    ╰────├────╰──╴light comes
+       │         │        from north west
+       │         │
+       ╰─────────╰────────light comes
+                          from north east
+
+#+end_example
+
+When a shape is drawn in the clock-wise direction, it appears
+etched-out, as if it was on the foreground.
+
+When drawn anti-clockwise, it appears as a hole.
+
+Both rotation directions can be combined for interesting effects.
+
+#+begin_example
+
+  ╭─────────────────╮
+  │/////////////////▐
+  │////▗▄▄▄▄▄▄▄▄▖///▝─────╮
+  │////▐        │/////////▐
+  │////▐ a hole │/////////▐
+  │////▐        │/////////▐
+  │////▝────────╯/////////▐
+  │///////////////////////▐
+  ╰▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▟
+
+#+end_example
+
+The rectangle drawing and the contour tracing operate clock-wise, thus
+creating etched out shapes.
 
 ** Text direction
 :PROPERTIES:

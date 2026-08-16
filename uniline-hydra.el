@@ -128,9 +128,74 @@
       "Return a tick-glyph ▶ if current font is the one presented by LETTER."
       (if (uniline--is-font letter) "▶" " "))
 
+    ;; Only one Hydra can be active at a time,
+    ;; and when a new Hydra is called, the previous is exited.
+    ;; Sometimes, we want to come back to the master Hydra after
+    ;; interacting with a sub-Hydra.
+    ;; To do so, we remember where we are so as to come back there later.
+    ;; This is explained in the community wiki:
+    ;; https://github.com/abo-abo/hydra/wiki/Nesting-Hydras
+
+    (defvar-local uniline--previous-hydra)
+    (defun uniline--comeback-hydra ()
+      (if uniline--previous-hydra (funcall uniline--previous-hydra)))
+
+    (defun uniline-set-brush-comeback (brush)
+      (uniline-set-brush brush)
+      (uniline--comeback-hydra))
+
+    (defhydra uniline-hydra-brushes
+      (:hint nil :exit t)
+      ;; Docstring MUST begin with an empty line to benefit from substitutions
+      "
+╭────^^───^^─────^^───^^─╮╭────^^───^^────^^───^^─╮╭────^^───^^────^^───^^─╮╭^─^────────^─^───────╮
+│  _a_  _b_    _A_  _B_  ││  _c_  _d_   _C_  _D_  ││  _s_  _t_   _S_  _T_  ││_-_ thin   _<delete>_│
+│ ╭─╮^^╭─╮^^ ▗▖─╮^^╭─▗^^ ││ ╭─╮^^╭─╮^^ ╓─╮^^╭─╖^^ ││ ╭─╮^^╭─╮^^ ┎─╮^^╭─┒^^ ││_+_ thick  _<return>_│
+│▐▌ │^^│ ▐^^ ▐▌ │^^│ ▐^^ ││ ║ │^^│ ║^^ ║ │^^│ ║^^ ││ ┃ │^^│ ┃^^ ┃ │^^│ ┃^^ ││_=_ double ^ ^       │
+│▐▙▄╯^^╰▄▟^^ ▐▙▄▖^^▗▄▟^^ ││ ╚═╯^^╰═╝^^ ╚═╛^^╘═╝^^ ││ ┗━╯^^╰━┛^^ ┗━┙^^┕━┛^^ ││_#_ block    _~_ dots│
+╰────^^──^^─────^^───^^──╯╰────^^───^^────^^───^^─╯╰────^^───^^────^^───^^─╯╰^─^────────^─^───────╯"
+      ("b"              (uniline-set-brush-comeback :block-small-se-▟ ))
+      ("a"              (uniline-set-brush-comeback :block-small-sw-▙ ))
+      ("B"              (uniline-set-brush-comeback :block-large-se-▟ ))
+      ("A"              (uniline-set-brush-comeback :block-large-sw-▙ ))
+      ("d"              (uniline-set-brush-comeback :double-small-se-╝))
+      ("c"              (uniline-set-brush-comeback :double-small-sw-╚))
+      ("D"              (uniline-set-brush-comeback :double-large-se-╝))
+      ("C"              (uniline-set-brush-comeback :double-large-sw-╚))
+      ("t"              (uniline-set-brush-comeback :thick-small-se-┛ ))
+      ("s"              (uniline-set-brush-comeback :thick-small-sw-┗ ))
+      ("T"              (uniline-set-brush-comeback :thick-large-se-┛ ))
+      ("S"              (uniline-set-brush-comeback :thick-large-sw-┗ ))
+      ("<delete>"       (uniline-set-brush-comeback 0                 ))
+      ("<deletechar>"   (uniline-set-brush-comeback 0                 ))
+      ("C-<delete>"     (uniline-set-brush-comeback 0                 ))
+      ("C-<deletechar>" (uniline-set-brush-comeback 0                 ))
+      ("-"              (uniline-set-brush-comeback 1                 ))
+      ("<kp-subtract>"  (uniline-set-brush-comeback 1                 ))
+      ("+"              (uniline-set-brush-comeback 2                 ))
+      ("<kp-add>"       (uniline-set-brush-comeback 2                 ))
+      ("="              (uniline-set-brush-comeback 3                 ))
+      ("#"              (uniline-set-brush-comeback :block            ))
+      ("<return>"       (uniline-set-brush-comeback nil               ))
+      ("~"              uniline-set-brush-dot-toggle :exit nil)
+      ("C-t" uniline-toggle-hints :exit nil)
+      ("TAB" uniline-toggle-hints :exit nil)
+      ("?"  (info "(uniline) Which fonts?") :exit nil)
+      ("q"   uniline--comeback-hydra)
+      ("RET" uniline--comeback-hydra))
+
+    (defun uniline-hydra-brushes/body-and-comeback ()
+      (interactive)
+      (setq uniline--previous-hydra hydra-curr-body-fn)
+      (uniline-hydra-brushes/body))
+    (defun uniline-hydra-brushes/body-no-comeback ()
+      (interactive)
+      (setq uniline--previous-hydra nil)
+      (uniline-hydra-brushes/body))
+
     (defhydra uniline-hydra-fonts
       (:hint nil :exit nil)
-      ;; Docstring MUST begin with an empty line to benefit from substitutions
+      ;; No need to begin docstring with an empty line because of concat
       (concat
        (replace-regexp-in-string
         "_\\([dhcjbfsiIuapP]\\)_ "
@@ -165,6 +230,7 @@
 
     (defhydra uniline-hydra-customize
       (:hint nil :exit t)
+      ;; Docstring MUST begin with an empty line to benefit from substitutions
       "
 ╭^^╴current session╶╮╭^^╴future sessions╶───────────╮
 │_f_  fonts         ││_g_ Uniline group (settings)  │
@@ -184,7 +250,7 @@
 
     (defhydra uniline-hydra-arrows-classic
       (:hint nil :exit nil)
-      ;; Docstring MUST begin with an empty line to benefit from substitutions
+      ;; No need to begin docstring with an empty line because of concat
       (concat
        (string-replace
         "Text dir────"
@@ -193,10 +259,10 @@
 ╭^─^─^Insert glyph^^^^^─^─^───╮╭^^self╮╭^Rotate arrow^╮╭^Contour^╮╭^Text dir───^╮╭^─^───────╮
 │_a_,_A_rrow ▷ ▶ → ▹ ▸ ↔^^^^^^││_-_ - │╭^Tweak glyph─^╮│_c_ draw ││_C-<left>_  ←││_*_ custom│
 │_s_,_S_quare  □ ■ ◆ ◊  ^^^^^^││_+_ + ││_S-<left>_  ← ││_C_ ovwrt││_C-<right>_ →││_f_   font│
-│_o_,_O_-shape · ● ◦ Ø ø^^^^^^││_=_ = ││_S-<right>_ → │╭^─Fill──^╮│_C-<up>_    ↑││_?_   info│
-│_x_,_X_-cross ╳ ÷ × ± ¤^^^^^^││_#_ # ││_S-<up>_    ↑ ││_i_ fill ││_C-<down>_  ↓││_q_   exit│
-│_SPC_,_DEL_ grey  ░▒▓█ ^^^^^^││_~_ ~ ││_S-<down>_  ↓ │╰^───────^╯╰^─^──────────╯╰^─^───────╯
-╰^─^─^─^─^─^─^─^─^─^──────────╯╰^^────╯╰^────────────^╯"))
+│_o_,_O_-shape · ● ◦ Ø ø^^^^^^││_=_ = ││_S-<right>_ → ││_i_ fill ││_C-<up>_    ↑││_?_   info│
+│_x_,_X_-cross ╳ ÷ × ± ¤^^^^^^││_#_ # ││_S-<up>_    ↑ │╭^╴Brush╶^╮│_C-<down>_  ↓││_q_   exit│
+│_SPC_,_DEL_ grey  ░▒▓█ ^^^^^^││_~_ ~ ││_S-<down>_  ↓ ││_b_ brush│╰^─^──────────╯╰^─^───────╯
+╰^─^─^─^─^─^─^─^─^─^──────────╯╰^^────╯╰^────────────^╯╰^───────^╯"))
       ("a" uniline-insert-fw-arrow )
       ("A" uniline-insert-bw-arrow )
       ("s" uniline-insert-fw-square)
@@ -222,31 +288,32 @@
       ("=" self-insert-command)
       ("#" self-insert-command)
       ("~" self-insert-command)
-      ("f" uniline-hydra-fonts/body :exit t)
-      ("c" uniline-contour          :exit t)
-      ("C" (uniline-contour t)      :exit t)
-      ("i" uniline-fill             :exit t)
+      ("f" uniline-hydra-fonts/body   :exit t)
+      ("b" uniline-hydra-brushes/body-no-comeback :exit t)
+      ("c" uniline-contour            :exit t)
+      ("C" (uniline-contour t)        :exit t)
+      ("i" uniline-fill               :exit t)
       ("C-t" uniline-toggle-hints)
       ("TAB" uniline-toggle-hints)
       ("*" uniline-hydra-customize/body :exit t)
       ("?"  (info "uniline") :exit t)
-      ("q"   ()              :exit t)
+      ("q"        ()         :exit t)
       ("<return>" ()         :exit t))
 
     (defhydra uniline-hydra-arrows-brush
       (:hint nil :exit nil)
-      ;; Docstring MUST begin with an empty line to benefit from substitutions
+      ;; No need to begin docstring with an empty line because of concat
       (concat
        (string-replace
         "Text dir────"
         "Text dir─╴%s(uniline-text-direction-str)╶"
-            "\
-╭^─^─^Insert glyph^^^^^─^─^───╮╭^^brush───────^^───╮╭^Rotate arrow^╮╭^Contour^╮╭^Text dir───^╮╭^─^───────╮
+        "\
+╭^─^─^Insert glyph^^^^^─^─^───╮╭^^Brush───────^^───╮╭^Rotate arrow^╮╭^Contour^╮╭^Text dir───^╮╭^─^───────╮
 │_a_,_A_rrow ▷ ▶ → ▹ ▸ ↔^^^^^^││_-_ light  _+_ bold│╭^Tweak glyph─^╮│_c_ draw ││_C-<left>_  ←││_*_ custom│
 │_s_,_S_quare  □ ■ ◆ ◊  ^^^^^^││_=_ double _#_ quad││_S-<left>_  ← ││_C_ ovwrt││_C-<right>_ →││_f_   font│
-│_o_,_O_-shape · ● ◦ Ø ø^^^^^^││_~_ dotted       ^^││_S-<right>_ → │╭^─Fill──^╮│_C-<up>_    ↑││_?_   info│
-│_x_,_X_-cross ╳ ÷ × ± ¤^^^^^^││_<return>_ none  ^^││_S-<up>_    ↑ ││_i_ fill ││_C-<down>_  ↓││_q_   exit│
-│_SPC_,_DEL_ grey  ░▒▓█ ^^^^^^││_<delete>_ erase ^^││_S-<down>_  ↓ │╰^───────^╯╰^─^──────────╯╰^─^───────╯
+│_o_,_O_-shape · ● ◦ Ø ø^^^^^^││_~_ dotted _b_ 3D  ││_S-<right>_ → ││_i_ fill ││_C-<up>_    ↑││_?_   info│
+│_x_,_X_-cross ╳ ÷ × ± ¤^^^^^^││_<return>_ none  ^^││_S-<up>_    ↑ │╰^─^──────╯│_C-<down>_  ↓││_q_   exit│
+│_SPC_,_DEL_ grey  ░▒▓█ ^^^^^^││_<delete>_ erase ^^││_S-<down>_  ↓ │ ^ ^       ╰^─^──────────╯╰^─^───────╯
 ╰^─^─^─^─^─^─^─^─^─^──────────╯╰^^───────────^^────╯╰^────────────^╯"))
       ("a" uniline-insert-fw-arrow )
       ("A" uniline-insert-bw-arrow )
@@ -276,6 +343,7 @@
       ("="             uniline-set-brush-3          :exit t)
       ("#"             uniline-set-brush-block      :exit t)
       ("~"             uniline-set-brush-dot-toggle :exit t)
+      ("b" uniline-hydra-brushes/body-no-comeback   :exit t)
       ("f" uniline-hydra-fonts/body :exit t)
       ("c" uniline-contour          :exit t)
       ("C" (uniline-contour t)      :exit t)
@@ -337,7 +405,7 @@
 ╭^Move ^rect╮╭────^Draw^ rect────╮╭^─Rect^─╮╭^─^──Brush^^────╮╭──^Misc^─────────╮
 │_<right>_ →││_r_     trace inner││_c_ copy││_-_ ╭─╯  _+_ ┏━┛││_s_   alt styles │
 │_<left>_  ←││_R_     trace outer││_k_ kill││_=_ ╔═╝  _#_ ▄▄▟││_f_   choose font│
-│_<up>_    ↑││_C-r_   ovewr inner││_y_ yank││_~_ ┄┄┄  ^ ^    ││_C-t_ short hints│
+│_<up>_    ↑││_C-r_   ovewr inner││_y_ yank││_~_ ┄┄┄  _b_ 3D ││_C-t_ short hints│
 │_<down>_  ↓││_C-S-R_ ovewr outer││_i_ fill││_<delete>_ DEL^^││_?_   info       │
 ╰^─────^────╯╰^────^─────────────╯╰^^──────╯╰^^─────────^^───╯│_<return>_ exit  │
  ^     ^      ^    ^               ^^        ^^         ^^    ╰^───^────────────╯"
@@ -367,6 +435,7 @@
       ("="              uniline-set-brush-3)
       ("#"              uniline-set-brush-block)
       ("~"              uniline-set-brush-dot-toggle)
+      ("b" uniline-hydra-brushes/body-and-comeback :exit t)
 
       ("C-t" uniline-toggle-hints)
       ("TAB" uniline-toggle-hints)
