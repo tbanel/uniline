@@ -136,7 +136,7 @@
     ;; This is explained in the community wiki:
     ;; https://github.com/abo-abo/hydra/wiki/Nesting-Hydras
 
-    (defvar-local uniline--previous-hydra)
+    (defvar-local uniline--previous-hydra nil)
     (defun uniline--comeback-hydra ()
       (if uniline--previous-hydra (funcall uniline--previous-hydra)))
 
