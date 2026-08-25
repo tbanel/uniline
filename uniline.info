@@ -66,7 +66,7 @@ A minor mode for drawing
 * Draw lines by moving the cursor::
 * Infinite ∞ buffer::
 * Basic brushes::
-* 3D brushes::
+* The 2.5 dimensions brushes: The 25 dimensions brushes.
 * Text direction::
 
 Glyphs ‘▷ ▶ → □ ◆ ╮─’ insertion & modification
@@ -185,17 +185,20 @@ File: uniline.info,  Node: New,  Next: Gallery pure UNICODE diagrams in Emacs,  
 2 New
 *****
 
-Additional brushes are available.  They give a 3D aspect to boxes.
+Additional brushes are available.  They give a 2.5 dimensions aspect to
+boxes.  (More that the 2 dimensions of a flat paper and less than our 3
+dimensions world).
 
      ╭─────╮    ╭────────╮   ╭───────╮
      │  a  ▐  ╭▷┤ with   ║   │shadows▐
      │ box ▐──╯ ╰════╤═══╝   ╰▄▄▄▄▄▄▄▟
      ╰▄▄▄▄▄▟         ╰──────▷────╯
 
-   3D brushes are experimental.  They are available only with the Hydra
-interface.  Transient coming soon.
+   2.5 D brushes are still experimental and waiting for user feedback.
+They are available through the Hydra & Transient interfaces.  Just type
+‘INS b’ to bring a menu of available brushes.
 
-   See *note 3D brushes::.
+   See *note The 25 dimensions brushes::
 
 
 File: uniline.info,  Node: Gallery pure UNICODE diagrams in Emacs,  Next: A minor mode for drawing,  Prev: New,  Up: Top
@@ -683,7 +686,7 @@ File: uniline.info,  Node: A minor mode for drawing,  Next: The <insert> key,  P
 * Draw lines by moving the cursor::
 * Infinite ∞ buffer::
 * Basic brushes::
-* 3D brushes::
+* The 2.5 dimensions brushes: The 25 dimensions brushes.
 * Text direction::
 
 
@@ -751,7 +754,7 @@ adds empty lines.  When widening again the buffer, the region which was
 narrow will have increased.
 
 
-File: uniline.info,  Node: Basic brushes,  Next: 3D brushes,  Prev: Infinite ∞ buffer,  Up: A minor mode for drawing
+File: uniline.info,  Node: Basic brushes,  Next: The 25 dimensions brushes,  Prev: Infinite ∞ buffer,  Up: A minor mode for drawing
 
 4.4 Basic brushes
 =================
@@ -824,21 +827,17 @@ preserving thickness).  There is no dotted versions of double lines
 either.
 
 
-File: uniline.info,  Node: 3D brushes,  Next: Text direction,  Prev: Basic brushes,  Up: A minor mode for drawing
+File: uniline.info,  Node: The 25 dimensions brushes,  Next: Text direction,  Prev: Basic brushes,  Up: A minor mode for drawing
 
-4.5 3D brushes
-==============
+4.5 The 2.5 dimensions brushes
+==============================
 
 12 composite brushes are available.  (They are composite in the sense
-that they combine elementary brushes).  They are called 3D, aka 3
+that they combine elementary brushes).  They are called 2.5D, aka 2.5
 dimensions, because they give the illusion of a foreground shape which
-casts its shadow on the background.  In the litterature they are usually
-refered to as 2.5 dimensions.
+casts its shadow on the background.
 
-   Currently, they are only accessible through the Hydra interface.
-Transient coming soon.  Type:
-
-   ‘<insert> b’, then one of the 12 shortcut letters.
+   Type: ‘<insert> b’, then one of the 12 shortcut letters.
 
    The selected brush is displayed in the lighter, at the bottom of the
 Emacs screen.
@@ -894,11 +893,11 @@ etched-out, as if it was on the foreground.
      ╰▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▟
 
 
-   The rectangle drawing and the contour tracing operate clock-wise,
-thus creating etched out shapes.
+   The rectangle drawing and the contour tracing algorithms operate
+clock-wise, thus creating etched out shapes.
 
 
-File: uniline.info,  Node: Text direction,  Prev: 3D brushes,  Up: A minor mode for drawing
+File: uniline.info,  Node: Text direction,  Prev: The 25 dimensions brushes,  Up: A minor mode for drawing
 
 4.6 Text direction
 ==================
@@ -3297,104 +3296,104 @@ along with this program.  If not, see <http://www.gnu.org/licenses/>.
 
 Tag Table:
 Node: Top171
-Node: Getting started in 10 seconds3461
-Node: New4069
-Node: Gallery pure UNICODE diagrams in Emacs4724
-Node: Document a command5454
-Node: Connect boxes with arrows6004
-Node: Explain decisions trees7324
-Node: Draw lines or blocks8830
-Node: Outline the General Relativity and the Schrödinger's equations10372
-Node: Explain the structure of a sentence in a foreign language13271
-Node: Draw electronic diagrams14857
-Node: Explain Lisp lists16262
-Node: Draw sketched objects17445
-Node: Replace words with simple sketches19435
-Node: Visualize floating point layouts20018
-Node: Illustrate proportions22037
-Node: 3D illusions23516
-Node: Phylogeny hierarchy27529
-Node: Pure text31011
-Node: Beware!31743
-Node: A minor mode for drawing32326
-Node: Minor mode32655
-Node: Draw lines by moving the cursor33217
-Node: Infinite ∞ buffer33809
-Node: Basic brushes35092
-Node: 3D brushes37993
-Node: Text direction40959
-Node: The <insert> key41584
-Node: Glyphs ▷ ▶ → □ ◆ ╮─ insertion & modification43079
-Node: Arrows glyphs ▷ ▶ → ▹ ▸ ↔43796
-Node: Intersection glyphs ■ ◆ ●45440
-Node: Fine tweaking of lines48270
-Node: Rectangular actions50220
-Node: Drawing a rectangle51591
-Node: Filling a rectangle53242
-Node: Moving a rectangular region54010
-Node: Copying killing yanking a rectangular region56579
-Node: Dashed lines and other styles57827
-Node: ASCII to UNICODE62060
-Node: UNICODE to ASCII65768
-Node: Long range actions contour and flood-fill66266
-Node: Tracing a contour66529
-Node: Flood-fill68513
-Node: Macros70287
-Node: Which fonts?73678
-Node: Recommended fonts73941
-Node: Use case - mixing fonts76033
-Node: Hydra or Transient?78034
-Node: Selecting Hydra or Transient79023
-Node: Instantly selecting Hydra or Transient80141
-Node: One-liner menus81107
-Node: The Hydra interface83045
-Node: The Transient interface83718
-Node: Customization84256
-Node: Interface type85196
-Node: Insert key85722
-Node: Prefix brush settings with INS86498
-Node: Keyboard bindings87171
-Node: Maximum steps when drawing a contour89111
-Node: Cursor type89448
-Node: Hint style89773
-Node: Welcome message visibility90120
-Node: Line spacing90501
-Node: Font91967
-Node: Upward infiniteness ∞92485
-Node: Lisp Hooks93036
-Node: How Uniline behaves with its environment?94337
-Node: Language environment94973
-Node: Mouse support97360
-Node: Compatibility with Picture-mode98317
-Node: Compatibility with Artist-mode99257
-Node: Compatibility with Whitespace-mode99776
-Node: Compatibility with Org Mode100676
-Node: Org Mode and LaTex102097
-Node: What about \t tabs?103957
-Node: What about ^L page separation?104758
-Node: Emacs on the Linux console105381
-Node: Emacs on a graphical terminal emulator106343
-Node: Emacs on Windows107273
-Node: Emacs on MacOS107940
-Node: Compatibility with ASCIIFlow110129
-Node: Lisp API111083
-Node: Move the cursor111748
-Node: Brush112179
-Node: Example Lisp function to draw a plus sign113048
-Node: Long range actions (contour flood-fill rectangle)114884
-Node: Constants116000
-Node: Macro and text direction116415
-Node: Insert and tweak glyphs117350
-Node: Change to alternate styles118463
-Node: Installation119372
-Node: use-package the straightforward way119628
-Node: Without use-package122013
-Node: Autoloading?123595
-Node: Related packages124480
-Node: Emacs124661
-Node: Non Emacs128023
-Node: Author contributors129935
-Node: License132147
+Node: Getting started in 10 seconds3503
+Node: New4111
+Node: Gallery pure UNICODE diagrams in Emacs4962
+Node: Document a command5692
+Node: Connect boxes with arrows6242
+Node: Explain decisions trees7562
+Node: Draw lines or blocks9068
+Node: Outline the General Relativity and the Schrödinger's equations10610
+Node: Explain the structure of a sentence in a foreign language13509
+Node: Draw electronic diagrams15095
+Node: Explain Lisp lists16500
+Node: Draw sketched objects17683
+Node: Replace words with simple sketches19673
+Node: Visualize floating point layouts20256
+Node: Illustrate proportions22275
+Node: 3D illusions23754
+Node: Phylogeny hierarchy27767
+Node: Pure text31249
+Node: Beware!31981
+Node: A minor mode for drawing32564
+Node: Minor mode32935
+Node: Draw lines by moving the cursor33497
+Node: Infinite ∞ buffer34089
+Node: Basic brushes35372
+Node: The 25 dimensions brushes38288
+Node: Text direction41156
+Node: The <insert> key41796
+Node: Glyphs ▷ ▶ → □ ◆ ╮─ insertion & modification43291
+Node: Arrows glyphs ▷ ▶ → ▹ ▸ ↔44008
+Node: Intersection glyphs ■ ◆ ●45652
+Node: Fine tweaking of lines48482
+Node: Rectangular actions50432
+Node: Drawing a rectangle51803
+Node: Filling a rectangle53454
+Node: Moving a rectangular region54222
+Node: Copying killing yanking a rectangular region56791
+Node: Dashed lines and other styles58039
+Node: ASCII to UNICODE62272
+Node: UNICODE to ASCII65980
+Node: Long range actions contour and flood-fill66478
+Node: Tracing a contour66741
+Node: Flood-fill68725
+Node: Macros70499
+Node: Which fonts?73890
+Node: Recommended fonts74153
+Node: Use case - mixing fonts76245
+Node: Hydra or Transient?78246
+Node: Selecting Hydra or Transient79235
+Node: Instantly selecting Hydra or Transient80353
+Node: One-liner menus81319
+Node: The Hydra interface83257
+Node: The Transient interface83930
+Node: Customization84468
+Node: Interface type85408
+Node: Insert key85934
+Node: Prefix brush settings with INS86710
+Node: Keyboard bindings87383
+Node: Maximum steps when drawing a contour89323
+Node: Cursor type89660
+Node: Hint style89985
+Node: Welcome message visibility90332
+Node: Line spacing90713
+Node: Font92179
+Node: Upward infiniteness ∞92697
+Node: Lisp Hooks93248
+Node: How Uniline behaves with its environment?94549
+Node: Language environment95185
+Node: Mouse support97572
+Node: Compatibility with Picture-mode98529
+Node: Compatibility with Artist-mode99469
+Node: Compatibility with Whitespace-mode99988
+Node: Compatibility with Org Mode100888
+Node: Org Mode and LaTex102309
+Node: What about \t tabs?104169
+Node: What about ^L page separation?104970
+Node: Emacs on the Linux console105593
+Node: Emacs on a graphical terminal emulator106555
+Node: Emacs on Windows107485
+Node: Emacs on MacOS108152
+Node: Compatibility with ASCIIFlow110341
+Node: Lisp API111295
+Node: Move the cursor111960
+Node: Brush112391
+Node: Example Lisp function to draw a plus sign113260
+Node: Long range actions (contour flood-fill rectangle)115096
+Node: Constants116212
+Node: Macro and text direction116627
+Node: Insert and tweak glyphs117562
+Node: Change to alternate styles118675
+Node: Installation119584
+Node: use-package the straightforward way119840
+Node: Without use-package122225
+Node: Autoloading?123807
+Node: Related packages124692
+Node: Emacs124873
+Node: Non Emacs128235
+Node: Author contributors130147
+Node: License132359
 
 End Tag Table
 

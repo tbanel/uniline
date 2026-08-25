@@ -30,7 +30,9 @@
 :CUSTOM_ID: new
 :END:
 
-Additional brushes are available. They give a 3D aspect to boxes.
+Additional brushes are available. They give a 2.5 dimensions aspect to
+boxes. (More that the 2 dimensions of a flat paper and less than our 3
+dimensions world).
 
 #+begin_example
  ╭─────╮    ╭────────╮   ╭───────╮
@@ -39,10 +41,11 @@ Additional brushes are available. They give a 3D aspect to boxes.
  ╰▄▄▄▄▄▟         ╰──────▷────╯
 #+end_example
 
-3D brushes are experimental. They are available only with the Hydra
-interface. Transient coming soon.
+2.5 D brushes are still experimental and waiting for user
+feedback. They are available through the Hydra & Transient
+interfaces. Just type =INS b= to bring a menu of available brushes.
 
-See [[#25d-brushes][3D brushes]].
+See [[#the-25-dimensions-brushes]]
 
 * Table of Contents
 :PROPERTIES:
@@ -75,7 +78,7 @@ See [[#25d-brushes][3D brushes]].
   - [[#draw-lines-by-moving-the-cursor][Draw lines by moving the cursor]]
   - [[#infinite--buffer][Infinite ∞ buffer]]
   - [[#basic-brushes][Basic brushes]]
-  - [[#3d-brushes][3D brushes]]
+  - [[#the-25-dimensions-brushes][The 2.5 dimensions brushes]]
   - [[#text-direction][Text direction]]
 - [[#the-insert-key][The <insert> key]]
 - [[#glyphs-------insertion--modification][Glyphs ▷ ▶ → □ ◆ ╮─ insertion & modification]]
@@ -768,21 +771,17 @@ Uniline falls back to a plain line crossing character (but still
 preserving thickness). There is no dotted versions of double lines
 either.
 
-** 3D brushes
+** The 2.5 dimensions brushes
 :PROPERTIES:
-:CUSTOM_ID: 3d-brushes
+:CUSTOM_ID: the-25-dimensions-brushes
 :END:
 
 12 composite brushes are available. (They are composite in the sense
-that they combine elementary brushes). They are called 3D, aka 3
+that they combine elementary brushes). They are called 2.5D, aka 2.5
 dimensions, because they give the illusion of a foreground shape which
-casts its shadow on the background. In the litterature they are
-usually refered to as 2.5 dimensions.
+casts its shadow on the background.
 
-Currently, they are only accessible through the Hydra
-interface. Transient coming soon. Type:
-
-~<insert> b~, then one of the 12 shortcut letters.
+Type: ~<insert> b~, then one of the 12 shortcut letters.
 
 The selected brush is displayed in the lighter, at the bottom of the
 Emacs screen.
@@ -842,8 +841,8 @@ Both rotation directions can be combined for interesting effects.
 
 #+end_example
 
-The rectangle drawing and the contour tracing operate clock-wise, thus
-creating etched out shapes.
+The rectangle drawing and the contour tracing algorithms operate
+clock-wise, thus creating etched out shapes.
 
 ** Text direction
 :PROPERTIES:
