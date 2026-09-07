@@ -82,7 +82,7 @@
 "\
 
      ╭─────╮    ╭─────╮    ▖─────╮    ╭─────▗
-     ▌xxxxx┤    │xxxxx╮    ▌xxxxx┤    │xxxxx▐
+     ▌xxxxx│    │xxxxx▐    ▌xxxxx│    │xxxxx▐
      ▌x   x│    │x   x▐    ▌x   x│    │x   x▐
      ▌x a x│    │x b x▐    ▌x A x│    │x B x▐
      ▌x   x│    │x   x▐    ▌x   x│    │x   x▐
@@ -91,7 +91,7 @@
 
 
      ╭─────╮    ╭─────╮    ╓─────╮    ╭─────╖
-     ║xxxxx┤    │xxxxx╢    ║xxxxx┤    │xxxxx╢
+     ║xxxxx│    │xxxxx║    ║xxxxx│    │xxxxx║
      ║x   x│    │x   x║    ║x   x│    │x   x║
      ║x c x│    │x d x║    ║x C x│    │x D x║
      ║x   x│    │x   x║    ║x   x│    │x   x║
@@ -100,7 +100,7 @@
 
 
      ╭─────╮    ╭─────╮    ┎─────╮    ╭─────┒
-     ┃xxxxx┤    │xxxxx┦    ┃xxxxx┤    │xxxxx┨
+     ┃xxxxx│    │xxxxx┃    ┃xxxxx│    │xxxxx┃
      ┃x   x│    │x   x┃    ┃x   x│    │x   x┃
      ┃x s x│    │x t x┃    ┃x S x│    │x T x┃
      ┃x   x│    │x   x┃    ┃x   x│    │x   x┃

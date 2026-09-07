@@ -987,7 +987,7 @@ without the fall-back characters.
 There are entries for the 8 dotted lines: ┆ ┇ ┄ ┅ ┊ ┋ ┈ ┉ "))
 
 (eval-and-compile
-  ;; the brushes are local variableq, meaning that several Uniline
+  ;; the brushes are local variables, meaning that several Uniline
   ;; session in the same Emacs have different brushes.
   (defvar-local uniline-brush 1
     "Controls the style of line.
@@ -1842,6 +1842,12 @@ When FORCE is not nil, overwrite characters which are not lines."
            ;; brush is nil, just move point
            (uniline--move-in-direction ,dir ,repeat)))))))
 
+(defvar-local uniline--last-drawn-point nil
+  "Record (point) where the last line-draw happened."
+  ;; Useful to start drawing a fresh new 2.5D line
+  ;; without trying to continue a line in an unrelated location
+  )
+
 (eval-when-compile ; not needed at runtime
   (defconst uniline--2.5D-brush-samples-boxes
     '(
@@ -1958,6 +1964,8 @@ function `uniline-write-xxx'."
              (rectangle-mark-mode 1)
              (uniline--move-in-direction ,dir ,repeat)
              (setq deactivate-mark nil))
+         (unless (eq (point) uniline--last-drawn-point)
+           (setq uniline--arrow-direction ,dir))
          (let ((uniline-brush uniline-brush)
                (lin (line-number-at-pos))
                (col (current-column))
@@ -1990,7 +1998,8 @@ function `uniline-write-xxx'."
            (if (and corner (not (eq corner ?.)))
              (save-excursion
                (uniline-move-to-lin-col (1- lin) col)
-               (uniline--insert-char corner)))))))
+               (uniline--insert-char corner))))
+         (setq uniline--last-drawn-point (point)))))
 )
 
 (defun uniline-write-up↑ (repeat &optional force)
