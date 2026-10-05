@@ -32,7 +32,12 @@
 
 Uniline is now connected to the =abbrev= standard Emacs abbreviation
 system. This enables permanently storing small diagrams for latter
-use. See [[#abbrev][Abbrev]].
+use.
+
+Moreover, now typing =<insert> v= inserts an abbrev by interactively
+querying its name.
+
+See [[#abbrev][Abbrev]].
 
 * Table of Contents
 :PROPERTIES:
@@ -1624,6 +1629,12 @@ To insert a previously stored abbrev:
 - or a space if =abbrev-mode= is active.
 - the name is replaced by the stored rectangular diagram.
 
+Alternatively, type =<insert> v=.
+This will query (with completion) the name of the abbrev to insert.
+
+Note that the freshly inserted abbrev is selected. This allows moving
+it around. To unselect it, just type =<return>=.
+
 Uniline abbreviations are kept under the =uniline-abbrev-table=. They
 are available only under the Uniline minor mode.
 
@@ -1634,7 +1645,7 @@ are available only under the Uniline minor mode.
 
 To see, change, edit, and manage the abbreviations:
 - type =M-x list-abbrevs=,
-- look for the =(uniline-abbrev-table)=,
+- look for the =(uniline-abbrev-table)= entry,
 - edit at will,
 - permanently store by typing =C-x C-s=.
 

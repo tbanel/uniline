@@ -294,7 +294,9 @@ for later menu invocation in the same Uniline session."
    ["Contour,fill"
     ("c" "Draw  cnt" uniline-contour)
     ("C" "Ovwrt cnt" (lambda () (interactive) (uniline-contour t)))
-    ("i" "Fill area" uniline-fill)]
+    ("i" "Fill area" uniline-fill)
+    "Abbrev"
+    ("v" "Insert" uniline-abbrev-query-insert :transient nil)]
    ["Navigation"
     ("b"        "Brush"     uniline-transient-brushes)
     ("*"        "Customize" uniline-transient-customize)
@@ -358,7 +360,9 @@ for later menu invocation in the same Uniline session."
    ["Contour,fill"
     ("c" "Draw  cnt" uniline-contour)
     ("C" "Ovwrt cnt" (lambda () (interactive) (uniline-contour t)))
-    ("i" "Fill area" uniline-fill)]
+    ("i" "Fill area" uniline-fill)
+    "Abbrev"
+    ("v" "Insert" uniline-abbrev-query-insert :transient nil)]
    ["Navigation"
     ("*"        "Customize" uniline-transient-customize)
     ("f"        "Font"      uniline-transient-fonts)

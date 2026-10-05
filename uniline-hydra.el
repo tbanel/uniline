@@ -256,13 +256,13 @@
         "Text dir────"
         "Text dir─╴%s(uniline-text-direction-str)╶"
         "\
-╭^─^─^Insert glyph^^^^^─^─^───╮╭^^self╮╭^Rotate arrow^╮╭^Contour^╮╭^Text dir───^╮╭^─^───────╮
-│_a_,_A_rrow ▷ ▶ → ▹ ▸ ↔^^^^^^││_-_ - │╭^Tweak glyph─^╮│_c_ draw ││_C-<left>_  ←││_*_ custom│
-│_s_,_S_quare  □ ■ ◆ ◊  ^^^^^^││_+_ + ││_S-<left>_  ← ││_C_ ovwrt││_C-<right>_ →││_f_   font│
-│_o_,_O_-shape · ● ◦ Ø ø^^^^^^││_=_ = ││_S-<right>_ → ││_i_ fill ││_C-<up>_    ↑││_?_   info│
-│_x_,_X_-cross ╳ ÷ × ± ¤^^^^^^││_#_ # ││_S-<up>_    ↑ │╭^╴Brush╶^╮│_C-<down>_  ↓││_q_   exit│
-│_SPC_,_DEL_ grey  ░▒▓█ ^^^^^^││_~_ ~ ││_S-<down>_  ↓ ││_b_ brush│╰^─^──────────╯╰^─^───────╯
-╰^─^─^─^─^─^─^─^─^─^──────────╯╰^^────╯╰^────────────^╯╰^───────^╯"))
+╭^─^─^Insert glyph^^^^^─^─^───╮╭^^Self╮╭^Rotate arrow^╮╭^Contour^╮╭^Text dir───^╮╭^─^───────╮
+│_a_,_A_rrow ▷ ▶ → ▹ ▸ ↔^^^^^^││_-_ - │╭^Tweak glyph─^╮│_c_ draw ││_C-<left>_  ←││_b_  brush│
+│_s_,_S_quare  □ ■ ◆ ◊  ^^^^^^││_+_ + ││_S-<left>_  ← ││_C_ ovwrt││_C-<right>_ →││_*_ custom│
+│_o_,_O_-shape · ● ◦ Ø ø^^^^^^││_=_ = ││_S-<right>_ → ││_i_ fill ││_C-<up>_    ↑││_f_   font│
+│_x_,_X_-cross ╳ ÷ × ± ¤^^^^^^││_#_ # ││_S-<up>_    ↑ │╭^Abbrev╶^╮│_C-<down>_  ↓││_?_   info│
+│_SPC_,_DEL_ grey  ░▒▓█ ^^^^^^││_~_ ~ ││_S-<down>_  ↓ ││_v_ inser│╰^─^──────────╯│_q_   exit│
+╰^─^─^─^─^─^─^─^─^─^──────────╯╰^^────╯╰^────────────^╯╰^───────^╯ ^ ^           ╰^─^───────╯"))
       ("a" uniline-insert-fw-arrow )
       ("A" uniline-insert-bw-arrow )
       ("s" uniline-insert-fw-square)
@@ -271,6 +271,7 @@
       ("O" uniline-insert-bw-oshape)
       ("x" uniline-insert-fw-cross )
       ("X" uniline-insert-bw-cross )
+      ("v" uniline-abbrev-query-insert :exit t)
       ("SPC" uniline-insert-fw-grey)
       ("DEL" uniline-insert-bw-grey)
       ("S-<left>"  uniline-rotate-lf←)
@@ -312,9 +313,9 @@
 │_a_,_A_rrow ▷ ▶ → ▹ ▸ ↔^^^^^^││_-_ light  _+_ bold│╭^Tweak glyph─^╮│_c_ draw ││_C-<left>_  ←││_*_ custom│
 │_s_,_S_quare  □ ■ ◆ ◊  ^^^^^^││_=_ double _#_ quad││_S-<left>_  ← ││_C_ ovwrt││_C-<right>_ →││_f_   font│
 │_o_,_O_-shape · ● ◦ Ø ø^^^^^^││_~_ dotted _b_ 3D  ││_S-<right>_ → ││_i_ fill ││_C-<up>_    ↑││_?_   info│
-│_x_,_X_-cross ╳ ÷ × ± ¤^^^^^^││_<return>_ none  ^^││_S-<up>_    ↑ │╰^─^──────╯│_C-<down>_  ↓││_q_   exit│
-│_SPC_,_DEL_ grey  ░▒▓█ ^^^^^^││_<delete>_ erase ^^││_S-<down>_  ↓ │ ^ ^       ╰^─^──────────╯╰^─^───────╯
-╰^─^─^─^─^─^─^─^─^─^──────────╯╰^^───────────^^────╯╰^────────────^╯"))
+│_x_,_X_-cross ╳ ÷ × ± ¤^^^^^^││_<return>_ none  ^^││_S-<up>_    ↑ │╭^Abbrev─^╮│_C-<down>_  ↓││_q_   exit│
+│_SPC_,_DEL_ grey  ░▒▓█ ^^^^^^││_<delete>_ erase ^^││_S-<down>_  ↓ ││_v_ inser│╰^──────────^─╯╰^─^───────╯
+╰^─^─^─^─^─^─^─^─^─^──────────╯╰^^───────────^^────╯╰^────────────^╯╰^───────^╯"))
       ("a" uniline-insert-fw-arrow )
       ("A" uniline-insert-bw-arrow )
       ("s" uniline-insert-fw-square)
@@ -325,6 +326,7 @@
       ("X" uniline-insert-bw-cross )
       ("SPC" uniline-insert-fw-grey)
       ("DEL" uniline-insert-bw-grey)
+      ("v" uniline-abbrev-query-insert :exit t)
       ("S-<left>"  uniline-rotate-lf←)
       ("S-<right>" uniline-rotate-ri→)
       ("S-<up>"    uniline-rotate-up↑)

@@ -4018,6 +4018,31 @@ Or use the '0 standard' style transformer instead.")))
     'uniline-abbrev-hook)
   (deactivate-mark))
 
+;; The uniline-launch-interface is defined in uniline-hydra.el & uniline-transient.el
+;; with different implementation in each file.
+;; It is declared here so that the compiler does not frown upon.
+(declare-function uniline-launch-interface "" ())
+
+(defun uniline-abbrev-query-insert ()
+  "Queries for the name of an abbrev, and insert it.
+The abbrevs list is taken from `uniline-abbrev-table'"
+  (interactive)
+  (let ((last-abbrev-location (point))
+        (last-abbrev-text ""))
+    (abbrev-insert
+     (obarray-get
+      uniline-abbrev-table
+      (completing-read
+       "which abbrev? "
+       (cdr
+        (cl-loop
+         for s being the symbols of uniline-abbrev-table
+         collect s))))))
+  (activate-mark)
+  (rectangle-mark-mode 1)
+  (setq deactivate-mark nil)
+  (uniline-launch-interface))
+
 ;;;╭───────────────────────────╮
 ;;;│Common to Hydra & Transient│
 ;;;╰───────────────────────────╯
