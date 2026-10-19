@@ -200,6 +200,9 @@ system.  This enables permanently storing small diagrams for latter use.
    Moreover, now typing ‘<insert> v’ inserts an abbrev by interactively
 querying its name.
 
+   Late addition: the Uniline menu now offers the list of available
+abbrevs to insert at point.
+
    See *note Abbrev::.
 
 
@@ -1708,15 +1711,23 @@ File: uniline.info,  Node: Insert an abbrev,  Next: Manage abbrevs,  Prev: Creat
 10.2 Insert an abbrev
 =====================
 
-To insert a previously stored abbrev:
-   • type the name of the abbreviation in the buffer under
-     ‘uniline-mode’,
-   • either type ‘C-x '’,
-   • or a space if ‘abbrev-mode’ is active.
-   • the name is replaced by the stored rectangular diagram.
+There are 3 ways to insert a previously stored abbrev.
 
-   Alternatively, type ‘<insert> v’.  This will query (with completion)
-the name of the abbrev to insert.
+  1. The traditional abbrev way:
+        • type the name of the abbreviation in the buffer under
+          ‘uniline-mode’,
+        • either type ‘C-x '’,
+        • or a space if ‘abbrev-mode’ is active.
+        • the name is replaced by the stored rectangular diagram.
+
+  2. Through Hydra or transient menus:
+        • type ‘<insert> v’.  This will query (with completion) the name
+          of the abbrev to insert.
+
+  3. Through the menu:
+        • at the top of the Emacs screen, click on the "Uniline" menu.
+        • Thensearch for the "Insert abbrev" entry.  The list of
+          currently available abbrevs is offered.
 
    Note that the freshly inserted abbrev is selected.  This allows
 moving it around.  To unselect it, just type ‘<return>’.
@@ -1748,10 +1759,14 @@ a library of usual diagram elements is handy.  They can be
 representations of a valve, a motor, a vu-meter, a switch, a resistor, a
 cat, a hat, or whatever makes sense for a particular kind of diagram.
 
-   It is easy to create your own.  If you would like to contribute some
-specialized library (electric engineering or process orchestration for
-instance), you are welcome.  There is not yet a repository for such a
-library.  But this does not stop from starting one.
+   It is easy to create your own through the standard "abbrev" Emacs
+system.  If you would like to contribute some specialized library
+(electric engineering or process orchestration for instance), you are
+welcome.  There is not yet a repository for such a library.  But this
+does not stop from starting one.
+
+   Use ‘M-x list-abbrevs’ to see them under the ‘(uniline-abbrev-table)’
+entry, or open the ‘~/emacs.d/abbrev_defs’ file.
 
 
 File: uniline.info,  Node: Which fonts?,  Next: Hydra or Transient?,  Prev: Abbrev,  Up: Top
@@ -3463,108 +3478,108 @@ Tag Table:
 Node: Top171
 Node: Getting started in 10 seconds3637
 Node: New4245
-Node: Gallery pure UNICODE diagrams in Emacs4654
-Node: Document a command5384
-Node: Connect boxes with arrows5934
-Node: Explain decisions trees7254
-Node: Draw lines or blocks8760
-Node: Outline the General Relativity and the Schrödinger's equations10302
-Node: Explain the structure of a sentence in a foreign language13201
-Node: Draw electronic diagrams14787
-Node: Explain Lisp lists16192
-Node: Draw sketched objects17375
-Node: Replace words with simple sketches19365
-Node: Visualize floating point layouts19948
-Node: Illustrate proportions21967
-Node: 3D illusions23446
-Node: Phylogeny hierarchy27459
-Node: Pure text30941
-Node: Beware!31673
-Node: A minor mode for drawing32256
-Node: Minor mode32627
-Node: Draw lines by moving the cursor33189
-Node: Infinite ∞ buffer33781
-Node: Basic brushes35064
-Node: The 25 dimensions brushes37980
-Node: Text direction40848
-Node: The <insert> key41488
-Node: Glyphs ▷ ▶ → □ ◆ ╮─ insertion & modification42983
-Node: Arrows glyphs ▷ ▶ → ▹ ▸ ↔43700
-Node: Intersection glyphs ■ ◆ ●45344
-Node: Fine tweaking of lines48174
-Node: Rectangular actions50124
-Node: Drawing a rectangle51495
-Node: Filling a rectangle53146
-Node: Moving a rectangular region53914
-Node: Copying killing yanking a rectangular region56483
-Node: Dashed lines and other styles57731
-Node: ASCII to UNICODE61964
-Node: UNICODE to ASCII65672
-Node: Long range actions contour and flood-fill66170
-Node: Tracing a contour66433
-Node: Flood-fill69601
-Node: Macros71375
-Node: Abbrev74760
-Node: Create an abbrev75498
-Node: Insert an abbrev75800
-Node: Manage abbrevs76590
-Node: Library of abbrevs76957
-Node: Which fonts?77668
-Node: Recommended fonts77931
-Node: Use case - mixing fonts80023
-Node: Hydra or Transient?82024
-Node: Selecting Hydra or Transient83013
-Node: Instantly selecting Hydra or Transient84131
-Node: One-liner menus85097
-Node: The Hydra interface87035
-Node: The Transient interface87708
-Node: Customization88246
-Node: Interface type89186
-Node: Insert key89712
-Node: Prefix brush settings with INS90488
-Node: Keyboard bindings91161
-Node: Maximum steps when drawing a contour93101
-Node: Cursor type93579
-Node: Hint style93918
-Node: Welcome message visibility94265
-Node: Line spacing94647
-Node: Font96113
-Node: Upward infiniteness ∞96631
-Node: Lisp Hooks97182
-Node: How Uniline behaves with its environment?98483
-Node: Language environment99149
-Node: Mouse support101536
-Node: Compatibility with Picture-mode102493
-Node: Compatibility with Artist-mode103433
-Node: Compatibility with Whitespace-mode103952
-Node: Compatibility with Org Mode104852
-Node: Compatibility with abbrev106287
-Node: Org Mode and LaTex108690
-Node: What about \t tabs?110548
-Node: What about ^L page separation?111349
-Node: Emacs on the Linux console111974
-Node: Emacs on a graphical terminal emulator112936
-Node: Emacs on Windows113866
-Node: Emacs on MacOS114533
-Node: Compatibility with ASCIIFlow116722
-Node: Lisp API117676
-Node: Move the cursor118341
-Node: Brush118772
-Node: Example Lisp function to draw a plus sign119641
-Node: Long range actions (contour flood-fill rectangle)121477
-Node: Constants122593
-Node: Macro and text direction123008
-Node: Insert and tweak glyphs123943
-Node: Change to alternate styles125056
-Node: Installation125965
-Node: use-package the straightforward way126221
-Node: Without use-package128606
-Node: Autoloading?130188
-Node: Related packages131073
-Node: Emacs131254
-Node: Non Emacs134616
-Node: Author contributors136528
-Node: License138740
+Node: Gallery pure UNICODE diagrams in Emacs4751
+Node: Document a command5481
+Node: Connect boxes with arrows6031
+Node: Explain decisions trees7351
+Node: Draw lines or blocks8857
+Node: Outline the General Relativity and the Schrödinger's equations10399
+Node: Explain the structure of a sentence in a foreign language13298
+Node: Draw electronic diagrams14884
+Node: Explain Lisp lists16289
+Node: Draw sketched objects17472
+Node: Replace words with simple sketches19462
+Node: Visualize floating point layouts20045
+Node: Illustrate proportions22064
+Node: 3D illusions23543
+Node: Phylogeny hierarchy27556
+Node: Pure text31038
+Node: Beware!31770
+Node: A minor mode for drawing32353
+Node: Minor mode32724
+Node: Draw lines by moving the cursor33286
+Node: Infinite ∞ buffer33878
+Node: Basic brushes35161
+Node: The 25 dimensions brushes38077
+Node: Text direction40945
+Node: The <insert> key41585
+Node: Glyphs ▷ ▶ → □ ◆ ╮─ insertion & modification43080
+Node: Arrows glyphs ▷ ▶ → ▹ ▸ ↔43797
+Node: Intersection glyphs ■ ◆ ●45441
+Node: Fine tweaking of lines48271
+Node: Rectangular actions50221
+Node: Drawing a rectangle51592
+Node: Filling a rectangle53243
+Node: Moving a rectangular region54011
+Node: Copying killing yanking a rectangular region56580
+Node: Dashed lines and other styles57828
+Node: ASCII to UNICODE62061
+Node: UNICODE to ASCII65769
+Node: Long range actions contour and flood-fill66267
+Node: Tracing a contour66530
+Node: Flood-fill69698
+Node: Macros71472
+Node: Abbrev74857
+Node: Create an abbrev75595
+Node: Insert an abbrev75897
+Node: Manage abbrevs77020
+Node: Library of abbrevs77387
+Node: Which fonts?78276
+Node: Recommended fonts78539
+Node: Use case - mixing fonts80631
+Node: Hydra or Transient?82632
+Node: Selecting Hydra or Transient83621
+Node: Instantly selecting Hydra or Transient84739
+Node: One-liner menus85705
+Node: The Hydra interface87643
+Node: The Transient interface88316
+Node: Customization88854
+Node: Interface type89794
+Node: Insert key90320
+Node: Prefix brush settings with INS91096
+Node: Keyboard bindings91769
+Node: Maximum steps when drawing a contour93709
+Node: Cursor type94187
+Node: Hint style94526
+Node: Welcome message visibility94873
+Node: Line spacing95255
+Node: Font96721
+Node: Upward infiniteness ∞97239
+Node: Lisp Hooks97790
+Node: How Uniline behaves with its environment?99091
+Node: Language environment99757
+Node: Mouse support102144
+Node: Compatibility with Picture-mode103101
+Node: Compatibility with Artist-mode104041
+Node: Compatibility with Whitespace-mode104560
+Node: Compatibility with Org Mode105460
+Node: Compatibility with abbrev106895
+Node: Org Mode and LaTex109298
+Node: What about \t tabs?111156
+Node: What about ^L page separation?111957
+Node: Emacs on the Linux console112582
+Node: Emacs on a graphical terminal emulator113544
+Node: Emacs on Windows114474
+Node: Emacs on MacOS115141
+Node: Compatibility with ASCIIFlow117330
+Node: Lisp API118284
+Node: Move the cursor118949
+Node: Brush119380
+Node: Example Lisp function to draw a plus sign120249
+Node: Long range actions (contour flood-fill rectangle)122085
+Node: Constants123201
+Node: Macro and text direction123616
+Node: Insert and tweak glyphs124551
+Node: Change to alternate styles125664
+Node: Installation126573
+Node: use-package the straightforward way126829
+Node: Without use-package129214
+Node: Autoloading?130796
+Node: Related packages131681
+Node: Emacs131862
+Node: Non Emacs135224
+Node: Author contributors137136
+Node: License139348
 
 End Tag Table
 

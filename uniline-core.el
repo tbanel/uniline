@@ -3982,7 +3982,7 @@ Or use the '0 standard' style transformer instead.")))
 (unless (and (boundp 'uniline-abbrev-table) uniline-abbrev-table)
   (define-abbrev-table 'uniline-abbrev-table ()))
 
-;; Register Uniline minor mode as having it own abbreviations
+;; Register Uniline minor mode as having its own abbreviations
 
 (add-to-list
  'abbrev-minor-mode-table-alist
@@ -4003,7 +4003,28 @@ Or use the '0 standard' style transformer instead.")))
   (uniline-yank-rectangle)
   (deactivate-mark))
 
-(defvar uniline-abbrev-table)
+(defun uniline-abbrev--unilinize  (sexp)
+  "Destructively replace `abbrev-insert' by `uniline-abbrev-insert' in SEXP."
+  (cl-loop
+   for c on sexp
+   for d = (car c)
+   do (cond
+       ((eq d 'abbrev-insert)
+        (setcar c 'uniline-abbrev-insert))
+       ((consp d)
+        (uniline-abbrev--unilinize d)))))
+
+(defun uniline-abbrev-update-menu ()
+  "Update the \"Insert abbrev\" menu entry.
+As this entry list all abbrevs in uniline-abbrev-table,
+when uniline-abbrev-table changes, the sub-menu needs to be updated."
+   (interactive)
+   (let ((submenu
+          (abbrev-table-menu uniline-abbrev-table)))
+     (uniline-abbrev--unilinize submenu)
+     (setq submenu `(keymap "Insert abbrev" ,@(cdr submenu)))
+     (defvar uniline-menu)
+     (easy-menu-add-item uniline-menu '() submenu)))
 
 (defun uniline-abbrev-add ()
   "Add a new `abbrev' whose expansion is the currently selected rectangle."
@@ -4016,32 +4037,48 @@ Or use the '0 standard' style transformer instead.")))
      (cons "" killed-rectangle)
      "\n")
     'uniline-abbrev-hook)
+  (uniline-abbrev-update-menu)
   (deactivate-mark))
 
-;; The uniline-launch-interface is defined in uniline-hydra.el & uniline-transient.el
-;; with different implementation in each file.
-;; It is declared here so that the compiler does not frown upon.
-(declare-function uniline-launch-interface "" ())
+(defun uniline-abbrev-insert (name)
+  "Insert the abbrev with the name NAME.
+The abbrev is taken from `uniline-abbrev-table'"
+  (interactive)
+  (let ((last-abbrev-location (point))
+        (last-abbrev-text "")
+        (symbol
+         (obarray-get
+          uniline-abbrev-table
+          (if (symbolp name)
+              (symbol-name name)
+            name))))
+    (if (not symbol)
+        (message "abbrev %s does not exist anymore" name)
+      (abbrev-insert symbol)
+      (activate-mark)
+      (rectangle-mark-mode 1)
+      (setq deactivate-mark nil)
+      (uniline-launch-interface))))
 
 (defun uniline-abbrev-query-insert ()
   "Queries for the name of an abbrev, and insert it.
 The abbrevs list is taken from `uniline-abbrev-table'"
   (interactive)
-  (let ((last-abbrev-location (point))
-        (last-abbrev-text ""))
-    (abbrev-insert
-     (obarray-get
-      uniline-abbrev-table
-      (completing-read
-       "which abbrev? "
-       (cdr
-        (cl-loop
-         for s being the symbols of uniline-abbrev-table
-         collect s))))))
-  (activate-mark)
-  (rectangle-mark-mode 1)
-  (setq deactivate-mark nil)
-  (uniline-launch-interface))
+  (uniline-abbrev-insert
+   (completing-read
+    "which abbrev? "
+    (cdr
+     (cl-loop
+      for s being the symbols of uniline-abbrev-table
+      collect s)))))
+
+
+;; The uniline-launch-interface function is defined
+;; in uniline-hydra.el & in uniline-transient.el
+;; with different implementation in each file.
+;; It is declared here so that the compiler does not frown upon.
+(declare-function uniline-launch-interface "" ())
+
 
 ;;;╭───────────────────────────╮
 ;;;│Common to Hydra & Transient│
@@ -4580,6 +4617,7 @@ And backup previous settings."
   (uniline--fix-char-width-table)
   (uniline-toggle-hints t)
   (uniline--update-mode-line)
+  (uniline-abbrev-update-menu)
   (if uniline-show-welcome-message
       (uniline--welcome-message)))
 
@@ -4980,6 +5018,7 @@ Its value is ?h or ?t")
      ["Insert oshape · ● ◦ Ø ø"    uniline-insert-fw-oshape :keys "INS o"]
      ["Insert cross ╳ ╱ ╲ ÷ × ± ¤" uniline-insert-fw-cross  :keys "INS x"]
      ["Insert shades of grey ░▒▓█" uniline-insert-fw-grey   :keys "INS x"])
+    ("Insert abbrev" ["a" identity])
     ("Rotate arrow, tweak ¼ line"
      ["Rotate arrow, tweak ¼ line → right" uniline-rotate-ri→ :keys "INS S-<right>"]
      ["Rotate arrow, tweak ¼ line ← left"  uniline-rotate-lf← :keys "INS S-<left>" ]

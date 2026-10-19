@@ -37,6 +37,9 @@ use.
 Moreover, now typing =<insert> v= inserts an abbrev by interactively
 querying its name.
 
+Late addition: the Uniline menu now offers the list of available
+abbrevs to insert at point.
+
 See [[#abbrev][Abbrev]].
 
 * Table of Contents
@@ -1623,14 +1626,22 @@ That's all.
 :CUSTOM_ID: insert-an-abbrev
 :END:
 
-To insert a previously stored abbrev:
-- type the name of the abbreviation in the buffer under =uniline-mode=,
-- either type =C-x '=,
-- or a space if =abbrev-mode= is active.
-- the name is replaced by the stored rectangular diagram.
+There are 3 ways to insert a previously stored abbrev.
 
-Alternatively, type =<insert> v=.
-This will query (with completion) the name of the abbrev to insert.
+1. The traditional abbrev way:
+   - type the name of the abbreviation in the buffer under =uniline-mode=,
+   - either type =C-x '=,
+   - or a space if =abbrev-mode= is active.
+   - the name is replaced by the stored rectangular diagram.
+
+2. Through Hydra or transient menus:
+   - type =<insert> v=. This will query (with completion) the name of
+     the abbrev to insert.
+
+3. Through the menu:
+   - at the top of the Emacs screen, click on the "Uniline" menu.
+   - Thensearch for the "Insert abbrev" entry. The list of currently
+     available abbrevs is offered.
 
 Note that the freshly inserted abbrev is selected. This allows moving
 it around. To unselect it, just type =<return>=.
@@ -1661,10 +1672,14 @@ representations of a valve, a motor, a vu-meter, a switch, a resistor,
 a cat, a hat, or whatever makes sense for a particular kind of
 diagram.
 
-It is easy to create your own. If you would like to contribute some
-specialized library (electric engineering or process orchestration for
-instance), you are welcome. There is not yet a repository for such a
-library. But this does not stop from starting one.
+It is easy to create your own through the standard "abbrev" Emacs
+system. If you would like to contribute some specialized library
+(electric engineering or process orchestration for instance), you are
+welcome. There is not yet a repository for such a library. But this
+does not stop from starting one.
+
+Use =M-x list-abbrevs= to see them under the =(uniline-abbrev-table)=
+entry, or open the =~/emacs.d/abbrev_defs= file.
 
 * Which fonts?
 :PROPERTIES:
