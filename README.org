@@ -793,6 +793,8 @@ The "light" can be choosen to come
 
 Here they are:
 
+[[file:images/brushes-25D.png]]
+
 #+begin_example
 
    ╭─╴short shadow
@@ -827,6 +829,8 @@ etched-out, as if it was on the foreground.
 When drawn anti-clockwise, it appears as a hole.
 
 Both rotation directions can be combined for interesting effects.
+
+[[file:images/a-hole.png]]
 
 #+begin_example
 

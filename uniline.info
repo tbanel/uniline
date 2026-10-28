@@ -854,6 +854,8 @@ Emacs screen.
    Here they are:
 
 
+
+
      ╭─╴short shadow
      │             large shadow╶╮
      ╰─────╮         ╭──────────╯
@@ -885,6 +887,8 @@ etched-out, as if it was on the foreground.
    When drawn anti-clockwise, it appears as a hole.
 
    Both rotation directions can be combined for interesting effects.
+
+
 
 
      ╭─────────────────╮
@@ -3501,85 +3505,85 @@ Node: Draw lines by moving the cursor33286
 Node: Infinite ∞ buffer33878
 Node: Basic brushes35161
 Node: The 25 dimensions brushes38077
-Node: Text direction40945
-Node: The <insert> key41585
-Node: Glyphs ▷ ▶ → □ ◆ ╮─ insertion & modification43080
-Node: Arrows glyphs ▷ ▶ → ▹ ▸ ↔43797
-Node: Intersection glyphs ■ ◆ ●45441
-Node: Fine tweaking of lines48271
-Node: Rectangular actions50221
-Node: Drawing a rectangle51592
-Node: Filling a rectangle53243
-Node: Moving a rectangular region54011
-Node: Copying killing yanking a rectangular region56580
-Node: Dashed lines and other styles57828
-Node: ASCII to UNICODE62061
-Node: UNICODE to ASCII65769
-Node: Long range actions contour and flood-fill66267
-Node: Tracing a contour66530
-Node: Flood-fill69698
-Node: Macros71472
-Node: Abbrev74857
-Node: Create an abbrev75595
-Node: Insert an abbrev75897
-Node: Manage abbrevs77020
-Node: Library of abbrevs77387
-Node: Which fonts?78276
-Node: Recommended fonts78539
-Node: Use case - mixing fonts80631
-Node: Hydra or Transient?82632
-Node: Selecting Hydra or Transient83621
-Node: Instantly selecting Hydra or Transient84739
-Node: One-liner menus85705
-Node: The Hydra interface87643
-Node: The Transient interface88316
-Node: Customization88854
-Node: Interface type89794
-Node: Insert key90320
-Node: Prefix brush settings with INS91096
-Node: Keyboard bindings91769
-Node: Maximum steps when drawing a contour93709
-Node: Cursor type94187
-Node: Hint style94526
-Node: Welcome message visibility94873
-Node: Line spacing95255
-Node: Font96721
-Node: Upward infiniteness ∞97239
-Node: Lisp Hooks97790
-Node: How Uniline behaves with its environment?99091
-Node: Language environment99757
-Node: Mouse support102144
-Node: Compatibility with Picture-mode103101
-Node: Compatibility with Artist-mode104041
-Node: Compatibility with Whitespace-mode104560
-Node: Compatibility with Org Mode105460
-Node: Compatibility with abbrev106895
-Node: Org Mode and LaTex109298
-Node: What about \t tabs?111156
-Node: What about ^L page separation?111957
-Node: Emacs on the Linux console112582
-Node: Emacs on a graphical terminal emulator113544
-Node: Emacs on Windows114474
-Node: Emacs on MacOS115141
-Node: Compatibility with ASCIIFlow117330
-Node: Lisp API118284
-Node: Move the cursor118949
-Node: Brush119380
-Node: Example Lisp function to draw a plus sign120249
-Node: Long range actions (contour flood-fill rectangle)122085
-Node: Constants123201
-Node: Macro and text direction123616
-Node: Insert and tweak glyphs124551
-Node: Change to alternate styles125664
-Node: Installation126573
-Node: use-package the straightforward way126829
-Node: Without use-package129214
-Node: Autoloading?130796
-Node: Related packages131681
-Node: Emacs131862
-Node: Non Emacs135224
-Node: Author contributors137136
-Node: License139348
+Node: Text direction41026
+Node: The <insert> key41666
+Node: Glyphs ▷ ▶ → □ ◆ ╮─ insertion & modification43161
+Node: Arrows glyphs ▷ ▶ → ▹ ▸ ↔43878
+Node: Intersection glyphs ■ ◆ ●45522
+Node: Fine tweaking of lines48352
+Node: Rectangular actions50302
+Node: Drawing a rectangle51673
+Node: Filling a rectangle53324
+Node: Moving a rectangular region54092
+Node: Copying killing yanking a rectangular region56661
+Node: Dashed lines and other styles57909
+Node: ASCII to UNICODE62142
+Node: UNICODE to ASCII65850
+Node: Long range actions contour and flood-fill66348
+Node: Tracing a contour66611
+Node: Flood-fill69779
+Node: Macros71553
+Node: Abbrev74938
+Node: Create an abbrev75676
+Node: Insert an abbrev75978
+Node: Manage abbrevs77101
+Node: Library of abbrevs77468
+Node: Which fonts?78357
+Node: Recommended fonts78620
+Node: Use case - mixing fonts80712
+Node: Hydra or Transient?82713
+Node: Selecting Hydra or Transient83702
+Node: Instantly selecting Hydra or Transient84820
+Node: One-liner menus85786
+Node: The Hydra interface87724
+Node: The Transient interface88397
+Node: Customization88935
+Node: Interface type89875
+Node: Insert key90401
+Node: Prefix brush settings with INS91177
+Node: Keyboard bindings91850
+Node: Maximum steps when drawing a contour93790
+Node: Cursor type94268
+Node: Hint style94607
+Node: Welcome message visibility94954
+Node: Line spacing95336
+Node: Font96802
+Node: Upward infiniteness ∞97320
+Node: Lisp Hooks97871
+Node: How Uniline behaves with its environment?99172
+Node: Language environment99838
+Node: Mouse support102225
+Node: Compatibility with Picture-mode103182
+Node: Compatibility with Artist-mode104122
+Node: Compatibility with Whitespace-mode104641
+Node: Compatibility with Org Mode105541
+Node: Compatibility with abbrev106976
+Node: Org Mode and LaTex109379
+Node: What about \t tabs?111237
+Node: What about ^L page separation?112038
+Node: Emacs on the Linux console112663
+Node: Emacs on a graphical terminal emulator113625
+Node: Emacs on Windows114555
+Node: Emacs on MacOS115222
+Node: Compatibility with ASCIIFlow117411
+Node: Lisp API118365
+Node: Move the cursor119030
+Node: Brush119461
+Node: Example Lisp function to draw a plus sign120330
+Node: Long range actions (contour flood-fill rectangle)122166
+Node: Constants123282
+Node: Macro and text direction123697
+Node: Insert and tweak glyphs124632
+Node: Change to alternate styles125745
+Node: Installation126654
+Node: use-package the straightforward way126910
+Node: Without use-package129295
+Node: Autoloading?130877
+Node: Related packages131762
+Node: Emacs131943
+Node: Non Emacs135305
+Node: Author contributors137217
+Node: License139429
 
 End Tag Table
 
