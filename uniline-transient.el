@@ -145,18 +145,6 @@ for later menu invocation in the same Uniline session."
     (put :command 'slot-name t))
   (transient-setup (eieio-oref (transient-prefix-object) 'command )))
 
-;; Define common command classes to control state transitions
-
-(transient-define-suffix uniline--persistent-command (&rest args)
-  "Base class for commands that should keep the transient state active."
-  :transient t
-  (interactive)
-  args) ;; to avoid warnings
-
-(transient-define-suffix uniline--exit-command ()
-  "Base class for commands that should exit the transient state."
-  :transient nil)
-
 (transient-define-prefix uniline-transient-customize ()
   "Preferences."
   :info-manual "(uniline) Customization"
